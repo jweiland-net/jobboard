@@ -76,6 +76,39 @@
 			<trans-unit id="tx_jobfair2_domain_model_job.is_internal">
 				<source>Is internal?</source>
 			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.salary">
+				<source>Salary</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.salary_mode">
+				<source>Salary mode</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.salary_mode.description">
+				<source>Determines whether a tariff-based salary grade or a free salary entry is used. Changing this afterwards reloads the form, since the visible fields differ.</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.salary_mode.grade">
+				<source>Salary grade (tariff-based)</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.salary_mode.freeEntry">
+				<source>Free salary entry</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.salary_grade">
+				<source>Salary grade</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.salary_grade.description">
+				<source>The minimum/maximum salary is calculated automatically in the frontend from the steps stored for this salary grade.</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.salary_min">
+				<source>Minimum salary</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.salary_min.description">
+				<source>For an exact salary, please enter the same amount in both minimum and maximum salary. Since jobs without salary information may no longer be displayed by law, both fields must be filled in. Enter amounts using a decimal point (e.g. 3842.17), not a comma or thousands separator — the browser may otherwise silently truncate the value.</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.salary_max">
+				<source>Maximum salary</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.salary_max.description">
+				<source>For an exact salary, please enter the same amount as in minimum salary. Enter amounts using a decimal point (e.g. 3842.17), not a comma or thousands separator — the browser may otherwise silently truncate the value.</source>
+			</trans-unit>
 
 			<trans-unit id="tx_jobfair2_domain_model_jobarea">
 				<source>Occupational field</source>
@@ -89,6 +122,81 @@
 			</trans-unit>
 			<trans-unit id="tx_jobfair2_domain_model_jobtype.title">
 				<source>Type of employment</source>
+			</trans-unit>
+
+			<trans-unit id="tx_jobfair2_domain_model_salarytable">
+				<source>Salary table</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarytable.title">
+				<source>Title</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarytable.description">
+				<source>Description</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarytable.salary_grades">
+				<source>Salary grades</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarytable.starttime">
+				<source>Valid from (document)</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarytable.endtime">
+				<source>Valid until (document)</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarytable.starttime.description">
+				<source>For editorial documentation/organization of this document only. The legally binding validity is maintained at the individual salary grade level (see there).</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarytable.endtime.description">
+				<source>For editorial documentation/organization of this document only. The legally binding validity is maintained at the individual salary grade level (see there).</source>
+			</trans-unit>
+
+			<trans-unit id="tx_jobfair2_domain_model_salarygrade">
+				<source>Salary grade</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarygrade.title">
+				<source>Grade</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarygrade.title.description">
+				<source>e.g. "A9", "R3" or "B3" — depending on the pay scale.</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarygrade.has_steps">
+				<source>Has steps?</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarygrade.has_steps.description">
+				<source>Disable for salary grades without seniority steps (e.g. R3 and above, B-grades) — a fixed amount is used instead.</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarygrade.flat_amount">
+				<source>Fixed amount</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarygrade.flat_amount.description">
+				<source>Only relevant for salary grades without steps. Enter the amount using a decimal point (e.g. 3842.17) — do not use a thousands separator or comma, as the browser may otherwise silently truncate the value.</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarygrade.salary_steps">
+				<source>Steps</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarygrade.salary_steps.description">
+				<source>Not every step has to exist — gaps are allowed. Minimum/maximum are calculated in the frontend from the steps actually present.</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarygrade.starttime.description">
+				<source>Important: once this period expires (or has not started yet), this salary grade is hidden — and so is every job referencing it, since jobs without salary information may no longer be displayed by law. Please maintain new values in time.</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarygrade.endtime.description">
+				<source>Important: once this period expires (or has not started yet), this salary grade is hidden — and so is every job referencing it, since jobs without salary information may no longer be displayed by law. Please maintain new values in time.</source>
+			</trans-unit>
+
+			<trans-unit id="tx_jobfair2_domain_model_salarystep">
+				<source>Salary step</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarystep.step_label">
+				<source>Step</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarystep.step_label.description">
+				<source>Free text, e.g. "3", "3a" or "Entry step" — naming varies by pay scale.</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarystep.amount">
+				<source>Amount</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarystep.amount.description">
+				<source>Enter the amount using a decimal point (e.g. 3842.17) — do not use a thousands separator or comma, as the browser may otherwise silently truncate the value.</source>
 			</trans-unit>
 		</body>
 	</file>
