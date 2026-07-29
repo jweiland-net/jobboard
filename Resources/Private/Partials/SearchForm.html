@@ -1,0 +1,25 @@
+<html lang="en"
+      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:jf2="http://typo3.org/ns/JWeiland/Jobfair2/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+<div class="grid">
+    <div class="col-4_md-12">
+        <f:if condition="{settings.showSearch}">
+            <f:render partial="Job/Search" arguments="{
+                jobAreas: jobAreas,
+                jobTypes: jobTypes,
+                selected_job_area: selected_job_area,
+                selected_job_type: selected_job_type,
+                selected_address: selected_address
+            }"/>
+        </f:if>
+    </div>
+
+    <div class="col-8_md-12 margin-bottom">
+        <f:render partial="Maps2/PoiCollection"
+                  section="showMap"
+                  arguments="{poiCollections: '{jf2:jobPoiCollection(jobs: jobs)}', override: '{settings: {mapWidth: \'100%\', mapHeight: \'400\', streetViewControl: 0}, extConf: {strokeColor: \'blue\'}}'}"/>
+    </div>
+</div>
+</html>

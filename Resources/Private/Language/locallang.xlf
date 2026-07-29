@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" product-name="jobfair2">
+		<header/>
+		<body>
+			<trans-unit id="job.title">
+				<source>Job</source>
+			</trans-unit>
+			<trans-unit id="job.ending_date">
+				<source>Application deadline</source>
+			</trans-unit>
+			<trans-unit id="job.employer">
+				<source>Employer</source>
+			</trans-unit>
+			<trans-unit id="job.tenderFile">
+				<source>Job ad</source>
+			</trans-unit>
+			<trans-unit id="job.company">
+				<source>Place of Employment</source>
+			</trans-unit>
+			<trans-unit id="job.address.zip">
+				<source>Zip</source>
+			</trans-unit>
+			<trans-unit id="job.address.city">
+				<source>City</source>
+			</trans-unit>
+
+			<trans-unit id="job.job_area.title">
+				<source>Job Area</source>
+			</trans-unit>
+			<trans-unit id="job.job_type.title">
+				<source>Job Type</source>
+			</trans-unit>
+
+			<trans-unit id="fluid.select.prependOptionLabel">
+				<source>---Please choose---</source>
+			</trans-unit>
+
+			<trans-unit id="search.label">
+				<source>Search for jobs</source>
+			</trans-unit>
+			<trans-unit id="search.city_or_zip">
+				<source>Search for city or zip</source>
+			</trans-unit>
+			<trans-unit id="search.no_jobs_found">
+				<source>No jobs found.</source>
+			</trans-unit>
+			<trans-unit id="search.submit">
+				<source>Submit</source>
+			</trans-unit>
+			<trans-unit id="search.job_area">
+				<source>Job Area</source>
+			</trans-unit>
+			<trans-unit id="search.job_type">
+				<source>Job Type</source>
+			</trans-unit>
+
+			<trans-unit id="poi_collection.apply_until">
+				<source>Apply until</source>
+			</trans-unit>
+
+			<trans-unit id="remember">
+				<source>Remember?</source>
+			</trans-unit>
+			<trans-unit id="dateFormat">
+				<source>Y-m-d</source>
+			</trans-unit>
+
+			<trans-unit id="applicationTo">
+				<source>Application to</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

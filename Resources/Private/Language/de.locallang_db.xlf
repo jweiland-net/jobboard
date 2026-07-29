@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="english" datatype="plaintext" original="messages" product-name="jobfair2">
+		<header/>
+		<body>
+			<trans-unit id="plugin.jobfair.title">
+				<source>Jobfair</source>
+				<target>Stellenbörse</target>
+			</trans-unit>
+			<trans-unit id="plugin.jobfair.description">
+				<source>Integrates a job board with which visitors can reduce the job offers to their needs using various filters.</source>
+				<target>Bindet eine Stellenbörse ein mit der Besucher mittels diverser Filter die Stellenangebote auf ihre Bedürfnisse reduzieren können.</target>
+			</trans-unit>
+
+			<trans-unit id="tx_jobfair2_domain_model_job">
+				<source>Job</source>
+				<target>Arbeitsplatz</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.title">
+				<source>Job title</source>
+				<target>Berufsbezeichnung</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.reference_number">
+				<source>Reference number</source>
+				<target>Referenznummer</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.is_import">
+				<source>Is imported record?</source>
+				<target>Importierter Datensatz?</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.is_import.description">
+				<source>Indicates, if this job was created manual in TYPO3 backend or was imported.</source>
+				<target>Zeigt an, ob dieser Job manuell im TYPO3 Backend erstellt oder importiert wurde.</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.vacancy_id">
+				<source>Vacancy ID</source>
+				<target>Stellenangebots-ID</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.description">
+				<source>Job description</source>
+				<target>Stellenbeschreibung</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.address">
+				<source>Address of the workplace</source>
+				<target>Adresse der Arbeitsstelle</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.link">
+				<source>Link to vacancy of MHM HR</source>
+				<target>Link zum Stellenangebot bei MHM HR</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.job_area">
+				<source>Occupational field</source>
+				<target>Berufsfeld</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.job_type">
+				<source>Type of employment</source>
+				<target>Beschäftigungsart</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.start_date">
+				<source>Date of starting work</source>
+				<target>Datum des Arbeitsantritts</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.start_date.description">
+				<source>When the data record is saved, the job offer appears immediately in the job market, regardless of this date, provided the application deadline has not yet passed.</source>
+				<target>Mit Speichern des Datensatzes erscheint das Stellenangebot unabhängig von diesem Datum unmittelbar in der Jobbörse, sofern die Bewerbungsfrist noch nicht verstrichen ist.</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.ending_date">
+				<source>Application deadline</source>
+				<target>Bewerbungsfrist</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.ending_date.description">
+				<source>Once the application deadline has been reached, the job offer automatically disappears from the job offers after a maximum of 1 day.</source>
+				<target>Mit Erreichen der Bewerbungsfrist verschwindet das Stellenangebot nach max. 1 Tag automatisch aus den Jobangeboten.</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.employer">
+				<source>Employer</source>
+				<target>Arbeitgeber</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.email">
+				<source>Email for application</source>
+				<target>E-Mail für Bewerbung</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.employer_address">
+				<source>Address of the employer</source>
+				<target>Adresse des Arbeitgebers</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.tender_file">
+				<source>Tender documents</source>
+				<target>Ausschreibungsunterlagen</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.location">
+				<source>Location</source>
+				<target>Location</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.pdf_files">
+				<source>Job advertisement</source>
+				<target>Stellenausschreibung</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.is_internal">
+				<source>Is internal?</source>
+				<target>Ist Intern?</target>
+			</trans-unit>
+
+			<trans-unit id="tx_jobfair2_domain_model_jobarea">
+				<source>Occupational field</source>
+				<target>Berufsfeld</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_jobarea.title">
+				<source>Occupational field</source>
+				<target>Berufsfeld</target>
+			</trans-unit>
+
+			<trans-unit id="tx_jobfair2_domain_model_jobtype">
+				<source>Type of employment</source>
+				<target>Beschäftigungsart</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_jobtype.title">
+				<source>Type of employment</source>
+				<target>Beschäftigungsart</target>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

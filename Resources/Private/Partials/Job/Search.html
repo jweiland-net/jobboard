@@ -1,0 +1,18 @@
+<html lang="en"
+      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+<div class="search-jobfair">
+    <fieldset>
+        <legend class="fontsize3">{f:translate(key: 'search.label')}</legend>
+        <f:form action="search">
+            <f:render partial="Types/Select" arguments="{label: 'search.job_area', options: jobAreas, name: 'jobArea', value: selected_job_area}"/>
+            <f:render partial="Types/Select" arguments="{label: 'search.job_type', options: jobTypes, name: 'jobType', value: selected_job_type}"/>
+            <f:render partial="Types/Textfield" arguments="{label: 'search.city_or_zip', name: 'address', value: selected_address}"/>
+            <div class="form-group">
+                <f:form.submit class="submit-btn" value="{f:translate(key: 'search.submit')}"/>
+            </div>
+        </f:form>
+    </fieldset>
+</div>
+</html>

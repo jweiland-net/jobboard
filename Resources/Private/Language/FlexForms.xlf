@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" product-name="jobfair2">
+		<header/>
+		<body>
+			<trans-unit id="sheetGeneral">
+				<source>General</source>
+			</trans-unit>
+			<trans-unit id="isInternal">
+				<source>Is Internal?</source>
+			</trans-unit>
+			<trans-unit id="isInternal.no">
+				<source>No</source>
+			</trans-unit>
+			<trans-unit id="isInternal.yes">
+				<source>Yes</source>
+			</trans-unit>
+			<trans-unit id="jobAreas">
+				<source>Job areas</source>
+			</trans-unit>
+			<trans-unit id="showSearch">
+				<source>Show Search</source>
+			</trans-unit>
+			<trans-unit id="search">
+				<source>Search</source>
+			</trans-unit>
+			<trans-unit id="maxEntries">
+				<source>Max entries to show (0 for all)</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

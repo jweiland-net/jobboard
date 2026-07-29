@@ -1,0 +1,72 @@
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:pdf="http://typo3.org/ns/Bithost/Pdfviewhelpers/ViewHelpers"
+      xsi:schemaLocation="http://typo3.org/ns/Bithost/Pdfviewhelpers/ViewHelpers https://pdfviewhelpers.bithost.ch/schema/2.2.xsd"
+      data-namespace-typo3-fluid="true">
+
+<pdf:document outputDestination="inline" outputPath="{job.uid}-{job.title}.pdf" title="{job.title}">
+    <pdf:page margin="{top: 35}">
+        <pdf:header>
+            <pdf:image alignment="right" posY="18" src="{settings.pdfLogo}" width="40"/>
+        </pdf:header>
+
+        <pdf:text color="#666" paragraphSpacing="1">
+            <f:translate key="job.title"/>
+        </pdf:text>
+        <pdf:headline type="title">{job.title}</pdf:headline>
+
+        <pdf:html>
+            <strong><f:translate key="job.ending_date"/>:</strong>
+            <f:format.date format="{f:translate(key:'dateFormat')}">{job.endingDate}</f:format.date>
+        </pdf:html>
+
+        <pdf:lineBreak height="5"/>
+
+        <pdf:html>
+            {job.description}
+        </pdf:html>
+
+        <pdf:lineBreak height="5"/>
+
+        <pdf:html>
+            <strong><f:translate key="job.job_area.title"/>:</strong> {job.jobArea.title}
+            <br/>
+            <strong><f:translate key="job.job_type.title"/>:</strong> {job.jobType.title}
+        </pdf:html>
+
+        <pdf:lineBreak height="5"/>
+
+        <pdf:html>
+            <strong><f:translate key="job.company"/>:</strong>
+        </pdf:html>
+
+        <pdf:text paragraphSpacing="0">
+            {f:if(condition: job.address.company, then: job.address.company, else: job.employer)}
+            {job.address.address}
+            {job.address.zip} {job.address.city}
+
+            {job.address.email}
+            {job.address.phone}
+        </pdf:text>
+
+        <pdf:html>
+            <strong><f:translate key="applicationTo"/>:</strong>
+        </pdf:html>
+
+        <pdf:html>
+            <strong><f:translate key="job.employer"/></strong>
+        </pdf:html>
+
+        <pdf:text paragraphSpacing="0">
+            {job.employer}
+            {job.employerAddress.address}
+            {job.employerAddress.zip} {job.employerAddress.city}
+
+            {job.email}
+            {job.employerAddress.phone}
+        </pdf:text>
+    </pdf:page>
+</pdf:document>
+</html>

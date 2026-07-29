@@ -1,0 +1,94 @@
+<html lang="en"
+      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+<f:layout name="Default"/>
+
+<f:section name="main">
+    <div class="grid">
+        <div class="col-9_md-12 float-right">
+            <div class="container">
+                <div>
+                    <header class=" margin-bottom">
+                        <h1 class="word-break">{job.title}</h1>
+                    </header>
+                    <f:format.html>{job.description}</f:format.html>
+                    <div class="jobs-links">
+                        <f:if condition="{job.description}">
+                            <div class="margin-top inline-block">
+                                <f:link.action action="detail" arguments="{job: job}" pageType="1575903427" class="btn-secondary">
+                                    <i aria-hidden="true" class="fa fa-download icon-width"></i>PDF <span class="vhidden-sm">Datei zum Angebot</span> herunterladen
+                                </f:link.action>
+                            </div>
+                        </f:if>
+                        <f:if condition="{job.email}">
+                            <div class="margin-top inline-block">
+                                <f:link.page pageUid="{settings.pidOfApplicationForm}" class="btn-primary" additionalParams="{jobuid: job.uid}">Online bewerben</f:link.page>
+                            </div>
+                        </f:if>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <aside class="col-3_md-12">
+            <dl>
+                <dt>
+                    <f:translate key="job.ending_date"/>
+                </dt>
+                <dd>
+                    <f:format.date format="{f:translate(key:'dateFormat')}">{job.endingDate}</f:format.date>
+                </dd>
+            </dl>
+            <dl>
+                <dt>
+                    <f:translate key="job.job_area.title"/></dt>
+                <dd>{job.jobArea.title}</dd>
+            </dl>
+            <f:if condition="{job.jobType.title}">
+                <dl>
+                    <dt>
+                        <f:translate key="job.job_type.title"/>
+                    </dt>
+                    <dd>{job.jobType.title}</dd>
+                </dl>
+            </f:if>
+
+            <dl>
+                <dt>
+                    <f:translate key="job.company"/>
+                </dt>
+                <f:if condition="{job.address.company}">
+                    <dd>{job.address.company}</dd>
+                </f:if>
+                <dd>
+                    <f:if condition="{job.address.address}">{job.address.address}<br/></f:if>
+                    <f:if condition="{job.address.city}">{job.address.zip} {job.address.city}</f:if>
+                    <f:if condition="{job.address.email}">
+                        <br/><i aria-hidden="true" class="fa fa-envelope-o icon-width"></i>
+                        <f:link.email email="{job.address.email}"/>
+                    </f:if>
+                </dd>
+            </dl>
+            <dl>
+                <dt>{f:translate(key: 'job.employer')}</dt>
+                <f:if condition="{job.employer}">
+                    <dd>{job.employer}</dd>
+                </f:if>
+
+                <dd>
+                    <f:if condition="{job.employerAddress}">
+                        <f:if condition="{job.employerAddress.address}">{job.employerAddress.address}<br/></f:if>
+                        <f:if condition="{job.employerAddress.city}">{job.employerAddress.zip} {job.employerAddress.city}</f:if>
+                    </f:if>
+
+                    <f:if condition="{job.email}">
+                        <br/><i aria-hidden="true" class="fa fa-envelope-o icon-width"></i>
+                        <f:link.email email="{job.email}"/>
+                    </f:if>
+                </dd>
+            </dl>
+        </aside>
+    </div>
+</f:section>
+</html>

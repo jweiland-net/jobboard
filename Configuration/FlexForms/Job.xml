@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<T3DataStructure>
+    <sheets>
+        <sDEFAULT>
+            <ROOT>
+                <sheetTitle>LLL:EXT:jobfair2/Resources/Private/Language/FlexForms.xlf:sheetGeneral</sheetTitle>
+                <type>array</type>
+                <el>
+                    <settings.maxEntries>
+                        <label>LLL:EXT:jobfair2/Resources/Private/Language/FlexForms.xlf:maxEntries</label>
+                        <config>
+                            <type>input</type>
+                            <eval>trim,int</eval>
+                            <default>0</default>
+                        </config>
+                    </settings.maxEntries>
+                    <settings.showSearch>
+                        <label>LLL:EXT:jobfair2/Resources/Private/Language/FlexForms.xlf:search</label>
+                        <config>
+                            <type>check</type>
+                            <renderType>checkboxToggle</renderType>
+                            <items type="array">
+                                <numIndex index="0" type="array">
+                                    <numIndex index="0">LLL:EXT:jobfair2/Resources/Private/Language/FlexForms.xlf:showSearch</numIndex>
+                                    <numIndex index="1">1</numIndex>
+                                </numIndex>
+                            </items>
+                            <default>1</default>
+                        </config>
+                    </settings.showSearch>
+                    <settings.jobAreas>
+                        <label>LLL:EXT:jobfair2/Resources/Private/Language/FlexForms.xlf:jobAreas</label>
+                        <config>
+                            <type>select</type>
+                            <renderType>selectMultipleSideBySide</renderType>
+                            <internal_type>db</internal_type>
+                            <foreign_table>tx_jobfair2_domain_model_jobarea</foreign_table>
+                        </config>
+                    </settings.jobAreas>
+                    <settings.isInternal>
+                        <label>LLL:EXT:jobfair2/Resources/Private/Language/FlexForms.xlf:isInternal</label>
+                        <config>
+                            <type>check</type>
+                            <renderType>checkboxToggle</renderType>
+                            <default>0</default>
+                        </config>
+                    </settings.isInternal>
+                </el>
+            </ROOT>
+        </sDEFAULT>
+    </sheets>
+</T3DataStructure>

@@ -1,0 +1,15 @@
+mod.wizards.newContentElement.wizardItems.plugins {
+  elements {
+    jobfair {
+      iconIdentifier = ext-jobfair2-record-job
+      title = LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:plugin.jobfair.title
+      description = LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:plugin.jobfair.description
+      tt_content_defValues {
+        CType = jobfair2_jobfair
+      }
+    }
+  }
+}
+
+# Add CType Preview
+mod.web_layout.tt_content.preview.jobfair2_jobfair = EXT:jobfair2/Resources/Private/Templates/PluginPreview/Jobfair.html

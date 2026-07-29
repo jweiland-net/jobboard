@@ -1,0 +1,45 @@
+{
+	"name": "jweiland/jobfair2",
+	"type": "typo3-cms-extension",
+	"description": "Job fair implementation using Maps2 and tt_address to display jobs",
+	"license": "GPL-2.0+",
+	"keywords": [
+		"typo3",
+		"TYPO3 CMS",
+		"jobfair",
+		"jobfair2"
+	],
+	"homepage": "https://jweiland.net",
+	"authors": [
+		{
+			"name": "Stefan Froemken",
+			"email": "projects@jweiland.net",
+			"role": "Lead Developer"
+		}
+	],
+	"support": {
+		"email": "projects@jweiland.net",
+		"issues": "https://github.com/jweiland-net/jobfair2/issues",
+		"source": "https://github.com/jweiland-net/jobfair2"
+	},
+	"require": {
+		"typo3/cms-core": "^13.4",
+		"jweiland/maps2": "*",
+		"friendsoftypo3/tt-address": "*",
+		"bithost-gmbh/pdfviewhelpers": "dev-typo3-v13"
+	},
+	"require-dev": {
+		"roave/security-advisories": "dev-latest",
+		"phpunit/phpunit": "~4.8.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"JWeiland\\Jobfair2\\": "Classes"
+		}
+	},
+	"extra": {
+		"typo3/cms": {
+			"extension-key": "jobfair2"
+		}
+	}
+}

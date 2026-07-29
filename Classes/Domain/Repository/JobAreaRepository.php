@@ -1,0 +1,31 @@
+<?php
+
+declare(strict_types=1);
+
+/*
+ * This file is part of the package jweiland/jobfair2.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
+ */
+
+namespace JWeiland\Jobfair2\Domain\Repository;
+
+use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
+use TYPO3\CMS\Extbase\Persistence\Repository;
+
+/**
+ * Class JobAreaRepository
+ */
+class JobAreaRepository extends Repository
+{
+    public function findByUids(array $uids): QueryResultInterface
+    {
+        $query = $this->createQuery();
+        $query->matching(
+            $query->in('uid', $uids),
+        );
+
+        return $query->execute();
+    }
+}

@@ -1,0 +1,29 @@
+<html lang="en"
+      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+<f:layout name="Default"/>
+
+<f:section name="main">
+    <f:render partial="SearchForm" arguments="{_all}"/>
+
+    <f:if condition="{jobs}">
+        <f:then>
+            <f:render partial="Types/Table" arguments="{objects: jobs, fields:
+						{
+							title: '{0: \'job.title\', 1: \'text\', 2: \'title\'}',
+							ending_date: '{0: \'job.ending_date\', 1: \'date\', 2: \'endingDate\', 3: \'d.m.Y\'}',
+							zip: '{0: \'job.address.zip\', 1: \'text\', 2: \'address.zip\'}',
+							city: '{0: \'job.address.city\', 1: \'text\', 2: \'address.city\'}',
+							employer: '{0: \'job.employer\', 1: \'text\', 2: \'employer\'}',
+							job_type: '{0: \'job.job_type.title\', 1: \'text\', 2: \'jobType.title\'}'
+						},
+						class: 'dataTable'
+					}"/>
+        </f:then>
+        <f:else>
+            <p>{f:translate(key: 'search.no_jobs_found')}</p>
+        </f:else>
+    </f:if>
+</f:section>
+</html>
