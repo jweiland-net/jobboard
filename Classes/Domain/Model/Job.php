@@ -55,6 +55,14 @@ class Job extends AbstractEntity
 
     protected bool $isInternal = false;
 
+    protected int $salaryMode = 0;
+
+    protected ?SalaryGrade $salaryGrade = null;
+
+    protected float $salaryMin = 0.0;
+
+    protected float $salaryMax = 0.0;
+
     public function getTitle(): string
     {
         return $this->title;
@@ -233,5 +241,45 @@ class Job extends AbstractEntity
     public function setIsInternal(bool $isInternal): void
     {
         $this->isInternal = $isInternal;
+    }
+
+    public function getSalaryMode(): int
+    {
+        return $this->salaryMode;
+    }
+
+    public function setSalaryMode(int $salaryMode): void
+    {
+        $this->salaryMode = $salaryMode;
+    }
+
+    public function getSalaryGrade(): ?SalaryGrade
+    {
+        return $this->salaryGrade;
+    }
+
+    public function setSalaryGrade(SalaryGrade $salaryGrade): void
+    {
+        $this->salaryGrade = $salaryGrade;
+    }
+
+    public function getSalaryMin(): float
+    {
+        return $this->salaryMin;
+    }
+
+    public function setSalaryMin(float $salaryMin): void
+    {
+        $this->salaryMin = $salaryMin;
+    }
+
+    public function getSalaryMax(): float
+    {
+        return $this->salaryMax;
+    }
+
+    public function setSalaryMax(float $salaryMax): void
+    {
+        $this->salaryMax = $salaryMax;
     }
 }

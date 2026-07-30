@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of the package jweiland/jobfair2.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
+ */
+
 if (!defined('TYPO3')) {
     die('Access denied.');
 }
@@ -23,7 +30,7 @@ return [
         'iconfile' => 'EXT:jobfair2/Resources/Public/Icons/jobtype.svg',
     ],
     'types' => [
-        '0' => ['showitem' => 'hidden, title'],
+        0 => ['showitem' => 'hidden, title'],
     ],
     'palettes' => [
         '1' => ['showitem' => ''],
@@ -97,7 +104,7 @@ return [
             ],
         ],
         'title' => [
-            'exclude' => 1,
+            'exclude' => true,
             'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_jobtype.title',
             'config' => [
                 'type' => 'input',

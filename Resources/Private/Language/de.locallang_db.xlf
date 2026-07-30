@@ -100,6 +100,50 @@
 				<source>Is internal?</source>
 				<target>Ist Intern?</target>
 			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.salary">
+				<source>Salary</source>
+				<target>Gehalt</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.salary_mode">
+				<source>Salary mode</source>
+				<target>Gehaltsmodus</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.salary_mode.description">
+				<source>Determines whether a tariff-based salary grade or a free salary entry is used. Changing this afterwards reloads the form, since the visible fields differ.</source>
+				<target>Bestimmt, ob eine tarifliche Besoldungsgruppe oder eine freie Gehaltsangabe genutzt wird. Ein nachträglicher Wechsel lädt das Formular neu, da sich die sichtbaren Felder unterscheiden.</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.salary_mode.grade">
+				<source>Salary grade (tariff-based)</source>
+				<target>Besoldungsgruppe (tariflich)</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.salary_mode.freeEntry">
+				<source>Free salary entry</source>
+				<target>Freie Gehaltsangabe</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.salary_grade">
+				<source>Salary grade</source>
+				<target>Besoldungsgruppe</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.salary_grade.description">
+				<source>The minimum/maximum salary is calculated automatically in the frontend from the steps stored for this salary grade.</source>
+				<target>Min./Max.-Gehalt wird im Frontend automatisch aus den hinterlegten Stufen dieser Besoldungsgruppe berechnet.</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.salary_min">
+				<source>Minimum salary</source>
+				<target>Mindestgehalt</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.salary_min.description">
+				<source>For an exact salary, please enter the same amount in both minimum and maximum salary. Since jobs without salary information may no longer be displayed by law, both fields must be filled in. You may enter the amount with a thousands separator and decimal comma (e.g. 3.842,17) — it is normalized automatically once you leave the field.</source>
+				<target>Für ein exaktes Gehalt bitte denselben Betrag in Min. und Max. eintragen. Da Jobs ohne Gehaltsangabe laut Gesetz nicht mehr angezeigt werden dürfen, müssen beide Felder befüllt sein. Der Betrag kann mit Tausendertrennzeichen und Komma als Dezimaltrennzeichen eingegeben werden (z. B. 3.842,17) — er wird beim Verlassen des Feldes automatisch normalisiert.</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.salary_max">
+				<source>Maximum salary</source>
+				<target>Höchstgehalt</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.salary_max.description">
+				<source>For an exact salary, please enter the same amount as in minimum salary. You may enter the amount with a thousands separator and decimal comma (e.g. 3.842,17) — it is normalized automatically once you leave the field.</source>
+				<target>Für ein exaktes Gehalt bitte denselben Betrag wie beim Mindestgehalt eintragen. Der Betrag kann mit Tausendertrennzeichen und Komma als Dezimaltrennzeichen eingegeben werden (z. B. 3.842,17) — er wird beim Verlassen des Feldes automatisch normalisiert.</target>
+			</trans-unit>
 
 			<trans-unit id="tx_jobfair2_domain_model_jobarea">
 				<source>Occupational field</source>
@@ -117,6 +161,97 @@
 			<trans-unit id="tx_jobfair2_domain_model_jobtype.title">
 				<source>Type of employment</source>
 				<target>Beschäftigungsart</target>
+			</trans-unit>
+
+			<trans-unit id="tx_jobfair2_domain_model_salarytable">
+				<source>Salary table</source>
+				<target>Besoldungstabelle</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarytable.title">
+				<source>Title</source>
+				<target>Titel</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarytable.description">
+				<source>Description</source>
+				<target>Beschreibung</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarytable.salary_grades">
+				<source>Salary grades</source>
+				<target>Besoldungsgruppen</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarytable.starttime.description">
+				<source>For editorial documentation/organization of this document only. The legally binding validity is maintained at the individual salary grade level (see there).</source>
+				<target>Dient nur der redaktionellen Dokumentation/Organisation dieses Dokuments. Die rechtlich wirksame Gültigkeit wird auf Ebene der einzelnen Besoldungsgruppe gepflegt (siehe dort).</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarytable.endtime.description">
+				<source>For editorial documentation/organization of this document only. The legally binding validity is maintained at the individual salary grade level (see there).</source>
+				<target>Dient nur der redaktionellen Dokumentation/Organisation dieses Dokuments. Die rechtlich wirksame Gültigkeit wird auf Ebene der einzelnen Besoldungsgruppe gepflegt (siehe dort).</target>
+			</trans-unit>
+
+			<trans-unit id="tx_jobfair2_domain_model_salarygrade">
+				<source>Salary grade</source>
+				<target>Besoldungsgruppe</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarygrade.title">
+				<source>Grade</source>
+				<target>Gruppe</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarygrade.title.description">
+				<source>e.g. "A9", "R3" or "B3" — depending on the pay scale.</source>
+				<target>z. B. "A9", "R3" oder "B3" — je nach Besoldungstabelle.</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarygrade.has_steps">
+				<source>Has steps?</source>
+				<target>Hat Stufen?</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarygrade.has_steps.description">
+				<source>Disable for salary grades without seniority steps (e.g. R3 and above, B-grades) — a fixed amount is used instead.</source>
+				<target>Deaktivieren für Besoldungsgruppen ohne Erfahrungsstufen (z. B. R3 aufwärts, B-Besoldung) — es wird dann ein fester Betrag statt einzelner Stufen hinterlegt.</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarygrade.flat_amount">
+				<source>Fixed amount</source>
+				<target>Fester Betrag</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarygrade.flat_amount.description">
+				<source>Only relevant for salary grades without steps. You may enter the amount with a thousands separator and decimal comma (e.g. 3.842,17) — it is normalized automatically once you leave the field.</source>
+				<target>Nur relevant für Besoldungsgruppen ohne Stufen. Der Betrag kann mit Tausendertrennzeichen und Komma als Dezimaltrennzeichen eingegeben werden (z. B. 3.842,17) — er wird beim Verlassen des Feldes automatisch normalisiert.</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarygrade.salary_steps">
+				<source>Steps</source>
+				<target>Stufen</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarygrade.salary_steps.description">
+				<source>Not every step has to exist — gaps are allowed. Minimum/maximum are calculated in the frontend from the steps actually present.</source>
+				<target>Nicht jede Stufe muss existieren — Lücken sind zulässig. Minimum/Maximum werden im Frontend automatisch aus den tatsächlich vorhandenen Stufen ermittelt.</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarygrade.starttime.description">
+				<source>Important: once this period expires (or has not started yet), this salary grade is hidden — and so is every job referencing it, since jobs without salary information may no longer be displayed by law. Please maintain new values in time.</source>
+				<target>Wichtig: Läuft dieser Zeitraum ab bzw. hat er noch nicht begonnen, wird diese Besoldungsgruppe ausgeblendet — und damit auch jeder Job, der auf sie verweist, da Jobs ohne Gehaltsangabe laut Gesetz nicht mehr angezeigt werden dürfen. Bitte neue Werte rechtzeitig vor Ablauf pflegen.</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarygrade.endtime.description">
+				<source>Important: once this period expires (or has not started yet), this salary grade is hidden — and so is every job referencing it, since jobs without salary information may no longer be displayed by law. Please maintain new values in time.</source>
+				<target>Wichtig: Läuft dieser Zeitraum ab bzw. hat er noch nicht begonnen, wird diese Besoldungsgruppe ausgeblendet — und damit auch jeder Job, der auf sie verweist, da Jobs ohne Gehaltsangabe laut Gesetz nicht mehr angezeigt werden dürfen. Bitte neue Werte rechtzeitig vor Ablauf pflegen.</target>
+			</trans-unit>
+
+			<trans-unit id="tx_jobfair2_domain_model_salarystep">
+				<source>Salary step</source>
+				<target>Besoldungsstufe</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarystep.step_label">
+				<source>Step</source>
+				<target>Stufe</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarystep.step_label.description">
+				<source>Free text, e.g. "3", "3a" or "Entry step" — naming varies by pay scale.</source>
+				<target>Freitext, z. B. "3", "3a" oder "Eingangsstufe" — je nach Tarifwerk unterschiedlich benannt.</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarystep.amount">
+				<source>Amount</source>
+				<target>Betrag</target>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_salarystep.amount.description">
+				<source>You may enter the amount with a thousands separator and decimal comma (e.g. 3.842,17) — it is normalized automatically once you leave the field.</source>
+				<target>Der Betrag kann mit Tausendertrennzeichen und Komma als Dezimaltrennzeichen eingegeben werden (z. B. 3.842,17) — er wird beim Verlassen des Feldes automatisch normalisiert.</target>
 			</trans-unit>
 		</body>
 	</file>

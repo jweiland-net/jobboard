@@ -51,7 +51,7 @@ class JobfairController extends ActionController
     public function searchAction(
         ?JobArea $jobArea = null,
         ?JobType $jobType = null,
-        string $address = ''
+        string $address = '',
     ): ResponseInterface {
         $searchCriteria = [];
 

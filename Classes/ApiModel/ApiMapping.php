@@ -17,7 +17,7 @@ readonly class ApiMapping
         private string $apiPath,
         private bool $isDate = false,
         private int|string $default = '',
-        private string $prefix = ''
+        private string $prefix = '',
     ) {}
 
     public function getApiPath(): string

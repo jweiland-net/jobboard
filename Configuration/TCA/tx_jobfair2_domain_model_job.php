@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the package jweiland/jobfair2.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
+ */
+
+use TYPO3\CMS\Core\Resource\FileType;
+
 if (!defined('TYPO3')) {
     die('Access denied.');
 }
@@ -10,12 +19,12 @@ return [
         'label' => 'title',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
-        'type' => 'is_import',
-        'typeicon_column' => 'is_import',
+        'type' => 'salary_mode',
+        'typeicon_column' => 'salary_mode',
         'typeicon_classes' => [
-            'default' => 'ext-jobfair2-record-job',
-            0 => 'ext-jobfair2-record-job',
-            1 => 'ext-jobfair2-record-job-import',
+            'default' => 'ext-jobfair2-record-job-grade',
+            0 => 'ext-jobfair2-record-job-grade',
+            1 => 'ext-jobfair2-record-job-freeentry',
         ],
         'languageField' => 'sys_language_uid',
         'transOrigPointerField' => 'l10n_parent',
@@ -28,13 +37,24 @@ return [
         ],
     ],
     'types' => [
-        '0' => [
-            'showitem' => '--palette--;;languageHidden, l10n_diffsource, 
-            --palette--;Job;titleReference, 
-            --palette--;Import;importVacancy, 
+        0 => [
+            'showitem' => '--palette--;;languageHidden, l10n_diffsource,
+            --palette--;Job;titleReference,
+            --palette--;Import;importVacancy,
             description, address, --palette--;;areaType, --palette--;;startEndDate,
             --div--;LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.employer, employer, email, employer_address,
-            --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_tca.xlf:pages.tabs.access, 
+            --div--;LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary, salary_grade,
+            --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_tca.xlf:pages.tabs.access,
+            --palette--;LLL:EXT:frontend/Resources/Private/Language/locallang_tca.xlf:pages.palettes.access;access',
+        ],
+        1 => [
+            'showitem' => '--palette--;;languageHidden, l10n_diffsource,
+            --palette--;Job;titleReference,
+            --palette--;Import;importVacancy,
+            description, address, --palette--;;areaType, --palette--;;startEndDate,
+            --div--;LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.employer, employer, email, employer_address,
+            --div--;LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary, salary_min, salary_max,
+            --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_tca.xlf:pages.tabs.access,
             --palette--;LLL:EXT:frontend/Resources/Private/Language/locallang_tca.xlf:pages.palettes.access;access',
         ],
     ],
@@ -49,75 +69,8 @@ return [
         ],
     ],
     'columns' => [
-        'sys_language_uid' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.language',
-            'config' => ['type' => 'language'],
-        ],
-        'l10n_parent' => [
-            'displayCond' => 'FIELD:sys_language_uid:>:0',
-            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.l18n_parent',
-            'config' => [
-                'type' => 'select',
-                'renderType' => 'selectSingle',
-                'items' => [
-                    ['label' => '', 'value' => 0],
-                ],
-                'foreign_table' => 'tx_jobfair2_domain_model_job',
-                'foreign_table_where' => 'AND tx_jobfair2_domain_model_job.pid=###CURRENT_PID### AND tx_jobfair2_domain_model_job.sys_language_uid IN (-1,0)',
-                'fieldWizard' => [
-                    'selectIcons' => [
-                        'disabled' => true,
-                    ],
-                ],
-                'default' => 0,
-            ],
-        ],
-        'l10n_source' => [
-            'config' => [
-                'type' => 'passthrough',
-            ],
-        ],
-        'hidden' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.visible',
-            'config' => [
-                'type' => 'check',
-                'renderType' => 'checkboxToggle',
-                'items' => [
-                    [
-                        'label' => '',
-                        'invertStateDisplay' => true,
-                    ],
-                ],
-            ],
-        ],
-        'starttime' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:starttime_formlabel',
-            'config' => [
-                'type' => 'datetime',
-                'size' => 16,
-                'default' => 0,
-                'behaviour' => [
-                    'allowLanguageSynchronization' => true,
-                ],
-            ],
-        ],
-        'endtime' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:endtime_formlabel',
-            'config' => [
-                'type' => 'datetime',
-                'size' => 16,
-                'default' => 0,
-                'behaviour' => [
-                    'allowLanguageSynchronization' => true,
-                ],
-            ],
-        ],
         'title' => [
-            'exclude' => 1,
+            'exclude' => true,
             'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.title',
             'config' => [
                 'type' => 'input',
@@ -128,7 +81,7 @@ return [
             ],
         ],
         'reference_number' => [
-            'exclude' => 1,
+            'exclude' => true,
             'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.reference_number',
             'config' => [
                 'type' => 'input',
@@ -139,7 +92,7 @@ return [
             ],
         ],
         'is_import' => [
-            'exclude' => 1,
+            'exclude' => true,
             'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.is_import',
             'description' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.is_import.description',
             'config' => [
@@ -150,7 +103,8 @@ return [
             ],
         ],
         'vacancy_id' => [
-            'exclude' => 1,
+            'exclude' => true,
+            'displayCond' => 'FIELD:is_import:REQ:true',
             'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.vacancy_id',
             'config' => [
                 'type' => 'input',
@@ -159,7 +113,7 @@ return [
             ],
         ],
         'description' => [
-            'exclude' => 1,
+            'exclude' => true,
             'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.description',
             'config' => [
                 'type' => 'text',
@@ -167,7 +121,7 @@ return [
             ],
         ],
         'address' => [
-            'exclude' => 1,
+            'exclude' => true,
             'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.address',
             'config' => [
                 'type' => 'group',
@@ -185,14 +139,8 @@ return [
                 'required' => true,
             ],
         ],
-        'link' => [
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.link',
-            'config' => [
-                'type' => 'passthrough',
-            ],
-        ],
         'job_area' => [
-            'exclude' => 1,
+            'exclude' => true,
             'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.job_area',
             'config' => [
                 'type' => 'select',
@@ -208,7 +156,7 @@ return [
             ],
         ],
         'job_type' => [
-            'exclude' => 1,
+            'exclude' => true,
             'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.job_type',
             'config' => [
                 'type' => 'select',
@@ -224,7 +172,7 @@ return [
             ],
         ],
         'start_date' => [
-            'exclude' => 1,
+            'exclude' => true,
             'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.start_date',
             'description' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.start_date.description',
             'config' => [
@@ -235,7 +183,7 @@ return [
             ],
         ],
         'ending_date' => [
-            'exclude' => 1,
+            'exclude' => true,
             'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.ending_date',
             'description' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.ending_date.description',
             'config' => [
@@ -246,7 +194,7 @@ return [
             ],
         ],
         'employer' => [
-            'exclude' => 1,
+            'exclude' => true,
             'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.employer',
             'config' => [
                 'type' => 'input',
@@ -256,8 +204,16 @@ return [
                 'required' => true,
             ],
         ],
+        'email' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.email',
+            'config' => [
+                'type' => 'email',
+                'required' => true,
+            ],
+        ],
         'employer_address' => [
-            'exclude' => 1,
+            'exclude' => true,
             'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.employer_address',
             'config' => [
                 'type' => 'group',
@@ -274,16 +230,60 @@ return [
                 ],
             ],
         ],
-        'email' => [
-            'exclude' => 1,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.email',
+        'salary_grade' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary_grade',
+            'description' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary_grade.description',
             'config' => [
-                'type' => 'email',
-                'required' => true,
+                'type' => 'group',
+                'allowed' => 'tx_jobfair2_domain_model_salarygrade',
+                'foreign_table' => 'tx_jobfair2_domain_model_salarygrade',
+                'minitems' => 1,
+                'maxitems' => 1,
+                'size' => 1,
+                'suggestOptions' => [
+                    'default' => [
+                        'addWhere' => 'AND tx_jobfair2_domain_model_salarygrade.sys_language_uid IN (-1,0)',
+                    ],
+                ],
+            ],
+        ],
+        'salary_min' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary_min',
+            'description' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary_min.description',
+            'config' => [
+                'type' => 'number',
+                'format' => 'decimal',
+                'renderType' => 'jobfair2LocalizedDecimal',
+                'range' => [
+                    'lower' => 0,
+                ],
+                'default' => 0.00,
+            ],
+        ],
+        'salary_max' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary_max',
+            'description' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary_max.description',
+            'config' => [
+                'type' => 'number',
+                'format' => 'decimal',
+                'renderType' => 'jobfair2LocalizedDecimal',
+                'range' => [
+                    'lower' => 0,
+                ],
+                'default' => 0.00,
+            ],
+        ],
+        'link' => [
+            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.link',
+            'config' => [
+                'type' => 'passthrough',
             ],
         ],
         'tender_file' => [
-            'exclude' => 1,
+            'exclude' => true,
             'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.tender_file',
             'config' => [
                 //## !!! Watch out for fieldName different from columnName
@@ -295,32 +295,32 @@ return [
                 // Use the imageoverlayPalette instead of the basicoverlayPalette
                 'overrideChildTca' => [
                     'types' => [
-                        '0' => [
+                        0 => [
                             'showitem' => '
                                         --palette--;;imageoverlayPalette,
                                         --palette--;;filePalette',
                         ],
-                        \TYPO3\CMS\Core\Resource\FileType::TEXT->value => [
+                        FileType::TEXT->value => [
                             'showitem' => '
                                         --palette--;;imageoverlayPalette,
                                         --palette--;;filePalette',
                         ],
-                        \TYPO3\CMS\Core\Resource\FileType::IMAGE->value => [
+                        FileType::IMAGE->value => [
                             'showitem' => '
                                         --palette--;;imageoverlayPalette,
                                         --palette--;;filePalette',
                         ],
-                        \TYPO3\CMS\Core\Resource\FileType::AUDIO->value => [
+                        FileType::AUDIO->value => [
                             'showitem' => '
                                         --palette--;;audioOverlayPalette,
                                         --palette--;;filePalette',
                         ],
-                        \TYPO3\CMS\Core\Resource\FileType::VIDEO->value => [
+                        FileType::VIDEO->value => [
                             'showitem' => '
                                         --palette--;;videoOverlayPalette,
                                         --palette--;;filePalette',
                         ],
-                        \TYPO3\CMS\Core\Resource\FileType::APPLICATION->value => [
+                        FileType::APPLICATION->value => [
                             'showitem' => '
                                         --palette--;;imageoverlayPalette,
                                         --palette--;;filePalette',
@@ -333,7 +333,7 @@ return [
             ],
         ],
         'pdf_files' => [
-            'exclude' => 1,
+            'exclude' => true,
             'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.pdf_files',
             'config' => [
                 //## !!! Watch out for fieldName different from columnName
@@ -345,32 +345,32 @@ return [
                 // Use the imageoverlayPalette instead of the basicoverlayPalette
                 'overrideChildTca' => [
                     'types' => [
-                        '0' => [
+                        0 => [
                             'showitem' => '
                                         --palette--;;imageoverlayPalette,
                                         --palette--;;filePalette',
                         ],
-                        \TYPO3\CMS\Core\Resource\FileType::TEXT->value => [
+                        FileType::TEXT->value => [
                             'showitem' => '
                                         --palette--;;imageoverlayPalette,
                                         --palette--;;filePalette',
                         ],
-                        \TYPO3\CMS\Core\Resource\FileType::IMAGE->value => [
+                        FileType::IMAGE->value => [
                             'showitem' => '
                                         --palette--;;imageoverlayPalette,
                                         --palette--;;filePalette',
                         ],
-                        \TYPO3\CMS\Core\Resource\FileType::AUDIO->value => [
+                        FileType::AUDIO->value => [
                             'showitem' => '
                                         --palette--;;audioOverlayPalette,
                                         --palette--;;filePalette',
                         ],
-                        \TYPO3\CMS\Core\Resource\FileType::VIDEO->value => [
+                        FileType::VIDEO->value => [
                             'showitem' => '
                                         --palette--;;videoOverlayPalette,
                                         --palette--;;filePalette',
                         ],
-                        \TYPO3\CMS\Core\Resource\FileType::APPLICATION->value => [
+                        FileType::APPLICATION->value => [
                             'showitem' => '
                                         --palette--;;imageoverlayPalette,
                                         --palette--;;filePalette',
@@ -395,7 +395,7 @@ return [
             ],
         ],
         'is_internal' => [
-            'exclude' => 1,
+            'exclude' => true,
             'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.is_internal',
             'config' => [
                 'type' => 'select',
@@ -406,6 +406,20 @@ return [
                 ],
                 'minitems' => 1,
                 'maxItems' => 1,
+                'default' => 0,
+            ],
+        ],
+        'salary_mode' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary_mode',
+            'description' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary_mode.description',
+            'config' => [
+                'type' => 'select',
+                'renderType' => 'selectSingle',
+                'items' => [
+                    ['label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary_mode.grade', 'value' => 0],
+                    ['label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary_mode.freeEntry', 'value' => 1],
+                ],
                 'default' => 0,
             ],
         ],

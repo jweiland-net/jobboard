@@ -30,7 +30,7 @@ readonly class JobService
 
     public function __construct(
         private JobAreaService $jobAreaService,
-        private JobTypeService $jobTypeService
+        private JobTypeService $jobTypeService,
     ) {}
 
     /**
