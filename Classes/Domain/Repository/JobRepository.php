@@ -18,6 +18,10 @@ use TYPO3\CMS\Extbase\Persistence\Repository;
 
 /**
  * Allows to help search for jobs by various search criteria
+ *
+ * Deliberately does not filter out jobs without resolvable salary information -
+ * that is a display rule, not a data access concern, and belongs in
+ * JobfairController (see excludeJobsWithoutSalaryInformation()).
  */
 class JobRepository extends Repository
 {

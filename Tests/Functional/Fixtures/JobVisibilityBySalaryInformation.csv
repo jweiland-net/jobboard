@@ -1,0 +1,39 @@
+"pages"
+,"uid","pid","title","slug","deleted","hidden","doktype","is_siteroot"
+,1,0,"Root","/",0,0,1,1
+,2,1,"Storage for jobs","/storage",0,0,254,0
+
+"tt_address"
+,"uid","pid","company","city","zip"
+,1,2,"Example Employer Ltd.","Example City","12345"
+
+"tx_jobfair2_domain_model_salarytable"
+,"uid","pid","title"
+,1,2,"Test Salary Table"
+
+"tx_jobfair2_domain_model_salarygrade"
+,"uid","pid","title","has_steps","flat_amount","salary_table","hidden","starttime","endtime"
+,1,2,"Grade with visible steps",1,0.00,1,0,0,0
+,2,2,"Grade expired via endtime",0,3500.00,1,0,0,946684800
+,3,2,"Grade hidden",0,3500.00,1,1,0,0
+,4,2,"Grade not yet started",0,3500.00,1,0,1893456000,0
+,5,2,"Grade whose steps are all expired",1,0.00,1,0,0,0
+
+"tx_jobfair2_domain_model_salarystep"
+,"uid","pid","salary_grade","step_label","amount","hidden","starttime","endtime"
+,1,2,1,"1",3220.85,0,0,0
+,2,2,1,"2",3407.74,0,0,0
+,3,2,5,"1",3000.00,0,0,946684800
+,4,2,5,"2",3200.00,0,0,946684800
+
+"tx_jobfair2_domain_model_job"
+,"uid","pid","title","reference_number","address","employer","email","salary_mode","salary_grade","salary_min","salary_max"
+,1,2,"Job with visible stepped grade","1",1,"Example Employer Ltd.","test@example.com",0,1,0.00,0.00
+,2,2,"Job with expired grade","2",1,"Example Employer Ltd.","test@example.com",0,2,0.00,0.00
+,3,2,"Job with hidden grade","3",1,"Example Employer Ltd.","test@example.com",0,3,0.00,0.00
+,4,2,"Job with not yet started grade","4",1,"Example Employer Ltd.","test@example.com",0,4,0.00,0.00
+,5,2,"Job with all steps expired","5",1,"Example Employer Ltd.","test@example.com",0,5,0.00,0.00
+,6,2,"Job without any salary grade selected","6",1,"Example Employer Ltd.","test@example.com",0,,0.00,0.00
+,7,2,"Job with free entry range","7",1,"Example Employer Ltd.","test@example.com",1,,2500.00,3200.00
+,8,2,"Job with a single free entry amount","8",1,"Example Employer Ltd.","test@example.com",1,,2500.00,0.00
+,9,2,"Job with free entry but no amount at all","9",1,"Example Employer Ltd.","test@example.com",1,,0.00,0.00
