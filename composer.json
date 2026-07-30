@@ -24,6 +24,7 @@
 	},
 	"require": {
 		"typo3/cms-core": "^13.4",
+		"ext-intl": "*",
 		"jweiland/maps2": "*",
 		"friendsoftypo3/tt-address": "*",
 		"bithost-gmbh/pdfviewhelpers": "*"

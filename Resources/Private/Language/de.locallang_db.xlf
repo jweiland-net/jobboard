@@ -133,16 +133,16 @@
 				<target>Mindestgehalt</target>
 			</trans-unit>
 			<trans-unit id="tx_jobfair2_domain_model_job.salary_min.description">
-				<source>For an exact salary, please enter the same amount in both minimum and maximum salary. Since jobs without salary information may no longer be displayed by law, both fields must be filled in. Enter amounts using a decimal point (e.g. 3842.17), not a comma or thousands separator — the browser may otherwise silently truncate the value.</source>
-				<target>Für ein exaktes Gehalt bitte denselben Betrag in Min. und Max. eintragen. Da Jobs ohne Gehaltsangabe laut Gesetz nicht mehr angezeigt werden dürfen, müssen beide Felder befüllt sein. Beträge bitte mit Punkt als Dezimaltrennzeichen eingeben (z. B. 3842.17), nicht mit Komma oder Tausendertrennzeichen — der Browser kann den Wert sonst stillschweigend abschneiden.</target>
+				<source>For an exact salary, please enter the same amount in both minimum and maximum salary. Since jobs without salary information may no longer be displayed by law, both fields must be filled in. You may enter the amount with a thousands separator and decimal comma (e.g. 3.842,17) — it is normalized automatically once you leave the field.</source>
+				<target>Für ein exaktes Gehalt bitte denselben Betrag in Min. und Max. eintragen. Da Jobs ohne Gehaltsangabe laut Gesetz nicht mehr angezeigt werden dürfen, müssen beide Felder befüllt sein. Der Betrag kann mit Tausendertrennzeichen und Komma als Dezimaltrennzeichen eingegeben werden (z. B. 3.842,17) — er wird beim Verlassen des Feldes automatisch normalisiert.</target>
 			</trans-unit>
 			<trans-unit id="tx_jobfair2_domain_model_job.salary_max">
 				<source>Maximum salary</source>
 				<target>Höchstgehalt</target>
 			</trans-unit>
 			<trans-unit id="tx_jobfair2_domain_model_job.salary_max.description">
-				<source>For an exact salary, please enter the same amount as in minimum salary. Enter amounts using a decimal point (e.g. 3842.17), not a comma or thousands separator — the browser may otherwise silently truncate the value.</source>
-				<target>Für ein exaktes Gehalt bitte denselben Betrag wie beim Mindestgehalt eintragen. Beträge bitte mit Punkt als Dezimaltrennzeichen eingeben (z. B. 3842.17), nicht mit Komma oder Tausendertrennzeichen — der Browser kann den Wert sonst stillschweigend abschneiden.</target>
+				<source>For an exact salary, please enter the same amount as in minimum salary. You may enter the amount with a thousands separator and decimal comma (e.g. 3.842,17) — it is normalized automatically once you leave the field.</source>
+				<target>Für ein exaktes Gehalt bitte denselben Betrag wie beim Mindestgehalt eintragen. Der Betrag kann mit Tausendertrennzeichen und Komma als Dezimaltrennzeichen eingegeben werden (z. B. 3.842,17) — er wird beim Verlassen des Feldes automatisch normalisiert.</target>
 			</trans-unit>
 
 			<trans-unit id="tx_jobfair2_domain_model_jobarea">
@@ -221,8 +221,8 @@
 				<target>Fester Betrag</target>
 			</trans-unit>
 			<trans-unit id="tx_jobfair2_domain_model_salarygrade.flat_amount.description">
-				<source>Only relevant for salary grades without steps. Enter the amount using a decimal point (e.g. 3842.17) — do not use a thousands separator or comma, as the browser may otherwise silently truncate the value.</source>
-				<target>Nur relevant für Besoldungsgruppen ohne Stufen. Betrag bitte mit Punkt als Dezimaltrennzeichen eingeben (z. B. 3842.17) — kein Tausendertrennzeichen und kein Komma verwenden, da der Browser den Wert sonst stillschweigend abschneiden kann.</target>
+				<source>Only relevant for salary grades without steps. You may enter the amount with a thousands separator and decimal comma (e.g. 3.842,17) — it is normalized automatically once you leave the field.</source>
+				<target>Nur relevant für Besoldungsgruppen ohne Stufen. Der Betrag kann mit Tausendertrennzeichen und Komma als Dezimaltrennzeichen eingegeben werden (z. B. 3.842,17) — er wird beim Verlassen des Feldes automatisch normalisiert.</target>
 			</trans-unit>
 			<trans-unit id="tx_jobfair2_domain_model_salarygrade.salary_steps">
 				<source>Steps</source>
@@ -258,8 +258,8 @@
 				<target>Betrag</target>
 			</trans-unit>
 			<trans-unit id="tx_jobfair2_domain_model_salarystep.amount.description">
-				<source>Enter the amount using a decimal point (e.g. 3842.17) — do not use a thousands separator or comma, as the browser may otherwise silently truncate the value.</source>
-				<target>Betrag bitte mit Punkt als Dezimaltrennzeichen eingeben (z. B. 3842.17) — kein Tausendertrennzeichen und kein Komma verwenden, da der Browser den Wert sonst stillschweigend abschneiden kann.</target>
+				<source>You may enter the amount with a thousands separator and decimal comma (e.g. 3.842,17) — it is normalized automatically once you leave the field.</source>
+				<target>Der Betrag kann mit Tausendertrennzeichen und Komma als Dezimaltrennzeichen eingegeben werden (z. B. 3.842,17) — er wird beim Verlassen des Feldes automatisch normalisiert.</target>
 			</trans-unit>
 		</body>
 	</file>

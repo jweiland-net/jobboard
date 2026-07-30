@@ -131,6 +131,7 @@ return [
             'config' => [
                 'type' => 'number',
                 'format' => 'decimal',
+                'renderType' => 'jobfair2LocalizedDecimal',
                 'range' => [
                     'lower' => 0,
                 ],

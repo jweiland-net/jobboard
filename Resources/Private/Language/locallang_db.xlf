@@ -101,13 +101,13 @@
 				<source>Minimum salary</source>
 			</trans-unit>
 			<trans-unit id="tx_jobfair2_domain_model_job.salary_min.description">
-				<source>For an exact salary, please enter the same amount in both minimum and maximum salary. Since jobs without salary information may no longer be displayed by law, both fields must be filled in. Enter amounts using a decimal point (e.g. 3842.17), not a comma or thousands separator — the browser may otherwise silently truncate the value.</source>
+				<source>For an exact salary, please enter the same amount in both minimum and maximum salary. Since jobs without salary information may no longer be displayed by law, both fields must be filled in. You may enter the amount with a thousands separator and decimal comma (e.g. 3.842,17) — it is normalized automatically once you leave the field.</source>
 			</trans-unit>
 			<trans-unit id="tx_jobfair2_domain_model_job.salary_max">
 				<source>Maximum salary</source>
 			</trans-unit>
 			<trans-unit id="tx_jobfair2_domain_model_job.salary_max.description">
-				<source>For an exact salary, please enter the same amount as in minimum salary. Enter amounts using a decimal point (e.g. 3842.17), not a comma or thousands separator — the browser may otherwise silently truncate the value.</source>
+				<source>For an exact salary, please enter the same amount as in minimum salary. You may enter the amount with a thousands separator and decimal comma (e.g. 3.842,17) — it is normalized automatically once you leave the field.</source>
 			</trans-unit>
 
 			<trans-unit id="tx_jobfair2_domain_model_jobarea">
@@ -168,7 +168,7 @@
 				<source>Fixed amount</source>
 			</trans-unit>
 			<trans-unit id="tx_jobfair2_domain_model_salarygrade.flat_amount.description">
-				<source>Only relevant for salary grades without steps. Enter the amount using a decimal point (e.g. 3842.17) — do not use a thousands separator or comma, as the browser may otherwise silently truncate the value.</source>
+				<source>Only relevant for salary grades without steps. You may enter the amount with a thousands separator and decimal comma (e.g. 3.842,17) — it is normalized automatically once you leave the field.</source>
 			</trans-unit>
 			<trans-unit id="tx_jobfair2_domain_model_salarygrade.salary_steps">
 				<source>Steps</source>
@@ -196,7 +196,7 @@
 				<source>Amount</source>
 			</trans-unit>
 			<trans-unit id="tx_jobfair2_domain_model_salarystep.amount.description">
-				<source>Enter the amount using a decimal point (e.g. 3842.17) — do not use a thousands separator or comma, as the browser may otherwise silently truncate the value.</source>
+				<source>You may enter the amount with a thousands separator and decimal comma (e.g. 3.842,17) — it is normalized automatically once you leave the field.</source>
 			</trans-unit>
 		</body>
 	</file>
