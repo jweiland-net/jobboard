@@ -69,10 +69,5 @@ return [
                 'default' => 0.00,
             ],
         ],
-        'salary_grade' => [
-            'config' => [
-                'type' => 'passthrough',
-            ],
-        ],
     ],
 ];
