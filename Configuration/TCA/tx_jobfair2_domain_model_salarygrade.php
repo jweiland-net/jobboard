@@ -20,8 +20,8 @@ return [
         'typeicon_column' => 'has_steps',
         'typeicon_classes' => [
             'default' => 'ext-jobfair2-record-salarygrade-stepped',
-            1 => 'ext-jobfair2-record-salarygrade-stepped',
             0 => 'ext-jobfair2-record-salarygrade-flat',
+            1 => 'ext-jobfair2-record-salarygrade-stepped',
         ],
         'languageField' => 'sys_language_uid',
         'transOrigPointerField' => 'l10n_parent',
@@ -35,15 +35,15 @@ return [
         'iconfile' => 'EXT:jobfair2/Resources/Public/Icons/salarygrade.svg',
     ],
     'types' => [
-        '1' => [
+        0 => [
             'showitem' => '--palette--;;languageHidden, l10n_diffsource,
-                --palette--;;titleStep, salary_steps,
+                --palette--;;titleStep, flat_amount,
                 --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_tca.xlf:pages.tabs.access,
                 --palette--;;access',
         ],
-        '0' => [
+        1 => [
             'showitem' => '--palette--;;languageHidden, l10n_diffsource,
-                --palette--;;titleStep, flat_amount,
+                --palette--;;titleStep, salary_steps,
                 --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_tca.xlf:pages.tabs.access,
                 --palette--;;access',
         ],

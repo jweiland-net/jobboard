@@ -28,7 +28,7 @@ return [
         'iconfile' => 'EXT:jobfair2/Resources/Public/Icons/salarystep.svg',
     ],
     'types' => [
-        '0' => [
+        0 => [
             'showitem' => '--palette--;;languageHidden, l10n_diffsource,
                 step_label, amount,
                 --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_tca.xlf:pages.tabs.access,

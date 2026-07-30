@@ -30,7 +30,7 @@ return [
         ],
     ],
     'types' => [
-        '0' => [
+        0 => [
             'showitem' => '--palette--;;languageHidden, l10n_diffsource,
             --palette--;Job;titleReference,
             --palette--;Import;importVacancy,
@@ -40,7 +40,7 @@ return [
             --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_tca.xlf:pages.tabs.access,
             --palette--;LLL:EXT:frontend/Resources/Private/Language/locallang_tca.xlf:pages.palettes.access;access',
         ],
-        '1' => [
+        1 => [
             'showitem' => '--palette--;;languageHidden, l10n_diffsource,
             --palette--;Job;titleReference,
             --palette--;Import;importVacancy,
@@ -242,7 +242,7 @@ return [
                 // Use the imageoverlayPalette instead of the basicoverlayPalette
                 'overrideChildTca' => [
                     'types' => [
-                        '0' => [
+                        0 => [
                             'showitem' => '
                                         --palette--;;imageoverlayPalette,
                                         --palette--;;filePalette',
@@ -292,7 +292,7 @@ return [
                 // Use the imageoverlayPalette instead of the basicoverlayPalette
                 'overrideChildTca' => [
                     'types' => [
-                        '0' => [
+                        0 => [
                             'showitem' => '
                                         --palette--;;imageoverlayPalette,
                                         --palette--;;filePalette',

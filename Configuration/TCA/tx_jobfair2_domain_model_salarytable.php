@@ -23,7 +23,7 @@ return [
         'iconfile' => 'EXT:jobfair2/Resources/Public/Icons/salarytable.svg',
     ],
     'types' => [
-        '0' => [
+        0 => [
             'showitem' => '--palette--;;languageHidden, l10n_diffsource,
                 title, description, salary_grades,
                 --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_tca.xlf:pages.tabs.access,

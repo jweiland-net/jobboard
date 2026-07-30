@@ -23,7 +23,7 @@ return [
         'iconfile' => 'EXT:jobfair2/Resources/Public/Icons/jobarea.svg',
     ],
     'types' => [
-        '0' => ['showitem' => 'title'],
+        0 => ['showitem' => 'title'],
     ],
     'palettes' => [
         '1' => ['showitem' => ''],
