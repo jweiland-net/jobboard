@@ -32,7 +32,7 @@ return [
             'showitem' => '--palette--;;languageHidden, l10n_diffsource,
                 step_label, amount,
                 --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_tca.xlf:pages.tabs.access,
-                --palette--;;access',
+                --palette--;LLL:EXT:frontend/Resources/Private/Language/locallang_tca.xlf:pages.palettes.access;access',
         ],
     ],
     'palettes' => [

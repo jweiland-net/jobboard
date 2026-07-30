@@ -136,12 +136,6 @@
 			<trans-unit id="tx_jobfair2_domain_model_salarytable.salary_grades">
 				<source>Salary grades</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_salarytable.starttime">
-				<source>Valid from (document)</source>
-			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_salarytable.endtime">
-				<source>Valid until (document)</source>
-			</trans-unit>
 			<trans-unit id="tx_jobfair2_domain_model_salarytable.starttime.description">
 				<source>For editorial documentation/organization of this document only. The legally binding validity is maintained at the individual salary grade level (see there).</source>
 			</trans-unit>
@@ -176,14 +170,8 @@
 			<trans-unit id="tx_jobfair2_domain_model_salarygrade.salary_steps.description">
 				<source>Not every step has to exist — gaps are allowed. Minimum/maximum are calculated in the frontend from the steps actually present.</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_salarygrade.starttime">
-				<source>Valid from</source>
-			</trans-unit>
 			<trans-unit id="tx_jobfair2_domain_model_salarygrade.starttime.description">
 				<source>Important: once this period expires (or has not started yet), this salary grade is hidden — and so is every job referencing it, since jobs without salary information may no longer be displayed by law. Please maintain new values in time.</source>
-			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_salarygrade.endtime">
-				<source>Valid until</source>
 			</trans-unit>
 			<trans-unit id="tx_jobfair2_domain_model_salarygrade.endtime.description">
 				<source>Important: once this period expires (or has not started yet), this salary grade is hidden — and so is every job referencing it, since jobs without salary information may no longer be displayed by law. Please maintain new values in time.</source>
