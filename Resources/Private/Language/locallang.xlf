@@ -31,6 +31,9 @@
 			<trans-unit id="job.job_type.title">
 				<source>Job Type</source>
 			</trans-unit>
+			<trans-unit id="job.salary">
+				<source>Salary</source>
+			</trans-unit>
 
 			<trans-unit id="fluid.select.prependOptionLabel">
 				<source>---Please choose---</source>

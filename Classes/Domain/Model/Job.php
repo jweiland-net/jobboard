@@ -282,4 +282,49 @@ class Job extends AbstractEntity
     {
         $this->salaryMax = $salaryMax;
     }
+
+    /**
+     * Lowest payable amount, regardless of salaryMode: the salary grade's
+     * minimum (steps or flat amount) if this job references one, otherwise
+     * the free-text salaryMin.
+     */
+    public function getSalaryRangeMin(): float
+    {
+        if ($this->salaryMode === 1) {
+            return $this->salaryMin;
+        }
+
+        return $this->salaryGrade?->getMinAmount() ?? 0.0;
+    }
+
+    /**
+     * Highest payable amount, regardless of salaryMode. Falls back to
+     * salaryMin for free-text entries where only a single amount was
+     * maintained (salaryMax left empty), so it never reports a smaller
+     * maximum than the minimum.
+     */
+    public function getSalaryRangeMax(): float
+    {
+        if ($this->salaryMode === 1) {
+            return $this->salaryMax > 0.0 ? $this->salaryMax : $this->salaryMin;
+        }
+
+        return $this->salaryGrade?->getMaxAmount() ?? 0.0;
+    }
+
+    /**
+     * False for a single maintained amount (flat salary grade, grade with
+     * only one existing step, or free-text entry without a max), so
+     * templates can render "3.220,85 €" instead of a meaningless
+     * "3.220,85 € - 3.220,85 €" range.
+     */
+    public function getHasSalaryRange(): bool
+    {
+        return $this->getSalaryRangeMax() > $this->getSalaryRangeMin();
+    }
+
+    public function getHasSalaryInformation(): bool
+    {
+        return $this->getSalaryRangeMin() > 0.0 || $this->getSalaryRangeMax() > 0.0;
+    }
 }

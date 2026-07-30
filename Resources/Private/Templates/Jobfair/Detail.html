@@ -53,6 +53,23 @@
                     <dd>{job.jobType.title}</dd>
                 </dl>
             </f:if>
+            <f:if condition="{job.hasSalaryInformation}">
+                <dl>
+                    <dt>
+                        <f:translate key="job.salary"/>
+                    </dt>
+                    <dd>
+                        <f:if condition="{job.hasSalaryRange}">
+                            <f:then>
+                                <f:format.currency currencySign="€">{job.salaryRangeMin}</f:format.currency> - <f:format.currency currencySign="€">{job.salaryRangeMax}</f:format.currency>
+                            </f:then>
+                            <f:else>
+                                <f:format.currency currencySign="€">{job.salaryRangeMin}</f:format.currency>
+                            </f:else>
+                        </f:if>
+                    </dd>
+                </dl>
+            </f:if>
 
             <dl>
                 <dt>
