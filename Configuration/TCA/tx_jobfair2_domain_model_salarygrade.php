@@ -35,19 +35,20 @@ return [
     'types' => [
         '1' => [
             'showitem' => '--palette--;;languageHidden, l10n_diffsource,
-                title, has_steps, salary_steps,
+                --palette--;;titleStep, salary_steps,
                 --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_tca.xlf:pages.tabs.access,
                 --palette--;;access',
         ],
         '0' => [
             'showitem' => '--palette--;;languageHidden, l10n_diffsource,
-                title, has_steps, flat_amount,
+                --palette--;;titleStep, flat_amount,
                 --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_tca.xlf:pages.tabs.access,
                 --palette--;;access',
         ],
     ],
     'palettes' => [
         'languageHidden' => ['showitem' => 'sys_language_uid, l10n_parent, hidden'],
+        'titleStep' => ['showitem' => 'title, has_steps'],
         'access' => [
             'showitem' => 'starttime;LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_salarygrade.starttime,endtime;LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_salarygrade.endtime',
         ],
@@ -176,7 +177,8 @@ return [
                     'useSortable' => true,
                     'collapseAll' => true,
                     'expandSingle' => true,
-                    'levelLinksPosition' => 'top',
+                    'levelLinksPosition' => 'both',
+                    'newRecordLinkAddTitle' => true,
                 ],
             ],
         ],
