@@ -38,7 +38,7 @@ return [
     ],
     'columns' => [
         'title' => [
-            'exclude' => 1,
+            'exclude' => true,
             'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_salarytable.title',
             'config' => [
                 'type' => 'input',
@@ -49,7 +49,7 @@ return [
             ],
         ],
         'description' => [
-            'exclude' => 1,
+            'exclude' => true,
             'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_salarytable.description',
             'config' => [
                 'type' => 'text',
@@ -58,7 +58,7 @@ return [
             ],
         ],
         'salary_grades' => [
-            'exclude' => 1,
+            'exclude' => true,
             'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_salarytable.salary_grades',
             'config' => [
                 'type' => 'inline',

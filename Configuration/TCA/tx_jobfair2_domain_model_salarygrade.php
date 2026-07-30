@@ -63,7 +63,7 @@ return [
             ],
         ],
         'title' => [
-            'exclude' => 1,
+            'exclude' => true,
             'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_salarygrade.title',
             'description' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_salarygrade.title.description',
             'config' => [
@@ -75,7 +75,7 @@ return [
             ],
         ],
         'has_steps' => [
-            'exclude' => 1,
+            'exclude' => true,
             'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_salarygrade.has_steps',
             'description' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_salarygrade.has_steps.description',
             'config' => [
@@ -85,7 +85,7 @@ return [
             ],
         ],
         'flat_amount' => [
-            'exclude' => 1,
+            'exclude' => true,
             'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_salarygrade.flat_amount',
             'description' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_salarygrade.flat_amount.description',
             'config' => [
@@ -99,7 +99,7 @@ return [
             ],
         ],
         'salary_steps' => [
-            'exclude' => 1,
+            'exclude' => true,
             'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_salarygrade.salary_steps',
             'description' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_salarygrade.salary_steps.description',
             'config' => [
