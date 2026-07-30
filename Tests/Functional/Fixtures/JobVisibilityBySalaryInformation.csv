@@ -16,7 +16,7 @@
 ,1,2,"Grade with visible steps",1,0.00,1,0,0,0
 ,2,2,"Grade expired via endtime",0,3500.00,1,0,0,946684800
 ,3,2,"Grade hidden",0,3500.00,1,1,0,0
-,4,2,"Grade not yet started",0,3500.00,1,0,4102444800,0
+,4,2,"Grade not yet started",0,3500.00,1,0,1893456000,0
 ,5,2,"Grade whose steps are all expired",1,0.00,1,0,0,0
 
 "tx_jobfair2_domain_model_salarystep"
