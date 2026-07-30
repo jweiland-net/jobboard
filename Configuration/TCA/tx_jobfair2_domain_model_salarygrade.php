@@ -8,6 +8,9 @@ return [
     'ctrl' => [
         'title' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_salarygrade',
         'label' => 'title',
+        'label_alt' => 'salary_table',
+        'label_alt_force' => true,
+        'formattedLabel_userFunc' => \JWeiland\Jobfair2\UserFunc\InlineRecordTitleFormatter::class . '->formatSalaryGradeTitle',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
         'sortby' => 'sorting',
@@ -121,7 +124,8 @@ return [
         ],
         'salary_table' => [
             'config' => [
-                'type' => 'passthrough',
+                'type' => 'group',
+                'allowed' => 'tx_jobfair2_domain_model_salarytable',
             ],
         ],
         'title' => [

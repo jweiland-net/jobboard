@@ -440,16 +440,17 @@ return [
             'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary_grade',
             'description' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary_grade.description',
             'config' => [
-                'type' => 'select',
-                'renderType' => 'selectSingle',
-                'items' => [
-                    ['label' => '', 'value' => 0],
-                ],
+                'type' => 'group',
+                'allowed' => 'tx_jobfair2_domain_model_salarygrade',
                 'foreign_table' => 'tx_jobfair2_domain_model_salarygrade',
-                'foreign_table_where' => 'AND tx_jobfair2_domain_model_salarygrade.sys_language_uid IN (-1,0) ORDER BY tx_jobfair2_domain_model_salarygrade.title ASC',
                 'minitems' => 1,
                 'maxitems' => 1,
-                'default' => 0,
+                'size' => 1,
+                'suggestOptions' => [
+                    'default' => [
+                        'addWhere' => 'AND tx_jobfair2_domain_model_salarygrade.sys_language_uid IN (-1,0)',
+                    ],
+                ],
             ],
         ],
         'salary_min' => [
