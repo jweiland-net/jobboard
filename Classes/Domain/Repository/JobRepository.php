@@ -11,9 +11,9 @@ declare(strict_types=1);
 
 namespace JWeiland\Jobfair2\Domain\Repository;
 
+use JWeiland\Jobfair2\Domain\Model\Job;
 use TYPO3\CMS\Core\Utility\MathUtility;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
-use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 use TYPO3\CMS\Extbase\Persistence\Repository;
 
 /**
@@ -25,7 +25,10 @@ class JobRepository extends Repository
         'ending_date' => QueryInterface::ORDER_ASCENDING,
     ];
 
-    public function findBySearchCriteria(array $searchCriteria, int $limit = 0): QueryResultInterface
+    /**
+     * @return Job[]
+     */
+    public function findBySearchCriteria(array $searchCriteria, int $limit = 0): array
     {
         $query = $this->createQuery();
 
@@ -61,11 +64,18 @@ class JobRepository extends Repository
             }
         }
 
-        if ($limit) {
-            $query->setLimit($limit);
-        }
+        $result = $query->matching($query->logicalAnd(...$andConstraint))->execute();
 
-        return $query->matching($query->logicalAnd(...$andConstraint))->execute();
+        // Jobs without resolvable salary information must never reach the frontend, even
+        // if they otherwise match the search - the DB-level limit is applied only after
+        // this filter, so a page never shows fewer jobs than requested just because some
+        // of the matched jobs had to be dropped.
+        $jobs = array_values(array_filter(
+            $result->toArray(),
+            static fn(Job $job): bool => $job->getHasSalaryInformation(),
+        ));
+
+        return $limit ? array_slice($jobs, 0, $limit) : $jobs;
     }
 
     private function buildOrConstraintForAddress(string $searchValue, QueryInterface $query): array

@@ -18,6 +18,7 @@ use JWeiland\Jobfair2\Domain\Repository\JobAreaRepository;
 use JWeiland\Jobfair2\Domain\Repository\JobRepository;
 use JWeiland\Jobfair2\Domain\Repository\JobTypeRepository;
 use Psr\Http\Message\ResponseInterface;
+use TYPO3\CMS\Core\Error\Http\PageNotFoundException;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
@@ -93,6 +94,16 @@ class JobfairController extends ActionController
 
     public function detailAction(Job $job): ResponseInterface
     {
+        if (!$job->getHasSalaryInformation()) {
+            // A job without resolvable salary information must not be displayed - this
+            // also covers a salary grade or all of its steps having expired/hidden via
+            // TYPO3's own access restrictions in the meantime.
+            throw new PageNotFoundException(
+                'This job does not have any resolvable salary information and must not be displayed.',
+                1753868400,
+            );
+        }
+
         $this->view->assign('job', $job);
         $this->view->assign('settings', $this->settings);
         return $this->htmlResponse();
