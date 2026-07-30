@@ -132,12 +132,6 @@ return [
                 'required' => true,
             ],
         ],
-        'link' => [
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.link',
-            'config' => [
-                'type' => 'passthrough',
-            ],
-        ],
         'job_area' => [
             'exclude' => true,
             'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.job_area',
@@ -203,6 +197,14 @@ return [
                 'required' => true,
             ],
         ],
+        'email' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.email',
+            'config' => [
+                'type' => 'email',
+                'required' => true,
+            ],
+        ],
         'employer_address' => [
             'exclude' => true,
             'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.employer_address',
@@ -221,12 +223,56 @@ return [
                 ],
             ],
         ],
-        'email' => [
+        'salary_grade' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.email',
+            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary_grade',
+            'description' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary_grade.description',
             'config' => [
-                'type' => 'email',
-                'required' => true,
+                'type' => 'group',
+                'allowed' => 'tx_jobfair2_domain_model_salarygrade',
+                'foreign_table' => 'tx_jobfair2_domain_model_salarygrade',
+                'minitems' => 1,
+                'maxitems' => 1,
+                'size' => 1,
+                'suggestOptions' => [
+                    'default' => [
+                        'addWhere' => 'AND tx_jobfair2_domain_model_salarygrade.sys_language_uid IN (-1,0)',
+                    ],
+                ],
+            ],
+        ],
+        'salary_min' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary_min',
+            'description' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary_min.description',
+            'config' => [
+                'type' => 'number',
+                'format' => 'decimal',
+                'renderType' => 'jobfair2LocalizedDecimal',
+                'range' => [
+                    'lower' => 0,
+                ],
+                'default' => 0.00,
+            ],
+        ],
+        'salary_max' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary_max',
+            'description' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary_max.description',
+            'config' => [
+                'type' => 'number',
+                'format' => 'decimal',
+                'renderType' => 'jobfair2LocalizedDecimal',
+                'range' => [
+                    'lower' => 0,
+                ],
+                'default' => 0.00,
+            ],
+        ],
+        'link' => [
+            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.link',
+            'config' => [
+                'type' => 'passthrough',
             ],
         ],
         'tender_file' => [
@@ -368,52 +414,6 @@ return [
                     ['label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary_mode.freeEntry', 'value' => 1],
                 ],
                 'default' => 0,
-            ],
-        ],
-        'salary_grade' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary_grade',
-            'description' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary_grade.description',
-            'config' => [
-                'type' => 'group',
-                'allowed' => 'tx_jobfair2_domain_model_salarygrade',
-                'foreign_table' => 'tx_jobfair2_domain_model_salarygrade',
-                'minitems' => 1,
-                'maxitems' => 1,
-                'size' => 1,
-                'suggestOptions' => [
-                    'default' => [
-                        'addWhere' => 'AND tx_jobfair2_domain_model_salarygrade.sys_language_uid IN (-1,0)',
-                    ],
-                ],
-            ],
-        ],
-        'salary_min' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary_min',
-            'description' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary_min.description',
-            'config' => [
-                'type' => 'number',
-                'format' => 'decimal',
-                'renderType' => 'jobfair2LocalizedDecimal',
-                'range' => [
-                    'lower' => 0,
-                ],
-                'default' => 0.00,
-            ],
-        ],
-        'salary_max' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary_max',
-            'description' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary_max.description',
-            'config' => [
-                'type' => 'number',
-                'format' => 'decimal',
-                'renderType' => 'jobfair2LocalizedDecimal',
-                'range' => [
-                    'lower' => 0,
-                ],
-                'default' => 0.00,
             ],
         ],
     ],

@@ -42,11 +42,6 @@ return [
         ],
     ],
     'columns' => [
-        'salary_grade' => [
-            'config' => [
-                'type' => 'passthrough',
-            ],
-        ],
         'step_label' => [
             'exclude' => true,
             'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_salarystep.step_label',
@@ -72,6 +67,11 @@ return [
                 ],
                 'required' => true,
                 'default' => 0.00,
+            ],
+        ],
+        'salary_grade' => [
+            'config' => [
+                'type' => 'passthrough',
             ],
         ],
     ],

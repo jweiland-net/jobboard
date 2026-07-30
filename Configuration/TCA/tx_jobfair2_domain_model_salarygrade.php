@@ -56,12 +56,6 @@ return [
         ],
     ],
     'columns' => [
-        'salary_table' => [
-            'config' => [
-                'type' => 'group',
-                'allowed' => 'tx_jobfair2_domain_model_salarytable',
-            ],
-        ],
         'title' => [
             'exclude' => true,
             'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_salarygrade.title',
@@ -114,6 +108,12 @@ return [
                     'levelLinksPosition' => 'both',
                     'newRecordLinkAddTitle' => true,
                 ],
+            ],
+        ],
+        'salary_table' => [
+            'config' => [
+                'type' => 'group',
+                'allowed' => 'tx_jobfair2_domain_model_salarytable',
             ],
         ],
     ],
