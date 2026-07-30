@@ -1,5 +1,7 @@
 <?php
 
+use TYPO3\CMS\Core\Resource\FileType;
+
 if (!defined('TYPO3')) {
     die('Access denied.');
 }
@@ -312,27 +314,27 @@ return [
                                         --palette--;;imageoverlayPalette,
                                         --palette--;;filePalette',
                         ],
-                        \TYPO3\CMS\Core\Resource\FileType::TEXT->value => [
+                        FileType::TEXT->value => [
                             'showitem' => '
                                         --palette--;;imageoverlayPalette,
                                         --palette--;;filePalette',
                         ],
-                        \TYPO3\CMS\Core\Resource\FileType::IMAGE->value => [
+                        FileType::IMAGE->value => [
                             'showitem' => '
                                         --palette--;;imageoverlayPalette,
                                         --palette--;;filePalette',
                         ],
-                        \TYPO3\CMS\Core\Resource\FileType::AUDIO->value => [
+                        FileType::AUDIO->value => [
                             'showitem' => '
                                         --palette--;;audioOverlayPalette,
                                         --palette--;;filePalette',
                         ],
-                        \TYPO3\CMS\Core\Resource\FileType::VIDEO->value => [
+                        FileType::VIDEO->value => [
                             'showitem' => '
                                         --palette--;;videoOverlayPalette,
                                         --palette--;;filePalette',
                         ],
-                        \TYPO3\CMS\Core\Resource\FileType::APPLICATION->value => [
+                        FileType::APPLICATION->value => [
                             'showitem' => '
                                         --palette--;;imageoverlayPalette,
                                         --palette--;;filePalette',
@@ -362,27 +364,27 @@ return [
                                         --palette--;;imageoverlayPalette,
                                         --palette--;;filePalette',
                         ],
-                        \TYPO3\CMS\Core\Resource\FileType::TEXT->value => [
+                        FileType::TEXT->value => [
                             'showitem' => '
                                         --palette--;;imageoverlayPalette,
                                         --palette--;;filePalette',
                         ],
-                        \TYPO3\CMS\Core\Resource\FileType::IMAGE->value => [
+                        FileType::IMAGE->value => [
                             'showitem' => '
                                         --palette--;;imageoverlayPalette,
                                         --palette--;;filePalette',
                         ],
-                        \TYPO3\CMS\Core\Resource\FileType::AUDIO->value => [
+                        FileType::AUDIO->value => [
                             'showitem' => '
                                         --palette--;;audioOverlayPalette,
                                         --palette--;;filePalette',
                         ],
-                        \TYPO3\CMS\Core\Resource\FileType::VIDEO->value => [
+                        FileType::VIDEO->value => [
                             'showitem' => '
                                         --palette--;;videoOverlayPalette,
                                         --palette--;;filePalette',
                         ],
-                        \TYPO3\CMS\Core\Resource\FileType::APPLICATION->value => [
+                        FileType::APPLICATION->value => [
                             'showitem' => '
                                         --palette--;;imageoverlayPalette,
                                         --palette--;;filePalette',

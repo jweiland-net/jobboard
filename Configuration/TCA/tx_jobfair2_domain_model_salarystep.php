@@ -1,5 +1,7 @@
 <?php
 
+use JWeiland\Jobfair2\UserFunc\SalaryStepTitleFormatter;
+
 if (!defined('TYPO3')) {
     die('Access denied.');
 }
@@ -10,7 +12,7 @@ return [
         'label' => 'step_label',
         'label_alt' => 'amount',
         'label_alt_force' => true,
-        'label_userFunc' => \JWeiland\Jobfair2\UserFunc\SalaryStepTitleFormatter::class . '->formatTitle',
+        'label_userFunc' => SalaryStepTitleFormatter::class . '->formatTitle',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
         'sortby' => 'sorting',

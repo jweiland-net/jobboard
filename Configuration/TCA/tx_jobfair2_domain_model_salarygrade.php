@@ -1,5 +1,7 @@
 <?php
 
+use JWeiland\Jobfair2\UserFunc\InlineRecordTitleFormatter;
+
 if (!defined('TYPO3')) {
     die('Access denied.');
 }
@@ -10,7 +12,7 @@ return [
         'label' => 'title',
         'label_alt' => 'salary_table',
         'label_alt_force' => true,
-        'formattedLabel_userFunc' => \JWeiland\Jobfair2\UserFunc\InlineRecordTitleFormatter::class . '->formatSalaryGradeTitle',
+        'formattedLabel_userFunc' => InlineRecordTitleFormatter::class . '->formatSalaryGradeTitle',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
         'sortby' => 'sorting',
