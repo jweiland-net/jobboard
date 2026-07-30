@@ -54,17 +54,17 @@ final class LocalizedDecimalElement extends AbstractFormElement
         $fieldId = StringUtility::getUniqueId('formengine-input-');
 
         $resultArray['javaScriptModules'][] = JavaScriptModuleInstruction::create(
-            '@jweiland/jobfair2/form-engine-localized-decimal.js'
+            '@jweiland/jobfair2/form-engine-localized-decimal.js',
         )->invoke('initialize', $fieldId);
 
         $resultArray['html'] = $this->renderLabel($fieldId) . '
             <div class="formengine-field-item t3js-formengine-field-item">
                 ' . $fieldInformationResult['html'] . $this->buildFieldHtml(
-                    $fieldId,
-                    (string)$parameterArray['itemFormElValue'],
-                    $fieldControlResult['html'],
-                    $fieldWizardResult['html']
-                ) . '
+            $fieldId,
+            (string)$parameterArray['itemFormElValue'],
+            $fieldControlResult['html'],
+            $fieldWizardResult['html'],
+        ) . '
             </div>';
 
         return $resultArray;
@@ -75,7 +75,7 @@ final class LocalizedDecimalElement extends AbstractFormElement
         $parameterArray = $this->data['parameterArray'];
         $config = $parameterArray['fieldConf']['config'];
         $width = $this->formMaxWidth(
-            MathUtility::forceIntegerInRange($config['size'] ?? $this->defaultInputWidth, $this->minimumInputWidth, $this->maxInputWidth)
+            MathUtility::forceIntegerInRange($config['size'] ?? $this->defaultInputWidth, $this->minimumInputWidth, $this->maxInputWidth),
         );
         $attributes = [
             'value' => $value,

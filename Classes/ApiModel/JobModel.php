@@ -41,7 +41,7 @@ class JobModel extends AbstractModel
                 'No primary location found for vacancy ID: %s',
                 $this->getValueByPath('vacancy_id', 'int', 0),
             ),
-            1751531883
+            1751531883,
         );
     }
 }

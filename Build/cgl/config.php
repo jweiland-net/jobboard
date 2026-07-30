@@ -2,6 +2,13 @@
 
 declare(strict_types=1);
 
+/*
+ * This file is part of the package jweiland/jobfair2.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
+ */
+
 use PhpCsFixer\Config;
 use PhpCsFixer\Finder;
 
@@ -28,7 +35,7 @@ return (new Config())
         (new Finder())
             ->in(__DIR__ . '/../../')
             ->exclude(__DIR__ . '/../../.Build')
-            ->exclude(__DIR__ . '/../../var')
+            ->exclude(__DIR__ . '/../../var'),
     )
     ->setRiskyAllowed(true)
     ->setRules([
