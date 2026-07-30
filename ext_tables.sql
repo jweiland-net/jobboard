@@ -30,8 +30,7 @@ CREATE TABLE tx_jobfair2_domain_model_job
 #
 CREATE TABLE tx_jobfair2_domain_model_salarygrade
 (
-	salary_table int(11) DEFAULT '0' NOT NULL,
-	flat_amount  decimal(10,2) DEFAULT '0.00' NOT NULL
+	flat_amount decimal(10,2) DEFAULT '0.00' NOT NULL
 );
 
 #
