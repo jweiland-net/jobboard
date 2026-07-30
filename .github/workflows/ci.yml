@@ -34,3 +34,15 @@ jobs:
 
       - name: 'CGL'
         run: Build/Scripts/runTests.sh -b docker -n -p ${{ matrix.php }} -s cgl
+
+      - name: 'Execute unit tests'
+        run: Build/Scripts/runTests.sh -b docker -p ${{ matrix.php }} -s unit
+
+      - name: 'Execute functional tests with MariaDB'
+        run: Build/Scripts/runTests.sh -b docker -p ${{ matrix.php }} -d mariadb -s functional
+
+      - name: 'Execute functional tests with SQLite'
+        run: Build/Scripts/runTests.sh -b docker -p ${{ matrix.php }} -d sqlite -s functional
+
+      - name: 'Execute functional tests with Postgres'
+        run: Build/Scripts/runTests.sh -b docker -p ${{ matrix.php }} -d postgres -s functional
