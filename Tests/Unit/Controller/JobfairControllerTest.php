@@ -52,6 +52,125 @@ class JobfairControllerTest extends UnitTestCase
         parent::tearDown();
     }
 
+    /**
+     * @param iterable<Job> $jobs
+     * @return Job[]
+     */
+    private function excludeJobsWithoutSalaryInformation(iterable $jobs, int $limit = 0): array
+    {
+        $method = new \ReflectionMethod($this->subject, 'excludeJobsWithoutSalaryInformation');
+        $method->setAccessible(true);
+
+        return $method->invoke($this->subject, $jobs, $limit);
+    }
+
+    private function buildJobWithSalaryInformation(string $title): Job
+    {
+        $job = new Job();
+        $job->setTitle($title);
+        $job->setSalaryMode(1);
+        $job->setSalaryMin(2500.0);
+
+        return $job;
+    }
+
+    private function buildJobWithoutSalaryInformation(string $title): Job
+    {
+        $job = new Job();
+        $job->setTitle($title);
+        $job->setSalaryMode(1);
+
+        return $job;
+    }
+
+    #[Test]
+    public function excludeJobsWithoutSalaryInformationRemovesJobsWithoutSalary(): void
+    {
+        $jobWithSalary = $this->buildJobWithSalaryInformation('With salary');
+        $jobWithoutSalary = $this->buildJobWithoutSalaryInformation('Without salary');
+
+        $filtered = $this->excludeJobsWithoutSalaryInformation([$jobWithSalary, $jobWithoutSalary]);
+
+        self::assertSame(
+            [$jobWithSalary],
+            $filtered,
+        );
+    }
+
+    #[Test]
+    public function excludeJobsWithoutSalaryInformationKeepsOrderOfEligibleJobs(): void
+    {
+        $firstJob = $this->buildJobWithSalaryInformation('First');
+        $secondJob = $this->buildJobWithSalaryInformation('Second');
+
+        $filtered = $this->excludeJobsWithoutSalaryInformation([$firstJob, $secondJob]);
+
+        self::assertSame(
+            [$firstJob, $secondJob],
+            $filtered,
+        );
+    }
+
+    #[Test]
+    public function excludeJobsWithoutSalaryInformationWithoutLimitReturnsAllEligibleJobs(): void
+    {
+        $jobs = [
+            $this->buildJobWithSalaryInformation('First'),
+            $this->buildJobWithSalaryInformation('Second'),
+            $this->buildJobWithSalaryInformation('Third'),
+        ];
+
+        self::assertCount(
+            3,
+            $this->excludeJobsWithoutSalaryInformation($jobs),
+        );
+    }
+
+    #[Test]
+    public function excludeJobsWithoutSalaryInformationAppliesLimitAfterFiltering(): void
+    {
+        // Only 2 of these 3 have salary information at all - a limit of 2 must still
+        // return exactly 2 eligible jobs, not fewer just because one was ineligible.
+        $jobs = [
+            $this->buildJobWithoutSalaryInformation('Ineligible'),
+            $this->buildJobWithSalaryInformation('First eligible'),
+            $this->buildJobWithSalaryInformation('Second eligible'),
+        ];
+
+        $filtered = $this->excludeJobsWithoutSalaryInformation($jobs, 2);
+
+        self::assertCount(
+            2,
+            $filtered,
+        );
+        self::assertSame(
+            'First eligible',
+            $filtered[0]->getTitle(),
+        );
+        self::assertSame(
+            'Second eligible',
+            $filtered[1]->getTitle(),
+        );
+    }
+
+    #[Test]
+    public function excludeJobsWithoutSalaryInformationStopsIteratingOnceLimitIsReached(): void
+    {
+        $jobs = (function (): \Generator {
+            yield $this->buildJobWithSalaryInformation('First');
+            yield $this->buildJobWithSalaryInformation('Second');
+
+            throw new \RuntimeException('Must not be reached - the limit was already satisfied.');
+        })();
+
+        $filtered = $this->excludeJobsWithoutSalaryInformation($jobs, 2);
+
+        self::assertCount(
+            2,
+            $filtered,
+        );
+    }
+
     #[Test]
     public function detailActionThrowsPageNotFoundExceptionForJobWithoutSalaryInformation(): void
     {

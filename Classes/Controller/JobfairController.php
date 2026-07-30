@@ -42,7 +42,10 @@ class JobfairController extends ActionController
         }
 
         $this->view->assignMultiple([
-            'jobs' => $this->jobRepository->findBySearchCriteria($searchCriteria, (int)$this->settings['maxEntries']),
+            'jobs' => $this->excludeJobsWithoutSalaryInformation(
+                $this->jobRepository->findBySearchCriteria($searchCriteria),
+                (int)$this->settings['maxEntries'],
+            ),
             'jobAreas' => $this->getJobAreas(),
             'jobTypes' => $this->jobTypeRepository->findAll(),
         ]);
@@ -73,12 +76,47 @@ class JobfairController extends ActionController
         }
 
         $this->view->assignMultiple([
-            'jobs' => $this->jobRepository->findBySearchCriteria($searchCriteria, (int)$this->settings['maxEntries']),
+            'jobs' => $this->excludeJobsWithoutSalaryInformation(
+                $this->jobRepository->findBySearchCriteria($searchCriteria),
+                (int)$this->settings['maxEntries'],
+            ),
             'jobAreas' => $this->getJobAreas(),
             'jobTypes' => $this->jobTypeRepository->findAll(),
         ]);
 
         return $this->htmlResponse();
+    }
+
+    /**
+     * Jobs without resolvable salary information must never reach the frontend - this
+     * also covers a salary grade or all of its steps having expired/hidden via TYPO3's
+     * own access restrictions in the meantime. Filtering happens here (list/search),
+     * not in JobRepository, so it stays a display rule instead of a data access one.
+     *
+     * Applies the limit only after filtering, so a page never shows fewer jobs than
+     * requested just because some of the matches turned out to be ineligible - and
+     * stops iterating as soon as the limit is reached instead of always walking every
+     * matched job.
+     *
+     * @param iterable<Job> $jobs
+     * @return Job[]
+     */
+    private function excludeJobsWithoutSalaryInformation(iterable $jobs, int $limit = 0): array
+    {
+        $eligibleJobs = [];
+        foreach ($jobs as $job) {
+            if (!$job->getHasSalaryInformation()) {
+                continue;
+            }
+
+            $eligibleJobs[] = $job;
+
+            if ($limit > 0 && count($eligibleJobs) >= $limit) {
+                break;
+            }
+        }
+
+        return $eligibleJobs;
     }
 
     protected function getJobAreas(): QueryResultInterface
