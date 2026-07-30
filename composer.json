@@ -30,17 +30,35 @@
 		"bithost-gmbh/pdfviewhelpers": "*"
 	},
 	"require-dev": {
-		"roave/security-advisories": "dev-latest",
-		"phpunit/phpunit": "~4.8.0"
+		"ergebnis/composer-normalize": "^2.44",
+		"typo3/coding-standards": "^0.8",
+		"typo3/testing-framework": "^9.1.2"
 	},
 	"autoload": {
 		"psr-4": {
 			"JWeiland\\Jobfair2\\": "Classes"
 		}
 	},
+	"autoload-dev": {
+		"psr-4": {
+			"JWeiland\\Jobfair2\\Tests\\": "Tests"
+		}
+	},
+	"config": {
+		"allow-plugins": {
+			"ergebnis/composer-normalize": true,
+			"typo3/class-alias-loader": true,
+			"typo3/cms-composer-installers": true
+		},
+		"bin-dir": ".Build/bin",
+		"sort-packages": true,
+		"vendor-dir": ".Build/vendor"
+	},
 	"extra": {
 		"typo3/cms": {
-			"extension-key": "jobfair2"
+			"app-dir": ".Build",
+			"extension-key": "jobfair2",
+			"web-dir": ".Build/web"
 		}
 	}
 }
