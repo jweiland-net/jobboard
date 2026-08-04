@@ -10,74 +10,82 @@
 				<source>Integrates a job board with which visitors can reduce the job offers to their needs using various filters.</source>
 			</trans-unit>
 
+			<trans-unit id="tabs.job_description">
+				<source>Job Description</source>
+			</trans-unit>
+			<trans-unit id="tabs.job_details">
+				<source>Job Details</source>
+			</trans-unit>
+
+			<trans-unit id="palette.job_details">
+				<source>Job Details</source>
+			</trans-unit>
+			<trans-unit id="palette.job_description">
+				<source>Job Description</source>
+			</trans-unit>
+			<trans-unit id="palette.import">
+				<source>Import</source>
+			</trans-unit>
+			<trans-unit id="palette.address">
+				<source>Address</source>
+			</trans-unit>
+			<trans-unit id="palette.information">
+				<source>Job Information</source>
+			</trans-unit>
+			<trans-unit id="palette.salary">
+				<source>Remuneration</source>
+			</trans-unit>
+			<trans-unit id="palette.benefit">
+				<source>Benefits</source>
+			</trans-unit>
+			<trans-unit id="palette.contact_person">
+				<source>Contact Person</source>
+			</trans-unit>
+
 			<trans-unit id="tx_jobfair2_domain_model_job">
 				<source>Job</source>
 			</trans-unit>
 			<trans-unit id="tx_jobfair2_domain_model_job.title">
 				<source>Job title</source>
 			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.subtitle">
+				<source>Subtitle</source>
+			</trans-unit>
 			<trans-unit id="tx_jobfair2_domain_model_job.reference_number">
 				<source>Reference number</source>
-			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.is_import">
-				<source>Is imported record?</source>
-			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.is_import.description">
-				<source>Indicates, if this job was created manual in TYPO3 backend or was imported.</source>
-			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.vacancy_id">
-				<source>Vacancy ID</source>
 			</trans-unit>
 			<trans-unit id="tx_jobfair2_domain_model_job.description">
 				<source>Job description</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.address">
-				<source>Address of the workplace</source>
+			<trans-unit id="tx_jobfair2_domain_model_job.offer">
+				<source>Offer</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.link">
-				<source>Link to vacancy of MHM HR</source>
+			<trans-unit id="tx_jobfair2_domain_model_job.requirements">
+				<source>Requirements</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.further_information">
+				<source>Further Information</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.address">
+				<source>Workplace</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.job_role">
+				<source>Position</source>
 			</trans-unit>
 			<trans-unit id="tx_jobfair2_domain_model_job.job_area">
 				<source>Occupational field</source>
 			</trans-unit>
 			<trans-unit id="tx_jobfair2_domain_model_job.job_type">
-				<source>Type of employment</source>
+				<source>Employment scope</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.start_date">
-				<source>Date of starting work</source>
+			<trans-unit id="tx_jobfair2_domain_model_job.contract_type">
+				<source>Contract type</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.start_date.description">
-				<source>When the data record is saved, the job offer appears immediately in the job market, regardless of this date, provided the application deadline has not yet passed.</source>
+			<trans-unit id="tx_jobfair2_domain_model_job.tender_type">
+				<source>Tender type</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.ending_date">
-				<source>Application deadline</source>
-			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.ending_date.description">
-				<source>Once the application deadline has been reached, the job offer automatically disappears from the job offers after a maximum of 1 day.</source>
-			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.employer">
-				<source>Employer</source>
-			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.email">
-				<source>Email for application</source>
-			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.employer_address">
-				<source>Address of the employer</source>
-			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.tender_file">
-				<source>Tender documents</source>
-			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.location">
-				<source>Location</source>
-			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.pdf_files">
-				<source>Job advertisement</source>
-			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.is_internal">
-				<source>Is internal?</source>
-			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.salary">
-				<source>Salary</source>
+			<trans-unit id="tx_jobfair2_domain_model_job.benefits">
+				<source>Benefits</source>
 			</trans-unit>
 			<trans-unit id="tx_jobfair2_domain_model_job.salary_mode">
 				<source>Salary mode</source>
@@ -108,6 +116,96 @@
 			</trans-unit>
 			<trans-unit id="tx_jobfair2_domain_model_job.salary_max.description">
 				<source>For an exact salary, please enter the same amount as in minimum salary. You may enter the amount with a thousands separator and decimal comma (e.g. 3.842,17) — it is normalized automatically once you leave the field.</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.employer">
+				<source>Employer</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.employer_logo">
+				<source>Employer logo</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.employer_address">
+				<source>Address of the employer</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.application_information">
+				<source>Application Info</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.first_name">
+				<source>First name</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.last_name">
+				<source>Last name</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.email">
+				<source>Email address</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.telephone">
+				<source>Phone number</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.function">
+				<source>Function</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.start_date">
+				<source>Start of employment</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.start_date.description">
+				<source>When the data record is saved, the job offer appears immediately in the job market, regardless of this date, provided the application deadline has not yet passed.</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.ending_date">
+				<source>End of employment</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.ending_date.description">
+				<source>Optional. Only relevant for fixed-term positions (see contract type) — enter the last day of employment here.</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.application_deadline">
+				<source>Application deadline</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.application_deadline.description">
+				<source>Once the application deadline has been reached, the job offer automatically disappears from the job offers after a maximum of 1 day.</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.application_guidelines">
+				<source>Application guidelines</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.media">
+				<source>Media</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.header_logo">
+				<source>Header image</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.tender_file">
+				<source>Tender documents</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.pdf_files">
+				<source>Job advertisement</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.pdf_tstamp">
+				<source>PDF generated on</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.relations">
+				<source>Relations</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.related_jobs">
+				<source>Related jobs</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.link">
+				<source>Link to vacancy of MHM HR</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.is_internal">
+				<source>Is internal?</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.is_internal.no">
+				<source>No</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.is_internal.yes">
+				<source>Yes</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.is_import">
+				<source>Is imported record?</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.is_import.description">
+				<source>Indicates, if this job was created manual in TYPO3 backend or was imported.</source>
+			</trans-unit>
+			<trans-unit id="tx_jobfair2_domain_model_job.vacancy_id">
+				<source>Vacancy ID</source>
 			</trans-unit>
 
 			<trans-unit id="tx_jobfair2_domain_model_jobarea">

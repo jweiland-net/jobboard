@@ -13,7 +13,7 @@ if (!defined('TYPO3')) {
 
 return [
     'ctrl' => [
-        'title' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_jobtype',
+        'title' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_contracttype',
         'label' => 'title',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
@@ -38,7 +38,7 @@ return [
     'columns' => [
         'title' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_jobtype.title',
+            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_contracttype.title',
             'config' => [
                 'type' => 'input',
                 'size' => 13,
