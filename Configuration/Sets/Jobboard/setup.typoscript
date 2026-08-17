@@ -27,16 +27,3 @@ plugin.tx_jobboard {
     pidOfApplicationForm = {$jobboard.pidOfApplicationForm}
   }
 }
-
-page.includeCSS {
-  jqueryAutocomplete = EXT:jobboard/Resources/Public/Css/jquery-ui.min.css
-  jobboard = EXT:jobboard/Resources/Public/Css/style.css
-  jobboardpdf = EXT:jobboard/Resources/Public/Css/pdf.css
-}
-
-page.includeJSFooter {
-  jqueryAutocomplete = EXT:jobboard/Resources/Public/JavaScript/jquery-ui.min.js
-  dataTables = EXT:jobboard/Resources/Public/JavaScript/datatables.min.js
-  cookiejs = EXT:jobboard/Resources/Public/JavaScript/js.cookie-2.2.1.min.js
-  jobboard = EXT:jobboard/Resources/Public/JavaScript/script.js
-}
