@@ -14,9 +14,6 @@ namespace JWeiland\Jobboard\Domain\Model;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
-/**
- * Class SalaryTable
- */
 class SalaryTable extends AbstractEntity
 {
     protected string $title = '';

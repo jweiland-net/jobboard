@@ -13,9 +13,6 @@ namespace JWeiland\Jobboard\Domain\Model;
 
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
-/**
- * Class JobType
- */
 class JobType extends AbstractEntity
 {
     protected string $title;

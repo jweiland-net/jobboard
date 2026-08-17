@@ -13,9 +13,6 @@ namespace JWeiland\Jobboard\Domain\Model;
 
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
-/**
- * Class SalaryStep
- */
 class SalaryStep extends AbstractEntity
 {
     protected string $stepLabel = '';
