@@ -8,8 +8,8 @@
  */
 
 $EM_CONF[$_EXTKEY] = [
-    'title' => 'Job fair 2',
-    'description' => 'Job fair implementation using Maps2 and tt_address to display jobs',
+    'title' => 'Job Board',
+    'description' => 'Displays a searchable list of job openings with map view and optional automatic import from external sources',
     'category' => 'plugin',
     'author' => 'Stefan Froemken',
     'author_mail' => 'projects@jweiland.net',
