@@ -40,19 +40,33 @@
                 <type>array</type>
                 <el>
                     <settings.showSearch>
-                        <label>LLL:EXT:jobboard/Resources/Private/Language/FlexForms.xlf:search</label>
+                        <label>LLL:EXT:jobboard/Resources/Private/Language/FlexForms.xlf:showSearch</label>
                         <config>
                             <type>check</type>
                             <renderType>checkboxToggle</renderType>
                             <items type="array">
                                 <numIndex index="0" type="array">
-                                    <numIndex index="0">LLL:EXT:jobboard/Resources/Private/Language/FlexForms.xlf:showSearch</numIndex>
+                                    <numIndex index="0">LLL:EXT:jobboard/Resources/Private/Language/FlexForms.xlf:showSearch1</numIndex>
                                     <numIndex index="1">1</numIndex>
                                 </numIndex>
                             </items>
                             <default>1</default>
                         </config>
                     </settings.showSearch>
+                    <settings.showFreeTextSearch>
+                        <label>LLL:EXT:jobboard/Resources/Private/Language/FlexForms.xlf:showFreeTextSearch</label>
+                        <config>
+                            <type>check</type>
+                            <renderType>checkboxToggle</renderType>
+                            <items type="array">
+                                <numIndex index="0" type="array">
+                                    <numIndex index="0">LLL:EXT:jobboard/Resources/Private/Language/FlexForms.xlf:showFreeTextSearch1</numIndex>
+                                    <numIndex index="1">1</numIndex>
+                                </numIndex>
+                            </items>
+                            <default>1</default>
+                        </config>
+                    </settings.showFreeTextSearch>
                 </el>
             </ROOT>
         </search>

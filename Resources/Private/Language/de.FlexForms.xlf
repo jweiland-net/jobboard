@@ -23,13 +23,25 @@
 				<source>Job areas</source>
 				<target>Berufsfelder</target>
 			</trans-unit>
+			<trans-unit id="sheetSearch">
+				<source>Search</source>
+				<target>Suche</target>
+			</trans-unit>
 			<trans-unit id="showSearch">
 				<source>Show Search</source>
 				<target>Suche anzeigen</target>
 			</trans-unit>
-			<trans-unit id="search">
+			<trans-unit id="showSearch1">
 				<source>Search</source>
 				<target>Suche</target>
+			</trans-unit>
+			<trans-unit id="showFreeTextSearch">
+				<source>Show free text search</source>
+				<target>Zeige Freitextsuche</target>
+			</trans-unit>
+			<trans-unit id="showFreeTextSearch1">
+				<source>Free text search</source>
+				<target>Freitextsuche</target>
 			</trans-unit>
 			<trans-unit id="maxEntries">
 				<source>Max entries to show (0 for all)</source>
