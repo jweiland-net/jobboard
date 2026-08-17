@@ -1,9 +1,14 @@
 (function () {
   'use strict';
+
+  // Resolve sibling resources relative to this script's own (possibly hashed/rewritten) URL,
+  // since TYPO3 does not expose the extension's public path (typo3conf/ext vs. _assets) to plain JS.
+  let scriptBaseUrl = document.currentScript.src.replace(/[^/]+$/, '');
+
   let dataTable = $('.dataTable').DataTable({
     'bLengthChange': false,
     'language': {
-      'url': '/typo3conf/ext/jobboard/Resources/Public/JavaScript/dataTables/i18n/de_DE.json'
+      'url': scriptBaseUrl + 'dataTables/i18n/de_DE.json'
     },
     'paging': false,
     'bInfo': false

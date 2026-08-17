@@ -14,20 +14,51 @@
     <tbody>
     <tr>
         <td><strong>Plugin</strong></td>
-        <td>Jobboard</td>
+        <td>Job Board</td>
     </tr>
-    <f:if condition="{pi_flexform_transformed.settings.maxEntries}">
-        <tr>
-            <td><strong>Max Entries</strong></td>
-            <td>{pi_flexform_transformed.settings.maxEntries}</td>
-        </tr>
-    </f:if>
+
     <f:if condition="{pi_flexform_transformed.settings.jobAreas}">
         <tr>
             <td><strong>Job Areas</strong></td>
             <td>{pi_flexform_transformed.settings.jobAreas}</td>
         </tr>
     </f:if>
+
+    <f:if condition="{pi_flexform_transformed.settings.maxEntries}">
+        <tr>
+            <td><strong>Max Entries</strong></td>
+            <td>{pi_flexform_transformed.settings.maxEntries}</td>
+        </tr>
+    </f:if>
+
+    <tr>
+        <td><strong>Show Search</strong></td>
+        <td>
+            <f:if condition="{pi_flexform_transformed.settings.showSearch}">
+                <f:then>
+                    <core:icon identifier="actions-check"/>
+                </f:then>
+                <f:else>
+                    <core:icon identifier="actions-message-ok-close"/>
+                </f:else>
+            </f:if>
+        </td>
+    </tr>
+
+    <tr>
+        <td><strong>Show Free Text Search</strong></td>
+        <td>
+            <f:if condition="{pi_flexform_transformed.settings.showFreeTextSearch}">
+                <f:then>
+                    <core:icon identifier="actions-check"/>
+                </f:then>
+                <f:else>
+                    <core:icon identifier="actions-message-ok-close"/>
+                </f:else>
+            </f:if>
+        </td>
+    </tr>
+
     <tr>
         <td><strong>Is Internal</strong></td>
         <td>
