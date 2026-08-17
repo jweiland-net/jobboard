@@ -14,9 +14,6 @@ namespace JWeiland\Jobboard\Domain\Repository;
 use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 use TYPO3\CMS\Extbase\Persistence\Repository;
 
-/**
- * Class JobAreaRepository
- */
 class JobAreaRepository extends Repository
 {
     public function findByUids(array $uids): QueryResultInterface

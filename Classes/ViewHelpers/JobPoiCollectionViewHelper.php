@@ -16,9 +16,6 @@ use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
-/**
- * Class JobPoiCollectionViewHelper
- */
 class JobPoiCollectionViewHelper extends AbstractViewHelper
 {
     public function initializeArguments(): void

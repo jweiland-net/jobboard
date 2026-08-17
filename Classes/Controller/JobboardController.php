@@ -23,9 +23,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 
-/**
- * Class JobboardController
- */
 class JobboardController extends ActionController
 {
     public function __construct(
