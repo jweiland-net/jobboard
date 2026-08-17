@@ -49,7 +49,7 @@ class SalaryGrade extends AbstractEntity
         $this->title = $title;
     }
 
-    public function hasSteps(): bool
+    public function getHasSteps(): bool
     {
         return $this->hasSteps;
     }

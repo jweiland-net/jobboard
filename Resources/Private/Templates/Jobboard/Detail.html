@@ -12,6 +12,9 @@
                     <header class=" margin-bottom">
                         <h1 class="word-break">{job.title}</h1>
                     </header>
+                    <f:if condition="{job.subtitle}">
+                        <p class="word-break">{job.subtitle}</p>
+                    </f:if>
                     <f:format.html>{job.description}</f:format.html>
                     <div class="jobs-links">
                         <f:if condition="{job.description}">
@@ -27,6 +30,257 @@
                             </div>
                         </f:if>
                     </div>
+
+                    <!-- TCA palette "job_details": reference_number (title/subtitle are already shown above as heading) -->
+                    <section class="margin-top">
+                        <h2><f:translate key="job.groups.details"/></h2>
+                        <dl>
+                            <dt><f:translate key="job.referenceNumber"/></dt>
+                            <dd>{job.referenceNumber}</dd>
+                        </dl>
+                    </section>
+
+                    <!-- TCA palette "job_description": offer, requirements, further_information -->
+                    <f:if condition="{job.offer} || {job.requirements} || {job.furtherInformation}">
+                        <section class="margin-top">
+                            <h2><f:translate key="job.groups.description"/></h2>
+                            <f:if condition="{job.offer}">
+                                <h3><f:translate key="job.offer"/></h3>
+                                <f:format.html>{job.offer}</f:format.html>
+                            </f:if>
+                            <f:if condition="{job.requirements}">
+                                <h3><f:translate key="job.requirements"/></h3>
+                                <f:format.html>{job.requirements}</f:format.html>
+                            </f:if>
+                            <f:if condition="{job.furtherInformation}">
+                                <h3><f:translate key="job.furtherInformation"/></h3>
+                                <f:format.html>{job.furtherInformation}</f:format.html>
+                            </f:if>
+                        </section>
+                    </f:if>
+
+                    <!-- TCA palette "import": is_import, vacancy_id -->
+                    <f:if condition="{job.isImport}">
+                        <section class="margin-top">
+                            <h2><f:translate key="job.groups.import"/></h2>
+                            <dl>
+                                <dt><f:translate key="job.isImport"/></dt>
+                                <dd><f:translate key="job.boolean.yes"/></dd>
+                                <f:if condition="{job.vacancyId}">
+                                    <dt><f:translate key="job.vacancyId"/></dt>
+                                    <dd>{job.vacancyId}</dd>
+                                </f:if>
+                            </dl>
+                        </section>
+                    </f:if>
+
+                    <!-- TCA palette "address" -->
+                    <section class="margin-top">
+                        <h2><f:translate key="job.company"/></h2>
+                        <dl>
+                            <f:if condition="{job.address.company}">
+                                <dt><f:translate key="job.company"/></dt>
+                                <dd>{job.address.company}</dd>
+                            </f:if>
+                            <f:if condition="{job.address.address}">
+                                <dt><f:translate key="job.address.city"/></dt>
+                                <dd>
+                                    {job.address.address}<br/>
+                                    <f:if condition="{job.address.city}">{job.address.zip} {job.address.city}</f:if>
+                                </dd>
+                            </f:if>
+                        </dl>
+                    </section>
+
+                    <!-- TCA palette "information": job_role, job_area, job_type, contract_type, tender_type -->
+                    <section class="margin-top">
+                        <h2><f:translate key="job.groups.information"/></h2>
+                        <dl>
+                            <f:if condition="{job.jobRole.title}">
+                                <dt><f:translate key="job.jobRole.title"/></dt>
+                                <dd>{job.jobRole.title}</dd>
+                            </f:if>
+                            <dt><f:translate key="job.job_area.title"/></dt>
+                            <dd>{job.jobArea.title}</dd>
+                            <f:if condition="{job.jobType.title}">
+                                <dt><f:translate key="job.job_type.title"/></dt>
+                                <dd>{job.jobType.title}</dd>
+                            </f:if>
+                            <f:if condition="{job.contractType.title}">
+                                <dt><f:translate key="job.contractType.title"/></dt>
+                                <dd>{job.contractType.title}</dd>
+                            </f:if>
+                            <f:if condition="{job.tenderType.title}">
+                                <dt><f:translate key="job.tenderType.title"/></dt>
+                                <dd>{job.tenderType.title}</dd>
+                            </f:if>
+                        </dl>
+                    </section>
+
+                    <!-- TCA palette "salary_grade" / "salary_min_max" -->
+                    <f:if condition="{job.hasSalaryInformation}">
+                        <section class="margin-top">
+                            <h2><f:translate key="job.salary"/></h2>
+                            <dl>
+                                <dt><f:translate key="job.salary"/></dt>
+                                <dd>
+                                    <f:if condition="{job.hasSalaryRange}">
+                                        <f:then>
+                                            <f:format.currency currencySign="€">{job.salaryRangeMin}</f:format.currency> - <f:format.currency currencySign="€">{job.salaryRangeMax}</f:format.currency>
+                                        </f:then>
+                                        <f:else>
+                                            <f:format.currency currencySign="€">{job.salaryRangeMin}</f:format.currency>
+                                        </f:else>
+                                    </f:if>
+                                </dd>
+                                <f:if condition="{job.salaryGrade}">
+                                    <dt><f:translate key="job.salaryGrade.title"/></dt>
+                                    <dd>
+                                        {job.salaryGrade.title}
+                                        <f:if condition="{job.salaryGrade.salaryTable.title}"> ({job.salaryGrade.salaryTable.title})</f:if>
+                                    </dd>
+                                    <f:if condition="{job.salaryGrade.hasSteps}">
+                                        <dt><f:translate key="job.salarySteps"/></dt>
+                                        <dd>
+                                            <ul>
+                                                <f:for each="{job.salaryGrade.salarySteps}" as="salaryStep">
+                                                    <li>{salaryStep.stepLabel}: <f:format.currency currencySign="€">{salaryStep.amount}</f:format.currency></li>
+                                                </f:for>
+                                            </ul>
+                                        </dd>
+                                    </f:if>
+                                </f:if>
+                            </dl>
+                        </section>
+                    </f:if>
+
+                    <!-- TCA palette "benefit" -->
+                    <f:if condition="{job.benefits}">
+                        <section class="margin-top">
+                            <h2><f:translate key="job.benefits.title"/></h2>
+                            <p>{job.benefits.title}</p>
+                        </section>
+                    </f:if>
+
+                    <!-- TCA div "employer": employer, employer_logo, employer_address -->
+                    <section class="margin-top">
+                        <h2><f:translate key="job.employer"/></h2>
+                        <dl>
+                            <dt><f:translate key="job.employer"/></dt>
+                            <dd>{job.employer}</dd>
+                            <f:if condition="{job.employerAddress}">
+                                <dt><f:translate key="job.address.city"/></dt>
+                                <dd>
+                                    <f:if condition="{job.employerAddress.address}">{job.employerAddress.address}<br/></f:if>
+                                    <f:if condition="{job.employerAddress.city}">{job.employerAddress.zip} {job.employerAddress.city}</f:if>
+                                </dd>
+                            </f:if>
+                        </dl>
+                        <f:if condition="{job.employerLogo}">
+                            <div class="job-logos">
+                                <f:for each="{job.employerLogo}" as="employerLogo">
+                                    <f:image image="{employerLogo}" alt="{job.employer}" class="margin-top inline-block"/>
+                                </f:for>
+                            </div>
+                        </f:if>
+                    </section>
+
+                    <!-- TCA palette "contact_person" -->
+                    <f:if condition="{job.firstName} || {job.lastName} || {job.email} || {job.telephone} || {job.function}">
+                        <section class="margin-top">
+                            <h2><f:translate key="job.groups.contactPerson"/></h2>
+                            <dl>
+                                <f:if condition="{job.firstName} || {job.lastName}">
+                                    <dt><f:translate key="job.firstName"/> / <f:translate key="job.lastName"/></dt>
+                                    <dd>{job.firstName} {job.lastName}</dd>
+                                </f:if>
+                                <f:if condition="{job.function}">
+                                    <dt><f:translate key="job.function"/></dt>
+                                    <dd>{job.function}</dd>
+                                </f:if>
+                                <f:if condition="{job.email}">
+                                    <dt><f:translate key="job.email"/></dt>
+                                    <dd><f:link.email email="{job.email}"/></dd>
+                                </f:if>
+                                <f:if condition="{job.telephone}">
+                                    <dt><f:translate key="job.telephone"/></dt>
+                                    <dd>{job.telephone}</dd>
+                                </f:if>
+                            </dl>
+                        </section>
+                    </f:if>
+
+                    <!-- TCA palette "startEndDate" plus application_deadline, application_guidelines -->
+                    <section class="margin-top">
+                        <h2><f:translate key="job.groups.applicationInformation"/></h2>
+                        <dl>
+                            <f:if condition="{job.startDate}">
+                                <dt><f:translate key="job.startEndDate.startDate"/></dt>
+                                <dd><f:format.date format="{f:translate(key: 'dateFormat')}">{job.startDate}</f:format.date></dd>
+                            </f:if>
+                            <f:if condition="{job.endingDate}">
+                                <dt><f:translate key="job.startEndDate.endDate"/></dt>
+                                <dd><f:format.date format="{f:translate(key: 'dateFormat')}">{job.endingDate}</f:format.date></dd>
+                            </f:if>
+                            <f:if condition="{job.applicationDeadline}">
+                                <dt><f:translate key="job.applicationDeadline"/></dt>
+                                <dd><f:format.date format="{f:translate(key: 'dateFormat')}">{job.applicationDeadline}</f:format.date></dd>
+                            </f:if>
+                        </dl>
+                        <f:if condition="{job.applicationGuidelines}">
+                            <h3><f:translate key="job.applicationGuidelines"/></h3>
+                            <f:format.html>{job.applicationGuidelines}</f:format.html>
+                        </f:if>
+                    </section>
+
+                    <!-- TCA div "media": header_logo, tender_file, pdf_files, pdf_tstamp -->
+                    <f:if condition="{job.headerLogo} || {job.tenderFile} || {job.pdfFiles}">
+                        <section class="margin-top">
+                            <h2><f:translate key="job.groups.media"/></h2>
+                            <f:if condition="{job.headerLogo}">
+                                <h3><f:translate key="job.headerLogo"/></h3>
+                                <div class="job-logos">
+                                    <f:for each="{job.headerLogo}" as="headerLogo">
+                                        <f:image image="{headerLogo}" alt="{job.title}" class="margin-top inline-block"/>
+                                    </f:for>
+                                </div>
+                            </f:if>
+                            <f:if condition="{job.tenderFile}">
+                                <h3><f:translate key="job.tenderFile"/></h3>
+                                <ul>
+                                    <f:for each="{job.tenderFile}" as="tenderFile">
+                                        <li><a href="{tenderFile.originalResource.publicUrl}">{tenderFile.originalResource.name}</a></li>
+                                    </f:for>
+                                </ul>
+                            </f:if>
+                            <f:if condition="{job.pdfFiles}">
+                                <h3><f:translate key="job.pdfFiles"/></h3>
+                                <ul>
+                                    <f:for each="{job.pdfFiles}" as="pdfFile">
+                                        <li><a href="{pdfFile.originalResource.publicUrl}">{pdfFile.originalResource.name}</a></li>
+                                    </f:for>
+                                </ul>
+                            </f:if>
+                            <f:if condition="{job.pdfTstamp}">
+                                <dl>
+                                    <dt><f:translate key="job.pdfTstamp"/></dt>
+                                    <dd><f:format.date format="{f:translate(key: 'dateFormat')}">@{job.pdfTstamp}</f:format.date></dd>
+                                </dl>
+                            </f:if>
+                        </section>
+                    </f:if>
+
+                    <!-- TCA div "relations": related_jobs -->
+                    <f:if condition="{job.relatedJobs}">
+                        <section class="margin-top">
+                            <h2><f:translate key="job.relatedJobs"/></h2>
+                            <ul>
+                                <f:for each="{job.relatedJobs}" as="relatedJob">
+                                    <li><f:link.action action="detail" arguments="{job: relatedJob}">{relatedJob.title}</f:link.action></li>
+                                </f:for>
+                            </ul>
+                        </section>
+                    </f:if>
                 </div>
             </div>
         </div>

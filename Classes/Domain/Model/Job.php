@@ -198,7 +198,7 @@ class Job extends AbstractEntity
         $this->furtherInformation = $furtherInformation;
     }
 
-    public function isImport(): bool
+    public function getIsImport(): bool
     {
         return $this->isImport;
     }
@@ -578,7 +578,7 @@ class Job extends AbstractEntity
         $this->link = $link;
     }
 
-    public function isInternal(): bool
+    public function getIsInternal(): bool
     {
         return $this->isInternal;
     }
