@@ -509,7 +509,7 @@ return [
                 'type' => 'group',
                 'allowed' => 'tx_jobboard_domain_model_job',
                 'foreign_table' => 'tx_jobboard_domain_model_job',
-                'minitems' => 1,
+                'minitems' => 0,
                 'maxitems' => 99,
                 'size' => 1,
             ],
