@@ -10,17 +10,7 @@
 
     <f:if condition="{jobs}">
         <f:then>
-            <f:render partial="Types/Table" arguments="{objects: jobs, fields:
-						{
-							title: '{0: \'job.title\', 1: \'text\', 2: \'title\'}',
-							ending_date: '{0: \'job.ending_date\', 1: \'date\', 2: \'endingDate\', 3: \'d.m.Y\'}',
-							zip: '{0: \'job.address.zip\', 1: \'text\', 2: \'address.zip\'}',
-							city: '{0: \'job.address.city\', 1: \'text\', 2: \'address.city\'}',
-							employer: '{0: \'job.employer\', 1: \'text\', 2: \'employer\'}',
-							job_type: '{0: \'job.job_type.title\', 1: \'text\', 2: \'jobType.title\'}'
-						},
-						class: 'dataTable'
-					}"/>
+            <f:render partial="Types/Table" arguments="{objects: jobs}"/>
         </f:then>
         <f:else>
             <p>{f:translate(key: 'search.no_jobs_found')}</p>
