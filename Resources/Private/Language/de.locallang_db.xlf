@@ -328,6 +328,46 @@
 				<source>Benefit</source>
 				<target>Benefit</target>
 			</trans-unit>
+			<trans-unit id="tx_jobboard_domain_model_benefit.color">
+				<source>Color</source>
+				<target>Farbe</target>
+			</trans-unit>
+			<trans-unit id="tx_jobboard_domain_model_benefit.color.blue">
+				<source>Blue</source>
+				<target>Blau</target>
+			</trans-unit>
+			<trans-unit id="tx_jobboard_domain_model_benefit.color.green">
+				<source>Green</source>
+				<target>Grün</target>
+			</trans-unit>
+			<trans-unit id="tx_jobboard_domain_model_benefit.color.orange">
+				<source>Orange</source>
+				<target>Orange</target>
+			</trans-unit>
+			<trans-unit id="tx_jobboard_domain_model_benefit.color.pink">
+				<source>Pink</source>
+				<target>Pink</target>
+			</trans-unit>
+			<trans-unit id="tx_jobboard_domain_model_benefit.color.purple">
+				<source>Purple</source>
+				<target>Lila</target>
+			</trans-unit>
+			<trans-unit id="tx_jobboard_domain_model_benefit.color.yellow">
+				<source>Yellow</source>
+				<target>Gelb</target>
+			</trans-unit>
+			<trans-unit id="tx_jobboard_domain_model_benefit.description">
+				<source>Description</source>
+				<target>Beschreibung</target>
+			</trans-unit>
+			<trans-unit id="tx_jobboard_domain_model_benefit.media">
+				<source>Media</source>
+				<target>Medien</target>
+			</trans-unit>
+			<trans-unit id="tx_jobboard_domain_model_benefit.image">
+				<source>Image</source>
+				<target>Bild</target>
+			</trans-unit>
 
 			<trans-unit id="tx_jobboard_domain_model_salarytable">
 				<source>Salary table</source>
