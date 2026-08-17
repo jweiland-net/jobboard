@@ -1,6 +1,6 @@
 <html lang="en"
       xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
-      xmlns:jf2="http://typo3.org/ns/JWeiland/Jobfair2/ViewHelpers"
+      xmlns:jobboard="http://typo3.org/ns/JWeiland/Jobboard/ViewHelpers"
       data-namespace-typo3-fluid="true">
 
 <div class="grid">
@@ -19,7 +19,7 @@
     <div class="col-8_md-12 margin-bottom">
         <f:render partial="Maps2/PoiCollection"
                   section="showMap"
-                  arguments="{poiCollections: '{jf2:jobPoiCollection(jobs: jobs)}', override: '{settings: {mapWidth: \'100%\', mapHeight: \'400\', streetViewControl: 0}, extConf: {strokeColor: \'blue\'}}'}"/>
+                  arguments="{poiCollections: '{jobboard:jobPoiCollection(jobs: jobs)}', override: '{settings: {mapWidth: \'100%\', mapHeight: \'400\', streetViewControl: 0}, extConf: {strokeColor: \'blue\'}}'}"/>
     </div>
 </div>
 </html>

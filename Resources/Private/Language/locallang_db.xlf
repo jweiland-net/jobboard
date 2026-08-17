@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <xliff version="1.0">
-	<file source-language="english" datatype="plaintext" original="messages" product-name="jobfair2">
+	<file source-language="english" datatype="plaintext" original="messages" product-name="jobboard">
 		<header/>
 		<body>
-			<trans-unit id="plugin.jobfair.title">
-				<source>Jobfair</source>
+			<trans-unit id="plugin.jobboard.title">
+				<source>Jobboard</source>
 			</trans-unit>
-			<trans-unit id="plugin.jobfair.description">
+			<trans-unit id="plugin.jobboard.description">
 				<source>Integrates a job board with which visitors can reduce the job offers to their needs using various filters.</source>
 			</trans-unit>
 
@@ -42,252 +42,252 @@
 				<source>Contact Person</source>
 			</trans-unit>
 
-			<trans-unit id="tx_jobfair2_domain_model_job">
+			<trans-unit id="tx_jobboard_domain_model_job">
 				<source>Job</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.title">
+			<trans-unit id="tx_jobboard_domain_model_job.title">
 				<source>Job title</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.subtitle">
+			<trans-unit id="tx_jobboard_domain_model_job.subtitle">
 				<source>Subtitle</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.reference_number">
+			<trans-unit id="tx_jobboard_domain_model_job.reference_number">
 				<source>Reference number</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.description">
+			<trans-unit id="tx_jobboard_domain_model_job.description">
 				<source>Job description</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.offer">
+			<trans-unit id="tx_jobboard_domain_model_job.offer">
 				<source>Offer</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.requirements">
+			<trans-unit id="tx_jobboard_domain_model_job.requirements">
 				<source>Requirements</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.further_information">
+			<trans-unit id="tx_jobboard_domain_model_job.further_information">
 				<source>Further Information</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.address">
+			<trans-unit id="tx_jobboard_domain_model_job.address">
 				<source>Workplace</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.job_role">
+			<trans-unit id="tx_jobboard_domain_model_job.job_role">
 				<source>Position</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.job_area">
+			<trans-unit id="tx_jobboard_domain_model_job.job_area">
 				<source>Occupational field</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.job_type">
+			<trans-unit id="tx_jobboard_domain_model_job.job_type">
 				<source>Employment scope</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.contract_type">
+			<trans-unit id="tx_jobboard_domain_model_job.contract_type">
 				<source>Contract type</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.tender_type">
+			<trans-unit id="tx_jobboard_domain_model_job.tender_type">
 				<source>Tender type</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.benefits">
+			<trans-unit id="tx_jobboard_domain_model_job.benefits">
 				<source>Benefits</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.salary_mode">
+			<trans-unit id="tx_jobboard_domain_model_job.salary_mode">
 				<source>Salary mode</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.salary_mode.description">
+			<trans-unit id="tx_jobboard_domain_model_job.salary_mode.description">
 				<source>Determines whether a tariff-based salary grade or a free salary entry is used. Changing this afterwards reloads the form, since the visible fields differ.</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.salary_mode.grade">
+			<trans-unit id="tx_jobboard_domain_model_job.salary_mode.grade">
 				<source>Salary grade (tariff-based)</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.salary_mode.freeEntry">
+			<trans-unit id="tx_jobboard_domain_model_job.salary_mode.freeEntry">
 				<source>Free salary entry</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.salary_grade">
+			<trans-unit id="tx_jobboard_domain_model_job.salary_grade">
 				<source>Salary grade</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.salary_grade.description">
+			<trans-unit id="tx_jobboard_domain_model_job.salary_grade.description">
 				<source>The minimum/maximum salary is calculated automatically in the frontend from the steps stored for this salary grade.</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.salary_min">
+			<trans-unit id="tx_jobboard_domain_model_job.salary_min">
 				<source>Minimum salary</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.salary_min.description">
+			<trans-unit id="tx_jobboard_domain_model_job.salary_min.description">
 				<source>For an exact salary, please enter the same amount in both minimum and maximum salary. Since jobs without salary information may no longer be displayed by law, both fields must be filled in. You may enter the amount with a thousands separator and decimal comma (e.g. 3.842,17) — it is normalized automatically once you leave the field.</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.salary_max">
+			<trans-unit id="tx_jobboard_domain_model_job.salary_max">
 				<source>Maximum salary</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.salary_max.description">
+			<trans-unit id="tx_jobboard_domain_model_job.salary_max.description">
 				<source>For an exact salary, please enter the same amount as in minimum salary. You may enter the amount with a thousands separator and decimal comma (e.g. 3.842,17) — it is normalized automatically once you leave the field.</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.employer">
+			<trans-unit id="tx_jobboard_domain_model_job.employer">
 				<source>Employer</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.employer_logo">
+			<trans-unit id="tx_jobboard_domain_model_job.employer_logo">
 				<source>Employer logo</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.employer_address">
+			<trans-unit id="tx_jobboard_domain_model_job.employer_address">
 				<source>Address of the employer</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.application_information">
+			<trans-unit id="tx_jobboard_domain_model_job.application_information">
 				<source>Application Info</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.first_name">
+			<trans-unit id="tx_jobboard_domain_model_job.first_name">
 				<source>First name</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.last_name">
+			<trans-unit id="tx_jobboard_domain_model_job.last_name">
 				<source>Last name</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.email">
+			<trans-unit id="tx_jobboard_domain_model_job.email">
 				<source>Email address</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.telephone">
+			<trans-unit id="tx_jobboard_domain_model_job.telephone">
 				<source>Phone number</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.function">
+			<trans-unit id="tx_jobboard_domain_model_job.function">
 				<source>Function</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.start_date">
+			<trans-unit id="tx_jobboard_domain_model_job.start_date">
 				<source>Start of employment</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.start_date.description">
+			<trans-unit id="tx_jobboard_domain_model_job.start_date.description">
 				<source>When the data record is saved, the job offer appears immediately in the job market, regardless of this date, provided the application deadline has not yet passed.</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.ending_date">
+			<trans-unit id="tx_jobboard_domain_model_job.ending_date">
 				<source>End of employment</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.ending_date.description">
+			<trans-unit id="tx_jobboard_domain_model_job.ending_date.description">
 				<source>Optional. Only relevant for fixed-term positions (see contract type) — enter the last day of employment here.</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.application_deadline">
+			<trans-unit id="tx_jobboard_domain_model_job.application_deadline">
 				<source>Application deadline</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.application_deadline.description">
+			<trans-unit id="tx_jobboard_domain_model_job.application_deadline.description">
 				<source>Once the application deadline has been reached, the job offer automatically disappears from the job offers after a maximum of 1 day.</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.application_guidelines">
+			<trans-unit id="tx_jobboard_domain_model_job.application_guidelines">
 				<source>Application guidelines</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.media">
+			<trans-unit id="tx_jobboard_domain_model_job.media">
 				<source>Media</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.header_logo">
+			<trans-unit id="tx_jobboard_domain_model_job.header_logo">
 				<source>Header image</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.tender_file">
+			<trans-unit id="tx_jobboard_domain_model_job.tender_file">
 				<source>Tender documents</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.pdf_files">
+			<trans-unit id="tx_jobboard_domain_model_job.pdf_files">
 				<source>Job advertisement</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.pdf_tstamp">
+			<trans-unit id="tx_jobboard_domain_model_job.pdf_tstamp">
 				<source>PDF generated on</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.relations">
+			<trans-unit id="tx_jobboard_domain_model_job.relations">
 				<source>Relations</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.related_jobs">
+			<trans-unit id="tx_jobboard_domain_model_job.related_jobs">
 				<source>Related jobs</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.link">
+			<trans-unit id="tx_jobboard_domain_model_job.link">
 				<source>Link to vacancy of MHM HR</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.is_internal">
+			<trans-unit id="tx_jobboard_domain_model_job.is_internal">
 				<source>Is internal?</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.is_internal.no">
+			<trans-unit id="tx_jobboard_domain_model_job.is_internal.no">
 				<source>No</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.is_internal.yes">
+			<trans-unit id="tx_jobboard_domain_model_job.is_internal.yes">
 				<source>Yes</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.is_import">
+			<trans-unit id="tx_jobboard_domain_model_job.is_import">
 				<source>Is imported record?</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.is_import.description">
+			<trans-unit id="tx_jobboard_domain_model_job.is_import.description">
 				<source>Indicates, if this job was created manual in TYPO3 backend or was imported.</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_job.vacancy_id">
+			<trans-unit id="tx_jobboard_domain_model_job.vacancy_id">
 				<source>Vacancy ID</source>
 			</trans-unit>
 
-			<trans-unit id="tx_jobfair2_domain_model_jobarea">
+			<trans-unit id="tx_jobboard_domain_model_jobarea">
 				<source>Occupational field</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_jobarea.title">
+			<trans-unit id="tx_jobboard_domain_model_jobarea.title">
 				<source>Occupational field</source>
 			</trans-unit>
 
-			<trans-unit id="tx_jobfair2_domain_model_jobtype">
+			<trans-unit id="tx_jobboard_domain_model_jobtype">
 				<source>Type of employment</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_jobtype.title">
+			<trans-unit id="tx_jobboard_domain_model_jobtype.title">
 				<source>Type of employment</source>
 			</trans-unit>
 
-			<trans-unit id="tx_jobfair2_domain_model_salarytable">
+			<trans-unit id="tx_jobboard_domain_model_salarytable">
 				<source>Salary table</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_salarytable.title">
+			<trans-unit id="tx_jobboard_domain_model_salarytable.title">
 				<source>Title</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_salarytable.description">
+			<trans-unit id="tx_jobboard_domain_model_salarytable.description">
 				<source>Description</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_salarytable.salary_grades">
+			<trans-unit id="tx_jobboard_domain_model_salarytable.salary_grades">
 				<source>Salary grades</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_salarytable.starttime.description">
+			<trans-unit id="tx_jobboard_domain_model_salarytable.starttime.description">
 				<source>For editorial documentation/organization of this document only. The legally binding validity is maintained at the individual salary grade level (see there).</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_salarytable.endtime.description">
+			<trans-unit id="tx_jobboard_domain_model_salarytable.endtime.description">
 				<source>For editorial documentation/organization of this document only. The legally binding validity is maintained at the individual salary grade level (see there).</source>
 			</trans-unit>
 
-			<trans-unit id="tx_jobfair2_domain_model_salarygrade">
+			<trans-unit id="tx_jobboard_domain_model_salarygrade">
 				<source>Salary grade</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_salarygrade.title">
+			<trans-unit id="tx_jobboard_domain_model_salarygrade.title">
 				<source>Grade</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_salarygrade.title.description">
+			<trans-unit id="tx_jobboard_domain_model_salarygrade.title.description">
 				<source>e.g. "A9", "R3" or "B3" — depending on the pay scale.</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_salarygrade.has_steps">
+			<trans-unit id="tx_jobboard_domain_model_salarygrade.has_steps">
 				<source>Has steps?</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_salarygrade.has_steps.description">
+			<trans-unit id="tx_jobboard_domain_model_salarygrade.has_steps.description">
 				<source>Disable for salary grades without seniority steps (e.g. R3 and above, B-grades) — a fixed amount is used instead.</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_salarygrade.flat_amount">
+			<trans-unit id="tx_jobboard_domain_model_salarygrade.flat_amount">
 				<source>Fixed amount</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_salarygrade.flat_amount.description">
+			<trans-unit id="tx_jobboard_domain_model_salarygrade.flat_amount.description">
 				<source>Only relevant for salary grades without steps. You may enter the amount with a thousands separator and decimal comma (e.g. 3.842,17) — it is normalized automatically once you leave the field.</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_salarygrade.salary_steps">
+			<trans-unit id="tx_jobboard_domain_model_salarygrade.salary_steps">
 				<source>Steps</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_salarygrade.salary_steps.description">
+			<trans-unit id="tx_jobboard_domain_model_salarygrade.salary_steps.description">
 				<source>Not every step has to exist — gaps are allowed. Minimum/maximum are calculated in the frontend from the steps actually present.</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_salarygrade.starttime.description">
+			<trans-unit id="tx_jobboard_domain_model_salarygrade.starttime.description">
 				<source>Important: once this period expires (or has not started yet), this salary grade is hidden — and so is every job referencing it, since jobs without salary information may no longer be displayed by law. Please maintain new values in time.</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_salarygrade.endtime.description">
+			<trans-unit id="tx_jobboard_domain_model_salarygrade.endtime.description">
 				<source>Important: once this period expires (or has not started yet), this salary grade is hidden — and so is every job referencing it, since jobs without salary information may no longer be displayed by law. Please maintain new values in time.</source>
 			</trans-unit>
 
-			<trans-unit id="tx_jobfair2_domain_model_salarystep">
+			<trans-unit id="tx_jobboard_domain_model_salarystep">
 				<source>Salary step</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_salarystep.step_label">
+			<trans-unit id="tx_jobboard_domain_model_salarystep.step_label">
 				<source>Step</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_salarystep.step_label.description">
+			<trans-unit id="tx_jobboard_domain_model_salarystep.step_label.description">
 				<source>Free text, e.g. "3", "3a" or "Entry step" — naming varies by pay scale.</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_salarystep.amount">
+			<trans-unit id="tx_jobboard_domain_model_salarystep.amount">
 				<source>Amount</source>
 			</trans-unit>
-			<trans-unit id="tx_jobfair2_domain_model_salarystep.amount.description">
+			<trans-unit id="tx_jobboard_domain_model_salarystep.amount.description">
 				<source>You may enter the amount with a thousands separator and decimal comma (e.g. 3.842,17) — it is normalized automatically once you leave the field.</source>
 			</trans-unit>
 		</body>

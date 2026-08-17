@@ -9,14 +9,14 @@ declare(strict_types=1);
  * LICENSE file that was distributed with this source code.
  */
 
-namespace JWeiland\Jobfair2\Tests\Unit\Domain\Model;
+namespace JWeiland\Jobboard\Tests\Unit\Domain\Model;
 
-use JWeiland\Jobfair2\Domain\Model\Address;
-use JWeiland\Jobfair2\Domain\Model\Job;
-use JWeiland\Jobfair2\Domain\Model\JobArea;
-use JWeiland\Jobfair2\Domain\Model\JobType;
-use JWeiland\Jobfair2\Domain\Model\SalaryGrade;
-use JWeiland\Jobfair2\Domain\Model\SalaryStep;
+use JWeiland\Jobboard\Domain\Model\Address;
+use JWeiland\Jobboard\Domain\Model\Job;
+use JWeiland\Jobboard\Domain\Model\JobArea;
+use JWeiland\Jobboard\Domain\Model\JobType;
+use JWeiland\Jobboard\Domain\Model\SalaryGrade;
+use JWeiland\Jobboard\Domain\Model\SalaryStep;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Extbase\Domain\Model\FileReference;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;

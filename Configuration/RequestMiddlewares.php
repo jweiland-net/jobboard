@@ -7,11 +7,11 @@
  * LICENSE file that was distributed with this source code.
  */
 
-use JWeiland\Jobfair2\Middleware\AddressSearchMiddleware;
+use JWeiland\Jobboard\Middleware\AddressSearchMiddleware;
 
 return [
     'frontend' => [
-        'jweiland/jobfair2-address-search' => [
+        'jweiland/jobboard-address-search' => [
             'target' => AddressSearchMiddleware::class,
             'after' => [
                 // Must be loaded after "frontend.user" aspect (Context API) was initialized.

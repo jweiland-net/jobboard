@@ -9,7 +9,7 @@ declare(strict_types=1);
  * LICENSE file that was distributed with this source code.
  */
 
-namespace JWeiland\Jobfair2\UserFunc;
+namespace JWeiland\Jobboard\UserFunc;
 
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 
@@ -49,11 +49,11 @@ final class SalaryGradeTitleFormatter
             return '';
         }
 
-        $salaryTableRow = BackendUtility::getRecordWSOL('tx_jobfair2_domain_model_salarytable', $uid);
+        $salaryTableRow = BackendUtility::getRecordWSOL('tx_jobboard_domain_model_salarytable', $uid);
         if ($salaryTableRow === null) {
             return '';
         }
 
-        return BackendUtility::getRecordTitle('tx_jobfair2_domain_model_salarytable', $salaryTableRow);
+        return BackendUtility::getRecordTitle('tx_jobboard_domain_model_salarytable', $salaryTableRow);
     }
 }

@@ -7,7 +7,7 @@
  * LICENSE file that was distributed with this source code.
  */
 
-use JWeiland\Jobfair2\Domain\Model\Address;
+use JWeiland\Jobboard\Domain\Model\Address;
 
 return [
     Address::class => [

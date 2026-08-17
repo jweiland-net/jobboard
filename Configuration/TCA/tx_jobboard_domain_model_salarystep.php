@@ -7,7 +7,7 @@
  * LICENSE file that was distributed with this source code.
  */
 
-use JWeiland\Jobfair2\UserFunc\SalaryStepTitleFormatter;
+use JWeiland\Jobboard\UserFunc\SalaryStepTitleFormatter;
 
 if (!defined('TYPO3')) {
     die('Access denied.');
@@ -15,7 +15,7 @@ if (!defined('TYPO3')) {
 
 return [
     'ctrl' => [
-        'title' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_salarystep',
+        'title' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_salarystep',
         'label' => 'step_label',
         'label_alt' => 'amount',
         'label_alt_force' => true,
@@ -32,7 +32,7 @@ return [
             'starttime' => 'starttime',
             'endtime' => 'endtime',
         ],
-        'iconfile' => 'EXT:jobfair2/Resources/Public/Icons/salarystep.svg',
+        'iconfile' => 'EXT:jobboard/Resources/Public/Icons/salarystep.svg',
     ],
     'types' => [
         0 => [
@@ -51,8 +51,8 @@ return [
     'columns' => [
         'step_label' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_salarystep.step_label',
-            'description' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_salarystep.step_label.description',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_salarystep.step_label',
+            'description' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_salarystep.step_label.description',
             'config' => [
                 'type' => 'input',
                 'size' => 10,
@@ -63,12 +63,12 @@ return [
         ],
         'amount' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_salarystep.amount',
-            'description' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_salarystep.amount.description',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_salarystep.amount',
+            'description' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_salarystep.amount.description',
             'config' => [
                 'type' => 'number',
                 'format' => 'decimal',
-                'renderType' => 'jobfair2LocalizedDecimal',
+                'renderType' => 'jobboardLocalizedDecimal',
                 'range' => [
                     'lower' => 0,
                 ],

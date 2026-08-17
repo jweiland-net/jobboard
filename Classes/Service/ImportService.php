@@ -9,15 +9,15 @@ declare(strict_types=1);
  * LICENSE file that was distributed with this source code.
  */
 
-namespace JWeiland\Jobfair2\Service;
+namespace JWeiland\Jobboard\Service;
 
 use GuzzleHttp\Exception\GuzzleException;
-use JWeiland\Jobfair2\ApiModel\ApiModelInterface;
-use JWeiland\Jobfair2\ApiModel\JobModel;
-use JWeiland\Jobfair2\Client\XmlClient;
-use JWeiland\Jobfair2\Configuration\ImportConfiguration;
-use JWeiland\Jobfair2\Traits\ConnectionPoolTrait;
-use JWeiland\Jobfair2\Traits\DataHandlerTrait;
+use JWeiland\Jobboard\ApiModel\ApiModelInterface;
+use JWeiland\Jobboard\ApiModel\JobModel;
+use JWeiland\Jobboard\Client\XmlClient;
+use JWeiland\Jobboard\Configuration\ImportConfiguration;
+use JWeiland\Jobboard\Traits\ConnectionPoolTrait;
+use JWeiland\Jobboard\Traits\DataHandlerTrait;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -143,7 +143,7 @@ readonly class ImportService
                 'tt_address' => [
                     $addressUid => $migratedAddressRecord,
                 ],
-                'tx_jobfair2_domain_model_job' => [
+                'tx_jobboard_domain_model_job' => [
                     $jobUid => $migratedJobRecord,
                 ],
             ],
@@ -168,7 +168,7 @@ readonly class ImportService
         // We use DataHandler here to allow modifications via other extensions (HOOK). Needed for solr updates
         $dataHandler = $this->getDataHandler();
         $dataHandler->start([], [
-            'tx_jobfair2_domain_model_job' => $cmdMap,
+            'tx_jobboard_domain_model_job' => $cmdMap,
         ]);
         $dataHandler->process_datamap();
         $dataHandler->process_cmdmap();

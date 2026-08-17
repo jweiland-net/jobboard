@@ -11,7 +11,7 @@ Administrator manual
 
 Target group: **Administrators / Integrators**
 
-This manual describes how to install and configure Jobfair2: activating the
+This manual describes how to install and configure Jobboard: activating the
 extension, including its Site Sets, and setting the storage folder and page
 IDs the extension needs.
 
@@ -35,9 +35,9 @@ Installation
         vendor/bin/typo3 extension:setup
 
 #.  Open the :guilabel:`Site Configuration` module for the site the jobs
-    should appear on, and add the Site Set :guilabel:`Jobfair 2 - Main`
-    (`jweiland/jobfair2`). It automatically pulls in `jweiland/maps2-default`,
-    `jweiland/maps2-googlemaps` and `jweiland/jobfair2-pdf`.
+    should appear on, and add the Site Set :guilabel:`Jobboard - Main`
+    (`jweiland/jobboard`). It automatically pulls in `jweiland/maps2-default`,
+    `jweiland/maps2-googlemaps` and `jweiland/jobboard-pdf`.
 
 #.  Create a storage folder page for job, job area and job type records, and
     configure it below.
@@ -47,7 +47,7 @@ Installation
     :alt: TYPO3 Extensions module listing installed extensions
     :zoom: lightbox
 
-    The :guilabel:`Extensions` module, where Jobfair2 can be activated.
+    The :guilabel:`Extensions` module, where Jobboard can be activated.
 
 
 ..  _admin-manual-settings:
@@ -59,8 +59,8 @@ The following settings are available once the Site Set has been added to a
 site and can be adjusted per site under :guilabel:`Site Configuration >
 Settings`:
 
-..  typo3:site-set-settings:: PROJECT:/Configuration/Sets/Jobfair/settings.definitions.yaml
-    :name: jobfair2-site-settings
+..  typo3:site-set-settings:: PROJECT:/Configuration/Sets/Jobboard/settings.definitions.yaml
+    :name: jobboard-site-settings
 
 
 ..  _admin-manual-import:
@@ -68,7 +68,7 @@ Settings`:
 Importing jobs automatically
 ============================
 
-Jobfair2 does not ship with a preconfigured job source. To pull job postings
+Jobboard does not ship with a preconfigured job source. To pull job postings
 from an external API on a schedule, implement one small PHP class and
 register a TYPO3 :guilabel:`Scheduler` task that runs the console command
 described in :ref:`admin-api`. That page walks through building such a

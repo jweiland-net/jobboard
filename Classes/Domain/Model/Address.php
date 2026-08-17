@@ -9,7 +9,7 @@ declare(strict_types=1);
  * LICENSE file that was distributed with this source code.
  */
 
-namespace JWeiland\Jobfair2\Domain\Model;
+namespace JWeiland\Jobboard\Domain\Model;
 
 /**
  * Add tx_maps2_uid for EXT:maps to a domain model of tt_address

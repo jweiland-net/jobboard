@@ -12,36 +12,36 @@ declare(strict_types=1);
 use TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider;
 
 return [
-    'ext-jobfair2-record-job' => [
+    'ext-jobboard-record-job' => [
         'provider' => SvgIconProvider::class,
-        'source' => 'EXT:jobfair2/Resources/Public/Icons/job.svg',
+        'source' => 'EXT:jobboard/Resources/Public/Icons/job.svg',
     ],
-    'ext-jobfair2-record-job-import' => [
+    'ext-jobboard-record-job-import' => [
         'provider' => SvgIconProvider::class,
-        'source' => 'EXT:jobfair2/Resources/Public/Icons/job-import.svg',
+        'source' => 'EXT:jobboard/Resources/Public/Icons/job-import.svg',
     ],
-    'ext-jobfair2-record-job-grade' => [
+    'ext-jobboard-record-job-grade' => [
         'provider' => SvgIconProvider::class,
-        'source' => 'EXT:jobfair2/Resources/Public/Icons/job-grade.svg',
+        'source' => 'EXT:jobboard/Resources/Public/Icons/job-grade.svg',
     ],
-    'ext-jobfair2-record-job-freeentry' => [
+    'ext-jobboard-record-job-freeentry' => [
         'provider' => SvgIconProvider::class,
-        'source' => 'EXT:jobfair2/Resources/Public/Icons/job-freeentry.svg',
+        'source' => 'EXT:jobboard/Resources/Public/Icons/job-freeentry.svg',
     ],
-    'ext-jobfair2-record-salarytable' => [
+    'ext-jobboard-record-salarytable' => [
         'provider' => SvgIconProvider::class,
-        'source' => 'EXT:jobfair2/Resources/Public/Icons/salarytable.svg',
+        'source' => 'EXT:jobboard/Resources/Public/Icons/salarytable.svg',
     ],
-    'ext-jobfair2-record-salarygrade-stepped' => [
+    'ext-jobboard-record-salarygrade-stepped' => [
         'provider' => SvgIconProvider::class,
-        'source' => 'EXT:jobfair2/Resources/Public/Icons/salarygrade-stepped.svg',
+        'source' => 'EXT:jobboard/Resources/Public/Icons/salarygrade-stepped.svg',
     ],
-    'ext-jobfair2-record-salarygrade-flat' => [
+    'ext-jobboard-record-salarygrade-flat' => [
         'provider' => SvgIconProvider::class,
-        'source' => 'EXT:jobfair2/Resources/Public/Icons/salarygrade-flat.svg',
+        'source' => 'EXT:jobboard/Resources/Public/Icons/salarygrade-flat.svg',
     ],
-    'ext-jobfair2-record-salarystep' => [
+    'ext-jobboard-record-salarystep' => [
         'provider' => SvgIconProvider::class,
-        'source' => 'EXT:jobfair2/Resources/Public/Icons/salarystep.svg',
+        'source' => 'EXT:jobboard/Resources/Public/Icons/salarystep.svg',
     ],
 ];

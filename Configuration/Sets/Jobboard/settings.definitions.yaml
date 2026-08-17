@@ -1,47 +1,47 @@
 categories:
-  jobfair2:
-    label: 'jobfair2'
-  jobfair2.templates:
+  jobboard:
+    label: 'jobboard'
+  jobboard.templates:
     label: 'Templates'
-    parent: jobfair2
-  jobfair2.pages:
+    parent: jobboard
+  jobboard.pages:
     label: 'Pages'
-    parent: jobfair2
+    parent: jobboard
 
 settings:
-  jobfair2.templateRootPath:
+  jobboard.templateRootPath:
     label: 'Templates'
-    category: jobfair2.templates
+    category: jobboard.templates
     description: 'Path to template root'
     type: string
-    default: 'EXT:jobfair2/Resources/Private/Templates/'
-  jobfair2.partialRootPath:
+    default: 'EXT:jobboard/Resources/Private/Templates/'
+  jobboard.partialRootPath:
     label: 'Partials'
-    category: jobfair2.templates
+    category: jobboard.templates
     description: 'Path to partial root'
     type: string
-    default: 'EXT:jobfair2/Resources/Private/Partials/'
-  jobfair2.layoutRootPath:
+    default: 'EXT:jobboard/Resources/Private/Partials/'
+  jobboard.layoutRootPath:
     label: 'Layouts'
-    category: jobfair2.templates
+    category: jobboard.templates
     description: 'Path to layout root'
     type: string
-    default: 'EXT:jobfair2/Resources/Private/Layouts/'
-  jobfair2.storagePid:
+    default: 'EXT:jobboard/Resources/Private/Layouts/'
+  jobboard.storagePid:
     label: 'Default storage PID'
-    category: jobfair2.pages
+    category: jobboard.pages
     description: 'Folder that stores all jobs'
     type: page
     default: 0
-  jobfair2.pidOfDetailPage:
+  jobboard.pidOfDetailPage:
     label: 'Pid of Detail Page'
-    category: jobfair2.pages
+    category: jobboard.pages
     description: 'Page with detail page plugin'
     type: page
     default: 0
-  jobfair2.pidOfApplicationForm:
+  jobboard.pidOfApplicationForm:
     label: 'Pid of Application Form'
-    category: jobfair2.pages
+    category: jobboard.pages
     description: 'Page with online application form for a job'
     type: page
     default: 0

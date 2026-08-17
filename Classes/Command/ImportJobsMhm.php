@@ -9,10 +9,10 @@ declare(strict_types=1);
  * LICENSE file that was distributed with this source code.
  */
 
-namespace JWeiland\Jobfair2\Command;
+namespace JWeiland\Jobboard\Command;
 
-use JWeiland\Jobfair2\Configuration\ImportConfiguration;
-use JWeiland\Jobfair2\Service\ImportService;
+use JWeiland\Jobboard\Configuration\ImportConfiguration;
+use JWeiland\Jobboard\Service\ImportService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -28,7 +28,7 @@ use TYPO3\CMS\Core\Core\Bootstrap;
  * to update solr records or anything else.
  */
 #[AsCommand(
-    name: 'jobfair:import:jobs:mhm',
+    name: 'jobboard:import:jobs:mhm',
     description: 'Import jobs from XML API point of www.mhm-hr.com',
 )] class ImportJobsMhm extends Command
 {

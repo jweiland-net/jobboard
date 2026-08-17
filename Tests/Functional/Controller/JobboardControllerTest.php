@@ -9,13 +9,13 @@ declare(strict_types=1);
  * LICENSE file that was distributed with this source code.
  */
 
-namespace JWeiland\Jobfair2\Tests\Functional\Controller;
+namespace JWeiland\Jobboard\Tests\Functional\Controller;
 
-use JWeiland\Jobfair2\Controller\JobfairController;
-use JWeiland\Jobfair2\Domain\Model\Job;
-use JWeiland\Jobfair2\Domain\Repository\JobAreaRepository;
-use JWeiland\Jobfair2\Domain\Repository\JobRepository;
-use JWeiland\Jobfair2\Domain\Repository\JobTypeRepository;
+use JWeiland\Jobboard\Controller\JobboardController;
+use JWeiland\Jobboard\Domain\Model\Job;
+use JWeiland\Jobboard\Domain\Repository\JobAreaRepository;
+use JWeiland\Jobboard\Domain\Repository\JobRepository;
+use JWeiland\Jobboard\Domain\Repository\JobTypeRepository;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Extbase\Persistence\Generic\QuerySettingsInterface;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
@@ -31,11 +31,11 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
  * through JobRepository, not manually assembled Job objects, so the fixture
  * also proves the grade/step relations actually stop resolving once expired.
  */
-class JobfairControllerTest extends FunctionalTestCase
+class JobboardControllerTest extends FunctionalTestCase
 {
     private const STORAGE_PAGE = 2;
 
-    protected JobfairController $subject;
+    protected JobboardController $subject;
 
     protected array $testExtensionsToLoad = [
         'friendsoftypo3/tt-address',
@@ -55,7 +55,7 @@ class JobfairControllerTest extends FunctionalTestCase
         $jobRepository = $this->get(JobRepository::class);
         $jobRepository->setDefaultQuerySettings($querySettings);
 
-        $this->subject = new JobfairController(
+        $this->subject = new JobboardController(
             $jobRepository,
             self::createStub(JobAreaRepository::class),
             self::createStub(JobTypeRepository::class),

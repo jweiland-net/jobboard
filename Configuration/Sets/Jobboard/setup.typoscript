@@ -1,0 +1,45 @@
+plugin.tx_jobboard {
+  view {
+    templateRootPaths {
+      0 = EXT:jobboard/Resources/Private/Templates/
+      1 = {$jobboard.templateRootPath}
+      2 = EXT:maps2/Resources/Private/Templates/
+    }
+    partialRootPaths {
+      0 = EXT:jobboard/Resources/Private/Partials/
+      1 = {$jobboard.partialRootPath}
+      2 = EXT:maps2/Resources/Private/Partials/
+    }
+    layoutRootPaths {
+      0 = EXT:jobboard/Resources/Private/Layouts/
+      1 = {$jobboard.layoutRootPath}
+      2 = EXT:maps2/Resources/Private/Layouts/
+    }
+  }
+
+  persistence {
+    storagePid = {$jobboard.storagePid}
+    recursive = 3
+  }
+
+  settings {
+    pidOfDetailPage = {$jobboard.pidOfDetailPage}
+    pidOfApplicationForm = {$jobboard.pidOfApplicationForm}
+  }
+}
+
+page.includeCSS {
+  jqueryAutocomplete = EXT:jobboard/Resources/Public/Css/jquery-ui.min.css
+  jobboard = EXT:jobboard/Resources/Public/Css/style.css
+  # Known coupling to a foreign, project-specific extension - do not rename this filename here,
+  # it must stay in sync with the actual file in EXT:jw5160001drsportal (outside this repo).
+  drs = EXT:jw5160001drsportal/Resources/Public/Css/jobfair.css
+  jobboardpdf = EXT:jobboard/Resources/Public/Css/pdf.css
+}
+
+page.includeJSFooter {
+  jqueryAutocomplete = EXT:jobboard/Resources/Public/JavaScript/jquery-ui.min.js
+  dataTables = EXT:jobboard/Resources/Public/JavaScript/dataTables.min.js
+  cookiejs = EXT:jobboard/Resources/Public/JavaScript/js.cookie-2.2.1.min.js
+  jobboard = EXT:jobboard/Resources/Public/JavaScript/script.js
+}

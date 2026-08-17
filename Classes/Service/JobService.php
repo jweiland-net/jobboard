@@ -9,24 +9,24 @@ declare(strict_types=1);
  * LICENSE file that was distributed with this source code.
  */
 
-namespace JWeiland\Jobfair2\Service;
+namespace JWeiland\Jobboard\Service;
 
 use Doctrine\DBAL\Driver\Exception;
-use JWeiland\Jobfair2\ApiModel\ApiModelInterface;
-use JWeiland\Jobfair2\ApiModel\JobModel;
-use JWeiland\Jobfair2\Configuration\ImportConfiguration;
-use JWeiland\Jobfair2\Traits\ConnectionPoolTrait;
+use JWeiland\Jobboard\ApiModel\ApiModelInterface;
+use JWeiland\Jobboard\ApiModel\JobModel;
+use JWeiland\Jobboard\Configuration\ImportConfiguration;
+use JWeiland\Jobboard\Traits\ConnectionPoolTrait;
 use TYPO3\CMS\Core\Utility\StringUtility;
 
 /**
- * This service handles data for table tx_jobfair2_domain_model_job
+ * This service handles data for table tx_jobboard_domain_model_job
  * Do not migrate content to Extbase Repository as this service will be called via Command.
  */
 readonly class JobService
 {
     use ConnectionPoolTrait;
 
-    private const TABLE = 'tx_jobfair2_domain_model_job';
+    private const TABLE = 'tx_jobboard_domain_model_job';
 
     public function __construct(
         private JobAreaService $jobAreaService,

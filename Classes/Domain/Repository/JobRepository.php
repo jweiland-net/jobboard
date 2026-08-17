@@ -9,7 +9,7 @@ declare(strict_types=1);
  * LICENSE file that was distributed with this source code.
  */
 
-namespace JWeiland\Jobfair2\Domain\Repository;
+namespace JWeiland\Jobboard\Domain\Repository;
 
 use TYPO3\CMS\Core\Utility\MathUtility;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
@@ -21,7 +21,7 @@ use TYPO3\CMS\Extbase\Persistence\Repository;
  *
  * Deliberately does not filter out jobs without resolvable salary information -
  * that is a display rule, not a data access concern, and belongs in
- * JobfairController (see excludeJobsWithoutSalaryInformation()).
+ * JobboardController (see excludeJobsWithoutSalaryInformation()).
  */
 class JobRepository extends Repository
 {

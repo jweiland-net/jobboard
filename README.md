@@ -1,6 +1,6 @@
-# TYPO3 Extension `jobfair2`
+# TYPO3 Extension `jobfair2` (Jobboard)
 
-Jobfair2 is a TYPO3 extension that lets you present a list of open job positions on your website - like a digital job fair.
+Jobboard is a TYPO3 extension that lets you present a list of open job positions on your website - like a digital job board.
 
 ## What it does
 
@@ -24,7 +24,7 @@ Install the extension via Composer:
 composer require jweiland/jobfair2
 ```
 
-Afterward, activate the extension in the TYPO3 backend (Extension Manager / Admin Tools) and add the "Job fair" content element to a page.
+Afterward, activate the extension in the TYPO3 backend (Extension Manager / Admin Tools) and add the "Job board" content element to a page.
 
 ## License
 

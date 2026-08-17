@@ -13,7 +13,7 @@ if (!defined('TYPO3')) {
 
 return [
     'ctrl' => [
-        'title' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_jobtype',
+        'title' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_tendertype',
         'label' => 'title',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
@@ -27,7 +27,7 @@ return [
             'starttime' => 'starttime',
             'endtime' => 'endtime',
         ],
-        'iconfile' => 'EXT:jobfair2/Resources/Public/Icons/jobtype.svg',
+        'iconfile' => 'EXT:jobboard/Resources/Public/Icons/jobtype.svg',
     ],
     'types' => [
         0 => ['showitem' => 'hidden, title'],
@@ -38,7 +38,7 @@ return [
     'columns' => [
         'title' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_jobtype.title',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_tendertype.title',
             'config' => [
                 'type' => 'input',
                 'size' => 13,

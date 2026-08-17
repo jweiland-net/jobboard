@@ -7,8 +7,6 @@
  * LICENSE file that was distributed with this source code.
  */
 
-file_put_contents('/tmp/jobfair2-jsmodules-debug.log', date('H:i:s') . ' read via SAPI=' . PHP_SAPI . "\n", FILE_APPEND);
-
 return [
     'dependencies' => [
         'backend',
@@ -17,6 +15,6 @@ return [
         'backend.form',
     ],
     'imports' => [
-        '@jweiland/jobfair2/' => 'EXT:jobfair2/Resources/Public/JavaScript/',
+        '@jweiland/jobboard/' => 'EXT:jobboard/Resources/Public/JavaScript/',
     ],
 ];

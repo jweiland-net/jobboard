@@ -9,12 +9,12 @@ declare(strict_types=1);
  * LICENSE file that was distributed with this source code.
  */
 
-namespace JWeiland\Jobfair2\Service;
+namespace JWeiland\Jobboard\Service;
 
 use Doctrine\DBAL\Driver\Exception;
-use JWeiland\Jobfair2\ApiModel\ApiModelInterface;
-use JWeiland\Jobfair2\ApiModel\JobModel;
-use JWeiland\Jobfair2\Traits\ConnectionPoolTrait;
+use JWeiland\Jobboard\ApiModel\ApiModelInterface;
+use JWeiland\Jobboard\ApiModel\JobModel;
+use JWeiland\Jobboard\Traits\ConnectionPoolTrait;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Utility\StringUtility;
 

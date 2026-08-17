@@ -7,22 +7,22 @@
 ,"uid","pid","company","city","zip"
 ,1,2,"Example Employer Ltd.","Example City","12345"
 
-"tx_jobfair2_domain_model_salarytable"
+"tx_jobboard_domain_model_salarytable"
 ,"uid","pid","title"
 ,1,2,"Test Salary Table"
 
-"tx_jobfair2_domain_model_salarygrade"
+"tx_jobboard_domain_model_salarygrade"
 ,"uid","pid","title","has_steps","flat_amount","salary_table"
 ,1,2,"A7",1,0.00,1
 ,2,2,"B3",0,3500.00,1
 
-"tx_jobfair2_domain_model_salarystep"
+"tx_jobboard_domain_model_salarystep"
 ,"uid","pid","salary_grade","step_label","amount"
 ,1,2,1,"1",3220.85
 ,2,2,1,"2",3314.32
 ,3,2,1,"3",3407.74
 
-"tx_jobfair2_domain_model_job"
+"tx_jobboard_domain_model_job"
 ,"uid","pid","title","reference_number","address","employer","email","salary_mode","salary_grade","salary_min","salary_max"
 ,1,2,"Job with stepped salary grade","1",1,"Example Employer Ltd.","test@example.com",0,1,0.00,0.00
 ,2,2,"Job with flat salary grade","2",1,"Example Employer Ltd.","test@example.com",0,2,0.00,0.00

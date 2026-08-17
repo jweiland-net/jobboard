@@ -9,20 +9,20 @@ declare(strict_types=1);
  * LICENSE file that was distributed with this source code.
  */
 
-namespace JWeiland\Jobfair2\Service;
+namespace JWeiland\Jobboard\Service;
 
 use Doctrine\DBAL\Driver\Exception;
-use JWeiland\Jobfair2\Traits\ConnectionPoolTrait;
+use JWeiland\Jobboard\Traits\ConnectionPoolTrait;
 
 /**
- * This service handles data for table tx_jobfair2_domain_model_jobtype
+ * This service handles data for table tx_jobboard_domain_model_jobtype
  * Do not migrate content to Extbase Repository as this service will be called via Command.
  */
 class JobTypeService
 {
     use ConnectionPoolTrait;
 
-    private const TABLE = 'tx_jobfair2_domain_model_jobtype';
+    private const TABLE = 'tx_jobboard_domain_model_jobtype';
 
     /**
      * The job_area in XML API is located in "custom_select_multi_4".

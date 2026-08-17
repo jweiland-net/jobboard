@@ -12,7 +12,7 @@ Users manual
 Target group: **Editors**
 
 This manual describes how to maintain job areas, job types and job postings
-in the TYPO3 backend, and how to configure the "Job fair" content element on
+in the TYPO3 backend, and how to configure the "Job board" content element on
 a page.
 
 ..  figure:: ../Images/UserManual/BackendView.png
@@ -88,11 +88,11 @@ The most relevant fields are:
 
 ..  _users-manual-content-element:
 
-The "Job fair" content element
-==============================
+The "Job board" content element
+===============================
 
 Add the content element via :guilabel:`Content > Create new content element
-> Job fair`. It offers the following options:
+> Job board`. It offers the following options:
 
 :guilabel:`Max entries to show (0 for all)`
     Limits how many jobs are listed at once. Use :guilabel:`0` to show all

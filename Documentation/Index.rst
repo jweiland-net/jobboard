@@ -1,18 +1,18 @@
-:navigation-title: Job fair 2
+:navigation-title: Job board
 
 ..  include:: /Includes.rst.txt
 
 
 ..  _start:
 
-==========
-Job fair 2
-==========
+=========
+Job board
+=========
 
 ..  only:: html
 
     :Classification:
-        jobfair2
+        jobboard
 
     :Version:
         |release|
@@ -21,10 +21,10 @@ Job fair 2
         en, de
 
     :Description:
-        Job fair implementation using maps2 and tt_address to display jobs
+        Job board implementation using maps2 and tt_address to display jobs
 
     :Keywords:
-        jobs, jobfair, jobfair2, job fair, recruiting
+        jobs, jobboard, jobfair2, job board, recruiting
 
     :Copyright:
         since 2017

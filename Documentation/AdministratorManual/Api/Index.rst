@@ -9,11 +9,11 @@
 Add a custom job import API model
 =================================
 
-The scheduled import command (:bash:`jobfair:import:jobs:mhm`) does not talk
+The scheduled import command (:bash:`jobboard:import:jobs:mhm`) does not talk
 to one fixed API. Instead, it asks a small set of PHP classes which
 endpoints exist and how their XML fields map to the columns of
-:sql:`tx_jobfair2_domain_model_job`. Adding a new job source therefore never
-requires touching :php:class:`\JWeiland\Jobfair2\Service\ImportService` -
+:sql:`tx_jobboard_domain_model_job`. Adding a new job source therefore never
+requires touching :php:class:`\JWeiland\Jobboard\Service\ImportService` -
 you only add one new class.
 
 This page shows, on a stripped-down example, how such a class is built and
@@ -29,23 +29,23 @@ How the import model system works
 =================================
 
 Every job source is represented by one PHP class implementing
-:php:interface:`\JWeiland\Jobfair2\ApiModel\ApiModelInterface`. Such a class
+:php:interface:`\JWeiland\Jobboard\ApiModel\ApiModelInterface`. Such a class
 does not fetch or parse anything itself - it only describes:
 
 *   **Where** to fetch the XML from
-    (:php:method:`\JWeiland\Jobfair2\ApiModel\ApiModelInterface::getApiEndpoint()`).
+    (:php:method:`\JWeiland\Jobboard\ApiModel\ApiModelInterface::getApiEndpoint()`).
 *   **How** each XML field maps to a column of
-    :sql:`tx_jobfair2_domain_model_job`
-    (:php:method:`\JWeiland\Jobfair2\ApiModel\ApiModelInterface::getMapping()`).
+    :sql:`tx_jobboard_domain_model_job`
+    (:php:method:`\JWeiland\Jobboard\ApiModel\ApiModelInterface::getMapping()`).
 
-:php:class:`\JWeiland\Jobfair2\Service\ImportService` receives all classes
+:php:class:`\JWeiland\Jobboard\Service\ImportService` receives all classes
 implementing this interface as one collection (a Symfony *tagged
 iterator*, see :ref:`admin-api-registering` below), downloads the XML for
 each of them, and passes every single job entry - already wrapped as a
-:php:class:`\JWeiland\Jobfair2\ApiModel\JobModel` - together with the API
-model to :php:class:`\JWeiland\Jobfair2\Service\JobService`, which then
+:php:class:`\JWeiland\Jobboard\ApiModel\JobModel` - together with the API
+model to :php:class:`\JWeiland\Jobboard\Service\JobService`, which then
 reads each mapped field via
-:php:method:`\JWeiland\Jobfair2\ApiModel\AbstractModel::getValueByPath()`
+:php:method:`\JWeiland\Jobboard\ApiModel\AbstractModel::getValueByPath()`
 and writes the record through the TYPO3
 :php:class:`\TYPO3\CMS\Core\DataHandling\DataHandler`.
 
@@ -95,7 +95,7 @@ A matching API model class looks like this:
 
     declare(strict_types=1);
 
-    namespace JWeiland\Jobfair2\ApiModel;
+    namespace JWeiland\Jobboard\ApiModel;
 
     use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 
@@ -118,7 +118,7 @@ A matching API model class looks like this:
 
         private const API_ENDPOINT = 'https://example.org/api/jobs.xml';
 
-        // Key = column of tx_jobfair2_domain_model_job
+        // Key = column of tx_jobboard_domain_model_job
         // Value = where to find it in the XML
         // (see AbstractModel::getValueByPath())
         private const MAPPING = [
@@ -183,7 +183,7 @@ A matching API model class looks like this:
     :sep:`|`
 
     XPath-like path into one :xml:`<job>` entry, resolved via
-    :php:method:`\JWeiland\Jobfair2\ApiModel\AbstractModel::getValueByPath()`.
+    :php:method:`\JWeiland\Jobboard\ApiModel\AbstractModel::getValueByPath()`.
     Nested elements are separated with :php:`/`, e.g. :php:`'title/de'` for
     :xml:`<title><de>...</de></title>`.
 
@@ -226,16 +226,16 @@ Registering the model
 =====================
 
 The interface alone
-(:php:interface:`\JWeiland\Jobfair2\ApiModel\ApiModelInterface`) is **not
+(:php:interface:`\JWeiland\Jobboard\ApiModel\ApiModelInterface`) is **not
 enough** to activate a new source - it must also be tagged as
 :php:`api.model`, because
-:php:class:`\JWeiland\Jobfair2\Service\ImportService` receives all sources
+:php:class:`\JWeiland\Jobboard\Service\ImportService` receives all sources
 as one tagged service collection:
 
 ..  code-block:: yaml
-    :caption: EXT:jobfair2/Configuration/Services.yaml
+    :caption: EXT:jobboard/Configuration/Services.yaml
 
-    JWeiland\Jobfair2\Service\ImportService:
+    JWeiland\Jobboard\Service\ImportService:
         arguments:
             $apiModels: !tagged api.model
 
@@ -254,9 +254,9 @@ attribute is the recommended one:
     :file:`Configuration/Services.yaml`:
 
     ..  code-block:: yaml
-        :caption: EXT:jobfair2/Configuration/Services.yaml
+        :caption: EXT:jobboard/Configuration/Services.yaml
 
-        JWeiland\Jobfair2\ApiModel\ExampleJobBoardApiModel:
+        JWeiland\Jobboard\ApiModel\ExampleJobBoardApiModel:
             shared: false
             tags:
                 - name: api.model
@@ -273,7 +273,7 @@ Clearing caches after adding a new model
 The list of tagged :php:`api.model` services is resolved once, when TYPO3
 compiles the Dependency Injection container - the result is cached. After
 adding, renaming or removing an API model class, this cache must be
-rebuilt, otherwise :php:class:`\JWeiland\Jobfair2\Service\ImportService`
+rebuilt, otherwise :php:class:`\JWeiland\Jobboard\Service\ImportService`
 keeps using the previous list of sources.
 
 Flush the caches via the backend (:guilabel:`Admin Tools > Maintenance >
@@ -298,7 +298,7 @@ the next time the import command runs - no further wiring is required:
 
 ..  code-block:: bash
 
-    vendor/bin/typo3 jobfair:import:jobs:mhm <storagePid>
+    vendor/bin/typo3 jobboard:import:jobs:mhm <storagePid>
 
 :samp:`<storagePid>` is the page ID (folder) where imported jobs and
 addresses are stored.

@@ -9,7 +9,7 @@ declare(strict_types=1);
  * LICENSE file that was distributed with this source code.
  */
 
-namespace JWeiland\Jobfair2\UserFunc;
+namespace JWeiland\Jobboard\UserFunc;
 
 /**
  * Renders the SalaryStep record title as "Step 3 - 3.421,84" instead of
@@ -19,7 +19,7 @@ namespace JWeiland\Jobfair2\UserFunc;
  */
 final class SalaryStepTitleFormatter
 {
-    private const STEP_LABEL_LLL = 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_salarystep.step_label';
+    private const STEP_LABEL_LLL = 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_salarystep.step_label';
 
     public function formatTitle(array &$parameters): void
     {

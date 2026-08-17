@@ -7,8 +7,8 @@
  * LICENSE file that was distributed with this source code.
  */
 
-use JWeiland\Jobfair2\Backend\Element\LocalizedDecimalElement;
-use JWeiland\Jobfair2\Controller\JobfairController;
+use JWeiland\Jobboard\Backend\Element\LocalizedDecimalElement;
+use JWeiland\Jobboard\Controller\JobboardController;
 use Psr\Log\LogLevel;
 use TYPO3\CMS\Core\Log\Writer\FileWriter;
 use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
@@ -18,28 +18,28 @@ if (!defined('TYPO3')) {
 }
 
 ExtensionUtility::configurePlugin(
-    'Jobfair2',
-    'Jobfair',
+    'Jobboard',
+    'Jobboard',
     [
-        JobfairController::class => 'list, search, detail',
+        JobboardController::class => 'list, search, detail',
     ],
     [
-        JobfairController::class => 'search',
+        JobboardController::class => 'search',
     ],
     ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT,
 );
 
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][] = [
-    'nodeName' => 'jobfair2LocalizedDecimal',
+    'nodeName' => 'jobboardLocalizedDecimal',
     'priority' => 40,
     'class' => LocalizedDecimalElement::class,
 ];
 
-if (!isset($GLOBALS['TYPO3_CONF_VARS']['LOG']['JWeiland']['Jobfair2']['writerConfiguration'])) {
-    $GLOBALS['TYPO3_CONF_VARS']['LOG']['JWeiland']['Jobfair2']['writerConfiguration'] = [
+if (!isset($GLOBALS['TYPO3_CONF_VARS']['LOG']['JWeiland']['Jobboard']['writerConfiguration'])) {
+    $GLOBALS['TYPO3_CONF_VARS']['LOG']['JWeiland']['Jobboard']['writerConfiguration'] = [
         LogLevel::INFO => [
             FileWriter::class => [
-                'logFileInfix' => 'jobfair2',
+                'logFileInfix' => 'jobboard',
             ],
         ],
     ];
