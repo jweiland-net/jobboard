@@ -13,6 +13,7 @@ namespace JWeiland\Jobboard\Domain\Model;
 
 use TYPO3\CMS\Extbase\Domain\Model\FileReference;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
+use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
 /**
  * Class Job
@@ -23,37 +24,31 @@ class Job extends AbstractEntity
 
     protected string $referenceNumber = '';
 
+    protected string $subtitle = '';
+
+    protected string $description = '';
+
+    protected string $offer = '';
+
+    protected string $requirements = '';
+
+    protected string $furtherInformation = '';
+
     protected bool $isImport = false;
 
     protected int $vacancyId = 0;
 
-    protected string $description = '';
-
     protected ?Address $address = null;
 
-    protected string $link = '';
+    protected ?JobRole $jobRole = null;
 
     protected ?JobArea $jobArea = null;
 
     protected ?JobType $jobType = null;
 
-    protected ?\DateTime $startDate = null;
+    protected ?ContractType $contractType = null;
 
-    protected ?\DateTime $endingDate = null;
-
-    protected string $employer = '';
-
-    protected ?Address $employerAddress = null;
-
-    protected string $email = '';
-
-    protected ?FileReference $tenderFile = null;
-
-    protected ?FileReference $pdfFiles = null;
-
-    protected int $pdfTstamp = 0;
-
-    protected bool $isInternal = false;
+    protected ?TenderType $tenderType = null;
 
     protected int $salaryMode = 0;
 
@@ -62,6 +57,59 @@ class Job extends AbstractEntity
     protected float $salaryMin = 0.0;
 
     protected float $salaryMax = 0.0;
+
+    protected ?Benefit $benefits = null;
+
+    protected string $employer = '';
+
+    protected ?FileReference $employerLogo = null;
+
+    protected ?Address $employerAddress = null;
+
+    protected string $firstName = '';
+
+    protected string $lastName = '';
+
+    protected string $email = '';
+
+    protected string $telephone = '';
+
+    protected string $function = '';
+
+    protected ?\DateTime $startDate = null;
+
+    protected ?\DateTime $endingDate = null;
+
+    protected ?\DateTime $applicationDeadline = null;
+
+    protected string $applicationGuidelines = '';
+
+    protected ?FileReference $headerLogo = null;
+
+    protected ?FileReference $tenderFile = null;
+
+    protected ?FileReference $pdfFiles = null;
+
+    protected int $pdfTstamp = 0;
+
+    /**
+     * @var ObjectStorage<Job>
+     */
+    protected ObjectStorage $relatedJobs;
+
+    protected string $link = '';
+
+    protected bool $isInternal = false;
+
+    public function __construct()
+    {
+        $this->relatedJobs = new ObjectStorage();
+    }
+
+    public function initializeObject(): void
+    {
+        $this->relatedJobs ??= new ObjectStorage();
+    }
 
     public function getTitle(): string
     {
@@ -81,6 +129,56 @@ class Job extends AbstractEntity
     public function setReferenceNumber(string $referenceNumber): void
     {
         $this->referenceNumber = $referenceNumber;
+    }
+
+    public function getSubtitle(): string
+    {
+        return $this->subtitle;
+    }
+
+    public function setSubtitle(string $subtitle): void
+    {
+        $this->subtitle = $subtitle;
+    }
+
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): void
+    {
+        $this->description = $description;
+    }
+
+    public function getOffer(): string
+    {
+        return $this->offer;
+    }
+
+    public function setOffer(string $offer): void
+    {
+        $this->offer = $offer;
+    }
+
+    public function getRequirements(): string
+    {
+        return $this->requirements;
+    }
+
+    public function setRequirements(string $requirements): void
+    {
+        $this->requirements = $requirements;
+    }
+
+    public function getFurtherInformation(): string
+    {
+        return $this->furtherInformation;
+    }
+
+    public function setFurtherInformation(string $furtherInformation): void
+    {
+        $this->furtherInformation = $furtherInformation;
     }
 
     public function isImport(): bool
@@ -103,16 +201,6 @@ class Job extends AbstractEntity
         $this->vacancyId = $vacancyId;
     }
 
-    public function getDescription(): string
-    {
-        return $this->description;
-    }
-
-    public function setDescription(string $description): void
-    {
-        $this->description = $description;
-    }
-
     public function getAddress(): ?Address
     {
         return $this->address;
@@ -123,14 +211,14 @@ class Job extends AbstractEntity
         $this->address = $address;
     }
 
-    public function getLink(): string
+    public function getJobRole(): ?JobRole
     {
-        return $this->link;
+        return $this->jobRole;
     }
 
-    public function setLink(string $link): void
+    public function setJobRole(JobRole $jobRole): void
     {
-        $this->link = $link;
+        $this->jobRole = $jobRole;
     }
 
     public function getJobArea(): ?JobArea
@@ -153,94 +241,24 @@ class Job extends AbstractEntity
         $this->jobType = $jobType;
     }
 
-    public function getStartDate(): ?\DateTime
+    public function getContractType(): ?ContractType
     {
-        return $this->startDate;
+        return $this->contractType;
     }
 
-    public function setStartDate(\DateTime $startDate): void
+    public function setContractType(ContractType $contractType): void
     {
-        $this->startDate = $startDate;
+        $this->contractType = $contractType;
     }
 
-    public function getEndingDate(): ?\DateTime
+    public function getTenderType(): ?TenderType
     {
-        return $this->endingDate;
+        return $this->tenderType;
     }
 
-    public function setEndingDate(\DateTime $endingDate): void
+    public function setTenderType(TenderType $tenderType): void
     {
-        $this->endingDate = $endingDate;
-    }
-
-    public function getEmployer(): string
-    {
-        return $this->employer;
-    }
-
-    public function setEmployer(string $employer): void
-    {
-        $this->employer = $employer;
-    }
-
-    public function getEmployerAddress(): ?Address
-    {
-        return $this->employerAddress;
-    }
-
-    public function setEmployerAddress(Address $employerAddress): void
-    {
-        $this->employerAddress = $employerAddress;
-    }
-
-    public function getEmail(): string
-    {
-        return $this->email;
-    }
-
-    public function setEmail(string $email): void
-    {
-        $this->email = $email;
-    }
-
-    public function getTenderFile(): ?FileReference
-    {
-        return $this->tenderFile;
-    }
-
-    public function setTenderFile(FileReference $tenderFile): void
-    {
-        $this->tenderFile = $tenderFile;
-    }
-
-    public function getPdfFiles(): ?FileReference
-    {
-        return $this->pdfFiles;
-    }
-
-    public function setPdfFiles(FileReference $pdfFiles): void
-    {
-        $this->pdfFiles = $pdfFiles;
-    }
-
-    public function getPdfTstamp(): int
-    {
-        return $this->pdfTstamp;
-    }
-
-    public function setPdfTstamp(int $pdfTstamp): void
-    {
-        $this->pdfTstamp = $pdfTstamp;
-    }
-
-    public function isInternal(): bool
-    {
-        return $this->isInternal;
-    }
-
-    public function setIsInternal(bool $isInternal): void
-    {
-        $this->isInternal = $isInternal;
+        $this->tenderType = $tenderType;
     }
 
     public function getSalaryMode(): int
@@ -281,6 +299,212 @@ class Job extends AbstractEntity
     public function setSalaryMax(float $salaryMax): void
     {
         $this->salaryMax = $salaryMax;
+    }
+
+    public function getBenefits(): ?Benefit
+    {
+        return $this->benefits;
+    }
+
+    public function setBenefits(Benefit $benefits): void
+    {
+        $this->benefits = $benefits;
+    }
+
+    public function getEmployer(): string
+    {
+        return $this->employer;
+    }
+
+    public function setEmployer(string $employer): void
+    {
+        $this->employer = $employer;
+    }
+
+    public function getEmployerLogo(): ?FileReference
+    {
+        return $this->employerLogo;
+    }
+
+    public function setEmployerLogo(FileReference $employerLogo): void
+    {
+        $this->employerLogo = $employerLogo;
+    }
+
+    public function getEmployerAddress(): ?Address
+    {
+        return $this->employerAddress;
+    }
+
+    public function setEmployerAddress(Address $employerAddress): void
+    {
+        $this->employerAddress = $employerAddress;
+    }
+
+    public function getFirstName(): string
+    {
+        return $this->firstName;
+    }
+
+    public function setFirstName(string $firstName): void
+    {
+        $this->firstName = $firstName;
+    }
+
+    public function getLastName(): string
+    {
+        return $this->lastName;
+    }
+
+    public function setLastName(string $lastName): void
+    {
+        $this->lastName = $lastName;
+    }
+
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): void
+    {
+        $this->email = $email;
+    }
+
+    public function getTelephone(): string
+    {
+        return $this->telephone;
+    }
+
+    public function setTelephone(string $telephone): void
+    {
+        $this->telephone = $telephone;
+    }
+
+    public function getFunction(): string
+    {
+        return $this->function;
+    }
+
+    public function setFunction(string $function): void
+    {
+        $this->function = $function;
+    }
+
+    public function getStartDate(): ?\DateTime
+    {
+        return $this->startDate;
+    }
+
+    public function setStartDate(\DateTime $startDate): void
+    {
+        $this->startDate = $startDate;
+    }
+
+    public function getEndingDate(): ?\DateTime
+    {
+        return $this->endingDate;
+    }
+
+    public function setEndingDate(\DateTime $endingDate): void
+    {
+        $this->endingDate = $endingDate;
+    }
+
+    public function getApplicationDeadline(): ?\DateTime
+    {
+        return $this->applicationDeadline;
+    }
+
+    public function setApplicationDeadline(\DateTime $applicationDeadline): void
+    {
+        $this->applicationDeadline = $applicationDeadline;
+    }
+
+    public function getApplicationGuidelines(): string
+    {
+        return $this->applicationGuidelines;
+    }
+
+    public function setApplicationGuidelines(string $applicationGuidelines): void
+    {
+        $this->applicationGuidelines = $applicationGuidelines;
+    }
+
+    public function getHeaderLogo(): ?FileReference
+    {
+        return $this->headerLogo;
+    }
+
+    public function setHeaderLogo(FileReference $headerLogo): void
+    {
+        $this->headerLogo = $headerLogo;
+    }
+
+    public function getTenderFile(): ?FileReference
+    {
+        return $this->tenderFile;
+    }
+
+    public function setTenderFile(FileReference $tenderFile): void
+    {
+        $this->tenderFile = $tenderFile;
+    }
+
+    public function getPdfFiles(): ?FileReference
+    {
+        return $this->pdfFiles;
+    }
+
+    public function setPdfFiles(FileReference $pdfFiles): void
+    {
+        $this->pdfFiles = $pdfFiles;
+    }
+
+    public function getPdfTstamp(): int
+    {
+        return $this->pdfTstamp;
+    }
+
+    public function setPdfTstamp(int $pdfTstamp): void
+    {
+        $this->pdfTstamp = $pdfTstamp;
+    }
+
+    /**
+     * @return ObjectStorage<Job>
+     */
+    public function getRelatedJobs(): ObjectStorage
+    {
+        return $this->relatedJobs;
+    }
+
+    /**
+     * @param ObjectStorage<Job> $relatedJobs
+     */
+    public function setRelatedJobs(ObjectStorage $relatedJobs): void
+    {
+        $this->relatedJobs = $relatedJobs;
+    }
+
+    public function getLink(): string
+    {
+        return $this->link;
+    }
+
+    public function setLink(string $link): void
+    {
+        $this->link = $link;
+    }
+
+    public function isInternal(): bool
+    {
+        return $this->isInternal;
+    }
+
+    public function setIsInternal(bool $isInternal): void
+    {
+        $this->isInternal = $isInternal;
     }
 
     /**

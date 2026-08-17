@@ -7,21 +7,21 @@
 				<source>Job</source>
 				<target>Stellenbezeichnung</target>
 			</trans-unit>
-				<trans-unit id="job.ending_date">
-				<source>Application deadline</source>
-				<target>Bewerbungsfrist</target>
+			<trans-unit id="job.subtitle">
+				<source>Subtitle</source>
+				<target>Untertitel</target>
 			</trans-unit>
-			<trans-unit id="job.employer">
-				<source>Employer</source>
-				<target>Arbeitgeber</target>
+			<trans-unit id="job.offer">
+				<source>Offer</source>
+				<target>Angebot</target>
 			</trans-unit>
-			<trans-unit id="job.tenderFile">
-				<source>Job ad</source>
-				<target>Stelleninfos</target>
+			<trans-unit id="job.requirements">
+				<source>Requirements</source>
+				<target>Anforderungen</target>
 			</trans-unit>
-			<trans-unit id="job.company">
-				<source>Place of Employment</source>
-				<target>Arbeitsstelle</target>
+			<trans-unit id="job.furtherInformation">
+				<source>Further Information</source>
+				<target>Weitere Informationen</target>
 			</trans-unit>
 			<trans-unit id="job.address.zip">
 				<source>Zip</source>
@@ -31,7 +31,15 @@
 				<source>City</source>
 				<target>Adresse</target>
 			</trans-unit>
+			<trans-unit id="job.company">
+				<source>Place of Employment</source>
+				<target>Arbeitsstelle</target>
+			</trans-unit>
 
+			<trans-unit id="job.jobRole.title">
+				<source>Position</source>
+				<target>Position</target>
+			</trans-unit>
 			<trans-unit id="job.job_area.title">
 				<source>Job Area</source>
 				<target>Berufsfeld</target>
@@ -40,9 +48,70 @@
 				<source>Job Type</source>
 				<target>Beschäftigungsart</target>
 			</trans-unit>
+			<trans-unit id="job.contractType.title">
+				<source>Contract type</source>
+				<target>Vertragsart</target>
+			</trans-unit>
+			<trans-unit id="job.tenderType.title">
+				<source>Tender type</source>
+				<target>Art der Ausschreibung</target>
+			</trans-unit>
 			<trans-unit id="job.salary">
 				<source>Salary</source>
 				<target>Gehalt</target>
+			</trans-unit>
+			<trans-unit id="job.benefits.title">
+				<source>Benefits</source>
+				<target>Benefits</target>
+			</trans-unit>
+
+			<trans-unit id="job.employer">
+				<source>Employer</source>
+				<target>Arbeitgeber</target>
+			</trans-unit>
+			<trans-unit id="job.employerLogo">
+				<source>Employer logo</source>
+				<target>Logo des Arbeitgebers</target>
+			</trans-unit>
+			<trans-unit id="job.firstName">
+				<source>First name</source>
+				<target>Vorname</target>
+			</trans-unit>
+			<trans-unit id="job.lastName">
+				<source>Last name</source>
+				<target>Nachname</target>
+			</trans-unit>
+			<trans-unit id="job.telephone">
+				<source>Phone number</source>
+				<target>Telefonnummer</target>
+			</trans-unit>
+			<trans-unit id="job.function">
+				<source>Function</source>
+				<target>Funktion</target>
+			</trans-unit>
+			<trans-unit id="job.ending_date">
+				<source>Application deadline</source>
+				<target>Bewerbungsfrist</target>
+			</trans-unit>
+			<trans-unit id="job.applicationDeadline">
+				<source>Application deadline</source>
+				<target>Bewerbungsfrist</target>
+			</trans-unit>
+			<trans-unit id="job.applicationGuidelines">
+				<source>Application guidelines</source>
+				<target>Hinweise zur Bewerbung</target>
+			</trans-unit>
+			<trans-unit id="job.headerLogo">
+				<source>Header image</source>
+				<target>Headerbild</target>
+			</trans-unit>
+			<trans-unit id="job.tenderFile">
+				<source>Job ad</source>
+				<target>Stelleninfos</target>
+			</trans-unit>
+			<trans-unit id="job.relatedJobs">
+				<source>Related jobs</source>
+				<target>Ähnliche Jobangebote</target>
 			</trans-unit>
 
 			<trans-unit id="fluid.select.prependOptionLabel">

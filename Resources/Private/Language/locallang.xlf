@@ -6,17 +6,17 @@
 			<trans-unit id="job.title">
 				<source>Job</source>
 			</trans-unit>
-			<trans-unit id="job.ending_date">
-				<source>Application deadline</source>
+			<trans-unit id="job.subtitle">
+				<source>Subtitle</source>
 			</trans-unit>
-			<trans-unit id="job.employer">
-				<source>Employer</source>
+			<trans-unit id="job.offer">
+				<source>Offer</source>
 			</trans-unit>
-			<trans-unit id="job.tenderFile">
-				<source>Job ad</source>
+			<trans-unit id="job.requirements">
+				<source>Requirements</source>
 			</trans-unit>
-			<trans-unit id="job.company">
-				<source>Place of Employment</source>
+			<trans-unit id="job.furtherInformation">
+				<source>Further Information</source>
 			</trans-unit>
 			<trans-unit id="job.address.zip">
 				<source>Zip</source>
@@ -24,15 +24,67 @@
 			<trans-unit id="job.address.city">
 				<source>City</source>
 			</trans-unit>
+			<trans-unit id="job.company">
+				<source>Place of Employment</source>
+			</trans-unit>
 
+			<trans-unit id="job.jobRole.title">
+				<source>Position</source>
+			</trans-unit>
 			<trans-unit id="job.job_area.title">
 				<source>Job Area</source>
 			</trans-unit>
 			<trans-unit id="job.job_type.title">
 				<source>Job Type</source>
 			</trans-unit>
+			<trans-unit id="job.contractType.title">
+				<source>Contract type</source>
+			</trans-unit>
+			<trans-unit id="job.tenderType.title">
+				<source>Tender type</source>
+			</trans-unit>
 			<trans-unit id="job.salary">
 				<source>Salary</source>
+			</trans-unit>
+			<trans-unit id="job.benefits.title">
+				<source>Benefits</source>
+			</trans-unit>
+
+			<trans-unit id="job.employer">
+				<source>Employer</source>
+			</trans-unit>
+			<trans-unit id="job.employerLogo">
+				<source>Employer logo</source>
+			</trans-unit>
+			<trans-unit id="job.firstName">
+				<source>First name</source>
+			</trans-unit>
+			<trans-unit id="job.lastName">
+				<source>Last name</source>
+			</trans-unit>
+			<trans-unit id="job.telephone">
+				<source>Phone number</source>
+			</trans-unit>
+			<trans-unit id="job.function">
+				<source>Function</source>
+			</trans-unit>
+			<trans-unit id="job.ending_date">
+				<source>Application deadline</source>
+			</trans-unit>
+			<trans-unit id="job.applicationDeadline">
+				<source>Application deadline</source>
+			</trans-unit>
+			<trans-unit id="job.applicationGuidelines">
+				<source>Application guidelines</source>
+			</trans-unit>
+			<trans-unit id="job.headerLogo">
+				<source>Header image</source>
+			</trans-unit>
+			<trans-unit id="job.tenderFile">
+				<source>Job ad</source>
+			</trans-unit>
+			<trans-unit id="job.relatedJobs">
+				<source>Related jobs</source>
 			</trans-unit>
 
 			<trans-unit id="fluid.select.prependOptionLabel">
