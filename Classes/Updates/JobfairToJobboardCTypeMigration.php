@@ -34,11 +34,13 @@ final class JobfairToJobboardCTypeMigration implements UpgradeWizardInterface
     private const OLD_CTYPE = 'jobfair2_jobfair';
     private const NEW_CTYPE = 'jobboard_jobboard';
 
-    public function __construct(private readonly ConnectionPool $connectionPool) {}
+    public function __construct(
+        private readonly ConnectionPool $connectionPool,
+    ) {}
 
     public function getTitle(): string
     {
-        return 'Migrate "Jobfair2" content elements to the renamed "Jobboard" CType.';
+        return '[jobboard] Migrate "Jobfair2" content elements to the renamed "Jobboard" CType.';
     }
 
     public function getDescription(): string

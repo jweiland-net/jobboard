@@ -56,11 +56,13 @@ final class JobfairToJobboardMigration implements UpgradeWizardInterface
 
     private const JOB_FAL_FIELDS = ['tender_file', 'pdf_files'];
 
-    public function __construct(private readonly ConnectionPool $connectionPool) {}
+    public function __construct(
+        private readonly ConnectionPool $connectionPool,
+    ) {}
 
     public function getTitle(): string
     {
-        return 'Migrate Jobfair2 job data to the renamed Jobboard tables.';
+        return '[jobboard] Migrate Jobfair2 job data to the renamed Jobboard tables.';
     }
 
     public function getDescription(): string
