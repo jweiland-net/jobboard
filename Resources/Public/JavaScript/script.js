@@ -3,13 +3,13 @@
   let dataTable = $('.dataTable').DataTable({
     'bLengthChange': false,
     'language': {
-      'url': '/typo3conf/ext/jobfair2/Resources/Public/JavaScript/dataTables/i18n/de_DE.json'
+      'url': '/typo3conf/ext/jobboard/Resources/Public/JavaScript/dataTables/i18n/de_DE.json'
     },
     'paging': false,
     'bInfo': false
   });
 
-  let cookieName = 'jobfair2_remembered_jobs';
+  let cookieName = 'jobboard_remembered_jobs';
 
   $.each(getRememberedJobs(), function (index, value) {
     highlightJobInDatatable(value);
@@ -19,7 +19,7 @@
   dataTable.order([dataTable.column('.dataTable .rememberJob').index(), 'desc']);
 
   function highlightJobInDatatable (jobUid, highlight = true) {
-    $('[data-jobfair2-uid=' + jobUid + ']').each(function () {
+    $('[data-jobboard-uid=' + jobUid + ']').each(function () {
       if (highlight) {
         $(this).addClass('highlight-row');
       } else {
@@ -74,7 +74,7 @@
           },
           dataType: 'json',
           headers: {
-            'jobfair2-address-search': 1
+            'jobboard-address-search': 1
           },
           success: function(data) {
             response(data);

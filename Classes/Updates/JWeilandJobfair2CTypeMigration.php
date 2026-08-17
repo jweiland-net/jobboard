@@ -9,7 +9,7 @@ declare(strict_types=1);
  * LICENSE file that was distributed with this source code.
  */
 
-namespace JWeiland\Jobfair2\Updates;
+namespace JWeiland\Jobboard\Updates;
 
 use TYPO3\CMS\Install\Attribute\UpgradeWizard;
 use TYPO3\CMS\Install\Updates\AbstractListTypeToCTypeUpdate;

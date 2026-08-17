@@ -7,7 +7,8 @@
 		"typo3",
 		"TYPO3 CMS",
 		"jobfair",
-		"jobfair2"
+		"jobfair2",
+		"jobboard"
 	],
 	"homepage": "https://jweiland.net",
 	"authors": [
@@ -36,12 +37,12 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"JWeiland\\Jobfair2\\": "Classes"
+			"JWeiland\\Jobboard\\": "Classes"
 		}
 	},
 	"autoload-dev": {
 		"psr-4": {
-			"JWeiland\\Jobfair2\\Tests\\": "Tests"
+			"JWeiland\\Jobboard\\Tests\\": "Tests"
 		}
 	},
 	"config": {
@@ -57,7 +58,7 @@
 	"extra": {
 		"typo3/cms": {
 			"app-dir": ".Build",
-			"extension-key": "jobfair2",
+			"extension-key": "jobboard",
 			"web-dir": ".Build/web"
 		}
 	}

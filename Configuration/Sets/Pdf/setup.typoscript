@@ -8,16 +8,16 @@ config {
   linkVars >
 }
 
-pageJobfair2PDF = PAGE
-pageJobfair2PDF {
+pageJobboardPDF = PAGE
+pageJobboardPDF {
   typeNum = 1575903427
-  10 < tt_content.jobfair2_jobfair.20
+  10 < tt_content.jobboard_jobboard.20
 }
 
-plugin.tx_jobfair2 {
+plugin.tx_jobboard {
   view {
     templateRootPaths {
-      100 = EXT:jobfair2/Resources/Private/Pdf/
+      100 = EXT:jobboard/Resources/Private/Pdf/
     }
   }
 }
@@ -82,7 +82,7 @@ plugin.tx_pdfviewhelpers.settings {
     }
   }
   html {
-    styleSheet = EXT:jobfair2/Resources/Public/Css/pdf.css
+    styleSheet = EXT:jobboard/Resources/Public/Css/pdf.css
   }
 }
 

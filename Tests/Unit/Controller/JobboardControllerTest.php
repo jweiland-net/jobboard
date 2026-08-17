@@ -9,13 +9,13 @@ declare(strict_types=1);
  * LICENSE file that was distributed with this source code.
  */
 
-namespace JWeiland\Jobfair2\Tests\Unit\Controller;
+namespace JWeiland\Jobboard\Tests\Unit\Controller;
 
-use JWeiland\Jobfair2\Controller\JobfairController;
-use JWeiland\Jobfair2\Domain\Model\Job;
-use JWeiland\Jobfair2\Domain\Repository\JobAreaRepository;
-use JWeiland\Jobfair2\Domain\Repository\JobRepository;
-use JWeiland\Jobfair2\Domain\Repository\JobTypeRepository;
+use JWeiland\Jobboard\Controller\JobboardController;
+use JWeiland\Jobboard\Domain\Model\Job;
+use JWeiland\Jobboard\Domain\Repository\JobAreaRepository;
+use JWeiland\Jobboard\Domain\Repository\JobRepository;
+use JWeiland\Jobboard\Domain\Repository\JobTypeRepository;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Error\Http\PageNotFoundException;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
@@ -28,15 +28,15 @@ use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
  * displayed, whether the URL is guessed directly or reached through a link
  * that predates the salary grade/steps expiring.
  */
-class JobfairControllerTest extends UnitTestCase
+class JobboardControllerTest extends UnitTestCase
 {
-    protected JobfairController $subject;
+    protected JobboardController $subject;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->subject = new JobfairController(
+        $this->subject = new JobboardController(
             self::createStub(JobRepository::class),
             self::createStub(JobAreaRepository::class),
             self::createStub(JobTypeRepository::class),

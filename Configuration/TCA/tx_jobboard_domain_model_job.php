@@ -13,16 +13,16 @@ if (!defined('TYPO3')) {
 
 return [
     'ctrl' => [
-        'title' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job',
+        'title' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job',
         'label' => 'title',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
         'type' => 'salary_mode',
         'typeicon_column' => 'salary_mode',
         'typeicon_classes' => [
-            'default' => 'ext-jobfair2-record-job-grade',
-            0 => 'ext-jobfair2-record-job-grade',
-            1 => 'ext-jobfair2-record-job-freeentry',
+            'default' => 'ext-jobboard-record-job-grade',
+            0 => 'ext-jobboard-record-job-grade',
+            1 => 'ext-jobboard-record-job-freeentry',
         ],
         'languageField' => 'sys_language_uid',
         'transOrigPointerField' => 'l10n_parent',
@@ -36,47 +36,47 @@ return [
     ],
     'types' => [
         0 => [
-            'showitem' => '--div--;LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tabs.job_description,
+            'showitem' => '--div--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tabs.job_description,
             --palette--;;languageHidden, l10n_diffsource,
-            --palette--;LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:palette.job_details;job_details,
-            --palette--;LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:palette.job_description;job_description,
-            --palette--;LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:palette.import;import,
-            --div--;LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tabs.job_details,
-            --palette--;LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:palette.address;address,
-            --palette--;LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:palette.information;information,
-            --palette--;LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:palette.salary;salary_grade,
-            --palette--;LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:palette.benefit;benefit,
-            --div--;LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.employer,
+            --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.job_details;job_details,
+            --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.job_description;job_description,
+            --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.import;import,
+            --div--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tabs.job_details,
+            --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.address;address,
+            --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.information;information,
+            --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.salary;salary_grade,
+            --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.benefit;benefit,
+            --div--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.employer,
             employer, employer_logo, employer_address,
-            --div--;LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.application_information,
-            --palette--;LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:palette.contact_person;contact_person,
+            --div--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.application_information,
+            --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.contact_person;contact_person,
             --palette--;;startEndDate, application_deadline, application_guidelines,
-            --div--;LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.media,
+            --div--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.media,
             header_logo, tender_file, pdf_files, pdf_tstamp,
-            --div--;LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.relations,
+            --div--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.relations,
             related_jobs,
             --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_tca.xlf:pages.tabs.access,
             --palette--;LLL:EXT:frontend/Resources/Private/Language/locallang_tca.xlf:pages.palettes.access;access',
         ],
         1 => [
-            'showitem' => '--div--;LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tabs.job_description,
+            'showitem' => '--div--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tabs.job_description,
             --palette--;;languageHidden, l10n_diffsource,
-            --palette--;LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:palette.job_details;job_details,
-            --palette--;LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:palette.job_description;job_description,
-            --palette--;LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:palette.import;import,
-            --div--;LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tabs.job_details,
-            --palette--;LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:palette.address;address,
-            --palette--;LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:palette.information;information,
-            --palette--;LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:palette.salary;salary_min_max,
-            --palette--;LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:palette.benefit;benefit,
-            --div--;LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.employer,
+            --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.job_details;job_details,
+            --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.job_description;job_description,
+            --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.import;import,
+            --div--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tabs.job_details,
+            --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.address;address,
+            --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.information;information,
+            --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.salary;salary_min_max,
+            --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.benefit;benefit,
+            --div--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.employer,
             employer, employer_logo, employer_address,
-            --div--;LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.application_information,
-            --palette--;LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:palette.contact_person;contact_person,
+            --div--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.application_information,
+            --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.contact_person;contact_person,
             --palette--;;startEndDate, application_deadline, application_guidelines,
-            --div--;LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.media,
+            --div--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.media,
             header_logo, tender_file, pdf_files, pdf_tstamp,
-            --div--;LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.relations,
+            --div--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.relations,
             related_jobs,
             --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_tca.xlf:pages.tabs.access,
             --palette--;LLL:EXT:frontend/Resources/Private/Language/locallang_tca.xlf:pages.palettes.access;access',
@@ -100,7 +100,7 @@ return [
     'columns' => [
         'title' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.title',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.title',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -111,7 +111,7 @@ return [
         ],
         'subtitle' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.subtitle',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.subtitle',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -121,7 +121,7 @@ return [
         ],
         'reference_number' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.reference_number',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.reference_number',
             'config' => [
                 'type' => 'input',
                 'size' => 13,
@@ -132,7 +132,7 @@ return [
         ],
         'description' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.description',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.description',
             'config' => [
                 'type' => 'text',
                 'enableRichtext' => true,
@@ -140,7 +140,7 @@ return [
         ],
         'offer' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.offer',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.offer',
             'config' => [
                 'type' => 'text',
                 'enableRichtext' => true,
@@ -148,7 +148,7 @@ return [
         ],
         'requirements' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.requirements',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.requirements',
             'config' => [
                 'type' => 'text',
                 'enableRichtext' => true,
@@ -156,7 +156,7 @@ return [
         ],
         'further_information' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.further_information',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.further_information',
             'config' => [
                 'type' => 'text',
                 'enableRichtext' => true,
@@ -164,7 +164,7 @@ return [
         ],
         'address' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.address',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.address',
             'config' => [
                 'type' => 'group',
                 'allowed' => 'tt_address',
@@ -183,15 +183,15 @@ return [
         ],
         'job_role' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.job_role',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.job_role',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'items' => [
                     ['label' => '', 'value' => 0],
                 ],
-                'foreign_table' => 'tx_jobfair2_domain_model_jobrole',
-                'foreign_table_where' => 'AND tx_jobfair2_domain_model_jobrole.sys_language_uid IN (-1,0) ORDER BY tx_jobfair2_domain_model_jobrole.title ASC',
+                'foreign_table' => 'tx_jobboard_domain_model_jobrole',
+                'foreign_table_where' => 'AND tx_jobboard_domain_model_jobrole.sys_language_uid IN (-1,0) ORDER BY tx_jobboard_domain_model_jobrole.title ASC',
                 'minitems' => 1,
                 'maxitems' => 1,
                 'default' => 0,
@@ -199,15 +199,15 @@ return [
         ],
         'job_area' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.job_area',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.job_area',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'items' => [
                     ['label' => '', 'value' => 0],
                 ],
-                'foreign_table' => 'tx_jobfair2_domain_model_jobarea',
-                'foreign_table_where' => 'AND tx_jobfair2_domain_model_jobarea.sys_language_uid IN (-1,0) ORDER BY tx_jobfair2_domain_model_jobarea.title ASC',
+                'foreign_table' => 'tx_jobboard_domain_model_jobarea',
+                'foreign_table_where' => 'AND tx_jobboard_domain_model_jobarea.sys_language_uid IN (-1,0) ORDER BY tx_jobboard_domain_model_jobarea.title ASC',
                 'minitems' => 1,
                 'maxitems' => 1,
                 'default' => 0,
@@ -215,15 +215,15 @@ return [
         ],
         'job_type' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.job_type',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.job_type',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'items' => [
                     ['label' => '', 'value' => 0],
                 ],
-                'foreign_table' => 'tx_jobfair2_domain_model_jobtype',
-                'foreign_table_where' => 'AND tx_jobfair2_domain_model_jobtype.sys_language_uid IN (-1,0) ORDER BY tx_jobfair2_domain_model_jobtype.title ASC',
+                'foreign_table' => 'tx_jobboard_domain_model_jobtype',
+                'foreign_table_where' => 'AND tx_jobboard_domain_model_jobtype.sys_language_uid IN (-1,0) ORDER BY tx_jobboard_domain_model_jobtype.title ASC',
                 'minitems' => 1,
                 'maxitems' => 1,
                 'default' => 0,
@@ -231,15 +231,15 @@ return [
         ],
         'contract_type' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.contract_type',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.contract_type',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'items' => [
                     ['label' => '', 'value' => 0],
                 ],
-                'foreign_table' => 'tx_jobfair2_domain_model_contracttype',
-                'foreign_table_where' => 'AND tx_jobfair2_domain_model_contracttype.sys_language_uid IN (-1,0) ORDER BY tx_jobfair2_domain_model_contracttype.title ASC',
+                'foreign_table' => 'tx_jobboard_domain_model_contracttype',
+                'foreign_table_where' => 'AND tx_jobboard_domain_model_contracttype.sys_language_uid IN (-1,0) ORDER BY tx_jobboard_domain_model_contracttype.title ASC',
                 'minitems' => 1,
                 'maxitems' => 1,
                 'default' => 0,
@@ -247,15 +247,15 @@ return [
         ],
         'tender_type' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.tender_type',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.tender_type',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'items' => [
                     ['label' => '', 'value' => 0],
                 ],
-                'foreign_table' => 'tx_jobfair2_domain_model_tendertype',
-                'foreign_table_where' => 'AND tx_jobfair2_domain_model_tendertype.sys_language_uid IN (-1,0) ORDER BY tx_jobfair2_domain_model_tendertype.title ASC',
+                'foreign_table' => 'tx_jobboard_domain_model_tendertype',
+                'foreign_table_where' => 'AND tx_jobboard_domain_model_tendertype.sys_language_uid IN (-1,0) ORDER BY tx_jobboard_domain_model_tendertype.title ASC',
                 'minitems' => 1,
                 'maxitems' => 1,
                 'default' => 0,
@@ -263,15 +263,15 @@ return [
         ],
         'benefits' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.benefits',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.benefits',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'items' => [
                     ['label' => '', 'value' => 0],
                 ],
-                'foreign_table' => 'tx_jobfair2_domain_model_benefit',
-                'foreign_table_where' => 'AND tx_jobfair2_domain_model_benefit.sys_language_uid IN (-1,0) ORDER BY tx_jobfair2_domain_model_benefit.title ASC',
+                'foreign_table' => 'tx_jobboard_domain_model_benefit',
+                'foreign_table_where' => 'AND tx_jobboard_domain_model_benefit.sys_language_uid IN (-1,0) ORDER BY tx_jobboard_domain_model_benefit.title ASC',
                 'minitems' => 1,
                 'maxitems' => 1,
                 'default' => 0,
@@ -279,44 +279,44 @@ return [
         ],
         'salary_mode' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary_mode',
-            'description' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary_mode.description',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.salary_mode',
+            'description' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.salary_mode.description',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'items' => [
-                    ['label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary_mode.grade', 'value' => 0],
-                    ['label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary_mode.freeEntry', 'value' => 1],
+                    ['label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.salary_mode.grade', 'value' => 0],
+                    ['label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.salary_mode.freeEntry', 'value' => 1],
                 ],
                 'default' => 0,
             ],
         ],
         'salary_grade' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary_grade',
-            'description' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary_grade.description',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.salary_grade',
+            'description' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.salary_grade.description',
             'config' => [
                 'type' => 'group',
-                'allowed' => 'tx_jobfair2_domain_model_salarygrade',
-                'foreign_table' => 'tx_jobfair2_domain_model_salarygrade',
+                'allowed' => 'tx_jobboard_domain_model_salarygrade',
+                'foreign_table' => 'tx_jobboard_domain_model_salarygrade',
                 'minitems' => 1,
                 'maxitems' => 1,
                 'size' => 1,
                 'suggestOptions' => [
                     'default' => [
-                        'addWhere' => 'AND tx_jobfair2_domain_model_salarygrade.sys_language_uid IN (-1,0)',
+                        'addWhere' => 'AND tx_jobboard_domain_model_salarygrade.sys_language_uid IN (-1,0)',
                     ],
                 ],
             ],
         ],
         'salary_min' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary_min',
-            'description' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary_min.description',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.salary_min',
+            'description' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.salary_min.description',
             'config' => [
                 'type' => 'number',
                 'format' => 'decimal',
-                'renderType' => 'jobfair2LocalizedDecimal',
+                'renderType' => 'jobboardLocalizedDecimal',
                 'range' => [
                     'lower' => 0,
                 ],
@@ -325,12 +325,12 @@ return [
         ],
         'salary_max' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary_max',
-            'description' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.salary_max.description',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.salary_max',
+            'description' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.salary_max.description',
             'config' => [
                 'type' => 'number',
                 'format' => 'decimal',
-                'renderType' => 'jobfair2LocalizedDecimal',
+                'renderType' => 'jobboardLocalizedDecimal',
                 'range' => [
                     'lower' => 0,
                 ],
@@ -339,7 +339,7 @@ return [
         ],
         'employer' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.employer',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.employer',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -350,14 +350,14 @@ return [
         ],
         'employer_logo' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.employer_logo',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.employer_logo',
             'config' => [
                 'type' => 'file',
             ],
         ],
         'employer_address' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.employer_address',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.employer_address',
             'config' => [
                 'type' => 'group',
                 'allowed' => 'tt_address',
@@ -375,7 +375,7 @@ return [
         ],
         'first_name' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.first_name',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.first_name',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -385,7 +385,7 @@ return [
         ],
         'last_name' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.last_name',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.last_name',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -395,7 +395,7 @@ return [
         ],
         'email' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.email',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.email',
             'config' => [
                 'type' => 'email',
                 'required' => true,
@@ -403,7 +403,7 @@ return [
         ],
         'telephone' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.telephone',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.telephone',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -413,7 +413,7 @@ return [
         ],
         'function' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.function',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.function',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -423,8 +423,8 @@ return [
         ],
         'start_date' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.start_date',
-            'description' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.start_date.description',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.start_date',
+            'description' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.start_date.description',
             'config' => [
                 'type' => 'datetime',
                 'default' => 0,
@@ -434,8 +434,8 @@ return [
         ],
         'ending_date' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.ending_date',
-            'description' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.ending_date.description',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.ending_date',
+            'description' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.ending_date.description',
             'config' => [
                 'type' => 'datetime',
                 'default' => 0,
@@ -445,8 +445,8 @@ return [
         ],
         'application_deadline' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.application_deadline',
-            'description' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.application_deadline.description',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.application_deadline',
+            'description' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.application_deadline.description',
             'config' => [
                 'type' => 'datetime',
                 'default' => 0,
@@ -456,7 +456,7 @@ return [
         ],
         'application_guidelines' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.application_guidelines',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.application_guidelines',
             'config' => [
                 'type' => 'text',
                 'enableRichtext' => true,
@@ -464,14 +464,14 @@ return [
         ],
         'header_logo' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.header_logo',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.header_logo',
             'config' => [
                 'type' => 'file',
             ],
         ],
         'tender_file' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.tender_file',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.tender_file',
             'config' => [
                 'type' => 'file',
                 'allowed' => 'pdf',
@@ -482,7 +482,7 @@ return [
         ],
         'pdf_files' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.pdf_files',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.pdf_files',
             'config' => [
                 'type' => 'file',
                 'allowed' => 'pdf',
@@ -493,7 +493,7 @@ return [
         ],
         'pdf_tstamp' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.pdf_tstamp',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.pdf_tstamp',
             'config' => [
                 'type' => 'datetime',
                 'size' => 16,
@@ -505,31 +505,31 @@ return [
         ],
         'related_jobs' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.related_jobs',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.related_jobs',
             'config' => [
                 'type' => 'group',
-                'allowed' => 'tx_jobfair2_domain_model_job',
-                'foreign_table' => 'tx_jobfair2_domain_model_job',
+                'allowed' => 'tx_jobboard_domain_model_job',
+                'foreign_table' => 'tx_jobboard_domain_model_job',
                 'minitems' => 1,
                 'maxitems' => 99,
                 'size' => 1,
             ],
         ],
         'link' => [
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.link',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.link',
             'config' => [
                 'type' => 'passthrough',
             ],
         ],
         'is_internal' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.is_internal',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.is_internal',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'items' => [
-                    ['label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.is_internal.no', 'value' => 0],
-                    ['label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.is_internal.yes', 'value' => 1],
+                    ['label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.is_internal.no', 'value' => 0],
+                    ['label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.is_internal.yes', 'value' => 1],
                 ],
                 'minitems' => 1,
                 'maxItems' => 1,
@@ -538,8 +538,8 @@ return [
         ],
         'is_import' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.is_import',
-            'description' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.is_import.description',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.is_import',
+            'description' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.is_import.description',
             'config' => [
                 'type' => 'check',
                 'renderType' => 'checkboxToggle',
@@ -550,7 +550,7 @@ return [
         'vacancy_id' => [
             'exclude' => true,
             'displayCond' => 'FIELD:is_import:REQ:true',
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_job.vacancy_id',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.vacancy_id',
             'config' => [
                 'type' => 'input',
                 'readOnly' => true,

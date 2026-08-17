@@ -9,10 +9,10 @@ declare(strict_types=1);
  * LICENSE file that was distributed with this source code.
  */
 
-namespace JWeiland\Jobfair2\Middleware;
+namespace JWeiland\Jobboard\Middleware;
 
 use Doctrine\DBAL\Driver\Exception;
-use JWeiland\Jobfair2\Traits\ConnectionPoolTrait;
+use JWeiland\Jobboard\Traits\ConnectionPoolTrait;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -23,7 +23,7 @@ class AddressSearchMiddleware implements MiddlewareInterface
 {
     use ConnectionPoolTrait;
 
-    private const HEADER_NAME = 'jobfair2-address-search';
+    private const HEADER_NAME = 'jobboard-address-search';
 
     private const TABLE = 'tt_address';
 

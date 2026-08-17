@@ -9,9 +9,9 @@ declare(strict_types=1);
  * LICENSE file that was distributed with this source code.
  */
 
-namespace JWeiland\Jobfair2\ViewHelpers;
+namespace JWeiland\Jobboard\ViewHelpers;
 
-use JWeiland\Jobfair2\Domain\Model\Job;
+use JWeiland\Jobboard\Domain\Model\Job;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
@@ -41,7 +41,7 @@ class JobPoiCollectionViewHelper extends AbstractViewHelper
                 $poiCollection->setTitle($job->getTitle());
                 if ($job->getEndingDate() && $job->getJobType()) {
                     $poiCollection->setInfoWindowContent(
-                        LocalizationUtility::translate('poi_collection.apply_until', 'jobfair2')
+                        LocalizationUtility::translate('poi_collection.apply_until', 'jobboard')
                         . '&nbsp;'
                         . $job->getEndingDate()->format('d.m.Y')
                         . '<br />'

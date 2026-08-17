@@ -4,19 +4,19 @@ services:
     autoconfigure: true
     public: false
 
-  JWeiland\Jobfair2\:
+  JWeiland\Jobboard\:
     resource: '../Classes/*'
     exclude: '../Classes/Domain/Model/*'
 
-  JWeiland\Jobfair2\ApiModel\ApiMapping:
+  JWeiland\Jobboard\ApiModel\ApiMapping:
     shared: false
 
-  JWeiland\Jobfair2\ApiModel\JobModel:
+  JWeiland\Jobboard\ApiModel\JobModel:
     shared: false
 
-  JWeiland\Jobfair2\ApiModel\LocationModel:
+  JWeiland\Jobboard\ApiModel\LocationModel:
     shared: false
 
-  JWeiland\Jobfair2\Service\ImportService:
+  JWeiland\Jobboard\Service\ImportService:
     arguments:
       $apiModels: !tagged api.model

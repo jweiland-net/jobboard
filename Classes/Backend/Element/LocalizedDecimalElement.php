@@ -9,7 +9,7 @@ declare(strict_types=1);
  * LICENSE file that was distributed with this source code.
  */
 
-namespace JWeiland\Jobfair2\Backend\Element;
+namespace JWeiland\Jobboard\Backend\Element;
 
 use TYPO3\CMS\Backend\Form\Element\AbstractFormElement;
 use TYPO3\CMS\Core\Page\JavaScriptModuleInstruction;
@@ -54,7 +54,7 @@ final class LocalizedDecimalElement extends AbstractFormElement
         $fieldId = StringUtility::getUniqueId('formengine-input-');
 
         $resultArray['javaScriptModules'][] = JavaScriptModuleInstruction::create(
-            '@jweiland/jobfair2/form-engine-localized-decimal.js',
+            '@jweiland/jobboard/form-engine-localized-decimal.js',
         )->invoke('initialize', $fieldId);
 
         $resultArray['html'] = $this->renderLabel($fieldId) . '

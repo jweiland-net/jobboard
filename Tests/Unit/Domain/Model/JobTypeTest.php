@@ -9,9 +9,9 @@ declare(strict_types=1);
  * LICENSE file that was distributed with this source code.
  */
 
-namespace JWeiland\Jobfair2\Tests\Unit\Domain\Model;
+namespace JWeiland\Jobboard\Tests\Unit\Domain\Model;
 
-use JWeiland\Jobfair2\Domain\Model\JobType;
+use JWeiland\Jobboard\Domain\Model\JobType;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 

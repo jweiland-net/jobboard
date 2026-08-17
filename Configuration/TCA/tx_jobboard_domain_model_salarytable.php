@@ -13,7 +13,7 @@ if (!defined('TYPO3')) {
 
 return [
     'ctrl' => [
-        'title' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_salarytable',
+        'title' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_salarytable',
         'label' => 'title',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
@@ -27,7 +27,7 @@ return [
             'starttime' => 'starttime',
             'endtime' => 'endtime',
         ],
-        'iconfile' => 'EXT:jobfair2/Resources/Public/Icons/salarytable.svg',
+        'iconfile' => 'EXT:jobboard/Resources/Public/Icons/salarytable.svg',
     ],
     'types' => [
         0 => [
@@ -46,7 +46,7 @@ return [
     'columns' => [
         'title' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_salarytable.title',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_salarytable.title',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -57,7 +57,7 @@ return [
         ],
         'description' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_salarytable.description',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_salarytable.description',
             'config' => [
                 'type' => 'text',
                 'cols' => 40,
@@ -66,10 +66,10 @@ return [
         ],
         'salary_grades' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobfair2/Resources/Private/Language/locallang_db.xlf:tx_jobfair2_domain_model_salarytable.salary_grades',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_salarytable.salary_grades',
             'config' => [
                 'type' => 'inline',
-                'foreign_table' => 'tx_jobfair2_domain_model_salarygrade',
+                'foreign_table' => 'tx_jobboard_domain_model_salarygrade',
                 'foreign_field' => 'salary_table',
                 'foreign_sortby' => 'sorting',
                 'appearance' => [

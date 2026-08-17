@@ -1,7 +1,0 @@
-name: jweiland/jobfair2
-label: Jobfair 2 - Main
-
-dependencies:
-  - jweiland/maps2-default
-  - jweiland/maps2-googlemaps
-  - jweiland/jobfair2-pdf

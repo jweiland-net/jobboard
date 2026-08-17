@@ -31,5 +31,5 @@ if (ExtensionManagementUtility::isLoaded('tt_address')) {
     );
 }
 
-$GLOBALS['TCA']['tx_jobfair2_domain_model_job']['columns']['starttime']['config']['behaviour']['allowLanguageSynchronization'] = true;
-$GLOBALS['TCA']['tx_jobfair2_domain_model_job']['columns']['endtime']['config']['behaviour']['allowLanguageSynchronization'] = true;
+$GLOBALS['TCA']['tx_jobboard_domain_model_job']['columns']['starttime']['config']['behaviour']['allowLanguageSynchronization'] = true;
+$GLOBALS['TCA']['tx_jobboard_domain_model_job']['columns']['endtime']['config']['behaviour']['allowLanguageSynchronization'] = true;

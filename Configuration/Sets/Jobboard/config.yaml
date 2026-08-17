@@ -1,0 +1,7 @@
+name: jweiland/jobboard
+label: Jobboard - Main
+
+dependencies:
+  - jweiland/maps2-default
+  - jweiland/maps2-googlemaps
+  - jweiland/jobboard-pdf

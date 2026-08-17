@@ -15,15 +15,15 @@ if (!defined('TYPO3')) {
 }
 
 ExtensionUtility::registerPlugin(
-    'Jobfair2',
-    'Jobfair',
-    'Job fair',
+    'Jobboard',
+    'Jobboard',
+    'Job board',
 );
 
-ExtensionManagementUtility::addToAllTCAtypes('tt_content', '--div--;Configuration,pi_flexform,', 'jobfair2_jobfair', 'after:subheader');
+ExtensionManagementUtility::addToAllTCAtypes('tt_content', '--div--;Configuration,pi_flexform,', 'jobboard_jobboard', 'after:subheader');
 
 ExtensionManagementUtility::addPiFlexFormValue(
     '*',
-    'FILE:EXT:jobfair2/Configuration/FlexForms/Job.xml',
-    'jobfair2_jobfair',
+    'FILE:EXT:jobboard/Configuration/FlexForms/Job.xml',
+    'jobboard_jobboard',
 );

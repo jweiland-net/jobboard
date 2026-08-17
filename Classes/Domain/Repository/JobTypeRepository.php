@@ -9,7 +9,7 @@ declare(strict_types=1);
  * LICENSE file that was distributed with this source code.
  */
 
-namespace JWeiland\Jobfair2\Domain\Repository;
+namespace JWeiland\Jobboard\Domain\Repository;
 
 use TYPO3\CMS\Extbase\Persistence\Repository;
 

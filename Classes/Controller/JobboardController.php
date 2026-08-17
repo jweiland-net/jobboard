@@ -9,14 +9,14 @@ declare(strict_types=1);
  * LICENSE file that was distributed with this source code.
  */
 
-namespace JWeiland\Jobfair2\Controller;
+namespace JWeiland\Jobboard\Controller;
 
-use JWeiland\Jobfair2\Domain\Model\Job;
-use JWeiland\Jobfair2\Domain\Model\JobArea;
-use JWeiland\Jobfair2\Domain\Model\JobType;
-use JWeiland\Jobfair2\Domain\Repository\JobAreaRepository;
-use JWeiland\Jobfair2\Domain\Repository\JobRepository;
-use JWeiland\Jobfair2\Domain\Repository\JobTypeRepository;
+use JWeiland\Jobboard\Domain\Model\Job;
+use JWeiland\Jobboard\Domain\Model\JobArea;
+use JWeiland\Jobboard\Domain\Model\JobType;
+use JWeiland\Jobboard\Domain\Repository\JobAreaRepository;
+use JWeiland\Jobboard\Domain\Repository\JobRepository;
+use JWeiland\Jobboard\Domain\Repository\JobTypeRepository;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Error\Http\PageNotFoundException;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -24,9 +24,9 @@ use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 
 /**
- * Class JobfairController
+ * Class JobboardController
  */
-class JobfairController extends ActionController
+class JobboardController extends ActionController
 {
     public function __construct(
         protected JobRepository $jobRepository,
