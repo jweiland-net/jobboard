@@ -293,6 +293,42 @@
 				<target>Beschäftigungsart</target>
 			</trans-unit>
 
+			<trans-unit id="tx_jobboard_domain_model_jobrole">
+				<source>Position</source>
+				<target>Position</target>
+			</trans-unit>
+			<trans-unit id="tx_jobboard_domain_model_jobrole.title">
+				<source>Position</source>
+				<target>Position</target>
+			</trans-unit>
+
+			<trans-unit id="tx_jobboard_domain_model_contracttype">
+				<source>Contract type</source>
+				<target>Vertragsart</target>
+			</trans-unit>
+			<trans-unit id="tx_jobboard_domain_model_contracttype.title">
+				<source>Contract type</source>
+				<target>Vertragsart</target>
+			</trans-unit>
+
+			<trans-unit id="tx_jobboard_domain_model_tendertype">
+				<source>Tender type</source>
+				<target>Art der Ausschreibung</target>
+			</trans-unit>
+			<trans-unit id="tx_jobboard_domain_model_tendertype.title">
+				<source>Tender type</source>
+				<target>Art der Ausschreibung</target>
+			</trans-unit>
+
+			<trans-unit id="tx_jobboard_domain_model_benefit">
+				<source>Benefit</source>
+				<target>Benefit</target>
+			</trans-unit>
+			<trans-unit id="tx_jobboard_domain_model_benefit.title">
+				<source>Benefit</source>
+				<target>Benefit</target>
+			</trans-unit>
+
 			<trans-unit id="tx_jobboard_domain_model_salarytable">
 				<source>Salary table</source>
 				<target>Besoldungstabelle</target>
