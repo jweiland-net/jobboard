@@ -267,15 +267,11 @@ return [
             'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.benefits',
             'config' => [
                 'type' => 'select',
-                'renderType' => 'selectSingle',
-                'items' => [
-                    ['label' => '', 'value' => 0],
-                ],
+                'renderType' => 'selectMultipleSideBySide',
                 'foreign_table' => 'tx_jobboard_domain_model_benefit',
                 'foreign_table_where' => 'AND tx_jobboard_domain_model_benefit.sys_language_uid IN (-1,0) ORDER BY tx_jobboard_domain_model_benefit.title ASC',
-                'minitems' => 1,
-                'maxitems' => 1,
-                'default' => 0,
+                'MM' => 'tx_jobboard_job_benefit_mm',
+                'size' => 5,
             ],
         ],
         'salary_mode' => [

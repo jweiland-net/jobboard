@@ -55,7 +55,10 @@ class Job extends AbstractEntity
 
     protected float $salaryMax = 0.0;
 
-    protected ?Benefit $benefits = null;
+    /**
+     * @var ObjectStorage<Benefit>
+     */
+    protected ObjectStorage $benefits;
 
     protected string $employer = '';
 
@@ -112,6 +115,7 @@ class Job extends AbstractEntity
 
     public function __construct()
     {
+        $this->benefits = new ObjectStorage();
         $this->employerLogo = new ObjectStorage();
         $this->headerLogo = new ObjectStorage();
         $this->tenderFile = new ObjectStorage();
@@ -121,6 +125,7 @@ class Job extends AbstractEntity
 
     public function initializeObject(): void
     {
+        $this->benefits ??= new ObjectStorage();
         $this->employerLogo ??= new ObjectStorage();
         $this->headerLogo ??= new ObjectStorage();
         $this->tenderFile ??= new ObjectStorage();
@@ -318,14 +323,30 @@ class Job extends AbstractEntity
         $this->salaryMax = $salaryMax;
     }
 
-    public function getBenefits(): ?Benefit
+    /**
+     * @return ObjectStorage<Benefit>
+     */
+    public function getBenefits(): ObjectStorage
     {
         return $this->benefits;
     }
 
-    public function setBenefits(Benefit $benefits): void
+    /**
+     * @param ObjectStorage<Benefit> $benefits
+     */
+    public function setBenefits(ObjectStorage $benefits): void
     {
         $this->benefits = $benefits;
+    }
+
+    public function addBenefit(Benefit $benefit): void
+    {
+        $this->benefits->attach($benefit);
+    }
+
+    public function removeBenefit(Benefit $benefit): void
+    {
+        $this->benefits->detach($benefit);
     }
 
     public function getEmployer(): string
