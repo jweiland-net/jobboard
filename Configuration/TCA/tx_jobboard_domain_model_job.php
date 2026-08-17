@@ -91,6 +91,7 @@ return [
         'information' => ['showitem' => 'job_role, job_area, --linebreak--, job_type, contract_type, --linebreak--, tender_type'],
         'salary_grade' => ['showitem' => 'salary_mode, --linebreak--, salary_grade'],
         'salary_min_max' => ['showitem' => 'salary_mode, --linebreak--, salary_min, salary_max'],
+        'benefit' => ['showitem' => 'benefits'],
         'contact_person' => ['showitem' => 'first_name, last_name, --linebreak--, email, telephone, --linebreak--, function'],
         'startEndDate' => ['showitem' => 'start_date, ending_date'],
         'access' => [
