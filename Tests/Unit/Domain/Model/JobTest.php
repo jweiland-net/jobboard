@@ -452,20 +452,50 @@ class JobTest extends UnitTestCase
     }
 
     #[Test]
-    public function getEmployerLogoInitiallyReturnsNull(): void
+    public function getEmployerLogoInitiallyReturnsObjectStorage(): void
     {
-        self::assertNull($this->subject->getEmployerLogo());
+        self::assertEquals(
+            new ObjectStorage(),
+            $this->subject->getEmployerLogo(),
+        );
     }
 
     #[Test]
     public function setEmployerLogoSetsEmployerLogo(): void
     {
-        $instance = new FileReference();
-        $this->subject->setEmployerLogo($instance);
+        $object = new FileReference();
+
+        $objectStorage = new ObjectStorage();
+        $objectStorage->attach($object);
+
+        $this->subject->setEmployerLogo($objectStorage);
 
         self::assertSame(
-            $instance,
+            $objectStorage,
             $this->subject->getEmployerLogo(),
+        );
+    }
+
+    #[Test]
+    public function addEmployerLogoAddsEmployerLogo(): void
+    {
+        $instance = new FileReference();
+        $this->subject->addEmployerLogo($instance);
+
+        self::assertTrue(
+            $this->subject->getEmployerLogo()->contains($instance),
+        );
+    }
+
+    #[Test]
+    public function removeEmployerLogoRemovesEmployerLogo(): void
+    {
+        $instance = new FileReference();
+        $this->subject->addEmployerLogo($instance);
+        $this->subject->removeEmployerLogo($instance);
+
+        self::assertFalse(
+            $this->subject->getEmployerLogo()->contains($instance),
         );
     }
 
@@ -662,56 +692,146 @@ class JobTest extends UnitTestCase
     }
 
     #[Test]
-    public function getHeaderLogoInitiallyReturnsNull(): void
+    public function getHeaderLogoInitiallyReturnsObjectStorage(): void
     {
-        self::assertNull($this->subject->getHeaderLogo());
-    }
-
-    #[Test]
-    public function setHeaderLogoSetsHeaderLogo(): void
-    {
-        $instance = new FileReference();
-        $this->subject->setHeaderLogo($instance);
-
-        self::assertSame(
-            $instance,
+        self::assertEquals(
+            new ObjectStorage(),
             $this->subject->getHeaderLogo(),
         );
     }
 
     #[Test]
-    public function getTenderFileInitiallyReturnsNull(): void
+    public function setHeaderLogoSetsHeaderLogo(): void
     {
-        self::assertNull($this->subject->getTenderFile());
+        $object = new FileReference();
+
+        $objectStorage = new ObjectStorage();
+        $objectStorage->attach($object);
+
+        $this->subject->setHeaderLogo($objectStorage);
+
+        self::assertSame(
+            $objectStorage,
+            $this->subject->getHeaderLogo(),
+        );
     }
 
     #[Test]
-    public function setTenderFileSetsTenderFile(): void
+    public function addHeaderLogoAddsHeaderLogo(): void
     {
         $instance = new FileReference();
-        $this->subject->setTenderFile($instance);
+        $this->subject->addHeaderLogo($instance);
 
-        self::assertSame(
-            $instance,
+        self::assertTrue(
+            $this->subject->getHeaderLogo()->contains($instance),
+        );
+    }
+
+    #[Test]
+    public function removeHeaderLogoRemovesHeaderLogo(): void
+    {
+        $instance = new FileReference();
+        $this->subject->addHeaderLogo($instance);
+        $this->subject->removeHeaderLogo($instance);
+
+        self::assertFalse(
+            $this->subject->getHeaderLogo()->contains($instance),
+        );
+    }
+
+    #[Test]
+    public function getTenderFileInitiallyReturnsObjectStorage(): void
+    {
+        self::assertEquals(
+            new ObjectStorage(),
             $this->subject->getTenderFile(),
         );
     }
 
     #[Test]
-    public function getPdfFilesInitiallyReturnsNull(): void
+    public function setTenderFileSetsTenderFile(): void
     {
-        self::assertNull($this->subject->getPdfFiles());
+        $object = new FileReference();
+
+        $objectStorage = new ObjectStorage();
+        $objectStorage->attach($object);
+
+        $this->subject->setTenderFile($objectStorage);
+
+        self::assertSame(
+            $objectStorage,
+            $this->subject->getTenderFile(),
+        );
+    }
+
+    #[Test]
+    public function addTenderFileAddsTenderFile(): void
+    {
+        $instance = new FileReference();
+        $this->subject->addTenderFile($instance);
+
+        self::assertTrue(
+            $this->subject->getTenderFile()->contains($instance),
+        );
+    }
+
+    #[Test]
+    public function removeTenderFileRemovesTenderFile(): void
+    {
+        $instance = new FileReference();
+        $this->subject->addTenderFile($instance);
+        $this->subject->removeTenderFile($instance);
+
+        self::assertFalse(
+            $this->subject->getTenderFile()->contains($instance),
+        );
+    }
+
+    #[Test]
+    public function getPdfFilesInitiallyReturnsObjectStorage(): void
+    {
+        self::assertEquals(
+            new ObjectStorage(),
+            $this->subject->getPdfFiles(),
+        );
     }
 
     #[Test]
     public function setPdfFilesSetsPdfFiles(): void
     {
-        $instance = new FileReference();
-        $this->subject->setPdfFiles($instance);
+        $object = new FileReference();
+
+        $objectStorage = new ObjectStorage();
+        $objectStorage->attach($object);
+
+        $this->subject->setPdfFiles($objectStorage);
 
         self::assertSame(
-            $instance,
+            $objectStorage,
             $this->subject->getPdfFiles(),
+        );
+    }
+
+    #[Test]
+    public function addPdfFileAddsPdfFile(): void
+    {
+        $instance = new FileReference();
+        $this->subject->addPdfFile($instance);
+
+        self::assertTrue(
+            $this->subject->getPdfFiles()->contains($instance),
+        );
+    }
+
+    #[Test]
+    public function removePdfFileRemovesPdfFile(): void
+    {
+        $instance = new FileReference();
+        $this->subject->addPdfFile($instance);
+        $this->subject->removePdfFile($instance);
+
+        self::assertFalse(
+            $this->subject->getPdfFiles()->contains($instance),
         );
     }
 

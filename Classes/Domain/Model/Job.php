@@ -59,7 +59,10 @@ class Job extends AbstractEntity
 
     protected string $employer = '';
 
-    protected ?FileReference $employerLogo = null;
+    /**
+     * @var ObjectStorage<FileReference>
+     */
+    protected ObjectStorage $employerLogo;
 
     protected ?Address $employerAddress = null;
 
@@ -81,11 +84,20 @@ class Job extends AbstractEntity
 
     protected string $applicationGuidelines = '';
 
-    protected ?FileReference $headerLogo = null;
+    /**
+     * @var ObjectStorage<FileReference>
+     */
+    protected ObjectStorage $headerLogo;
 
-    protected ?FileReference $tenderFile = null;
+    /**
+     * @var ObjectStorage<FileReference>
+     */
+    protected ObjectStorage $tenderFile;
 
-    protected ?FileReference $pdfFiles = null;
+    /**
+     * @var ObjectStorage<FileReference>
+     */
+    protected ObjectStorage $pdfFiles;
 
     protected int $pdfTstamp = 0;
 
@@ -100,11 +112,19 @@ class Job extends AbstractEntity
 
     public function __construct()
     {
+        $this->employerLogo = new ObjectStorage();
+        $this->headerLogo = new ObjectStorage();
+        $this->tenderFile = new ObjectStorage();
+        $this->pdfFiles = new ObjectStorage();
         $this->relatedJobs = new ObjectStorage();
     }
 
     public function initializeObject(): void
     {
+        $this->employerLogo ??= new ObjectStorage();
+        $this->headerLogo ??= new ObjectStorage();
+        $this->tenderFile ??= new ObjectStorage();
+        $this->pdfFiles ??= new ObjectStorage();
         $this->relatedJobs ??= new ObjectStorage();
     }
 
@@ -318,14 +338,30 @@ class Job extends AbstractEntity
         $this->employer = $employer;
     }
 
-    public function getEmployerLogo(): ?FileReference
+    /**
+     * @return ObjectStorage<FileReference>
+     */
+    public function getEmployerLogo(): ObjectStorage
     {
         return $this->employerLogo;
     }
 
-    public function setEmployerLogo(FileReference $employerLogo): void
+    /**
+     * @param ObjectStorage<FileReference> $employerLogo
+     */
+    public function setEmployerLogo(ObjectStorage $employerLogo): void
     {
         $this->employerLogo = $employerLogo;
+    }
+
+    public function addEmployerLogo(FileReference $employerLogo): void
+    {
+        $this->employerLogo->attach($employerLogo);
+    }
+
+    public function removeEmployerLogo(FileReference $employerLogo): void
+    {
+        $this->employerLogo->detach($employerLogo);
     }
 
     public function getEmployerAddress(): ?Address
@@ -428,34 +464,82 @@ class Job extends AbstractEntity
         $this->applicationGuidelines = $applicationGuidelines;
     }
 
-    public function getHeaderLogo(): ?FileReference
+    /**
+     * @return ObjectStorage<FileReference>
+     */
+    public function getHeaderLogo(): ObjectStorage
     {
         return $this->headerLogo;
     }
 
-    public function setHeaderLogo(FileReference $headerLogo): void
+    /**
+     * @param ObjectStorage<FileReference> $headerLogo
+     */
+    public function setHeaderLogo(ObjectStorage $headerLogo): void
     {
         $this->headerLogo = $headerLogo;
     }
 
-    public function getTenderFile(): ?FileReference
+    public function addHeaderLogo(FileReference $headerLogo): void
+    {
+        $this->headerLogo->attach($headerLogo);
+    }
+
+    public function removeHeaderLogo(FileReference $headerLogo): void
+    {
+        $this->headerLogo->detach($headerLogo);
+    }
+
+    /**
+     * @return ObjectStorage<FileReference>
+     */
+    public function getTenderFile(): ObjectStorage
     {
         return $this->tenderFile;
     }
 
-    public function setTenderFile(FileReference $tenderFile): void
+    /**
+     * @param ObjectStorage<FileReference> $tenderFile
+     */
+    public function setTenderFile(ObjectStorage $tenderFile): void
     {
         $this->tenderFile = $tenderFile;
     }
 
-    public function getPdfFiles(): ?FileReference
+    public function addTenderFile(FileReference $tenderFile): void
+    {
+        $this->tenderFile->attach($tenderFile);
+    }
+
+    public function removeTenderFile(FileReference $tenderFile): void
+    {
+        $this->tenderFile->detach($tenderFile);
+    }
+
+    /**
+     * @return ObjectStorage<FileReference>
+     */
+    public function getPdfFiles(): ObjectStorage
     {
         return $this->pdfFiles;
     }
 
-    public function setPdfFiles(FileReference $pdfFiles): void
+    /**
+     * @param ObjectStorage<FileReference> $pdfFiles
+     */
+    public function setPdfFiles(ObjectStorage $pdfFiles): void
     {
         $this->pdfFiles = $pdfFiles;
+    }
+
+    public function addPdfFile(FileReference $pdfFile): void
+    {
+        $this->pdfFiles->attach($pdfFile);
+    }
+
+    public function removePdfFile(FileReference $pdfFile): void
+    {
+        $this->pdfFiles->detach($pdfFile);
     }
 
     public function getPdfTstamp(): int

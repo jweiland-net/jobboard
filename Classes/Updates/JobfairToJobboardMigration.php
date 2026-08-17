@@ -54,7 +54,7 @@ final class JobfairToJobboardMigration implements UpgradeWizardInterface
         'job',
     ];
 
-    private const JOB_FAL_FIELDS = ['tender_file', 'pdf_files'];
+    private const JOB_FAL_FIELDS = ['employer_logo', 'header_logo', 'tender_file', 'pdf_files'];
 
     public function __construct(
         private readonly ConnectionPool $connectionPool,
@@ -69,10 +69,11 @@ final class JobfairToJobboardMigration implements UpgradeWizardInterface
     {
         return 'The domain tables of this extension were renamed from "tx_jobfair2_domain_model_*" to '
             . '"tx_jobboard_domain_model_*". This wizard copies all existing rows (including job area, '
-            . 'job type, salary and lookup tables, plus attached PDF files) into the new tables, keeping '
-            . 'the original uid of every record. Legacy job records that predate the salary feature are '
-            . 'set to "free entry" salary mode with an empty salary range, since no salary grade can be '
-            . 'derived for them automatically. The old "tx_jobfair2_domain_model_*" tables are not removed '
+            . 'job type, salary and lookup tables, plus attached employer logos, header images and PDF '
+            . 'files) into the new tables, keeping the original uid of every record. Legacy job records '
+            . 'that predate the salary feature are set to "free entry" salary mode with an empty salary '
+            . 'range, since no salary grade can be derived for them automatically. The old '
+            . '"tx_jobfair2_domain_model_*" tables are not removed '
             . 'by this wizard - once the migration was verified, they can be removed manually via '
             . '"Admin Tools > Maintenance > Analyze Database Structure > Remove".';
     }
