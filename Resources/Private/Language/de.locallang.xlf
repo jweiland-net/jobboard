@@ -3,6 +3,35 @@
 	<file source-language="en" datatype="plaintext" original="messages" product-name="jobboard">
 		<header/>
 		<body>
+			<trans-unit id="job.groups.details">
+				<source>Job Details</source>
+				<target>Stellendetails</target>
+			</trans-unit>
+			<trans-unit id="job.groups.description">
+				<source>Job Description</source>
+				<target>Stellenbeschreibung</target>
+			</trans-unit>
+			<trans-unit id="job.groups.import">
+				<source>Import</source>
+				<target>Import</target>
+			</trans-unit>
+			<trans-unit id="job.groups.information">
+				<source>Job Information</source>
+				<target>Stelleninformationen</target>
+			</trans-unit>
+			<trans-unit id="job.groups.contactPerson">
+				<source>Contact Person</source>
+				<target>Ansprechpartner</target>
+			</trans-unit>
+			<trans-unit id="job.groups.applicationInformation">
+				<source>Application Information</source>
+				<target>Bewerbungsinformationen</target>
+			</trans-unit>
+			<trans-unit id="job.groups.media">
+				<source>Media</source>
+				<target>Medien</target>
+			</trans-unit>
+
 			<trans-unit id="job.title">
 				<source>Job</source>
 				<target>Stellenbezeichnung</target>
@@ -10,6 +39,14 @@
 			<trans-unit id="job.subtitle">
 				<source>Subtitle</source>
 				<target>Untertitel</target>
+			</trans-unit>
+			<trans-unit id="job.referenceNumber">
+				<source>Reference Number</source>
+				<target>Kennziffer</target>
+			</trans-unit>
+			<trans-unit id="job.description">
+				<source>Description</source>
+				<target>Beschreibung</target>
 			</trans-unit>
 			<trans-unit id="job.offer">
 				<source>Offer</source>
@@ -22,6 +59,14 @@
 			<trans-unit id="job.furtherInformation">
 				<source>Further Information</source>
 				<target>Weitere Informationen</target>
+			</trans-unit>
+			<trans-unit id="job.isImport">
+				<source>Imported</source>
+				<target>Importiert</target>
+			</trans-unit>
+			<trans-unit id="job.vacancyId">
+				<source>Vacancy ID</source>
+				<target>Vakanz-ID</target>
 			</trans-unit>
 			<trans-unit id="job.address.zip">
 				<source>Zip</source>
@@ -60,6 +105,14 @@
 				<source>Salary</source>
 				<target>Gehalt</target>
 			</trans-unit>
+			<trans-unit id="job.salaryGrade.title">
+				<source>Salary Grade</source>
+				<target>Entgeltgruppe</target>
+			</trans-unit>
+			<trans-unit id="job.salarySteps">
+				<source>Salary Steps</source>
+				<target>Gehaltsstufen</target>
+			</trans-unit>
 			<trans-unit id="job.benefits.title">
 				<source>Benefits</source>
 				<target>Benefits</target>
@@ -81,6 +134,10 @@
 				<source>Last name</source>
 				<target>Nachname</target>
 			</trans-unit>
+			<trans-unit id="job.email">
+				<source>Email</source>
+				<target>E-Mail</target>
+			</trans-unit>
 			<trans-unit id="job.telephone">
 				<source>Phone number</source>
 				<target>Telefonnummer</target>
@@ -88,6 +145,14 @@
 			<trans-unit id="job.function">
 				<source>Function</source>
 				<target>Funktion</target>
+			</trans-unit>
+			<trans-unit id="job.startEndDate.startDate">
+				<source>Start Date</source>
+				<target>Beginn</target>
+			</trans-unit>
+			<trans-unit id="job.startEndDate.endDate">
+				<source>End Date</source>
+				<target>Ende</target>
 			</trans-unit>
 			<trans-unit id="job.ending_date">
 				<source>Application deadline</source>
@@ -109,9 +174,26 @@
 				<source>Job ad</source>
 				<target>Stelleninfos</target>
 			</trans-unit>
+			<trans-unit id="job.pdfFiles">
+				<source>PDF Files</source>
+				<target>PDF-Dateien</target>
+			</trans-unit>
+			<trans-unit id="job.pdfTstamp">
+				<source>PDF Generated At</source>
+				<target>PDF erstellt am</target>
+			</trans-unit>
 			<trans-unit id="job.relatedJobs">
 				<source>Related jobs</source>
 				<target>Ähnliche Jobangebote</target>
+			</trans-unit>
+
+			<trans-unit id="job.boolean.yes">
+				<source>Yes</source>
+				<target>Ja</target>
+			</trans-unit>
+			<trans-unit id="job.boolean.no">
+				<source>No</source>
+				<target>Nein</target>
 			</trans-unit>
 
 			<trans-unit id="fluid.select.prependOptionLabel">

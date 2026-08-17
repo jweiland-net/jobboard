@@ -62,10 +62,10 @@ class SalaryGradeTest extends UnitTestCase
     }
 
     #[Test]
-    public function hasStepsInitiallyReturnsTrue(): void
+    public function getHasStepsInitiallyReturnsTrue(): void
     {
         self::assertTrue(
-            $this->subject->hasSteps(),
+            $this->subject->getHasSteps(),
         );
     }
 
@@ -75,7 +75,7 @@ class SalaryGradeTest extends UnitTestCase
         $this->subject->setHasSteps(false);
 
         self::assertFalse(
-            $this->subject->hasSteps(),
+            $this->subject->getHasSteps(),
         );
     }
 

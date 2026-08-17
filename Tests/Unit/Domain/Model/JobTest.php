@@ -190,10 +190,10 @@ class JobTest extends UnitTestCase
     }
 
     #[Test]
-    public function isImportInitiallyReturnsFalse(): void
+    public function getIsImportInitiallyReturnsFalse(): void
     {
         self::assertFalse(
-            $this->subject->isImport(),
+            $this->subject->getIsImport(),
         );
     }
 
@@ -203,7 +203,7 @@ class JobTest extends UnitTestCase
         $this->subject->setIsImport(true);
 
         self::assertTrue(
-            $this->subject->isImport(),
+            $this->subject->getIsImport(),
         );
     }
 
@@ -901,10 +901,10 @@ class JobTest extends UnitTestCase
     }
 
     #[Test]
-    public function isInternalInitiallyReturnsFalse(): void
+    public function getIsInternalInitiallyReturnsFalse(): void
     {
         self::assertFalse(
-            $this->subject->isInternal(),
+            $this->subject->getIsInternal(),
         );
     }
 
@@ -914,7 +914,7 @@ class JobTest extends UnitTestCase
         $this->subject->setIsInternal(true);
 
         self::assertTrue(
-            $this->subject->isInternal(),
+            $this->subject->getIsInternal(),
         );
     }
 
