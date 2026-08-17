@@ -1,7 +1,7 @@
 {
 	"name": "jweiland/jobfair2",
 	"type": "typo3-cms-extension",
-	"description": "Job fair 2 - Job fair implementation using Maps2 and tt_address to display jobs",
+	"description": "Job Board - Displays a searchable list of job openings with map view and optional automatic import from external sources",
 	"license": "GPL-2.0-or-later",
 	"keywords": [
 		"typo3",
