@@ -195,8 +195,8 @@
 				<target>Datum für Arbeitsbeginn</target>
 			</trans-unit>
 			<trans-unit id="tx_jobboard_domain_model_job.start_date.description">
-				<source>When the data record is saved, the job offer appears immediately in the job market, regardless of this date, provided the application deadline has not yet passed.</source>
-				<target>Mit Speichern des Datensatzes erscheint das Stellenangebot unabhängig von diesem Datum unmittelbar in der Jobbörse, sofern die Bewerbungsfrist noch nicht verstrichen ist.</target>
+				<source>When the data record is saved, the job offer appears immediately in the job market, regardless of this date.</source>
+				<target>Mit Speichern des Datensatzes erscheint das Stellenangebot unabhängig von diesem Datum unmittelbar in der Jobbörse.</target>
 			</trans-unit>
 			<trans-unit id="tx_jobboard_domain_model_job.ending_date">
 				<source>End of employment</source>
@@ -211,8 +211,8 @@
 				<target>Bewerbungsfrist</target>
 			</trans-unit>
 			<trans-unit id="tx_jobboard_domain_model_job.application_deadline.description">
-				<source>Once the application deadline has been reached, the job offer automatically disappears from the job offers after a maximum of 1 day.</source>
-				<target>Mit Erreichen der Bewerbungsfrist verschwindet das Stellenangebot nach max. 1 Tag automatisch aus den Jobangeboten.</target>
+				<source>The deadline by which applications for this job offer must be submitted.</source>
+				<target>Frist, bis zu der Bewerbungen für dieses Stellenangebot eingereicht werden können.</target>
 			</trans-unit>
 			<trans-unit id="tx_jobboard_domain_model_job.application_guidelines">
 				<source>Application guidelines</source>

@@ -148,7 +148,7 @@
 				<source>Start of employment</source>
 			</trans-unit>
 			<trans-unit id="tx_jobboard_domain_model_job.start_date.description">
-				<source>When the data record is saved, the job offer appears immediately in the job market, regardless of this date, provided the application deadline has not yet passed.</source>
+				<source>When the data record is saved, the job offer appears immediately in the job market, regardless of this date.</source>
 			</trans-unit>
 			<trans-unit id="tx_jobboard_domain_model_job.ending_date">
 				<source>End of employment</source>
@@ -160,7 +160,7 @@
 				<source>Application deadline</source>
 			</trans-unit>
 			<trans-unit id="tx_jobboard_domain_model_job.application_deadline.description">
-				<source>Once the application deadline has been reached, the job offer automatically disappears from the job offers after a maximum of 1 day.</source>
+				<source>The deadline by which applications for this job offer must be submitted.</source>
 			</trans-unit>
 			<trans-unit id="tx_jobboard_domain_model_job.application_guidelines">
 				<source>Application guidelines</source>
