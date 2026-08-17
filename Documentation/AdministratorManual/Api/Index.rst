@@ -217,7 +217,7 @@ A matching API model class looks like this:
     field values into this public repository. If your job source is
     confidential, keep the concrete API model class (endpoint URL,
     mapping, credentials) in a private, project-specific extension instead
-    and only rely on :ext:`jobfair2` for the generic import machinery.
+    and only rely on :ext:`jobboard` for the generic import machinery.
 
 
 ..  _admin-api-registering:

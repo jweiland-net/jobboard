@@ -1,4 +1,4 @@
-# TYPO3 Extension `jobfair2` (Jobboard)
+# TYPO3 Extension `jobboard`
 
 Jobboard is a TYPO3 extension that lets you present a list of open job positions on your website - like a digital job board.
 
@@ -21,7 +21,7 @@ Jobboard is a TYPO3 extension that lets you present a list of open job positions
 Install the extension via Composer:
 
 ```bash
-composer require jweiland/jobfair2
+composer require jweiland/jobboard
 ```
 
 Afterward, activate the extension in the TYPO3 backend (Extension Manager / Admin Tools) and add the "Job board" content element to a page.

@@ -31,9 +31,6 @@ plugin.tx_jobboard {
 page.includeCSS {
   jqueryAutocomplete = EXT:jobboard/Resources/Public/Css/jquery-ui.min.css
   jobboard = EXT:jobboard/Resources/Public/Css/style.css
-  # Known coupling to a foreign, project-specific extension - do not rename this filename here,
-  # it must stay in sync with the actual file in EXT:jw5160001drsportal (outside this repo).
-  drs = EXT:jw5160001drsportal/Resources/Public/Css/jobfair.css
   jobboardpdf = EXT:jobboard/Resources/Public/Css/pdf.css
 }
 

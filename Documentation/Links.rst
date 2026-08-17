@@ -10,7 +10,7 @@ Links
 =====
 
 :Packagist:
-    :composer:`jweiland/jobfair2`
+    :composer:`jweiland/jobboard`
 
 :Git repository:
     `Git repository`_
@@ -21,5 +21,5 @@ Links
 :Contact:
     `projects@jweiland.net <mailto:projects@jweiland.net>`__
 
-..  _Git repository: https://github.com/jweiland-net/jobfair2
-..  _Bug tracker: https://github.com/jweiland-net/jobfair2/issues
+..  _Git repository: https://github.com/jweiland-net/jobboard
+..  _Bug tracker: https://github.com/jweiland-net/jobboard/issues

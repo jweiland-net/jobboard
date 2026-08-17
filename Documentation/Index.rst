@@ -24,7 +24,7 @@ Job board
         Job board implementation using maps2 and tt_address to display jobs
 
     :Keywords:
-        jobs, jobboard, jobfair2, job board, recruiting
+        jobs, jobboard, job board, recruiting
 
     :Copyright:
         since 2017
