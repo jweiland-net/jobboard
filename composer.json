@@ -1,5 +1,5 @@
 {
-	"name": "jweiland/jobfair2",
+	"name": "jweiland/jobboard",
 	"type": "typo3-cms-extension",
 	"description": "Job Board - Displays a searchable list of job openings with map view and optional automatic import from external sources",
 	"license": "GPL-2.0-or-later",
@@ -20,8 +20,8 @@
 	],
 	"support": {
 		"email": "projects@jweiland.net",
-		"issues": "https://github.com/jweiland-net/jobfair2/issues",
-		"source": "https://github.com/jweiland-net/jobfair2"
+		"issues": "https://github.com/jweiland-net/jobboard/issues",
+		"source": "https://github.com/jweiland-net/jobboard"
 	},
 	"require": {
 		"ext-intl": "*",
