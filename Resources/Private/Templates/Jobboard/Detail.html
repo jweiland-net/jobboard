@@ -158,7 +158,11 @@
                     <f:if condition="{job.benefits}">
                         <section class="margin-top">
                             <h2><f:translate key="job.benefits.title"/></h2>
-                            <p>{job.benefits.title}</p>
+                            <ul>
+                                <f:for each="{job.benefits}" as="benefit">
+                                    <li>{benefit.title}</li>
+                                </f:for>
+                            </ul>
                         </section>
                     </f:if>
 

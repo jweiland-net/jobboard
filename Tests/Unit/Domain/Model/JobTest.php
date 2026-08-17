@@ -414,20 +414,50 @@ class JobTest extends UnitTestCase
     }
 
     #[Test]
-    public function getBenefitsInitiallyReturnsNull(): void
+    public function getBenefitsInitiallyReturnsObjectStorage(): void
     {
-        self::assertNull($this->subject->getBenefits());
+        self::assertEquals(
+            new ObjectStorage(),
+            $this->subject->getBenefits(),
+        );
     }
 
     #[Test]
     public function setBenefitsSetsBenefits(): void
     {
-        $instance = new Benefit();
-        $this->subject->setBenefits($instance);
+        $object = new Benefit();
+
+        $objectStorage = new ObjectStorage();
+        $objectStorage->attach($object);
+
+        $this->subject->setBenefits($objectStorage);
 
         self::assertSame(
-            $instance,
+            $objectStorage,
             $this->subject->getBenefits(),
+        );
+    }
+
+    #[Test]
+    public function addBenefitAddsBenefit(): void
+    {
+        $instance = new Benefit();
+        $this->subject->addBenefit($instance);
+
+        self::assertTrue(
+            $this->subject->getBenefits()->contains($instance),
+        );
+    }
+
+    #[Test]
+    public function removeBenefitRemovesBenefit(): void
+    {
+        $instance = new Benefit();
+        $this->subject->addBenefit($instance);
+        $this->subject->removeBenefit($instance);
+
+        self::assertFalse(
+            $this->subject->getBenefits()->contains($instance),
         );
     }
 
