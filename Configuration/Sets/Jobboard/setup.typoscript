@@ -36,7 +36,7 @@ page.includeCSS {
 
 page.includeJSFooter {
   jqueryAutocomplete = EXT:jobboard/Resources/Public/JavaScript/jquery-ui.min.js
-  dataTables = EXT:jobboard/Resources/Public/JavaScript/dataTables.min.js
+  dataTables = EXT:jobboard/Resources/Public/JavaScript/datatables.min.js
   cookiejs = EXT:jobboard/Resources/Public/JavaScript/js.cookie-2.2.1.min.js
   jobboard = EXT:jobboard/Resources/Public/JavaScript/script.js
 }
