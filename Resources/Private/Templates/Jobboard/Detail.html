@@ -160,7 +160,17 @@
                             <h2><f:translate key="job.benefits.title"/></h2>
                             <ul>
                                 <f:for each="{job.benefits}" as="benefit">
-                                    <li>{benefit.title}</li>
+                                    <li style="border: 3px solid {f:if(condition: benefit.color, then: benefit.color, else: 'transparent')};">
+                                        <strong>{benefit.title}</strong>
+                                        <f:if condition="{benefit.description}">
+                                            <p>{benefit.description}</p>
+                                        </f:if>
+                                        <f:if condition="{benefit.image}">
+                                            <f:for each="{benefit.image}" as="benefitImage">
+                                                <f:image image="{benefitImage}" alt="{benefit.title}" class="margin-top inline-block"/>
+                                            </f:for>
+                                        </f:if>
+                                    </li>
                                 </f:for>
                             </ul>
                         </section>
