@@ -10,7 +10,9 @@ covered here.
 `jobboard` is a standalone TYPO3 extension that renders a searchable job listing ("job board") on the frontend. It
 combines three building blocks:
 
-- **Job data** (`tx_jobboard_domain_model_job`) - title, description, dates, reference number, PDF files, etc.
+- **Job data** (`tx_jobboard_domain_model_job`) - title, description, dates, reference number, salary
+  information, contact person, media attachments, and relations to several taxonomy tables (job area, job
+  type, job role, contract type, tender type, benefits). See "3. Domain model" below for the full shape.
 - **Location data** - reuses `tt_address` (via `FriendsOfTYPO3\TtAddress`) and extends it with a relation to
   `EXT:maps2` (`tx_maps2_uid`) so job locations can be shown on a Google Map.
   Additionally, an `import_key` column is added to `tt_address` to make imported addresses idempotent.
@@ -29,7 +31,53 @@ combines three building blocks:
 - **State:** `ext_emconf.php` declares `'state' => 'alpha'`, version `0.0.1`. Treat the extension as not yet
   API-stable.
 
-## 3. Architecture overview
+## 3. Domain model
+
+`Job` is the central entity. Its properties (and the matching Fluid template sections in
+`Resources/Private/Templates/Jobboard/Detail.html`) are grouped the same way the TCA groups them into
+palettes/tabs: job details, job description, import, address, job information, salary, benefit, employer,
+contact person, application information, media, relations. `Detail.html` has one `f:section` per group
+(`renderDetails`, `renderDescription`, `renderSalary`, `renderBenefits`, ...), each rendered from `main` via
+`f:render section="..." arguments="{job: job}"` - keep new properties/output grouped the same way instead of
+adding ad-hoc fields elsewhere in the template.
+
+- **Taxonomy/lookup tables**: `JobArea`, `JobType`, `JobRole`, `ContractType`, `TenderType`, `Benefit` are
+  all minimal one-field (`title`) entities, each with their own TCA table. `Job` references `JobArea`,
+  `JobType`, `JobRole`, `ContractType`, and `TenderType` as single (`selectSingle`) relations, but
+  `benefits` is a genuine many-to-many relation (`selectMultipleSideBySide` + MM table
+  `tx_jobboard_job_benefit_mm`) - a job can have several benefits, unlike the other, singular, lookup
+  relations. `Benefit` additionally has `color` (TYPO3's native colorpicker, `type=input` /
+  `renderType=color`, with a `valuePicker` offering a fixed set of 6 pastel colors as quick-pick swatches -
+  editors can still choose any color freely) and a plain-text `description`. `ColorElement` does not
+  resolve `LLL:` references for `valuePicker.items` labels (unlike `InputTextElement`/`NumberElement`/
+  `EmailElement`/`LinkElement`), so those swatch names are intentionally untranslated plain text.
+- **Salary**: `Job::salaryMode` (TCA `type` field) picks between two shapes: `0` = reference a
+  `SalaryGrade` (itself either a flat `flatAmount` or a set of `SalaryStep` children, optionally grouped
+  under a `SalaryTable`), or `1` = free-text `salaryMin`/`salaryMax`. Use `Job::getSalaryRangeMin()`,
+  `getSalaryRangeMax()`, `getHasSalaryRange()`, and `getHasSalaryInformation()` to read the effective salary
+  regardless of mode - don't branch on `salaryMode` outside of `Job` itself, these methods already do it.
+  Known gap: `SalaryGrade::$salaryTable` is never hydrated by Extbase, because `salary_table` is not
+  declared as a relation column in `tx_jobboard_domain_model_salarygrade`'s own TCA - it only exists
+  implicitly as the inverse `foreign_field` of `salarytable.salary_grades`.
+- **File relations** (`employerLogo`, `headerLogo`, `tenderFile`, `pdfFiles` on `Job`; `image` on
+  `Benefit`) are all `ObjectStorage<FileReference>`, never a single `FileReference` - none of the underlying
+  TCA `type=file` columns actually restrict `maxitems` to 1 (even `Benefit::image`, which IS limited to 1
+  via `maxitems`, still uses `ObjectStorage` for consistency with the rest of the model). Each has
+  `add`/`remove` methods in addition to `get`/`set` (e.g. `addPdfFile()`/`removePdfFile()`, singularized
+  from the plural property name where applicable).
+- **Boolean getters and Fluid**: if a property name already starts with `is`/`has` (e.g. `isImport`,
+  `isInternal`, `hasSteps`), Fluid's `{job.isImport}` still resolves via a `get`-prefixed method
+  (`getIsImport()`), never a bare `isImport()`/`hasSteps()`. A bare method is invisible to the Fluid/Extbase
+  object accessor and either silently resolves to `null` or throws "Cannot access protected property" once
+  it falls through to direct property access. Every boolean getter in this codebase is named accordingly
+  (`getIsImport()`, `getIsInternal()`, `getHasSteps()`) - keep this in mind for any new boolean property,
+  it will not surface as a PHP error until the property is actually used from a Fluid template.
+- **`select` fields with an `MM` table keep their local column** (e.g. `Job::$benefits`'s underlying
+  `benefits` int column) - TYPO3's `DataHandler` writes the relation *count* into it on every save, it is
+  not dead weight to be dropped. Both the MM table and this local counter column are plain, TCA-derivable
+  int schemas and therefore never need an `ext_tables.sql` entry.
+
+## 4. Architecture overview
 
 ```
 Command (CLI)                       Frontend
@@ -84,7 +132,21 @@ Key points:
 - **`Address` domain model** extends `FriendsOfTYPO3\TtAddress\Domain\Model\Address` purely to add the
   `maps2` relation (`txMaps2Uid`). Keep this model in sync if `tt_address`'s own model changes upstream.
 
-## 4. Coding conventions actually used here
+## 5. Upgrade wizards
+
+- **`JobfairToJobboardMigration`** copies rows from the pre-rename `tx_jobfair2_domain_model_*` tables into
+  the current `tx_jobboard_domain_model_*` tables, preserving every row's original `uid` (so foreign keys
+  between these tables, and client-side "remembered jobs" in `localStorage`, stay valid). It copies columns
+  generically by diffing the *actual* schema of the old and new table (`getCommonColumns()`), not via a
+  hardcoded field list - adding or removing a plain `Job` column normally needs no wizard change. FAL
+  fields are the exception: `sys_file_reference.tablenames` is rewritten only for the columns listed in
+  `JOB_FAL_FIELDS` (`employer_logo`, `header_logo`, `tender_file`, `pdf_files`), so a *new* FAL column that
+  already existed under the old `tx_jobfair2_*` table name must be added to that constant, or its file
+  relations will silently point at the old, no-longer-existing table after migration.
+- **`JobfairToJobboardCTypeMigration`** migrates `tt_content.CType` and `be_groups` explicit-allow/deny
+  permissions from `jobfair2_jobfair` to `jobboard_jobboard`. Unrelated to FAL/domain data.
+
+## 6. Coding conventions actually used here
 
 - `declare(strict_types=1);` in every PHP file, one blank line after the opening tag.
 - Constructor property promotion everywhere; `readonly class` for stateless services
@@ -105,14 +167,19 @@ statements, no FQCN in the method body (except global-namespace classes like `\D
 return types, `private` visibility by default for new Events/Listeners/Middlewares/Commands unless XClass
 support is explicitly required.
 
-## 5. Testing & QA
+## 7. Testing & QA
 
 `Tests/Unit/` and `Tests/Functional/` exist (PHPUnit via `typo3/cms-testing-framework`), as does
 `Build/Scripts/runTests.sh` and a php-cs-fixer configuration (`Build/cgl/config.php`). There is currently
 **no** PHPStan configuration. If asked to add it, mirror the conventions used across other `jweiland/*`
 extensions rather than inventing a new structure.
 
-## 6. Operating the import (for context, not to be changed lightly)
+Unit tests for domain models follow one fixed pattern per property: `get<Prop>InitiallyReturns<Default>()` /
+`set<Prop>Sets<Prop>()`, plus `add<Prop>Adds<Prop>()` / `remove<Prop>Removes<Prop>()` for `ObjectStorage`
+properties. Properties/tests are ordered to match the TCA `showitem`/palette order of the table, not
+alphabetically or by insertion order.
+
+## 8. Operating the import (for context, not to be changed lightly)
 
 ```bash
 vendor/bin/typo3 jobboard:import:jobs:mhm <storagePid>
