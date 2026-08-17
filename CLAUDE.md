@@ -1,4 +1,4 @@
-# AI Development Guidelines for `jweiland/jobfair2`
+# AI Development Guidelines for `jweiland/jobboard`
 
 This file defines technical context and constraints for Claude (or any AI assistant) working on this
 repository. It is scoped to this single extension. If this repository is ever consumed as part of a larger
@@ -7,8 +7,8 @@ covered here.
 
 ## 1. What this extension is
 
-`jobfair2` (internally renamed to "Jobboard", see section 2) is a standalone TYPO3 extension that renders a
-searchable job listing ("job board") on the frontend. It combines three building blocks:
+`jobboard` is a standalone TYPO3 extension that renders a searchable job listing ("job board") on the frontend. It
+combines three building blocks:
 
 - **Job data** (`tx_jobboard_domain_model_job`) - title, description, dates, reference number, PDF files, etc.
 - **Location data** - reuses `tt_address` (via `FriendsOfTYPO3\TtAddress`) and extends it with a relation to
@@ -18,66 +18,7 @@ searchable job listing ("job board") on the frontend. It combines three building
   several endpoints of "MHM HR") and writes/updates/deletes `tx_jobboard_domain_model_job` and `tt_address`
   records via TYPO3's `DataHandler`.
 
-## 2. Origin and internal rename history - read this before renaming anything again
-
-This extension was extracted from another (older) TYPO3 project where it was pinned to a fixed version and
-lived alongside project-specific extensions. It was copied as-is into this repository to become an
-independent, Composer-installable package on its own GitHub repository
-(`git@github.com:jweiland-net/jobfair2.git`).
-
-**The wording "Jobfair"/"job fair" was renamed to "Jobboard"/"job board" throughout the codebase**, because
-customers found "job fair" confusing as a product name for a job listing/search feature. This rename
-covers the PHP namespace (`JWeiland\Jobfair2` -> `JWeiland\Jobboard`), all database table names
-(`tx_jobfair2_domain_model_*` -> `tx_jobboard_domain_model_*`), the CType/Extbase plugin signature
-(`jobfair2_jobfair` -> `jobboard_jobboard`), the TypoScript constants namespace (`jobfair2.*` ->
-`jobboard.*`), the Site Sets (`jweiland/jobfair2`/`jweiland/jobfair2-pdf` -> `jweiland/jobboard`/
-`jweiland/jobboard-pdf`), the CLI command (`jobfair:import:jobs:mhm` -> `jobboard:import:jobs:mhm`), the
-LOG channel (`JWeiland.Jobfair2` -> `JWeiland.Jobboard`), and all `EXT:jobfair2/...` path references
-(-> `EXT:jobboard/...`), plus documentation, comments and JS/CSS identifiers.
-
-**Deliberately excluded from this rename** (still `jobfair2`), because they are wired into the Composer
-setup and a separate GitHub repository rename has not happened yet:
-
-- The physical extension directory/Extension Key (`$_EXTKEY`, `ext_emconf.php`) - still `jobfair2`.
-- The `composer.json` package `name` (`jweiland/jobfair2`) and its `support.issues`/`support.source` URLs.
-- The `:composer:`/`:ext:` documentation roles and GitHub URLs in `Documentation/Links.rst` and
-  `Documentation/guides.xml` - they still point at the real, not-yet-renamed repository.
-
-Because the Extension Key stays `jobfair2` while `composer.json`'s `extra.typo3/cms.extension-key` was
-already changed to `jobboard` (and all `EXT:jobboard/...` path references assume that), **this extension is
-intentionally not runnable until the physical directory/repository is renamed to `jobboard` to match** -
-that final step is a separate, manual action by the maintainer (rename the GitHub repository, then update
-the path this package is checked out under). Do not "fix" this mismatch by reverting the Extension Key or
-the `EXT:jobboard/...` paths back to `jobfair2`.
-
-**Backwards compatibility for existing installations:** Because an older, still-active project
-(`5160001-drs-jobs`) has data in the *old* `tx_jobfair2_domain_model_*` tables and CType `jobfair2_jobfair`,
-two TYPO3 Upgrade Wizards ship in `Classes/Updates/` to migrate existing installations onto the renamed
-structure without data loss:
-
-- `JobfairToJobboardMigration` - copies all rows from the old `tx_jobfair2_domain_model_*` tables into the
-  new `tx_jobboard_domain_model_*` tables (preserving `uid` values for foreign key/localStorage
-  compatibility), including FAL file reference reassignment and a safe `salary_mode` default for legacy job
-  records that predate the salary feature.
-- `JobfairToJobboardCTypeMigration` - migrates `tt_content.CType` and backend user group permissions from
-  `jobfair2_jobfair` to `jobboard_jobboard`.
-- `JWeilandJobfair2CTypeMigration` (pre-existing) is kept as-is (only its namespace was updated) - it is a
-  historical `list_type` -> `CType` migration for very old installations and must not be repurposed for the
-  Jobfair2 -> Jobboard rename.
-
-**Known leftover coupling to the old project** (unrelated to the rename, still present):
-
-- `Configuration/Sets/Jobboard/setup.typoscript` includes a CSS file from a project-specific extension:
-  `EXT:jw5160001drsportal/Resources/Public/Css/jobfair.css`. This extension key does not exist in this
-  standalone package and will not resolve here. The filename `jobfair.css` is intentionally NOT renamed to
-  `jobboard.css`, since it points at a real file in that foreign extension which was not part of this
-  rename. Do not remove this line silently - the old project may depend on it being present in this exact
-  Site Set. Ask before touching it.
-
-When in doubt, prefer additive, backward-compatible changes over further renames, and flag anything that
-looks like a breaking change for the old project explicitly.
-
-## 3. Tech stack
+## 2. Tech stack
 
 - **TYPO3:** 13.4 LTS only (see `composer.json` / `ext_emconf.php` constraints).
 - **PHP:** 8.2+, constructor property promotion used throughout.
@@ -88,7 +29,7 @@ looks like a breaking change for the old project explicitly.
 - **State:** `ext_emconf.php` declares `'state' => 'alpha'`, version `0.0.1`. Treat the extension as not yet
   API-stable.
 
-## 4. Architecture overview
+## 3. Architecture overview
 
 ```
 Command (CLI)                       Frontend
@@ -143,7 +84,7 @@ Key points:
 - **`Address` domain model** extends `FriendsOfTYPO3\TtAddress\Domain\Model\Address` purely to add the
   `maps2` relation (`txMaps2Uid`). Keep this model in sync if `tt_address`'s own model changes upstream.
 
-## 5. Coding conventions actually used here
+## 4. Coding conventions actually used here
 
 - `declare(strict_types=1);` in every PHP file, one blank line after the opening tag.
 - Constructor property promotion everywhere; `readonly class` for stateless services
@@ -164,14 +105,14 @@ statements, no FQCN in the method body (except global-namespace classes like `\D
 return types, `private` visibility by default for new Events/Listeners/Middlewares/Commands unless XClass
 support is explicitly required.
 
-## 6. Testing & QA
+## 5. Testing & QA
 
 `Tests/Unit/` and `Tests/Functional/` exist (PHPUnit via `typo3/cms-testing-framework`), as does
 `Build/Scripts/runTests.sh` and a php-cs-fixer configuration (`Build/cgl/config.php`). There is currently
 **no** PHPStan configuration. If asked to add it, mirror the conventions used across other `jweiland/*`
 extensions rather than inventing a new structure.
 
-## 7. Operating the import (for context, not to be changed lightly)
+## 6. Operating the import (for context, not to be changed lightly)
 
 ```bash
 vendor/bin/typo3 jobboard:import:jobs:mhm <storagePid>

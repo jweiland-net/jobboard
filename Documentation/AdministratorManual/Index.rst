@@ -25,7 +25,7 @@ Installation
 
     ..  code-block:: bash
 
-        composer require jweiland/jobfair2
+        composer require jweiland/jobboard
 
 #.  Activate the extension, either via the :guilabel:`Extensions` module in
     the TYPO3 backend, or via the command line:
