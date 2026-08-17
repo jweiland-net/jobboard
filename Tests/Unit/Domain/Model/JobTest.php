@@ -12,13 +12,18 @@ declare(strict_types=1);
 namespace JWeiland\Jobboard\Tests\Unit\Domain\Model;
 
 use JWeiland\Jobboard\Domain\Model\Address;
+use JWeiland\Jobboard\Domain\Model\Benefit;
+use JWeiland\Jobboard\Domain\Model\ContractType;
 use JWeiland\Jobboard\Domain\Model\Job;
 use JWeiland\Jobboard\Domain\Model\JobArea;
+use JWeiland\Jobboard\Domain\Model\JobRole;
 use JWeiland\Jobboard\Domain\Model\JobType;
 use JWeiland\Jobboard\Domain\Model\SalaryGrade;
 use JWeiland\Jobboard\Domain\Model\SalaryStep;
+use JWeiland\Jobboard\Domain\Model\TenderType;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Extbase\Domain\Model\FileReference;
+use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
@@ -85,6 +90,106 @@ class JobTest extends UnitTestCase
     }
 
     #[Test]
+    public function getSubtitleInitiallyReturnsEmptyString(): void
+    {
+        self::assertSame(
+            '',
+            $this->subject->getSubtitle(),
+        );
+    }
+
+    #[Test]
+    public function setSubtitleSetsSubtitle(): void
+    {
+        $this->subject->setSubtitle('Join our team');
+
+        self::assertSame(
+            'Join our team',
+            $this->subject->getSubtitle(),
+        );
+    }
+
+    #[Test]
+    public function getDescriptionInitiallyReturnsEmptyString(): void
+    {
+        self::assertSame(
+            '',
+            $this->subject->getDescription(),
+        );
+    }
+
+    #[Test]
+    public function setDescriptionSetsDescription(): void
+    {
+        $this->subject->setDescription('foo bar');
+
+        self::assertSame(
+            'foo bar',
+            $this->subject->getDescription(),
+        );
+    }
+
+    #[Test]
+    public function getOfferInitiallyReturnsEmptyString(): void
+    {
+        self::assertSame(
+            '',
+            $this->subject->getOffer(),
+        );
+    }
+
+    #[Test]
+    public function setOfferSetsOffer(): void
+    {
+        $this->subject->setOffer('Flexible working hours');
+
+        self::assertSame(
+            'Flexible working hours',
+            $this->subject->getOffer(),
+        );
+    }
+
+    #[Test]
+    public function getRequirementsInitiallyReturnsEmptyString(): void
+    {
+        self::assertSame(
+            '',
+            $this->subject->getRequirements(),
+        );
+    }
+
+    #[Test]
+    public function setRequirementsSetsRequirements(): void
+    {
+        $this->subject->setRequirements('Completed vocational training');
+
+        self::assertSame(
+            'Completed vocational training',
+            $this->subject->getRequirements(),
+        );
+    }
+
+    #[Test]
+    public function getFurtherInformationInitiallyReturnsEmptyString(): void
+    {
+        self::assertSame(
+            '',
+            $this->subject->getFurtherInformation(),
+        );
+    }
+
+    #[Test]
+    public function setFurtherInformationSetsFurtherInformation(): void
+    {
+        $this->subject->setFurtherInformation('Start date negotiable');
+
+        self::assertSame(
+            'Start date negotiable',
+            $this->subject->getFurtherInformation(),
+        );
+    }
+
+    #[Test]
     public function isImportInitiallyReturnsFalse(): void
     {
         self::assertFalse(
@@ -123,26 +228,6 @@ class JobTest extends UnitTestCase
     }
 
     #[Test]
-    public function getDescriptionInitiallyReturnsEmptyString(): void
-    {
-        self::assertSame(
-            '',
-            $this->subject->getDescription(),
-        );
-    }
-
-    #[Test]
-    public function setDescriptionSetsDescription(): void
-    {
-        $this->subject->setDescription('foo bar');
-
-        self::assertSame(
-            'foo bar',
-            $this->subject->getDescription(),
-        );
-    }
-
-    #[Test]
     public function getAddressInitiallyReturnsNull(): void
     {
         self::assertNull($this->subject->getAddress());
@@ -161,22 +246,20 @@ class JobTest extends UnitTestCase
     }
 
     #[Test]
-    public function getLinkInitiallyReturnsEmptyString(): void
+    public function getJobRoleInitiallyReturnsNull(): void
     {
-        self::assertSame(
-            '',
-            $this->subject->getLink(),
-        );
+        self::assertNull($this->subject->getJobRole());
     }
 
     #[Test]
-    public function setLinkSetsLink(): void
+    public function setJobRoleSetsJobRole(): void
     {
-        $this->subject->setLink('https://example.com');
+        $instance = new JobRole();
+        $this->subject->setJobRole($instance);
 
         self::assertSame(
-            'https://example.com',
-            $this->subject->getLink(),
+            $instance,
+            $this->subject->getJobRole(),
         );
     }
 
@@ -217,170 +300,38 @@ class JobTest extends UnitTestCase
     }
 
     #[Test]
-    public function getStartDateInitiallyReturnsNull(): void
+    public function getContractTypeInitiallyReturnsNull(): void
     {
-        self::assertNull($this->subject->getStartDate());
+        self::assertNull($this->subject->getContractType());
     }
 
     #[Test]
-    public function setStartDateSetsStartDate(): void
+    public function setContractTypeSetsContractType(): void
     {
-        $date = new \DateTime();
-        $this->subject->setStartDate($date);
-
-        self::assertSame(
-            $date,
-            $this->subject->getStartDate(),
-        );
-    }
-
-    #[Test]
-    public function getEndingDateInitiallyReturnsNull(): void
-    {
-        self::assertNull($this->subject->getEndingDate());
-    }
-
-    #[Test]
-    public function setEndingDateSetsEndingDate(): void
-    {
-        $date = new \DateTime();
-        $this->subject->setEndingDate($date);
-
-        self::assertSame(
-            $date,
-            $this->subject->getEndingDate(),
-        );
-    }
-
-    #[Test]
-    public function getEmployerInitiallyReturnsEmptyString(): void
-    {
-        self::assertSame(
-            '',
-            $this->subject->getEmployer(),
-        );
-    }
-
-    #[Test]
-    public function setEmployerSetsEmployer(): void
-    {
-        $this->subject->setEmployer('Example Employer Ltd.');
-
-        self::assertSame(
-            'Example Employer Ltd.',
-            $this->subject->getEmployer(),
-        );
-    }
-
-    #[Test]
-    public function getEmployerAddressInitiallyReturnsNull(): void
-    {
-        self::assertNull($this->subject->getEmployerAddress());
-    }
-
-    #[Test]
-    public function setEmployerAddressSetsEmployerAddress(): void
-    {
-        $instance = new Address();
-        $this->subject->setEmployerAddress($instance);
+        $instance = new ContractType();
+        $this->subject->setContractType($instance);
 
         self::assertSame(
             $instance,
-            $this->subject->getEmployerAddress(),
+            $this->subject->getContractType(),
         );
     }
 
     #[Test]
-    public function getEmailInitiallyReturnsEmptyString(): void
+    public function getTenderTypeInitiallyReturnsNull(): void
     {
-        self::assertSame(
-            '',
-            $this->subject->getEmail(),
-        );
+        self::assertNull($this->subject->getTenderType());
     }
 
     #[Test]
-    public function setEmailSetsEmail(): void
+    public function setTenderTypeSetsTenderType(): void
     {
-        $this->subject->setEmail('test@example.com');
-
-        self::assertSame(
-            'test@example.com',
-            $this->subject->getEmail(),
-        );
-    }
-
-    #[Test]
-    public function getTenderFileInitiallyReturnsNull(): void
-    {
-        self::assertNull($this->subject->getTenderFile());
-    }
-
-    #[Test]
-    public function setTenderFileSetsTenderFile(): void
-    {
-        $instance = new FileReference();
-        $this->subject->setTenderFile($instance);
+        $instance = new TenderType();
+        $this->subject->setTenderType($instance);
 
         self::assertSame(
             $instance,
-            $this->subject->getTenderFile(),
-        );
-    }
-
-    #[Test]
-    public function getPdfFilesInitiallyReturnsNull(): void
-    {
-        self::assertNull($this->subject->getPdfFiles());
-    }
-
-    #[Test]
-    public function setPdfFilesSetsPdfFiles(): void
-    {
-        $instance = new FileReference();
-        $this->subject->setPdfFiles($instance);
-
-        self::assertSame(
-            $instance,
-            $this->subject->getPdfFiles(),
-        );
-    }
-
-    #[Test]
-    public function getPdfTstampInitiallyReturnsZero(): void
-    {
-        self::assertSame(
-            0,
-            $this->subject->getPdfTstamp(),
-        );
-    }
-
-    #[Test]
-    public function setPdfTstampSetsPdfTstamp(): void
-    {
-        $this->subject->setPdfTstamp(1234567890);
-
-        self::assertSame(
-            1234567890,
-            $this->subject->getPdfTstamp(),
-        );
-    }
-
-    #[Test]
-    public function isInternalInitiallyReturnsFalse(): void
-    {
-        self::assertFalse(
-            $this->subject->isInternal(),
-        );
-    }
-
-    #[Test]
-    public function setIsInternalSetsIsInternal(): void
-    {
-        $this->subject->setIsInternal(true);
-
-        self::assertTrue(
-            $this->subject->isInternal(),
+            $this->subject->getTenderType(),
         );
     }
 
@@ -459,6 +410,391 @@ class JobTest extends UnitTestCase
         self::assertSame(
             3500.5,
             $this->subject->getSalaryMax(),
+        );
+    }
+
+    #[Test]
+    public function getBenefitsInitiallyReturnsNull(): void
+    {
+        self::assertNull($this->subject->getBenefits());
+    }
+
+    #[Test]
+    public function setBenefitsSetsBenefits(): void
+    {
+        $instance = new Benefit();
+        $this->subject->setBenefits($instance);
+
+        self::assertSame(
+            $instance,
+            $this->subject->getBenefits(),
+        );
+    }
+
+    #[Test]
+    public function getEmployerInitiallyReturnsEmptyString(): void
+    {
+        self::assertSame(
+            '',
+            $this->subject->getEmployer(),
+        );
+    }
+
+    #[Test]
+    public function setEmployerSetsEmployer(): void
+    {
+        $this->subject->setEmployer('Example Employer Ltd.');
+
+        self::assertSame(
+            'Example Employer Ltd.',
+            $this->subject->getEmployer(),
+        );
+    }
+
+    #[Test]
+    public function getEmployerLogoInitiallyReturnsNull(): void
+    {
+        self::assertNull($this->subject->getEmployerLogo());
+    }
+
+    #[Test]
+    public function setEmployerLogoSetsEmployerLogo(): void
+    {
+        $instance = new FileReference();
+        $this->subject->setEmployerLogo($instance);
+
+        self::assertSame(
+            $instance,
+            $this->subject->getEmployerLogo(),
+        );
+    }
+
+    #[Test]
+    public function getEmployerAddressInitiallyReturnsNull(): void
+    {
+        self::assertNull($this->subject->getEmployerAddress());
+    }
+
+    #[Test]
+    public function setEmployerAddressSetsEmployerAddress(): void
+    {
+        $instance = new Address();
+        $this->subject->setEmployerAddress($instance);
+
+        self::assertSame(
+            $instance,
+            $this->subject->getEmployerAddress(),
+        );
+    }
+
+    #[Test]
+    public function getFirstNameInitiallyReturnsEmptyString(): void
+    {
+        self::assertSame(
+            '',
+            $this->subject->getFirstName(),
+        );
+    }
+
+    #[Test]
+    public function setFirstNameSetsFirstName(): void
+    {
+        $this->subject->setFirstName('Jane');
+
+        self::assertSame(
+            'Jane',
+            $this->subject->getFirstName(),
+        );
+    }
+
+    #[Test]
+    public function getLastNameInitiallyReturnsEmptyString(): void
+    {
+        self::assertSame(
+            '',
+            $this->subject->getLastName(),
+        );
+    }
+
+    #[Test]
+    public function setLastNameSetsLastName(): void
+    {
+        $this->subject->setLastName('Doe');
+
+        self::assertSame(
+            'Doe',
+            $this->subject->getLastName(),
+        );
+    }
+
+    #[Test]
+    public function getEmailInitiallyReturnsEmptyString(): void
+    {
+        self::assertSame(
+            '',
+            $this->subject->getEmail(),
+        );
+    }
+
+    #[Test]
+    public function setEmailSetsEmail(): void
+    {
+        $this->subject->setEmail('test@example.com');
+
+        self::assertSame(
+            'test@example.com',
+            $this->subject->getEmail(),
+        );
+    }
+
+    #[Test]
+    public function getTelephoneInitiallyReturnsEmptyString(): void
+    {
+        self::assertSame(
+            '',
+            $this->subject->getTelephone(),
+        );
+    }
+
+    #[Test]
+    public function setTelephoneSetsTelephone(): void
+    {
+        $this->subject->setTelephone('+49 123 456789');
+
+        self::assertSame(
+            '+49 123 456789',
+            $this->subject->getTelephone(),
+        );
+    }
+
+    #[Test]
+    public function getFunctionInitiallyReturnsEmptyString(): void
+    {
+        self::assertSame(
+            '',
+            $this->subject->getFunction(),
+        );
+    }
+
+    #[Test]
+    public function setFunctionSetsFunction(): void
+    {
+        $this->subject->setFunction('HR Manager');
+
+        self::assertSame(
+            'HR Manager',
+            $this->subject->getFunction(),
+        );
+    }
+
+    #[Test]
+    public function getStartDateInitiallyReturnsNull(): void
+    {
+        self::assertNull($this->subject->getStartDate());
+    }
+
+    #[Test]
+    public function setStartDateSetsStartDate(): void
+    {
+        $date = new \DateTime();
+        $this->subject->setStartDate($date);
+
+        self::assertSame(
+            $date,
+            $this->subject->getStartDate(),
+        );
+    }
+
+    #[Test]
+    public function getEndingDateInitiallyReturnsNull(): void
+    {
+        self::assertNull($this->subject->getEndingDate());
+    }
+
+    #[Test]
+    public function setEndingDateSetsEndingDate(): void
+    {
+        $date = new \DateTime();
+        $this->subject->setEndingDate($date);
+
+        self::assertSame(
+            $date,
+            $this->subject->getEndingDate(),
+        );
+    }
+
+    #[Test]
+    public function getApplicationDeadlineInitiallyReturnsNull(): void
+    {
+        self::assertNull($this->subject->getApplicationDeadline());
+    }
+
+    #[Test]
+    public function setApplicationDeadlineSetsApplicationDeadline(): void
+    {
+        $date = new \DateTime();
+        $this->subject->setApplicationDeadline($date);
+
+        self::assertSame(
+            $date,
+            $this->subject->getApplicationDeadline(),
+        );
+    }
+
+    #[Test]
+    public function getApplicationGuidelinesInitiallyReturnsEmptyString(): void
+    {
+        self::assertSame(
+            '',
+            $this->subject->getApplicationGuidelines(),
+        );
+    }
+
+    #[Test]
+    public function setApplicationGuidelinesSetsApplicationGuidelines(): void
+    {
+        $this->subject->setApplicationGuidelines('Please apply via our online form.');
+
+        self::assertSame(
+            'Please apply via our online form.',
+            $this->subject->getApplicationGuidelines(),
+        );
+    }
+
+    #[Test]
+    public function getHeaderLogoInitiallyReturnsNull(): void
+    {
+        self::assertNull($this->subject->getHeaderLogo());
+    }
+
+    #[Test]
+    public function setHeaderLogoSetsHeaderLogo(): void
+    {
+        $instance = new FileReference();
+        $this->subject->setHeaderLogo($instance);
+
+        self::assertSame(
+            $instance,
+            $this->subject->getHeaderLogo(),
+        );
+    }
+
+    #[Test]
+    public function getTenderFileInitiallyReturnsNull(): void
+    {
+        self::assertNull($this->subject->getTenderFile());
+    }
+
+    #[Test]
+    public function setTenderFileSetsTenderFile(): void
+    {
+        $instance = new FileReference();
+        $this->subject->setTenderFile($instance);
+
+        self::assertSame(
+            $instance,
+            $this->subject->getTenderFile(),
+        );
+    }
+
+    #[Test]
+    public function getPdfFilesInitiallyReturnsNull(): void
+    {
+        self::assertNull($this->subject->getPdfFiles());
+    }
+
+    #[Test]
+    public function setPdfFilesSetsPdfFiles(): void
+    {
+        $instance = new FileReference();
+        $this->subject->setPdfFiles($instance);
+
+        self::assertSame(
+            $instance,
+            $this->subject->getPdfFiles(),
+        );
+    }
+
+    #[Test]
+    public function getPdfTstampInitiallyReturnsZero(): void
+    {
+        self::assertSame(
+            0,
+            $this->subject->getPdfTstamp(),
+        );
+    }
+
+    #[Test]
+    public function setPdfTstampSetsPdfTstamp(): void
+    {
+        $this->subject->setPdfTstamp(1234567890);
+
+        self::assertSame(
+            1234567890,
+            $this->subject->getPdfTstamp(),
+        );
+    }
+
+    #[Test]
+    public function getRelatedJobsInitiallyReturnsObjectStorage(): void
+    {
+        self::assertEquals(
+            new ObjectStorage(),
+            $this->subject->getRelatedJobs(),
+        );
+    }
+
+    #[Test]
+    public function setRelatedJobsSetsRelatedJobs(): void
+    {
+        $object = new Job();
+
+        $objectStorage = new ObjectStorage();
+        $objectStorage->attach($object);
+
+        $this->subject->setRelatedJobs($objectStorage);
+
+        self::assertSame(
+            $objectStorage,
+            $this->subject->getRelatedJobs(),
+        );
+    }
+
+    #[Test]
+    public function getLinkInitiallyReturnsEmptyString(): void
+    {
+        self::assertSame(
+            '',
+            $this->subject->getLink(),
+        );
+    }
+
+    #[Test]
+    public function setLinkSetsLink(): void
+    {
+        $this->subject->setLink('https://example.com');
+
+        self::assertSame(
+            'https://example.com',
+            $this->subject->getLink(),
+        );
+    }
+
+    #[Test]
+    public function isInternalInitiallyReturnsFalse(): void
+    {
+        self::assertFalse(
+            $this->subject->isInternal(),
+        );
+    }
+
+    #[Test]
+    public function setIsInternalSetsIsInternal(): void
+    {
+        $this->subject->setIsInternal(true);
+
+        self::assertTrue(
+            $this->subject->isInternal(),
         );
     }
 
