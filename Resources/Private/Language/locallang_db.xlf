@@ -249,6 +249,36 @@
 			<trans-unit id="tx_jobboard_domain_model_benefit.title">
 				<source>Benefit</source>
 			</trans-unit>
+			<trans-unit id="tx_jobboard_domain_model_benefit.color">
+				<source>Color</source>
+			</trans-unit>
+			<trans-unit id="tx_jobboard_domain_model_benefit.color.blue">
+				<source>Blue</source>
+			</trans-unit>
+			<trans-unit id="tx_jobboard_domain_model_benefit.color.green">
+				<source>Green</source>
+			</trans-unit>
+			<trans-unit id="tx_jobboard_domain_model_benefit.color.orange">
+				<source>Orange</source>
+			</trans-unit>
+			<trans-unit id="tx_jobboard_domain_model_benefit.color.pink">
+				<source>Pink</source>
+			</trans-unit>
+			<trans-unit id="tx_jobboard_domain_model_benefit.color.purple">
+				<source>Purple</source>
+			</trans-unit>
+			<trans-unit id="tx_jobboard_domain_model_benefit.color.yellow">
+				<source>Yellow</source>
+			</trans-unit>
+			<trans-unit id="tx_jobboard_domain_model_benefit.description">
+				<source>Description</source>
+			</trans-unit>
+			<trans-unit id="tx_jobboard_domain_model_benefit.media">
+				<source>Media</source>
+			</trans-unit>
+			<trans-unit id="tx_jobboard_domain_model_benefit.image">
+				<source>Image</source>
+			</trans-unit>
 
 			<trans-unit id="tx_jobboard_domain_model_salarytable">
 				<source>Salary table</source>
