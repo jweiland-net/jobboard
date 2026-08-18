@@ -3,51 +3,29 @@
       data-namespace-typo3-fluid="true">
 
 <div class="table-responsive">
-    <table class="{class}">
+    <table class="dataTable">
         <thead>
         <tr>
-            <f:for each="{fields}" as="field">
-                <th>{f:translate(key: '{field.0}')}</th>
-            </f:for>
+            <th>{f:translate(key: 'job.title')}</th>
+            <th>{f:translate(key: 'job.ending_date')}</th>
+            <th>{f:translate(key: 'job.address.zip')}</th>
+            <th>{f:translate(key: 'job.address.city')}</th>
+            <th>{f:translate(key: 'job.employer')}</th>
+            <th>{f:translate(key: 'job.job_type.title')}</th>
             <th class="rememberJob">{f:translate(key: 'remember')}</th>
         </tr>
         </thead>
 
         <tbody>
-        <f:for each="{objects}" as="object">
-            <tr data-jobboard-uid="{object.uid}">
-                <f:for each="{fields}" as="field" iteration="iterator">
-                    <f:switch expression="{field.1}">
-                        <f:case value="text">
-                            <td>
-                                <f:if condition="{iterator.index} == 0">
-                                    <f:then>
-                                        <f:if condition="{object.link}">
-                                            <f:then>
-                                                <f:link.external uri="{object.link}" target="_blank">{object.{field.2}}</f:link.external>
-                                            </f:then>
-                                            <f:else>
-                                                <f:link.action action="detail" arguments="{job: object}">{object.{field.2}}</f:link.action>
-                                            </f:else>
-                                        </f:if>
-                                    </f:then>
-                                    <f:else>{object.{field.2}}</f:else>
-                                </f:if>
-                        </f:case>
-                        <f:case value="date">
-                            <td data-sort="{f:format.date(date: '{object.{field.2}}', format: 'Y-m-d')}">
-                                <f:format.date date="{object.{field.2}}" format="{field.3}"/>
-                        </f:case>
-                        <f:case value="filePDFLink">
-                            <td>
-                                <a href="{object.{field.2}.originalResource.publicUrl}" class="d-pdf" title="Stellenausschreibung herunterladen">
-                                    <span class="fa fa-download" aria-hidden="true"></span>
-                                </a>
-                        </f:case>
-                    </f:switch>
-                    </td>
-                </f:for>
-                <td data-sort="0"><input type="checkbox" name="remember_job" value="{object.uid}"></td>
+        <f:for each="{objects}" as="job">
+            <tr data-jobboard-uid="{job.uid}">
+                <f:render partial="Job/TitleLink" arguments="{job: job}"/>
+                <f:render partial="Types/Date" arguments="{value: job.endingDate, format: 'd.m.Y'}"/>
+                <f:render partial="Types/Text" arguments="{value: job.address.zip}"/>
+                <f:render partial="Types/Text" arguments="{value: job.address.city}"/>
+                <f:render partial="Types/Text" arguments="{value: job.employer}"/>
+                <f:render partial="Types/Text" arguments="{value: job.jobType.title}"/>
+                <td data-sort="0"><input type="checkbox" name="remember_job" value="{job.uid}"></td>
             </tr>
         </f:for>
         </tbody>
