@@ -23,7 +23,7 @@ Maps2Registry::getInstance()->add(
         'synchronizeColumns' => [
             [
                 'foreignColumnName' => [
-                    'type' => 'coalesce',
+                    'type' => ForeignColumnResolveTypeEnum::COALESCE,
                     'columns' => [
                         'company',
                         [
