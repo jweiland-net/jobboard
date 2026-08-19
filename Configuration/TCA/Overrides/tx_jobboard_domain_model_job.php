@@ -7,29 +7,37 @@
  * LICENSE file that was distributed with this source code.
  */
 
+use JWeiland\Maps2\Tca\ForeignColumnResolveTypeEnum;
 use JWeiland\Maps2\Tca\Maps2Registry;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 if (!defined('TYPO3')) {
     die('Access denied.');
 }
 
-if (ExtensionManagementUtility::isLoaded('tt_address')) {
-    Maps2Registry::getInstance()->add(
-        'tt_address',
-        'tt_address',
-        [
-            'addressColumns' => ['address', 'zip', 'city'],
-            'countryColumn' => 'country',
-            'synchronizeColumns' => [
-                [
-                    'foreignColumnName' => 'company',
-                    'poiCollectionColumnName' => 'title',
+Maps2Registry::getInstance()->add(
+    'tt_address',
+    'tt_address',
+    [
+        'addressColumns' => ['address', 'zip', 'city'],
+        'countryColumn' => 'country',
+        'synchronizeColumns' => [
+            [
+                'foreignColumnName' => [
+                    'type' => ForeignColumnResolveTypeEnum::COALESCE,
+                    'columns' => [
+                        'company',
+                        [
+                            'type' => 'concat',
+                            'columns' => [
+                                'first_name',
+                                'last_name',
+                            ],
+                            'glue' => ' ',
+                        ],
+                    ],
                 ],
+                'poiCollectionColumnName' => 'title',
             ],
         ],
-    );
-}
-
-$GLOBALS['TCA']['tx_jobboard_domain_model_job']['columns']['starttime']['config']['behaviour']['allowLanguageSynchronization'] = true;
-$GLOBALS['TCA']['tx_jobboard_domain_model_job']['columns']['endtime']['config']['behaviour']['allowLanguageSynchronization'] = true;
+    ],
+);
