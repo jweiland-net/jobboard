@@ -109,6 +109,7 @@ return [
                 'foreign_table' => 'tx_jobboard_domain_model_salarystep',
                 'foreign_field' => 'salary_grade',
                 'foreign_sortby' => 'sorting',
+                'minitems' => 1,
                 'appearance' => [
                     'useSortable' => true,
                     'collapseAll' => true,
