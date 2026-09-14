@@ -301,6 +301,7 @@ return [
                 'minitems' => 1,
                 'maxitems' => 1,
                 'size' => 1,
+                'required' => true,
                 'suggestOptions' => [
                     'default' => [
                         'addWhere' => 'AND tx_jobboard_domain_model_salarygrade.sys_language_uid IN (-1,0)',
