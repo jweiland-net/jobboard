@@ -1,5 +1,8 @@
 # TYPO3 Extension `jobboard`
 
+[![Packagist][packagist-logo-stable]][extension-packagist-url]
+[![TYPO3 14.2][TYPO3-shield]][TYPO3-14-url]
+
 Jobboard is a TYPO3 extension that lets you present a list of open job positions on your website - like a digital job board.
 
 ## What it does
@@ -33,3 +36,21 @@ Afterward, activate the extension in the TYPO3 backend (Extension Manager / Admi
 ## License
 
 Released under the GPL-2.0-or-later license. See [LICENSE](LICENSE) for details.
+
+[extension-build-shield]: https://poser.pugx.org/jweiland/video-shariff/v/stable.svg?style=for-the-badge
+
+[extension-ci-shield]: https://github.com/jweiland-net/jobboard/actions/workflows/ci.yml/badge.svg
+
+[extension-downloads-badge]: https://poser.pugx.org/jweiland/jobboard/d/total.svg?style=for-the-badge
+
+[extension-monthly-downloads]: https://poser.pugx.org/jweiland/jobboard/d/monthly?style=for-the-badge
+
+[extension-ter-url]: https://extensions.typo3.org/extension/jobboard/
+
+[extension-packagist-url]: https://packagist.org/packages/jweiland/jobboard/
+
+[packagist-logo-stable]: https://img.shields.io/badge/--grey.svg?style=for-the-badge&logo=packagist&logoColor=white
+
+[TYPO3-14-url]: https://get.typo3.org/version/14
+
+[TYPO3-shield]: https://img.shields.io/badge/TYPO3-14.3-green.svg?style=for-the-badge&logo=typo3
