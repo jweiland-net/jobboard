@@ -22,6 +22,7 @@ return [
         'label_alt' => 'amount',
         'label_alt_force' => true,
         'label_userFunc' => SalaryStepTitleFormatter::class . '->formatTitle',
+        'formattedLabel_userFunc' => SalaryStepTitleFormatter::class . '->formatInlineChildTitle',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
         'sortby' => 'sorting',
