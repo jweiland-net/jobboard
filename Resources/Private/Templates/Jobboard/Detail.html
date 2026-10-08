@@ -238,23 +238,23 @@
                         </f:else>
                     </f:if>
                 </dd>
-                <f:if condition="{job.salaryGrade}">
+                <f:for each="{job.salaryGrades}" as="salaryGrade">
                     <dt><f:translate key="job.salaryGrade.title"/></dt>
                     <dd>
-                        {job.salaryGrade.title}
-                        <f:if condition="{job.salaryGrade.salaryTable.title}"> ({job.salaryGrade.salaryTable.title})</f:if>
+                        {salaryGrade.title}
+                        <f:if condition="{salaryGrade.salaryTable.title}"> ({salaryGrade.salaryTable.title})</f:if>
                     </dd>
-                    <f:if condition="{job.salaryGrade.hasSteps}">
+                    <f:if condition="{salaryGrade.hasSteps}">
                         <dt><f:translate key="job.salarySteps"/></dt>
                         <dd>
                             <ul>
-                                <f:for each="{job.salaryGrade.salarySteps}" as="salaryStep">
+                                <f:for each="{salaryGrade.salarySteps}" as="salaryStep">
                                     <li>{salaryStep.stepLabel}: <f:format.currency currencySign="€">{salaryStep.amount}</f:format.currency></li>
                                 </f:for>
                             </ul>
                         </dd>
                     </f:if>
-                </f:if>
+                </f:for>
             </dl>
         </section>
     </f:if>

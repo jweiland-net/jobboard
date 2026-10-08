@@ -6,7 +6,7 @@ Jobboard is a TYPO3 extension that lets you present a list of open job positions
 
 - Displays a searchable, sortable list of jobs (title, location, job area, job type, application deadline).
 - Rich job details: job role, contract type, tender type, benefits (with an optional color, description and
-  icon/image each), and salary information - either a predefined salary grade or a free-text salary range.
+  icon/image each), and salary information - either one or more predefined salary grades or a free-text salary range.
 - Multiple files can be attached to a job: an employer logo, a header image, tender documents, and PDF
   attachments.
 - Shows job locations on a map ([EXT:maps2](https://github.com/jweiland-net/maps2)).

@@ -49,7 +49,10 @@ class Job extends AbstractEntity
 
     protected int $salaryMode = 0;
 
-    protected ?SalaryGrade $salaryGrade = null;
+    /**
+     * @var ObjectStorage<SalaryGrade>
+     */
+    protected ObjectStorage $salaryGrades;
 
     protected float $salaryMin = 0.0;
 
@@ -113,6 +116,7 @@ class Job extends AbstractEntity
 
     public function __construct()
     {
+        $this->salaryGrades = new ObjectStorage();
         $this->benefits = new ObjectStorage();
         $this->employerLogo = new ObjectStorage();
         $this->headerLogo = new ObjectStorage();
@@ -123,6 +127,7 @@ class Job extends AbstractEntity
 
     public function initializeObject(): void
     {
+        $this->salaryGrades ??= new ObjectStorage();
         $this->benefits ??= new ObjectStorage();
         $this->employerLogo ??= new ObjectStorage();
         $this->headerLogo ??= new ObjectStorage();
@@ -291,14 +296,44 @@ class Job extends AbstractEntity
         $this->salaryMode = $salaryMode;
     }
 
-    public function getSalaryGrade(): ?SalaryGrade
+    /**
+     * @return ObjectStorage<SalaryGrade>
+     */
+    public function getSalaryGrades(): ObjectStorage
     {
-        return $this->salaryGrade;
+        return $this->salaryGrades;
     }
 
-    public function setSalaryGrade(SalaryGrade $salaryGrade): void
+    /**
+     * @param ObjectStorage<SalaryGrade> $salaryGrades
+     */
+    public function setSalaryGrades(ObjectStorage $salaryGrades): void
     {
-        $this->salaryGrade = $salaryGrade;
+        $this->salaryGrades = $salaryGrades;
+    }
+
+    public function addSalaryGrade(SalaryGrade $salaryGrade): void
+    {
+        $this->salaryGrades->attach($salaryGrade);
+    }
+
+    public function removeSalaryGrade(SalaryGrade $salaryGrade): void
+    {
+        $this->salaryGrades->detach($salaryGrade);
+    }
+
+    /**
+     * First selected (and visible) salary grade. Kept for templates which
+     * only render a single grade via {job.salaryGrade}. Use
+     * {job.salaryGrades} to render all selected grades.
+     */
+    public function getSalaryGrade(): ?SalaryGrade
+    {
+        foreach ($this->salaryGrades as $salaryGrade) {
+            return $salaryGrade;
+        }
+
+        return null;
     }
 
     public function getSalaryMin(): float
@@ -608,7 +643,7 @@ class Job extends AbstractEntity
             return $this->salaryMin;
         }
 
-        return $this->salaryGrade?->getMinAmount() ?? 0.0;
+        return $this->getSalaryGrade()?->getMinAmount() ?? 0.0;
     }
 
     /**
@@ -623,7 +658,7 @@ class Job extends AbstractEntity
             return $this->salaryMax > 0.0 ? $this->salaryMax : $this->salaryMin;
         }
 
-        return $this->salaryGrade?->getMaxAmount() ?? 0.0;
+        return $this->getSalaryGrade()?->getMaxAmount() ?? 0.0;
     }
 
     /**

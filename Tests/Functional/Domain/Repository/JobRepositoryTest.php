@@ -21,8 +21,8 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
  * Test case.
  *
  * Verifies that Job::getSalaryRangeMin()/getSalaryRangeMax() (and the two
- * boolean helpers built on top of them) correctly resolve the "salary_grade"
- * group field once it is mapped back to a SalaryGrade object by the DataMapper.
+ * boolean helpers built on top of them) correctly resolve the "salary_grades"
+ * MM relation once it is mapped back to SalaryGrade objects by the DataMapper.
  */
 class JobRepositoryTest extends FunctionalTestCase
 {
@@ -76,6 +76,20 @@ class JobRepositoryTest extends FunctionalTestCase
         self::assertSame(3407.74, $job->getSalaryRangeMax());
         self::assertTrue($job->getHasSalaryRange());
         self::assertTrue($job->getHasSalaryInformation());
+    }
+
+    #[Test]
+    public function getSalaryGradesWithMultipleSalaryGradesReturnsAllGradesInMmSortingOrder(): void
+    {
+        $job = $this->findJobByUid(6);
+
+        $titles = [];
+        foreach ($job->getSalaryGrades() as $salaryGrade) {
+            $titles[] = $salaryGrade->getTitle();
+        }
+
+        self::assertSame(['B3', 'A7'], $titles);
+        self::assertSame('B3', $job->getSalaryGrade()?->getTitle());
     }
 
     #[Test]

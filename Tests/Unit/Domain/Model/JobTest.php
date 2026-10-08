@@ -356,19 +356,69 @@ class JobTest extends UnitTestCase
     }
 
     #[Test]
+    public function getSalaryGradesInitiallyReturnsObjectStorage(): void
+    {
+        self::assertEquals(
+            new ObjectStorage(),
+            $this->subject->getSalaryGrades(),
+        );
+    }
+
+    #[Test]
+    public function setSalaryGradesSetsSalaryGrades(): void
+    {
+        $object = new SalaryGrade();
+
+        $objectStorage = new ObjectStorage();
+        $objectStorage->attach($object);
+
+        $this->subject->setSalaryGrades($objectStorage);
+
+        self::assertSame(
+            $objectStorage,
+            $this->subject->getSalaryGrades(),
+        );
+    }
+
+    #[Test]
+    public function addSalaryGradeAddsSalaryGrade(): void
+    {
+        $instance = new SalaryGrade();
+        $this->subject->addSalaryGrade($instance);
+
+        self::assertTrue(
+            $this->subject->getSalaryGrades()->contains($instance),
+        );
+    }
+
+    #[Test]
+    public function removeSalaryGradeRemovesSalaryGrade(): void
+    {
+        $instance = new SalaryGrade();
+        $this->subject->addSalaryGrade($instance);
+        $this->subject->removeSalaryGrade($instance);
+
+        self::assertFalse(
+            $this->subject->getSalaryGrades()->contains($instance),
+        );
+    }
+
+    #[Test]
     public function getSalaryGradeInitiallyReturnsNull(): void
     {
         self::assertNull($this->subject->getSalaryGrade());
     }
 
     #[Test]
-    public function setSalaryGradeSetsSalaryGrade(): void
+    public function getSalaryGradeReturnsFirstSalaryGrade(): void
     {
-        $instance = new SalaryGrade();
-        $this->subject->setSalaryGrade($instance);
+        $first = new SalaryGrade();
+        $second = new SalaryGrade();
+        $this->subject->addSalaryGrade($first);
+        $this->subject->addSalaryGrade($second);
 
         self::assertSame(
-            $instance,
+            $first,
             $this->subject->getSalaryGrade(),
         );
     }
@@ -958,7 +1008,7 @@ class JobTest extends UnitTestCase
         $salaryGrade->getSalarySteps()->attach($stepThree);
 
         $this->subject->setSalaryMode(0);
-        $this->subject->setSalaryGrade($salaryGrade);
+        $this->subject->addSalaryGrade($salaryGrade);
 
         self::assertSame(3220.85, $this->subject->getSalaryRangeMin());
         self::assertSame(3407.74, $this->subject->getSalaryRangeMax());
@@ -974,7 +1024,7 @@ class JobTest extends UnitTestCase
         $salaryGrade->setFlatAmount(3500.0);
 
         $this->subject->setSalaryMode(0);
-        $this->subject->setSalaryGrade($salaryGrade);
+        $this->subject->addSalaryGrade($salaryGrade);
 
         self::assertSame(3500.0, $this->subject->getSalaryRangeMin());
         self::assertSame(3500.0, $this->subject->getSalaryRangeMax());
@@ -1036,7 +1086,7 @@ class JobTest extends UnitTestCase
         $salaryGrade->setFlatAmount(9999.0);
 
         $this->subject->setSalaryMode(1);
-        $this->subject->setSalaryGrade($salaryGrade);
+        $this->subject->addSalaryGrade($salaryGrade);
         $this->subject->setSalaryMin(2500.0);
         $this->subject->setSalaryMax(3200.0);
 
