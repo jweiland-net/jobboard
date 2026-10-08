@@ -56,7 +56,7 @@
 
 			<trans-unit id="tx_jobboard_domain_model_job">
 				<source>Job</source>
-				<target>Arbeitsplatz</target>
+				<target>Stellenangebot</target>
 			</trans-unit>
 			<trans-unit id="tx_jobboard_domain_model_job.title">
 				<source>Job title</source>
