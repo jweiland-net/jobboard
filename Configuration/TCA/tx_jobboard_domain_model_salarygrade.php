@@ -23,7 +23,11 @@ return [
         'formattedLabel_userFunc' => SalaryGradeTitleFormatter::class . '->formatInlineChildTitle',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
-        'sortby' => 'sorting',
+        // No "sortby" on purpose: it would take precedence over
+        // "default_sortby" in the list module and in select fields. The
+        // "sorting" column still exists (see ext_tables.sql), it is used
+        // as "foreign_sortby" of the inline relation salarytable.salary_grades.
+        'default_sortby' => 'title ASC',
         'type' => 'has_steps',
         'typeicon_column' => 'has_steps',
         'typeicon_classes' => [
