@@ -13,7 +13,10 @@ CREATE TABLE tx_jobboard_domain_model_job
 #
 CREATE TABLE tx_jobboard_domain_model_salarygrade
 (
-	flat_amount decimal(10, 2) DEFAULT '0.00' NOT NULL
+	flat_amount decimal(10, 2) DEFAULT '0.00' NOT NULL,
+	# Not derived from TCA, as ctrl.sortby is not set. Required as
+	# foreign_sortby of the inline relation salarytable.salary_grades.
+	sorting int(11) unsigned DEFAULT '0' NOT NULL
 );
 
 #

@@ -59,6 +59,9 @@ adding ad-hoc fields elsewhere in the template.
   Known gap: `SalaryGrade::$salaryTable` is never hydrated by Extbase, because `salary_table` is not
   declared as a relation column in `tx_jobboard_domain_model_salarygrade`'s own TCA - it only exists
   implicitly as the inverse `foreign_field` of `salarytable.salary_grades`.
+  `SalaryGrade` has no `ctrl.sortby` on purpose, so its `default_sortby` (`title ASC`) is effective in the
+  list module and in select fields. Its `sorting` column is still declared in `ext_tables.sql`, because
+  `salarytable.salary_grades` uses it as `foreign_sortby` - don't drop it.
 - **File relations** (`employerLogo`, `headerLogo`, `tenderFile`, `pdfFiles` on `Job`; `image` on
   `Benefit`) are all `ObjectStorage<FileReference>`, never a single `FileReference` - none of the underlying
   TCA `type=file` columns actually restrict `maxitems` to 1 (even `Benefit::image`, which IS limited to 1
