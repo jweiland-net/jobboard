@@ -225,4 +225,87 @@ class SalaryGradeTest extends UnitTestCase
             $this->subject->getMaxAmount(),
         );
     }
+
+    #[Test]
+    public function getAmountsWithoutStepsReturnsFlatAmount(): void
+    {
+        $this->subject->setHasSteps(false);
+        $this->subject->setFlatAmount(3500.0);
+
+        self::assertSame(
+            [3500.0],
+            $this->subject->getAmounts(),
+        );
+    }
+
+    #[Test]
+    public function getAmountsWithoutStepsIgnoresAttachedSteps(): void
+    {
+        $this->subject->setHasSteps(false);
+        $this->subject->setFlatAmount(3500.0);
+        $this->subject->getSalarySteps()->attach($this->createSalaryStep(3220.85));
+
+        self::assertSame(
+            [3500.0],
+            $this->subject->getAmounts(),
+        );
+    }
+
+    #[Test]
+    public function getAmountsWithoutStepsAndFlatAmountZeroReturnsZero(): void
+    {
+        $this->subject->setHasSteps(false);
+
+        self::assertSame(
+            [0.0],
+            $this->subject->getAmounts(),
+        );
+    }
+
+    #[Test]
+    public function getAmountsWithStepsReturnsAllStepAmountsInStepOrder(): void
+    {
+        $this->subject->setHasSteps(true);
+        $this->subject->getSalarySteps()->attach($this->createSalaryStep(3314.32));
+        $this->subject->getSalarySteps()->attach($this->createSalaryStep(3220.85));
+        $this->subject->getSalarySteps()->attach($this->createSalaryStep(0.0));
+
+        self::assertSame(
+            [3314.32, 3220.85, 0.0],
+            $this->subject->getAmounts(),
+        );
+    }
+
+    #[Test]
+    public function getAmountsWithStepsIgnoresFlatAmount(): void
+    {
+        $this->subject->setHasSteps(true);
+        $this->subject->setFlatAmount(1000.0);
+        $this->subject->getSalarySteps()->attach($this->createSalaryStep(3220.85));
+
+        self::assertSame(
+            [3220.85],
+            $this->subject->getAmounts(),
+        );
+    }
+
+    #[Test]
+    public function getAmountsWithStepsButNoExistingStepsReturnsEmptyArray(): void
+    {
+        $this->subject->setHasSteps(true);
+        $this->subject->setFlatAmount(3500.0);
+
+        self::assertSame(
+            [],
+            $this->subject->getAmounts(),
+        );
+    }
+
+    private function createSalaryStep(float $amount): SalaryStep
+    {
+        $salaryStep = new SalaryStep();
+        $salaryStep->setAmount($amount);
+
+        return $salaryStep;
+    }
 }

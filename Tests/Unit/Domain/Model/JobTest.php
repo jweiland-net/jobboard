@@ -19,8 +19,10 @@ use JWeiland\Jobboard\Domain\Model\JobArea;
 use JWeiland\Jobboard\Domain\Model\JobRole;
 use JWeiland\Jobboard\Domain\Model\JobType;
 use JWeiland\Jobboard\Domain\Model\SalaryGrade;
+use JWeiland\Jobboard\Domain\Model\SalaryRange;
 use JWeiland\Jobboard\Domain\Model\SalaryStep;
 use JWeiland\Jobboard\Domain\Model\TenderType;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Extbase\Domain\Model\FileReference;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
@@ -1092,5 +1094,192 @@ class JobTest extends UnitTestCase
 
         self::assertSame(2500.0, $this->subject->getSalaryRangeMin());
         self::assertSame(3200.0, $this->subject->getSalaryRangeMax());
+    }
+
+    #[Test]
+    public function getSalaryGradesRangeWithoutSalaryGradesReturnsEmptyRange(): void
+    {
+        $salaryRange = $this->subject->getSalaryGradesRange();
+
+        self::assertInstanceOf(SalaryRange::class, $salaryRange);
+        self::assertTrue($salaryRange->getIsEmpty());
+        self::assertSame(0.0, $salaryRange->getMin());
+        self::assertSame(0.0, $salaryRange->getMax());
+    }
+
+    /**
+     * Grade definitions: float = flat grade, list of floats = stepped grade.
+     *
+     * @return array<string, array{list<float|list<float>>, float, float, bool, bool}>
+     */
+    public static function multipleSalaryGradesDataProvider(): array
+    {
+        return [
+            'two stepped grades S 8a and S 8b' => [
+                [[3000.0, 3250.0, 3500.0, 4000.0], [3500.0, 3800.0, 4500.0]],
+                3000.0,
+                4500.0,
+                true,
+                true,
+            ],
+            'flat grade and stepped grade' => [
+                [3500.0, [3220.85, 3314.32, 3407.74]],
+                3220.85,
+                3500.0,
+                true,
+                true,
+            ],
+            'nested stepped grades' => [
+                [[3000.0, 5000.0], [3500.0, 4000.0]],
+                3000.0,
+                5000.0,
+                true,
+                true,
+            ],
+            'stepped grade without steps next to valid grade' => [
+                [[], [3000.0, 4000.0]],
+                3000.0,
+                4000.0,
+                true,
+                true,
+            ],
+            'flat grade with amount 0 next to flat grade' => [
+                [0.0, 3500.0],
+                3500.0,
+                3500.0,
+                false,
+                true,
+            ],
+            'identical flat amounts' => [
+                [3500.0, 3500.0],
+                3500.0,
+                3500.0,
+                false,
+                true,
+            ],
+            'only grades without positive amount' => [
+                [0.0, [], [0.0]],
+                0.0,
+                0.0,
+                false,
+                false,
+            ],
+        ];
+    }
+
+    /**
+     * @param list<float|list<float>> $gradeDefinitions
+     */
+    #[Test]
+    #[DataProvider('multipleSalaryGradesDataProvider')]
+    public function getSalaryRangeMinAndMaxWithGradeModeAndMultipleGradesSpanAllGrades(
+        array $gradeDefinitions,
+        float $expectedMin,
+        float $expectedMax,
+        bool $expectedHasSalaryRange,
+        bool $expectedHasSalaryInformation,
+    ): void {
+        $this->subject->setSalaryMode(0);
+        $this->addSalaryGrades($gradeDefinitions);
+
+        self::assertSame($expectedMin, $this->subject->getSalaryRangeMin());
+        self::assertSame($expectedMax, $this->subject->getSalaryRangeMax());
+        self::assertSame($expectedHasSalaryRange, $this->subject->getHasSalaryRange());
+        self::assertSame($expectedHasSalaryInformation, $this->subject->getHasSalaryInformation());
+    }
+
+    /**
+     * @param list<float|list<float>> $gradeDefinitions
+     */
+    #[Test]
+    #[DataProvider('multipleSalaryGradesDataProvider')]
+    public function getSalaryGradesRangeWithMultipleGradesSpansAllGrades(
+        array $gradeDefinitions,
+        float $expectedMin,
+        float $expectedMax,
+        bool $expectedHasSalaryRange,
+        bool $expectedHasSalaryInformation,
+    ): void {
+        $this->addSalaryGrades($gradeDefinitions);
+
+        $salaryRange = $this->subject->getSalaryGradesRange();
+
+        self::assertSame($expectedMin, $salaryRange->getMin());
+        self::assertSame($expectedMax, $salaryRange->getMax());
+        self::assertSame($expectedHasSalaryRange, $salaryRange->getHasRange());
+        self::assertSame(!$expectedHasSalaryInformation, $salaryRange->getIsEmpty());
+    }
+
+    #[Test]
+    public function getSalaryRangeMinAndMaxWithGradeModeIgnoreFreeEntryAmounts(): void
+    {
+        $this->subject->setSalaryMode(0);
+        $this->subject->setSalaryMin(1000.0);
+        $this->subject->setSalaryMax(9000.0);
+        $this->addSalaryGrades([[3000.0, 4000.0], [3500.0, 4500.0]]);
+
+        self::assertSame(3000.0, $this->subject->getSalaryRangeMin());
+        self::assertSame(4500.0, $this->subject->getSalaryRangeMax());
+    }
+
+    #[Test]
+    public function getSalaryRangeMinAndMaxWithFreeEntryModeIgnoresMultipleSalaryGrades(): void
+    {
+        $this->subject->setSalaryMode(1);
+        $this->subject->setSalaryMin(2500.0);
+        $this->subject->setSalaryMax(3200.0);
+        $this->addSalaryGrades([[3000.0, 4000.0], [3500.0, 4500.0], 9999.0]);
+
+        self::assertSame(2500.0, $this->subject->getSalaryRangeMin());
+        self::assertSame(3200.0, $this->subject->getSalaryRangeMax());
+        self::assertTrue($this->subject->getHasSalaryRange());
+        self::assertTrue($this->subject->getHasSalaryInformation());
+    }
+
+    #[Test]
+    public function getHasSalaryInformationWithFreeEntryModeWithoutAmountsIgnoresMultipleSalaryGrades(): void
+    {
+        $this->subject->setSalaryMode(1);
+        $this->addSalaryGrades([[3000.0, 4000.0], 3500.0]);
+
+        self::assertSame(0.0, $this->subject->getSalaryRangeMin());
+        self::assertSame(0.0, $this->subject->getSalaryRangeMax());
+        self::assertFalse($this->subject->getHasSalaryRange());
+        self::assertFalse($this->subject->getHasSalaryInformation());
+    }
+
+    #[Test]
+    public function getSalaryGradesRangeIsCalculatedRegardlessOfSalaryMode(): void
+    {
+        $this->subject->setSalaryMode(1);
+        $this->subject->setSalaryMin(2500.0);
+        $this->addSalaryGrades([[3000.0, 4000.0], [3500.0, 4500.0]]);
+
+        $salaryRange = $this->subject->getSalaryGradesRange();
+
+        self::assertSame(3000.0, $salaryRange->getMin());
+        self::assertSame(4500.0, $salaryRange->getMax());
+    }
+
+    /**
+     * @param list<float|list<float>> $gradeDefinitions
+     */
+    private function addSalaryGrades(array $gradeDefinitions): void
+    {
+        foreach ($gradeDefinitions as $definition) {
+            $salaryGrade = new SalaryGrade();
+            if (is_array($definition)) {
+                $salaryGrade->setHasSteps(true);
+                foreach ($definition as $amount) {
+                    $salaryStep = new SalaryStep();
+                    $salaryStep->setAmount($amount);
+                    $salaryGrade->getSalarySteps()->attach($salaryStep);
+                }
+            } else {
+                $salaryGrade->setHasSteps(false);
+                $salaryGrade->setFlatAmount($definition);
+            }
+            $this->subject->addSalaryGrade($salaryGrade);
+        }
     }
 }

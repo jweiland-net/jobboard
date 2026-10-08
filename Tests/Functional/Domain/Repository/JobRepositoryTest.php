@@ -14,6 +14,7 @@ namespace JWeiland\Jobboard\Tests\Functional\Domain\Repository;
 use JWeiland\Jobboard\Domain\Model\Job;
 use JWeiland\Jobboard\Domain\Model\SalaryGrade;
 use JWeiland\Jobboard\Domain\Repository\JobRepository;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
@@ -135,5 +136,62 @@ class JobRepositoryTest extends FunctionalTestCase
         self::assertSame(0.0, $job->getSalaryRangeMax());
         self::assertFalse($job->getHasSalaryRange());
         self::assertFalse($job->getHasSalaryInformation());
+    }
+
+    #[Test]
+    public function getSalaryRangeMinAndMaxWithFlatAndSteppedSalaryGradeSpanBothGrades(): void
+    {
+        $job = $this->findJobByUid(6);
+
+        self::assertSame(3220.85, $job->getSalaryRangeMin());
+        self::assertSame(3500.0, $job->getSalaryRangeMax());
+        self::assertSame(3220.85, $job->getSalaryGradesRange()->getMin());
+        self::assertSame(3500.0, $job->getSalaryGradesRange()->getMax());
+        self::assertTrue($job->getHasSalaryRange());
+        self::assertTrue($job->getHasSalaryInformation());
+    }
+
+    #[Test]
+    public function getSalaryGradesWithHiddenExpiredAndFutureSalaryGradesReturnsVisibleGradesOnly(): void
+    {
+        $job = $this->findJobByUid(7);
+
+        $titles = [];
+        foreach ($job->getSalaryGrades() as $salaryGrade) {
+            $titles[] = $salaryGrade->getTitle();
+        }
+
+        self::assertSame(['B3'], $titles);
+    }
+
+    /**
+     * @return array<string, array{int, float, float, bool, bool}>
+     */
+    public static function invisibleSalaryInformationDataProvider(): array
+    {
+        return [
+            'hidden, expired and not yet started grades next to visible flat grade' => [7, 3500.0, 3500.0, false, true],
+            'hidden, expired and not yet started steps next to visible steps' => [8, 3000.0, 3200.0, true, true],
+            'grade with only hidden steps next to visible stepped grade' => [9, 3220.85, 3407.74, true, true],
+            'flat grade with amount 0 next to visible stepped grade' => [10, 3220.85, 3407.74, true, true],
+            'hidden grade and grade with only hidden steps' => [11, 0.0, 0.0, false, false],
+        ];
+    }
+
+    #[Test]
+    #[DataProvider('invisibleSalaryInformationDataProvider')]
+    public function getSalaryRangeMinAndMaxIgnoreInvisibleGradesStepsAndZeroAmounts(
+        int $jobUid,
+        float $expectedMin,
+        float $expectedMax,
+        bool $expectedHasSalaryRange,
+        bool $expectedHasSalaryInformation,
+    ): void {
+        $job = $this->findJobByUid($jobUid);
+
+        self::assertSame($expectedMin, $job->getSalaryRangeMin());
+        self::assertSame($expectedMax, $job->getSalaryRangeMax());
+        self::assertSame($expectedHasSalaryRange, $job->getHasSalaryRange());
+        self::assertSame($expectedHasSalaryInformation, $job->getHasSalaryInformation());
     }
 }

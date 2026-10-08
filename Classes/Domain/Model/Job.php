@@ -633,9 +633,18 @@ class Job extends AbstractEntity
     }
 
     /**
-     * Lowest payable amount, regardless of salaryMode: the salary grade's
-     * minimum (steps or flat amount) if this job references one, otherwise
-     * the free-text salaryMin.
+     * Range over all steps (or flat amounts) of all selected salary grades,
+     * from the lowest to the highest amount. Ignores salaryMode.
+     */
+    public function getSalaryGradesRange(): SalaryRange
+    {
+        return SalaryRange::fromSalaryGrades($this->salaryGrades);
+    }
+
+    /**
+     * Lowest payable amount, regardless of salaryMode: the lowest amount of
+     * all selected salary grades (steps or flat amounts), otherwise the
+     * free-text salaryMin.
      */
     public function getSalaryRangeMin(): float
     {
@@ -643,7 +652,7 @@ class Job extends AbstractEntity
             return $this->salaryMin;
         }
 
-        return $this->getSalaryGrade()?->getMinAmount() ?? 0.0;
+        return $this->getSalaryGradesRange()->getMin();
     }
 
     /**
@@ -658,7 +667,7 @@ class Job extends AbstractEntity
             return $this->salaryMax > 0.0 ? $this->salaryMax : $this->salaryMin;
         }
 
-        return $this->getSalaryGrade()?->getMaxAmount() ?? 0.0;
+        return $this->getSalaryGradesRange()->getMax();
     }
 
     /**
