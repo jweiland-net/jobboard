@@ -55,7 +55,10 @@ adding ad-hoc fields elsewhere in the template.
   `SalaryGrade`s (`Job::$salaryGrades`, `selectMultipleSideBySide` + MM table
   `tx_jobboard_job_salarygrade_mm`; each grade is either a flat `flatAmount` or a set of `SalaryStep`
   children, optionally grouped under a `SalaryTable`), or `1` = free-text `salaryMin`/`salaryMax`.
-  `Job::getSalaryGrade()` only returns the first selected grade, for templates rendering a single grade. Use `Job::getSalaryRangeMin()`,
+  `Job::getSalaryGrade()` only returns the first selected grade, for templates rendering a single grade.
+  With several grades, the salary range spans all of them: `SalaryRange::fromSalaryGrades()` (pure
+  `final readonly` value object in `Domain/Model/`) takes the lowest and highest positive amount of all
+  steps/flat amounts of all grades (`SalaryGrade::getAmounts()`), exposed as `Job::getSalaryGradesRange()`. Use `Job::getSalaryRangeMin()`,
   `getSalaryRangeMax()`, `getHasSalaryRange()`, and `getHasSalaryInformation()` to read the effective salary
   regardless of mode - don't branch on `salaryMode` outside of `Job` itself, these methods already do it.
   Known gap: `SalaryGrade::$salaryTable` is never hydrated by Extbase, because `salary_table` is not

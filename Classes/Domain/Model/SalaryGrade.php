@@ -126,6 +126,18 @@ class SalaryGrade extends AbstractEntity
     }
 
     /**
+     * All payable amounts of this grade: the flat amount if it has no steps,
+     * otherwise the amounts of all steps that actually exist (hidden or
+     * expired steps are not loaded by Extbase).
+     *
+     * @return float[]
+     */
+    public function getAmounts(): array
+    {
+        return $this->hasSteps ? $this->getStepAmounts() : [$this->flatAmount];
+    }
+
+    /**
      * @return float[]
      */
     private function getStepAmounts(): array
