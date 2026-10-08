@@ -306,6 +306,8 @@ class SalaryRangeTest extends UnitTestCase
         array $gradeDefinitions,
         float $expectedMin,
         float $expectedMax,
+        bool $expectedHasRange,
+        bool $expectedIsEmpty,
     ): void {
         $reversedGradeDefinitions = array_map(
             static fn(float|array $definition): float|array => is_array($definition)
@@ -318,6 +320,8 @@ class SalaryRangeTest extends UnitTestCase
 
         self::assertSame($expectedMin, $subject->getMin());
         self::assertSame($expectedMax, $subject->getMax());
+        self::assertSame($expectedHasRange, $subject->getHasRange());
+        self::assertSame($expectedIsEmpty, $subject->getIsEmpty());
     }
 
     #[Test]
