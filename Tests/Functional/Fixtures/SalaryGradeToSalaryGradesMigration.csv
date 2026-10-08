@@ -1,0 +1,23 @@
+"pages"
+,"uid","pid","title","slug","deleted","hidden","doktype","is_siteroot"
+,1,0,"Root","/",0,0,1,1
+,2,1,"Storage for jobs","/storage",0,0,254,0
+
+"tx_jobboard_domain_model_salarygrade"
+,"uid","pid","title","has_steps","flat_amount"
+,1,2,"A7",0,3000.00
+,2,2,"B3",0,3500.00
+,3,2,"S 8a",0,3200.00
+
+"tx_jobboard_domain_model_job"
+,"uid","pid","title","deleted","salary_mode","salary_grade","salary_grades"
+,1,2,"Job with plain legacy uid",0,0,"1",0
+,2,2,"Job with table-prefixed legacy uid",0,0,"tx_jobboard_domain_model_salarygrade_2",0
+,3,2,"Job without legacy grade",0,1,"",0
+,4,2,"Job already having MM relations",0,0,"3",1
+,5,2,"Job with legacy zero value",0,0,"0",0
+,6,2,"Deleted job with legacy uid",1,0,"2",0
+
+"tx_jobboard_job_salarygrade_mm"
+,"uid_local","uid_foreign","sorting","sorting_foreign"
+,4,1,1,0

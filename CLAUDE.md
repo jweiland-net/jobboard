@@ -51,9 +51,11 @@ adding ad-hoc fields elsewhere in the template.
   editors can still choose any color freely) and a plain-text `description`. `ColorElement` does not
   resolve `LLL:` references for `valuePicker.items` labels (unlike `InputTextElement`/`NumberElement`/
   `EmailElement`/`LinkElement`), so those swatch names are intentionally untranslated plain text.
-- **Salary**: `Job::salaryMode` (TCA `type` field) picks between two shapes: `0` = reference a
-  `SalaryGrade` (itself either a flat `flatAmount` or a set of `SalaryStep` children, optionally grouped
-  under a `SalaryTable`), or `1` = free-text `salaryMin`/`salaryMax`. Use `Job::getSalaryRangeMin()`,
+- **Salary**: `Job::salaryMode` (TCA `type` field) picks between two shapes: `0` = reference one or more
+  `SalaryGrade`s (`Job::$salaryGrades`, `selectMultipleSideBySide` + MM table
+  `tx_jobboard_job_salarygrade_mm`; each grade is either a flat `flatAmount` or a set of `SalaryStep`
+  children, optionally grouped under a `SalaryTable`), or `1` = free-text `salaryMin`/`salaryMax`.
+  `Job::getSalaryGrade()` only returns the first selected grade, for templates rendering a single grade. Use `Job::getSalaryRangeMin()`,
   `getSalaryRangeMax()`, `getHasSalaryRange()`, and `getHasSalaryInformation()` to read the effective salary
   regardless of mode - don't branch on `salaryMode` outside of `Job` itself, these methods already do it.
   Known gap: `SalaryGrade::$salaryTable` is never hydrated by Extbase, because `salary_table` is not
@@ -146,6 +148,10 @@ Key points:
   `JOB_FAL_FIELDS` (`employer_logo`, `header_logo`, `tender_file`, `pdf_files`), so a *new* FAL column that
   already existed under the old `tx_jobfair2_*` table name must be added to that constant, or its file
   relations will silently point at the old, no-longer-existing table after migration.
+- **`SalaryGradeToSalaryGradesMigration`** moves the former single salary grade (legacy text column
+  `tx_jobboard_domain_model_job.salary_grade`, only still declared in `ext_tables.sql` for this wizard)
+  into the MM relation `salary_grades` and empties the legacy column afterwards. Once all installations
+  ran it, the wizard and the legacy column can be removed together.
 - **`JobfairToJobboardCTypeMigration`** migrates `tt_content.CType` and `be_groups` explicit-allow/deny
   permissions from `jobfair2_jobfair` to `jobboard_jobboard`. Unrelated to FAL/domain data.
 

@@ -99,11 +99,11 @@
 			<trans-unit id="tx_jobboard_domain_model_job.salary_mode.freeEntry">
 				<source>Free salary entry</source>
 			</trans-unit>
-			<trans-unit id="tx_jobboard_domain_model_job.salary_grade">
-				<source>Salary grade</source>
+			<trans-unit id="tx_jobboard_domain_model_job.salary_grades">
+				<source>Salary grades</source>
 			</trans-unit>
-			<trans-unit id="tx_jobboard_domain_model_job.salary_grade.description">
-				<source>The minimum/maximum salary is calculated automatically in the frontend from the steps stored for this salary grade.</source>
+			<trans-unit id="tx_jobboard_domain_model_job.salary_grades.description">
+				<source>Select one or more salary grades. The minimum/maximum salary is calculated automatically in the frontend from the steps stored for the selected salary grades.</source>
 			</trans-unit>
 			<trans-unit id="tx_jobboard_domain_model_job.salary_min">
 				<source>Minimum salary</source>

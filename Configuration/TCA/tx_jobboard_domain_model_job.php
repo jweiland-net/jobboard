@@ -91,7 +91,7 @@ return [
         'import' => ['showitem' => 'is_import, vacancy_id'],
         'address' => ['showitem' => 'address'],
         'information' => ['showitem' => 'job_role, job_area, --linebreak--, job_type, contract_type, --linebreak--, tender_type'],
-        'salary_grade' => ['showitem' => 'salary_mode, --linebreak--, salary_grade'],
+        'salary_grade' => ['showitem' => 'salary_mode, --linebreak--, salary_grades'],
         'salary_min_max' => ['showitem' => 'salary_mode, --linebreak--, salary_min, salary_max'],
         'benefit' => ['showitem' => 'benefits'],
         'contact_person' => ['showitem' => 'first_name, last_name, --linebreak--, email, telephone, --linebreak--, function'],
@@ -290,23 +290,19 @@ return [
                 'default' => 0,
             ],
         ],
-        'salary_grade' => [
+        'salary_grades' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.salary_grade',
-            'description' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.salary_grade.description',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.salary_grades',
+            'description' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.salary_grades.description',
             'config' => [
-                'type' => 'group',
-                'allowed' => 'tx_jobboard_domain_model_salarygrade',
+                'type' => 'select',
+                'renderType' => 'selectMultipleSideBySide',
                 'foreign_table' => 'tx_jobboard_domain_model_salarygrade',
+                'foreign_table_where' => 'AND tx_jobboard_domain_model_salarygrade.sys_language_uid IN (-1,0) ORDER BY tx_jobboard_domain_model_salarygrade.title ASC',
+                'MM' => 'tx_jobboard_job_salarygrade_mm',
+                'size' => 5,
+                'autoSizeMax' => 10,
                 'minitems' => 1,
-                'maxitems' => 1,
-                'size' => 1,
-                'required' => true,
-                'suggestOptions' => [
-                    'default' => [
-                        'addWhere' => 'AND tx_jobboard_domain_model_salarygrade.sys_language_uid IN (-1,0)',
-                    ],
-                ],
             ],
         ],
         'salary_min' => [
