@@ -1,1 +1,1 @@
-<INCLUDE_TYPOSCRIPT: source="FILE:EXT:jobboard/Configuration/TSconfig/ContentElementWizard.tsconfig">
+@import 'EXT:jobboard/Configuration/TSconfig/ContentElementWizard.tsconfig'
