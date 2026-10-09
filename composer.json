@@ -1,14 +1,13 @@
 {
 	"name": "jweiland/jobboard",
-	"type": "typo3-cms-extension",
 	"description": "Job Board - Displays a searchable list of job openings with map view and optional automatic import from external sources",
 	"license": "GPL-2.0-or-later",
+	"type": "typo3-cms-extension",
 	"keywords": [
 		"typo3",
 		"TYPO3 CMS",
 		"jobboard"
 	],
-	"homepage": "https://jweiland.net",
 	"authors": [
 		{
 			"name": "Stefan Froemken",
@@ -16,6 +15,7 @@
 			"role": "Lead Developer"
 		}
 	],
+	"homepage": "https://jweiland.net",
 	"support": {
 		"email": "projects@jweiland.net",
 		"issues": "https://github.com/jweiland-net/jobboard/issues",
@@ -23,10 +23,10 @@
 	},
 	"require": {
 		"ext-intl": "*",
-		"typo3/cms-core": "^13.4.34",
-		"jweiland/maps2": "*",
+		"bithost-gmbh/pdfviewhelpers": "*",
 		"friendsoftypo3/tt-address": "*",
-		"bithost-gmbh/pdfviewhelpers": "*"
+		"jweiland/maps2": "*",
+		"typo3/cms-core": "^13.4.34"
 	},
 	"require-dev": {
 		"ergebnis/composer-normalize": "^2.44",
@@ -51,6 +51,15 @@
 			"typo3/cms-composer-installers": true
 		},
 		"bin-dir": ".Build/bin",
+		"policy": {
+			"advisories": {
+				"ignore-id": [
+					"PKSA-6j95-1jtb-x6wc",
+					"PKSA-8j6w-3kr7-s9xk",
+					"PKSA-cbx2-m9db-bmzd"
+				]
+			}
+		},
 		"sort-packages": true,
 		"vendor-dir": ".Build/vendor"
 	},
