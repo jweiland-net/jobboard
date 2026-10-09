@@ -47,9 +47,9 @@ class JobRepository extends Repository
             $query->greaterThanOrEqual('endingDate', new \DateTime()),
         );
 
-        $jobAreas = $settings['jobAreas'] ?? [];
-        if (is_array($jobAreas) && $jobAreas !== []) {
-            $andConstraint[] = $query->in('jobArea', $jobAreas);
+        $jobAreaConstraints = $this->buildOrConstraintForJobAreas($settings['jobAreas'] ?? [], $query);
+        if ($jobAreaConstraints !== []) {
+            $andConstraint[] = $query->logicalOr(...$jobAreaConstraints);
         }
 
         if ($limit) {
@@ -73,7 +73,7 @@ class JobRepository extends Repository
         );
 
         if ($search->getJobArea() instanceof JobArea) {
-            $andConstraint[] = $query->equals('jobArea', $search->getJobArea());
+            $andConstraint[] = $query->contains('jobAreas', $search->getJobArea());
         }
 
         if ($search->getJobRole() instanceof JobRole) {
@@ -99,6 +99,33 @@ class JobRepository extends Repository
         }
 
         return $query->matching($query->logicalAnd(...$andConstraint))->execute();
+    }
+
+    /**
+     * A job matches, if any of its job areas is one of the configured job
+     * areas. FlexForm delivers the selected uids as comma-separated string,
+     * TypoScript may deliver them as array.
+     *
+     * @param string|int|int[]|string[] $jobAreas
+     */
+    private function buildOrConstraintForJobAreas(mixed $jobAreas, QueryInterface $query): array
+    {
+        if (is_array($jobAreas)) {
+            $jobAreas = implode(',', $jobAreas);
+        }
+
+        if (!is_scalar($jobAreas)) {
+            return [];
+        }
+
+        $orConstraint = [];
+        foreach (GeneralUtility::intExplode(',', (string)$jobAreas, true) as $jobAreaUid) {
+            if ($jobAreaUid > 0) {
+                $orConstraint[] = $query->contains('jobAreas', $jobAreaUid);
+            }
+        }
+
+        return $orConstraint;
     }
 
     private function buildOrConstraintForAddress(ZipCity $zipCity, QueryInterface $query): array

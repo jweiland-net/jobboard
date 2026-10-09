@@ -286,24 +286,6 @@ class JobTest extends UnitTestCase
     }
 
     #[Test]
-    public function getJobAreaInitiallyReturnsNull(): void
-    {
-        self::assertNull($this->subject->getJobArea());
-    }
-
-    #[Test]
-    public function setJobAreaSetsJobArea(): void
-    {
-        $instance = new JobArea();
-        $this->subject->setJobArea($instance);
-
-        self::assertSame(
-            $instance,
-            $this->subject->getJobArea(),
-        );
-    }
-
-    #[Test]
     public function getJobTypeInitiallyReturnsNull(): void
     {
         self::assertNull($this->subject->getJobType());
@@ -336,6 +318,74 @@ class JobTest extends UnitTestCase
         self::assertSame(
             $instance,
             $this->subject->getContractType(),
+        );
+    }
+
+    #[Test]
+    public function getJobAreasInitiallyReturnsObjectStorage(): void
+    {
+        self::assertEquals(
+            new ObjectStorage(),
+            $this->subject->getJobAreas(),
+        );
+    }
+
+    #[Test]
+    public function setJobAreasSetsJobAreas(): void
+    {
+        $object = new JobArea();
+
+        $objectStorage = new ObjectStorage();
+        $objectStorage->attach($object);
+
+        $this->subject->setJobAreas($objectStorage);
+
+        self::assertSame(
+            $objectStorage,
+            $this->subject->getJobAreas(),
+        );
+    }
+
+    #[Test]
+    public function addJobAreaAddsJobArea(): void
+    {
+        $instance = new JobArea();
+        $this->subject->addJobArea($instance);
+
+        self::assertTrue(
+            $this->subject->getJobAreas()->contains($instance),
+        );
+    }
+
+    #[Test]
+    public function removeJobAreaRemovesJobArea(): void
+    {
+        $instance = new JobArea();
+        $this->subject->addJobArea($instance);
+        $this->subject->removeJobArea($instance);
+
+        self::assertFalse(
+            $this->subject->getJobAreas()->contains($instance),
+        );
+    }
+
+    #[Test]
+    public function getJobAreaInitiallyReturnsNull(): void
+    {
+        self::assertNull($this->subject->getJobArea());
+    }
+
+    #[Test]
+    public function getJobAreaReturnsFirstJobArea(): void
+    {
+        $first = new JobArea();
+        $second = new JobArea();
+        $this->subject->addJobArea($first);
+        $this->subject->addJobArea($second);
+
+        self::assertSame(
+            $first,
+            $this->subject->getJobArea(),
         );
     }
 

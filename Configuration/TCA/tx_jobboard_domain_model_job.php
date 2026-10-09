@@ -90,7 +90,7 @@ return [
         'job_description' => ['showitem' => 'description, --linebreak--, offer, --linebreak--, requirements, --linebreak--, further_information'],
         'import' => ['showitem' => 'is_import, vacancy_id'],
         'address' => ['showitem' => 'address'],
-        'information' => ['showitem' => 'job_role, job_area, --linebreak--, job_type, contract_type, --linebreak--, tender_type'],
+        'information' => ['showitem' => 'job_role, job_type, contract_type, --linebreak--, job_areas, --linebreak--, tender_type'],
         'salary_grade' => ['showitem' => 'salary_mode, --linebreak--, salary_grades'],
         'salary_min_max' => ['showitem' => 'salary_mode, --linebreak--, salary_min, salary_max'],
         'benefit' => ['showitem' => 'benefits'],
@@ -221,20 +221,18 @@ return [
                 'default' => 0,
             ],
         ],
-        'job_area' => [
+        'job_areas' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.job_area',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.job_areas',
             'config' => [
                 'type' => 'select',
-                'renderType' => 'selectSingle',
-                'items' => [
-                    ['label' => '', 'value' => 0],
-                ],
+                'renderType' => 'selectMultipleSideBySide',
                 'foreign_table' => 'tx_jobboard_domain_model_jobarea',
                 'foreign_table_where' => 'AND tx_jobboard_domain_model_jobarea.sys_language_uid IN (-1,0) ORDER BY tx_jobboard_domain_model_jobarea.title ASC',
+                'MM' => 'tx_jobboard_job_jobarea_mm',
+                'size' => 5,
+                'autoSizeMax' => 10,
                 'minitems' => 1,
-                'maxitems' => 1,
-                'default' => 0,
             ],
         ],
         'job_type' => [

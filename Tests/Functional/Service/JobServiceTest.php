@@ -121,7 +121,7 @@ final class JobServiceTest extends FunctionalTestCase
 
         self::assertSame(2, $preparedJob['pid']);
         self::assertTrue($preparedJob['is_import']);
-        self::assertSame(1, $preparedJob['job_area']);
+        self::assertSame('1', $preparedJob['job_areas']);
         self::assertSame(1, $preparedJob['job_type']);
         self::assertSame('Fachkraft (m/w/d)', $preparedJob['title']);
         self::assertSame('test_4711', $preparedJob['vacancy_id']);

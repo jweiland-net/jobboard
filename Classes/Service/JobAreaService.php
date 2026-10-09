@@ -13,6 +13,7 @@ namespace JWeiland\Jobboard\Service;
 
 use Doctrine\DBAL\Driver\Exception;
 use JWeiland\Jobboard\Traits\ConnectionPoolTrait;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * This service handles data for table tx_jobboard_domain_model_jobarea
@@ -25,10 +26,24 @@ class JobAreaService
     private const TABLE = 'tx_jobboard_domain_model_jobarea';
 
     /**
-     * The job_area in XML API is located in "custom_select_multi_4".
-     * These values are divided by "\n".
-     * As our database can only handle one record we just check first value.
+     * Resolves one or more job area titles (divided by "\n", as delivered by
+     * multi-select fields of the XML API) to a comma-separated list of job
+     * area uids, as expected by DataHandler for the MM relation "job_areas".
+     * Unknown titles are skipped.
      */
+    public function getJobAreaUidList(string $jobAreas): string
+    {
+        $jobAreaUids = [];
+        foreach (GeneralUtility::trimExplode("\n", $jobAreas, true) as $jobArea) {
+            $jobAreaUid = $this->getJobAreaUid($jobArea);
+            if ($jobAreaUid > 0) {
+                $jobAreaUids[$jobAreaUid] = $jobAreaUid;
+            }
+        }
+
+        return implode(',', $jobAreaUids);
+    }
+
     public function getJobAreaUid(string $jobArea): int
     {
         if ($jobArea === '') {

@@ -111,8 +111,8 @@ class JobboardController extends ActionController
     {
         $jobAreas = [];
         foreach ($jobs as $job) {
-            if ($job->getJobArea() instanceof JobArea) {
-                $jobAreas[$job->getJobArea()->getUid()] = $job->getJobArea()->getTitle();
+            foreach ($job->getJobAreas() as $jobArea) {
+                $jobAreas[$jobArea->getUid()] = $jobArea->getTitle();
             }
         }
 

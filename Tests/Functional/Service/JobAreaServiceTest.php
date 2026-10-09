@@ -72,4 +72,40 @@ final class JobAreaServiceTest extends FunctionalTestCase
             $this->subject->getJobAreaUid('Does not exist'),
         );
     }
+
+    #[Test]
+    public function getJobAreaUidListWithSingleTitleReturnsItsUid(): void
+    {
+        self::assertSame(
+            '2',
+            $this->subject->getJobAreaUidList('Handwerk'),
+        );
+    }
+
+    #[Test]
+    public function getJobAreaUidListWithLineSeparatedTitlesReturnsCommaSeparatedUids(): void
+    {
+        self::assertSame(
+            '2,1',
+            $this->subject->getJobAreaUidList("Handwerk\nIT\nHandwerk"),
+        );
+    }
+
+    #[Test]
+    public function getJobAreaUidListSkipsUnknownTitles(): void
+    {
+        self::assertSame(
+            '1',
+            $this->subject->getJobAreaUidList("Does not exist\nIT"),
+        );
+    }
+
+    #[Test]
+    public function getJobAreaUidListWithEmptyStringReturnsEmptyString(): void
+    {
+        self::assertSame(
+            '',
+            $this->subject->getJobAreaUidList(''),
+        );
+    }
 }

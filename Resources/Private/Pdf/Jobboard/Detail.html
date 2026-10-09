@@ -31,7 +31,7 @@
         <pdf:lineBreak height="5"/>
 
         <pdf:html>
-            <strong><f:translate key="job.job_area.title"/>:</strong> {job.jobArea.title}
+            <strong><f:translate key="job.job_areas.title"/>:</strong> <f:for each="{job.jobAreas}" as="jobArea" iteration="jobAreaIterator">{jobArea.title}<f:if condition="{jobAreaIterator.isLast}"><f:else>, </f:else></f:if></f:for>
             <br/>
             <strong><f:translate key="job.job_type.title"/>:</strong> {job.jobType.title}
         </pdf:html>

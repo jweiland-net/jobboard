@@ -58,11 +58,14 @@
                     <f:format.date format="{f:translate(key:'dateFormat')}">{job.endingDate}</f:format.date>
                 </dd>
             </dl>
-            <dl>
-                <dt>
-                    <f:translate key="job.job_area.title"/></dt>
-                <dd>{job.jobArea.title}</dd>
-            </dl>
+            <f:if condition="{job.jobAreas}">
+                <dl>
+                    <dt>
+                        <f:translate key="job.job_areas.title"/>
+                    </dt>
+                    <dd><f:for each="{job.jobAreas}" as="jobArea" iteration="jobAreaIterator">{jobArea.title}<f:if condition="{jobAreaIterator.isLast}"><f:else>, </f:else></f:if></f:for></dd>
+                </dl>
+            </f:if>
             <f:if condition="{job.jobType.title}">
                 <dl>
                     <dt>
@@ -196,7 +199,7 @@
     </section>
 </f:section>
 
-<!-- TCA palette "information": job_role, job_area, job_type, contract_type, tender_type -->
+<!-- TCA palette "information": job_role, job_type, contract_type, job_areas, tender_type -->
 <f:section name="renderInformation">
     <section class="margin-top">
         <h2><f:translate key="job.groups.information"/></h2>
@@ -205,8 +208,6 @@
                 <dt><f:translate key="job.jobRole.title"/></dt>
                 <dd>{job.jobRole.title}</dd>
             </f:if>
-            <dt><f:translate key="job.job_area.title"/></dt>
-            <dd>{job.jobArea.title}</dd>
             <f:if condition="{job.jobType.title}">
                 <dt><f:translate key="job.job_type.title"/></dt>
                 <dd>{job.jobType.title}</dd>
@@ -214,6 +215,10 @@
             <f:if condition="{job.contractType.title}">
                 <dt><f:translate key="job.contractType.title"/></dt>
                 <dd>{job.contractType.title}</dd>
+            </f:if>
+            <f:if condition="{job.jobAreas}">
+                <dt><f:translate key="job.job_areas.title"/></dt>
+                <dd><f:for each="{job.jobAreas}" as="jobArea" iteration="jobAreaIterator">{jobArea.title}<f:if condition="{jobAreaIterator.isLast}"><f:else>, </f:else></f:if></f:for></dd>
             </f:if>
             <f:if condition="{job.tenderType.title}">
                 <dt><f:translate key="job.tenderType.title"/></dt>

@@ -75,8 +75,8 @@
 			<trans-unit id="tx_jobboard_domain_model_job.job_role">
 				<source>Position</source>
 			</trans-unit>
-			<trans-unit id="tx_jobboard_domain_model_job.job_area">
-				<source>Occupational field</source>
+			<trans-unit id="tx_jobboard_domain_model_job.job_areas">
+				<source>Occupational fields</source>
 			</trans-unit>
 			<trans-unit id="tx_jobboard_domain_model_job.job_type">
 				<source>Employment scope</source>

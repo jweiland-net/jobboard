@@ -1,0 +1,22 @@
+"pages"
+,"uid","pid","title","slug","deleted","hidden","doktype","is_siteroot"
+,1,0,"Root","/",0,0,1,1
+,2,1,"Storage for jobs","/storage",0,0,254,0
+
+"tx_jobboard_domain_model_jobarea"
+,"uid","pid","title"
+,1,2,"Area A"
+,2,2,"Area B"
+,3,2,"Area C"
+
+"tx_jobboard_domain_model_job"
+,"uid","pid","title","deleted","job_area","job_areas"
+,1,2,"Job with legacy job area",0,1,0
+,2,2,"Job without legacy job area",0,0,0
+,3,2,"Job already having MM relations",0,3,2
+,4,2,"Deleted job with legacy job area",1,2,0
+
+"tx_jobboard_job_jobarea_mm"
+,"uid_local","uid_foreign","sorting","sorting_foreign"
+,3,1,1,0
+,3,2,2,0
