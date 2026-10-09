@@ -66,6 +66,10 @@
 				<source>Subtitle</source>
 				<target>Untertitel</target>
 			</trans-unit>
+			<trans-unit id="tx_jobboard_domain_model_job.path_segment">
+				<source>URL segment</source>
+				<target>URL-Segment</target>
+			</trans-unit>
 			<trans-unit id="tx_jobboard_domain_model_job.reference_number">
 				<source>Reference number</source>
 				<target>Kennziffer</target>

@@ -155,6 +155,9 @@ Key points:
   `tx_jobboard_domain_model_job.salary_grade`, only still declared in `ext_tables.sql` for this wizard)
   into the MM relation `salary_grades` and empties the legacy column afterwards. Once all installations
   ran it, the wizard and the legacy column can be removed together.
+- **`JobPathSegmentUpdate`** (`jweilandJobboardJobPathSegmentUpdate`) fills empty `path_segment` slugs of
+  jobs via `SlugHelper` (table-wide unique, as `PersistedAliasMapper` in `Configuration/Routes/Default.yaml`
+  resolves slugs table-wide). New jobs, also imported ones, get their slug from `DataHandler` automatically.
 - **`JobfairToJobboardCTypeMigration`** migrates `tt_content.CType` and `be_groups` explicit-allow/deny
   permissions from `jobfair2_jobfair` to `jobboard_jobboard`. Unrelated to FAL/domain data.
 

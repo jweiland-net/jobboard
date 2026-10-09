@@ -1,0 +1,14 @@
+"pages"
+,"uid","pid","title","slug","deleted","hidden","doktype","is_siteroot"
+,1,0,"Root","/",0,0,1,1
+,2,1,"Storage for jobs","/storage",0,0,254,0
+
+"tx_jobboard_domain_model_job"
+,"uid","pid","title","path_segment","deleted","hidden"
+,1,2,"Sample job",,0,0
+,2,2,"Another sample job","custom-segment",0,0
+,3,2,"Duplicate title",,0,0
+,4,2,"Duplicate title",,0,1
+,5,2,"Taken segment","sample-job-title",0,0
+,6,2,"Sample job title",,0,0
+,7,2,"Deleted job",,1,0

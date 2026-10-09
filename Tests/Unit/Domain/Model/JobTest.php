@@ -112,6 +112,26 @@ class JobTest extends UnitTestCase
     }
 
     #[Test]
+    public function getPathSegmentInitiallyReturnsEmptyString(): void
+    {
+        self::assertSame(
+            '',
+            $this->subject->getPathSegment(),
+        );
+    }
+
+    #[Test]
+    public function setPathSegmentSetsPathSegment(): void
+    {
+        $this->subject->setPathSegment('sample-job-title');
+
+        self::assertSame(
+            'sample-job-title',
+            $this->subject->getPathSegment(),
+        );
+    }
+
+    #[Test]
     public function getDescriptionInitiallyReturnsEmptyString(): void
     {
         self::assertSame(

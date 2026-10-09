@@ -152,6 +152,17 @@ Then place your own copies of :file:`Templates/Jobboard/List.html` and/or
     result message) as-is.
 
 
+..  _admin-manual-routing:
+
+Speaking URLs
+=============
+
+Jobboard ships a route enhancer for speaking URLs of the job detail view,
+for example :samp:`/jobs/web-developer-m-w-d`. It has to be imported in the
+site configuration. See :ref:`admin-routing` for setup, the URL segment
+field of jobs and the upgrade wizard for existing jobs.
+
+
 ..  _admin-manual-import:
 
 Importing jobs automatically
@@ -168,4 +179,5 @@ class step by step.
     :titlesonly:
     :hidden:
 
+    Routing/Index
     Api/Index

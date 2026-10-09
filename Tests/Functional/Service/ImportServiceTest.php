@@ -159,6 +159,44 @@ final class ImportServiceTest extends FunctionalTestCase
     }
 
     #[Test]
+    public function importGeneratesPathSegmentForNewJob(): void
+    {
+        $importService = $this->buildImportService(
+            '<jobs>
+                <job>
+                    <vacancy_id>4712</vacancy_id>
+                    <title><de>Sample job title</de></title>
+                    <custom_select_4><de>IT</de></custom_select_4>
+                    <custom_select_2><de>Vollzeit</de></custom_select_2>
+                    <salary_mode>1</salary_mode>
+                    <locations>
+                        <location primary="true">
+                            <technical_name>loc-2</technical_name>
+                            <de>Example Company</de>
+                            <street>Example Street 1</street>
+                            <zipcode>12345</zipcode>
+                            <city>Example City</city>
+                        </location>
+                    </locations>
+                </job>
+            </jobs>',
+        );
+
+        self::assertTrue($importService->import(new ImportConfiguration(2)));
+
+        $queryBuilder = $this->get(ConnectionPool::class)->getQueryBuilderForTable('tx_jobboard_domain_model_job');
+        $queryBuilder->getRestrictions()->removeAll();
+        $pathSegment = $queryBuilder
+            ->select('path_segment')
+            ->from('tx_jobboard_domain_model_job')
+            ->where($queryBuilder->expr()->eq('vacancy_id', $queryBuilder->createNamedParameter('test_4712')))
+            ->executeQuery()
+            ->fetchOne();
+
+        self::assertSame('sample-job-title', $pathSegment);
+    }
+
+    #[Test]
     public function importDeletesJobsNoLongerPresentInApiResponse(): void
     {
         $importService = $this->buildImportService('<jobs></jobs>');

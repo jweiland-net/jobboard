@@ -1,0 +1,35 @@
+# Route enhancer for speaking URLs of the job detail view.
+#
+# Import this file in your site configuration (config/sites/<site>/config.yaml)
+# or in any YAML file imported from there:
+#
+#   imports:
+#     - { resource: 'EXT:jobboard/Configuration/Routes/Default.yaml' }
+#
+# Project-specific values can be added below the same enhancer key, e.g.:
+#
+#   routeEnhancers:
+#     JobboardPlugin:
+#       limitToPages: [123]
+#
+# Note: lists (like "limitToPages") of imported files are merged, not
+# replaced. That's why this file does not define "limitToPages" itself.
+routeEnhancers:
+  JobboardPlugin:
+    type: Extbase
+    extension: Jobboard
+    plugin: Jobboard
+    routes:
+      -
+        routePath: '/{job_title}'
+        _controller: 'Jobboard::detail'
+        _arguments:
+          job_title: job
+    requirements:
+      job_title: '^[[:alnum:]\-]+$'
+    defaultController: 'Jobboard::list'
+    aspects:
+      job_title:
+        type: PersistedAliasMapper
+        tableName: tx_jobboard_domain_model_job
+        routeFieldName: path_segment
