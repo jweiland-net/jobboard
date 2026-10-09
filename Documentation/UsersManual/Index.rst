@@ -51,6 +51,13 @@ The most relevant fields are:
     The job title as shown on the frontend, and an internal reference
     number (e.g. an internal vacancy number).
 
+:guilabel:`URL segment`
+    The part of the URL of the job detail page, for example
+    `web-developer-m-w-d`. It is generated automatically from the title
+    when the job is created. Changing the title later does not change the
+    URL segment, so existing links keep working. Use the button next to
+    the field to regenerate it from the current title if needed.
+
 :guilabel:`Description`
     A rich-text description of the vacancy.
 

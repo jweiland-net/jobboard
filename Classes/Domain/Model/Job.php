@@ -23,6 +23,8 @@ class Job extends AbstractEntity
 
     protected string $subtitle = '';
 
+    protected string $pathSegment = '';
+
     protected string $description = '';
 
     protected string $offer = '';
@@ -164,6 +166,16 @@ class Job extends AbstractEntity
     public function setSubtitle(string $subtitle): void
     {
         $this->subtitle = $subtitle;
+    }
+
+    public function getPathSegment(): string
+    {
+        return $this->pathSegment;
+    }
+
+    public function setPathSegment(string $pathSegment): void
+    {
+        $this->pathSegment = $pathSegment;
     }
 
     public function getDescription(): string

@@ -86,7 +86,7 @@ return [
     ],
     'palettes' => [
         'languageHidden' => ['showitem' => 'sys_language_uid, l10n_parent, hidden'],
-        'job_details' => ['showitem' => 'title, reference_number, --linebreak--, subtitle'],
+        'job_details' => ['showitem' => 'title, reference_number, --linebreak--, subtitle, --linebreak--, path_segment'],
         'job_description' => ['showitem' => 'description, --linebreak--, offer, --linebreak--, requirements, --linebreak--, further_information'],
         'import' => ['showitem' => 'is_import, vacancy_id'],
         'address' => ['showitem' => 'address'],
@@ -131,6 +131,27 @@ return [
                 'max' => 60,
                 'eval' => 'trim',
                 'required' => true,
+            ],
+        ],
+        'path_segment' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.path_segment',
+            'config' => [
+                'type' => 'slug',
+                'size' => 50,
+                'generatorOptions' => [
+                    'fields' => ['title'],
+                    // The page slug is added by the route enhancer, not by the record slug
+                    'prefixParentPageSlug' => false,
+                    'fieldSeparator' => '-',
+                    'replacements' => [
+                        '/' => '-',
+                    ],
+                ],
+                'fallbackCharacter' => '-',
+                'prependSlash' => false,
+                'eval' => 'unique',
+                'default' => '',
             ],
         ],
         'description' => [
