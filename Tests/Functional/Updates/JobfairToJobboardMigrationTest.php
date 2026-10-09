@@ -109,13 +109,12 @@ final class JobfairToJobboardMigrationTest extends FunctionalTestCase
 
         $connection = $this->get(ConnectionPool::class)->getConnectionForTable('tx_jobboard_domain_model_job');
         $row = $connection->select(
-            ['title', 'job_area', 'salary_mode', 'salary_min', 'salary_max'],
+            ['title', 'salary_mode', 'salary_min', 'salary_max'],
             'tx_jobboard_domain_model_job',
             ['uid' => 1],
         )->fetchAssociative();
 
         self::assertSame('Legacy job without salary_mode', $row['title']);
-        self::assertSame(1, (int)$row['job_area']);
         self::assertSame(1, (int)$row['salary_mode']);
         self::assertSame(0.0, (float)$row['salary_min']);
         self::assertSame(0.0, (float)$row['salary_max']);

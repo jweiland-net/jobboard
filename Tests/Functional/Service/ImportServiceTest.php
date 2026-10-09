@@ -135,7 +135,17 @@ final class ImportServiceTest extends FunctionalTestCase
 
         self::assertIsArray($job);
         self::assertSame('Fachkraft (m/w/d)', $job['title']);
-        self::assertSame(1, (int)$job['job_area']);
+        self::assertSame(1, (int)$job['job_areas']);
+        self::assertSame(
+            [1],
+            array_map(
+                intval(...),
+                $connectionPool
+                    ->getConnectionForTable('tx_jobboard_job_jobarea_mm')
+                    ->select(['uid_foreign'], 'tx_jobboard_job_jobarea_mm', ['uid_local' => (int)$job['uid']])
+                    ->fetchFirstColumn(),
+            ),
+        );
         self::assertSame(1, (int)$job['job_type']);
         self::assertGreaterThan(0, (int)$job['address']);
 

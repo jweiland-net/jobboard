@@ -41,11 +41,14 @@ class Job extends AbstractEntity
 
     protected ?JobRole $jobRole = null;
 
-    protected ?JobArea $jobArea = null;
-
     protected ?JobType $jobType = null;
 
     protected ?ContractType $contractType = null;
+
+    /**
+     * @var ObjectStorage<JobArea>
+     */
+    protected ObjectStorage $jobAreas;
 
     protected ?TenderType $tenderType = null;
 
@@ -118,6 +121,7 @@ class Job extends AbstractEntity
 
     public function __construct()
     {
+        $this->jobAreas = new ObjectStorage();
         $this->salaryGrades = new ObjectStorage();
         $this->benefits = new ObjectStorage();
         $this->employerLogo = new ObjectStorage();
@@ -129,6 +133,7 @@ class Job extends AbstractEntity
 
     public function initializeObject(): void
     {
+        $this->jobAreas ??= new ObjectStorage();
         $this->salaryGrades ??= new ObjectStorage();
         $this->benefits ??= new ObjectStorage();
         $this->employerLogo ??= new ObjectStorage();
@@ -258,16 +263,6 @@ class Job extends AbstractEntity
         $this->jobRole = $jobRole;
     }
 
-    public function getJobArea(): ?JobArea
-    {
-        return $this->jobArea;
-    }
-
-    public function setJobArea(JobArea $jobArea): void
-    {
-        $this->jobArea = $jobArea;
-    }
-
     public function getJobType(): ?JobType
     {
         return $this->jobType;
@@ -286,6 +281,46 @@ class Job extends AbstractEntity
     public function setContractType(ContractType $contractType): void
     {
         $this->contractType = $contractType;
+    }
+
+    /**
+     * @return ObjectStorage<JobArea>
+     */
+    public function getJobAreas(): ObjectStorage
+    {
+        return $this->jobAreas;
+    }
+
+    /**
+     * @param ObjectStorage<JobArea> $jobAreas
+     */
+    public function setJobAreas(ObjectStorage $jobAreas): void
+    {
+        $this->jobAreas = $jobAreas;
+    }
+
+    public function addJobArea(JobArea $jobArea): void
+    {
+        $this->jobAreas->attach($jobArea);
+    }
+
+    public function removeJobArea(JobArea $jobArea): void
+    {
+        $this->jobAreas->detach($jobArea);
+    }
+
+    /**
+     * First selected (and visible) job area. Kept for templates which only
+     * render a single job area via {job.jobArea}. Use {job.jobAreas} to
+     * render all selected job areas.
+     */
+    public function getJobArea(): ?JobArea
+    {
+        foreach ($this->jobAreas as $jobArea) {
+            return $jobArea;
+        }
+
+        return null;
     }
 
     public function getTenderType(): ?TenderType

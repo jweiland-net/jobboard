@@ -42,11 +42,13 @@ contact person, application information, media, relations. `Detail.html` has one
 adding ad-hoc fields elsewhere in the template.
 
 - **Taxonomy/lookup tables**: `JobArea`, `JobType`, `JobRole`, `ContractType`, `TenderType`, `Benefit` are
-  all minimal one-field (`title`) entities, each with their own TCA table. `Job` references `JobArea`,
-  `JobType`, `JobRole`, `ContractType`, and `TenderType` as single (`selectSingle`) relations, but
-  `benefits` is a genuine many-to-many relation (`selectMultipleSideBySide` + MM table
-  `tx_jobboard_job_benefit_mm`) - a job can have several benefits, unlike the other, singular, lookup
-  relations. `Benefit` additionally has `color` (TYPO3's native colorpicker, `type=input` /
+  all minimal one-field (`title`) entities, each with their own TCA table. `Job` references `JobType`,
+  `JobRole`, `ContractType`, and `TenderType` as single (`selectSingle`) relations, but `jobAreas` and
+  `benefits` are genuine many-to-many relations (`selectMultipleSideBySide` + MM tables
+  `tx_jobboard_job_jobarea_mm` / `tx_jobboard_job_benefit_mm`) - a job can have several job areas and
+  benefits, unlike the other, singular, lookup relations. `Job::getJobArea()` only returns the first
+  selected job area, for templates rendering a single one; the frontend search still filters by one job
+  area and matches every job having it among its job areas (`contains`). `Benefit` additionally has `color` (TYPO3's native colorpicker, `type=input` /
   `renderType=color`, with a `valuePicker` offering a fixed set of 6 pastel colors as quick-pick swatches -
   editors can still choose any color freely) and a plain-text `description`. `ColorElement` does not
   resolve `LLL:` references for `valuePicker.items` labels (unlike `InputTextElement`/`NumberElement`/
@@ -121,7 +123,7 @@ Key points:
   it allows other extensions to hook into `DataHandler` (e.g. Solr indexing) on every import.
 - **Frontend path uses Extbase/Fluid as usual.** `JobboardController` + `JobRepository` (Extbase) serve the
   `list`, `search`, and `detail` actions. `JobRepository::findBySearchCriteria()` implements the actual
-  search logic (job area, job type, zip/city).
+  search logic (job area, job role, job type, zip/city, search word).
 - **`ApiModelInterface` implementations are pluggable data-source adapters.** Each class only defines a
   `NAME`, `API_ENDPOINT`, and a `MAPPING` array (API XPath -> DB column, with optional date-cast and
   prefix). New job sources are added by creating a new class tagged `api.model` via
@@ -151,10 +153,13 @@ Key points:
   `JOB_FAL_FIELDS` (`employer_logo`, `header_logo`, `tender_file`, `pdf_files`), so a *new* FAL column that
   already existed under the old `tx_jobfair2_*` table name must be added to that constant, or its file
   relations will silently point at the old, no-longer-existing table after migration.
-- **`SalaryGradeToSalaryGradesMigration`** moves the former single salary grade (legacy text column
-  `tx_jobboard_domain_model_job.salary_grade`, only still declared in `ext_tables.sql` for this wizard)
-  into the MM relation `salary_grades` and empties the legacy column afterwards. Once all installations
-  ran it, the wizard and the legacy column can be removed together.
+- **`JobAreaToJobAreasMigration`** / **`SalaryGradeToSalaryGradesMigration`** move the former single job
+  area (int column `job_area`) / salary grade (text column `salary_grade`) of
+  `tx_jobboard_domain_model_job` into the MM relations `job_areas` / `salary_grades`. Both legacy columns are
+  no longer declared anywhere; the wizards only migrate our existing test environments and must run before
+  the database compare drops the old columns (without them, they are silently not necessary). Their
+  functional tests create the legacy column themselves in `setUp()`. As `JobfairToJobboardMigration` only
+  copies common columns, `job_area`/`salary_grade` are no longer copied from the `tx_jobfair2_*` tables.
 - **`JobPathSegmentUpdate`** (`jweilandJobboardJobPathSegmentUpdate`) fills empty `path_segment` slugs of
   jobs via `SlugHelper` (table-wide unique, as `PersistedAliasMapper` in `Configuration/Routes/Default.yaml`
   resolves slugs table-wide). New jobs, also imported ones, get their slug from `DataHandler` automatically.

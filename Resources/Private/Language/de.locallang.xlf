@@ -89,6 +89,10 @@
 				<source>Job Area</source>
 				<target>Berufsfeld</target>
 			</trans-unit>
+			<trans-unit id="job.job_areas.title">
+				<source>Job Areas</source>
+				<target>Berufsfelder</target>
+			</trans-unit>
 			<trans-unit id="job.job_type.title">
 				<source>Job Type</source>
 				<target>Beschäftigungsart</target>

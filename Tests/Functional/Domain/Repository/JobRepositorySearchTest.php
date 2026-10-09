@@ -26,9 +26,11 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
  * Test case.
  *
  * Covers JobRepository::findBySearch(): the "title is not empty" and "not yet
- * ended" base filters, the job area/job role/job type equality filters, the zip
+ * ended" base filters, the job area filter (matching any of the MM related
+ * job areas of a job), the job role/job type equality filters, the zip
  * (exact) / city (LIKE) address filter, and the free text search matching
  * title, address or Job RTE fields word by word, combined with logical AND.
+ * Additionally covers the job area filter of JobRepository::findBySettings().
  *
  * JobArea/JobRole/JobType have no dedicated repository (they are plain lookup
  * entities only ever read as a relation of Job), so single entities are
@@ -77,6 +79,18 @@ class JobRepositorySearchTest extends FunctionalTestCase
         return array_map(
             static fn(Job $job): string => $job->getTitle(),
             iterator_to_array($this->subject->findBySearch($search)),
+        );
+    }
+
+    /**
+     * @param array<string, mixed> $settings
+     * @return string[]
+     */
+    private function findJobTitlesBySettings(array $settings): array
+    {
+        return array_map(
+            static fn(Job $job): string => $job->getTitle(),
+            iterator_to_array($this->subject->findBySettings($settings)),
         );
     }
 
@@ -162,6 +176,7 @@ class JobRepositorySearchTest extends FunctionalTestCase
             [
                 'Job with exact zip match',
                 'Job with same city but different zip',
+                'Job in a different city',
                 'Job in city name containing search term',
                 'Job with far future ending date in Pforzheim',
                 'Job in Pforzheim but other job type',
@@ -170,6 +185,45 @@ class JobRepositorySearchTest extends FunctionalTestCase
             ],
             $this->findJobTitles(new Search($jobArea, null, null, '', '')),
         );
+    }
+
+    #[Test]
+    public function findBySearchByJobAreaMatchesJobsHavingThatJobAreaAmongOthers(): void
+    {
+        // "Job in a different city" references job areas 2 and 1
+        $jobArea = $this->get(PersistenceManagerInterface::class)->getObjectByIdentifier(2, JobArea::class);
+
+        self::assertEqualsCanonicalizing(
+            [
+                'Job in a different city',
+                'Job in Pforzheim but other job area',
+            ],
+            $this->findJobTitles(new Search($jobArea, null, null, '', '')),
+        );
+    }
+
+    #[Test]
+    public function findBySettingsWithoutJobAreasReturnsAllActiveJobsWithATitle(): void
+    {
+        self::assertCount(9, $this->findJobTitlesBySettings([]));
+    }
+
+    #[Test]
+    public function findBySettingsWithJobAreaListFromFlexFormReturnsJobsHavingAnyOfThem(): void
+    {
+        self::assertEqualsCanonicalizing(
+            [
+                'Job in a different city',
+                'Job in Pforzheim but other job area',
+            ],
+            $this->findJobTitlesBySettings(['jobAreas' => '2']),
+        );
+    }
+
+    #[Test]
+    public function findBySettingsWithJobAreaArrayReturnsEveryMatchingJobOnlyOnce(): void
+    {
+        self::assertCount(9, $this->findJobTitlesBySettings(['jobAreas' => ['1', '2']]));
     }
 
     #[Test]

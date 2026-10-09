@@ -98,9 +98,9 @@
 				<source>Position</source>
 				<target>Position</target>
 			</trans-unit>
-			<trans-unit id="tx_jobboard_domain_model_job.job_area">
-				<source>Occupational field</source>
-				<target>Berufsfeld</target>
+			<trans-unit id="tx_jobboard_domain_model_job.job_areas">
+				<source>Occupational fields</source>
+				<target>Berufsfelder</target>
 			</trans-unit>
 			<trans-unit id="tx_jobboard_domain_model_job.job_type">
 				<source>Employment scope</source>

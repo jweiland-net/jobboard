@@ -50,14 +50,14 @@
 ,4,2,5,"2",3200.00,0,0,946684800
 
 "tx_jobboard_domain_model_job"
-,"uid","pid","title","reference_number","address","employer","email","salary_mode","salary_grades","salary_min","salary_max","job_area","job_role","job_type"
+,"uid","pid","title","reference_number","address","employer","email","salary_mode","salary_grades","salary_min","salary_max","job_areas","job_role","job_type"
 ,1,2,"Job with visible stepped grade","1",1,"Example Employer Ltd.","test@example.com",0,1,0.00,0.00,1,1,1
 ,2,2,"Job with expired grade","2",1,"Example Employer Ltd.","test@example.com",0,1,0.00,0.00,0,0,0
 ,3,2,"Job with hidden grade","3",1,"Example Employer Ltd.","test@example.com",0,1,0.00,0.00,0,0,0
 ,4,2,"Job with not yet started grade","4",1,"Example Employer Ltd.","test@example.com",0,1,0.00,0.00,0,0,0
 ,5,2,"Job with all steps expired","5",1,"Example Employer Ltd.","test@example.com",0,1,0.00,0.00,0,0,0
 ,6,2,"Job without any salary grade selected","6",1,"Example Employer Ltd.","test@example.com",0,0,0.00,0.00,0,0,0
-,7,2,"Job with free entry range","7",1,"Example Employer Ltd.","test@example.com",1,0,2500.00,3200.00,2,2,2
+,7,2,"Job with free entry range","7",1,"Example Employer Ltd.","test@example.com",1,0,2500.00,3200.00,1,2,2
 ,8,2,"Job with a single free entry amount","8",1,"Example Employer Ltd.","test@example.com",1,0,2500.00,0.00,0,0,0
 ,9,2,"Job with free entry but no amount at all","9",1,"Example Employer Ltd.","test@example.com",1,0,0.00,0.00,0,0,0
 
@@ -68,3 +68,8 @@
 ,3,3,1,0
 ,4,4,1,0
 ,5,5,1,0
+
+"tx_jobboard_job_jobarea_mm"
+,"uid_local","uid_foreign","sorting","sorting_foreign"
+,1,1,1,0
+,7,2,1,0

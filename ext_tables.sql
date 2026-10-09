@@ -4,11 +4,6 @@
 CREATE TABLE tx_jobboard_domain_model_job
 (
 	address int(11) unsigned DEFAULT '0' NOT NULL,
-	# Legacy single salary grade (former TCA "group" field), replaced by the
-	# MM relation "salary_grades". Only kept, so the upgrade wizard
-	# "jweilandJobboardSalaryGradeToSalaryGradesMigration" can read it.
-	# Will be removed in a future version.
-	salary_grade text,
 	salary_min decimal(10, 2) DEFAULT '0.00' NOT NULL,
 	salary_max decimal(10, 2) DEFAULT '0.00' NOT NULL
 );

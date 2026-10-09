@@ -66,7 +66,7 @@ readonly class JobService
         $preparedJob = [
             'pid' => $apiModel->getStoragePid(),
             'is_import' => true,
-            'job_area' => $this->jobAreaService->getJobAreaUid(
+            'job_areas' => $this->jobAreaService->getJobAreaUidList(
                 $importedJob->getValueByPath('custom_select_4/de'),
             ),
             'job_type' => $this->jobTypeService->getJobTypeUid(

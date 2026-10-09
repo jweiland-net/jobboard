@@ -14,8 +14,8 @@
         <div class="jobboard-job" data-jobboard-uid="{job.uid}">
             <div class="jobboard-jobdetails">
                 <p>
-                    <f:if condition="{job.jobArea}">
-                        <span>{job.jobArea.title}</span>
+                    <f:if condition="{job.jobAreas}">
+                        <span><f:for each="{job.jobAreas}" as="jobArea" iteration="jobAreaIterator">{jobArea.title}<f:if condition="{jobAreaIterator.isLast}"><f:else>, </f:else></f:if></f:for></span>
                     </f:if>
                     <f:if condition="{job.jobRole}">
                         <span>{job.jobRole.title}</span>

@@ -11,34 +11,34 @@ declare(strict_types=1);
 
 namespace JWeiland\Jobboard\Updates;
 
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Install\Attribute\UpgradeWizard;
 use TYPO3\CMS\Install\Updates\DatabaseUpdatedPrerequisite;
 use TYPO3\CMS\Install\Updates\UpgradeWizardInterface;
 
 /**
- * Moves the former single salary grade of a job (legacy TCA "group" column
- * "salary_grade", storing the grade uid as text) into the MM relation
- * "salary_grades" (table "tx_jobboard_job_salarygrade_mm"), which allows
- * selecting multiple salary grades per job.
+ * Moves the former single job area of a job (legacy TCA "selectSingle"
+ * column "job_area", storing the job area uid) into the MM relation
+ * "job_areas" (table "tx_jobboard_job_jobarea_mm"), which allows selecting
+ * multiple job areas per job.
  *
  * Jobs which already have MM relations (e.g. edited after the database
  * update, but before this wizard was executed) keep them. In every case the
- * legacy column is emptied afterwards, so each job is only migrated once.
+ * legacy column is reset to 0 afterwards, so each job is only migrated once.
  *
  * The legacy column is no longer declared in TCA or ext_tables.sql. This
  * wizard migrates existing (test) installations and must run before the
  * database compare drops the old column. Without that column it is silently
  * not necessary.
  */
-#[UpgradeWizard('jweilandJobboardSalaryGradeToSalaryGradesMigration')]
-final readonly class SalaryGradeToSalaryGradesMigration implements UpgradeWizardInterface
+#[UpgradeWizard('jweilandJobboardJobAreaToJobAreasMigration')]
+final readonly class JobAreaToJobAreasMigration implements UpgradeWizardInterface
 {
     private const TABLE_JOB = 'tx_jobboard_domain_model_job';
-    private const TABLE_MM = 'tx_jobboard_job_salarygrade_mm';
-    private const LEGACY_COLUMN = 'salary_grade';
-    private const MM_COUNT_COLUMN = 'salary_grades';
+    private const TABLE_MM = 'tx_jobboard_job_jobarea_mm';
+    private const LEGACY_COLUMN = 'job_area';
+    private const MM_COUNT_COLUMN = 'job_areas';
 
     public function __construct(
         private ConnectionPool $connectionPool,
@@ -46,14 +46,14 @@ final readonly class SalaryGradeToSalaryGradesMigration implements UpgradeWizard
 
     public function getTitle(): string
     {
-        return '[jobboard] Migrate the single salary grade of jobs to the new multi-select relation.';
+        return '[jobboard] Migrate the single job area of jobs to the new multi-select relation.';
     }
 
     public function getDescription(): string
     {
-        return 'Jobs can now reference multiple salary grades. This wizard moves the formerly selected '
-            . 'single salary grade (column "salary_grade") of every job record into the new relation '
-            . '"salary_grades" (MM table "' . self::TABLE_MM . '") and empties the old column afterwards.';
+        return 'Jobs can now reference multiple job areas. This wizard moves the formerly selected '
+            . 'single job area (column "job_area") of every job record into the new relation '
+            . '"job_areas" (MM table "' . self::TABLE_MM . '") and resets the old column afterwards.';
     }
 
     public function getPrerequisites(): array
@@ -77,7 +77,7 @@ final readonly class SalaryGradeToSalaryGradesMigration implements UpgradeWizard
         foreach ($this->fetchJobsToMigrate() as $job) {
             $jobUid = (int)$job['uid'];
             if (!$this->hasMmRelations($jobUid)) {
-                $this->insertMmRelations($jobUid, $this->extractSalaryGradeUids((string)$job[self::LEGACY_COLUMN]));
+                $this->insertMmRelation($jobUid, (int)$job[self::LEGACY_COLUMN]);
             }
 
             $this->updateJob($jobUid);
@@ -105,8 +105,7 @@ final readonly class SalaryGradeToSalaryGradesMigration implements UpgradeWizard
             ->select('uid', self::LEGACY_COLUMN)
             ->from(self::TABLE_JOB)
             ->where(
-                $queryBuilder->expr()->isNotNull(self::LEGACY_COLUMN),
-                $queryBuilder->expr()->neq(self::LEGACY_COLUMN, $queryBuilder->createNamedParameter('')),
+                $queryBuilder->expr()->gt(self::LEGACY_COLUMN, $queryBuilder->createNamedParameter(0, Connection::PARAM_INT)),
             )
             ->executeQuery()
             ->fetchAllAssociative();
@@ -119,43 +118,19 @@ final readonly class SalaryGradeToSalaryGradesMigration implements UpgradeWizard
         return $connection->count('*', self::TABLE_MM, ['uid_local' => $jobUid]) > 0;
     }
 
-    /**
-     * The legacy group field stored a comma-separated list of either plain
-     * uids ("12") or table-prefixed uids ("tx_jobboard_domain_model_salarygrade_12").
-     *
-     * @return int[]
-     */
-    private function extractSalaryGradeUids(string $legacyValue): array
+    private function insertMmRelation(int $jobUid, int $jobAreaUid): void
     {
-        $uids = [];
-        foreach (GeneralUtility::trimExplode(',', $legacyValue, true) as $item) {
-            if (preg_match('/(\d+)$/', $item, $matches) === 1 && (int)$matches[1] > 0) {
-                $uids[] = (int)$matches[1];
-            }
-        }
-
-        return array_values(array_unique($uids));
-    }
-
-    /**
-     * @param int[] $salaryGradeUids
-     */
-    private function insertMmRelations(int $jobUid, array $salaryGradeUids): void
-    {
-        $connection = $this->connectionPool->getConnectionForTable(self::TABLE_MM);
-        foreach ($salaryGradeUids as $index => $salaryGradeUid) {
-            $connection->insert(self::TABLE_MM, [
-                'uid_local' => $jobUid,
-                'uid_foreign' => $salaryGradeUid,
-                'sorting' => $index + 1,
-                'sorting_foreign' => 0,
-            ]);
-        }
+        $this->connectionPool->getConnectionForTable(self::TABLE_MM)->insert(self::TABLE_MM, [
+            'uid_local' => $jobUid,
+            'uid_foreign' => $jobAreaUid,
+            'sorting' => 1,
+            'sorting_foreign' => 0,
+        ]);
     }
 
     /**
      * Stores the relation count in the local MM column (as DataHandler does)
-     * and empties the legacy column.
+     * and resets the legacy column.
      */
     private function updateJob(int $jobUid): void
     {
@@ -166,7 +141,7 @@ final readonly class SalaryGradeToSalaryGradesMigration implements UpgradeWizard
                 self::MM_COUNT_COLUMN => $this->connectionPool
                     ->getConnectionForTable(self::TABLE_MM)
                     ->count('*', self::TABLE_MM, ['uid_local' => $jobUid]),
-                self::LEGACY_COLUMN => null,
+                self::LEGACY_COLUMN => 0,
             ],
             ['uid' => $jobUid],
         );
