@@ -1,0 +1,86 @@
+<html lang="en"
+      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+<f:comment>
+    Structured data (schema.org/JobPosting) for the job detail view.
+
+    Override this partial in your site package to add, remove or remap
+    properties. Rules to keep the output valid JSON:
+    - Render every dynamic value with the tag syntax
+      <f:format.json value="..."/>. It adds the quotes, escapes special
+      chars and hex-encodes "<" and ">", so "</script>" can not break out.
+    - Do NOT use the inline syntax {value -> f:format.json()}. Fluid treats
+      a JSON object like { "a": {foo -> f:format.json()} } as one shorthand
+      block and prints it unparsed. A tag inside the braces prevents this.
+      For the same reason a JSON object needs at least one tag inside.
+    - Each optional property ends with a comma. "url" is always rendered as
+      last property, so there is never a trailing comma.
+    - "employmentType" is not rendered, as schema.org expects fixed values
+      like FULL_TIME or PART_TIME, while job types are free text records.
+</f:comment>
+
+<f:asset.script identifier="jobboard-json-ld-{job.uid}" type="application/ld+json" useNonce="1">
+{
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    "title": <f:format.json value="{job.title}"/>,
+    "description": <f:format.json value="{job.description}"/>,
+    <f:if condition="{job.referenceNumber}">
+    "identifier": {
+        "@type": "PropertyValue",
+        "name": <f:format.json value="{job.employer}"/>,
+        "value": <f:format.json value="{job.referenceNumber}"/>
+    },
+    </f:if>
+    <f:if condition="{job.startDate}">
+    "jobStartDate": <f:format.json value="{job.startDate -> f:format.date(format: 'Y-m-d')}"/>,
+    </f:if>
+    <f:if condition="{job.applicationDeadline}">
+    "validThrough": <f:format.json value="{job.applicationDeadline -> f:format.date(format: 'c')}"/>,
+    </f:if>
+    "hiringOrganization": {
+        "@type": "Organization",
+        <f:for each="{job.employerLogo}" as="employerLogo" iteration="employerLogoIterator">
+            <f:if condition="{employerLogoIterator.isFirst}">
+        "logo": <f:format.json value="{f:uri.image(image: employerLogo, absolute: 1)}"/>,
+            </f:if>
+        </f:for>
+        "name": <f:format.json value="{f:if(condition: job.employer, then: job.employer, else: job.address.company)}"/>
+    },
+    <f:if condition="{job.address}">
+    "jobLocation": {
+        "@type": "Place",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": <f:format.json value="{job.address.address}"/>,
+            "postalCode": <f:format.json value="{job.address.zip}"/>,
+            "addressLocality": <f:format.json value="{job.address.city}"/>,
+            "addressCountry": "DE"
+        }
+    },
+    </f:if>
+    <f:if condition="{job.hasSalaryInformation}">
+    "baseSalary": {
+        "@type": "MonetaryAmount",
+        "currency": "EUR",
+        "value": {
+            "@type": "QuantitativeValue",
+            <f:if condition="{job.hasSalaryRange}">
+                <f:then>
+            "minValue": <f:format.json value="{job.salaryRangeMin}"/>,
+            "maxValue": <f:format.json value="{job.salaryRangeMax}"/>,
+                </f:then>
+                <f:else>
+            "value": <f:format.json value="{job.salaryRangeMin}"/>,
+                </f:else>
+            </f:if>
+            "unitText": "MONTH"
+        }
+    },
+    </f:if>
+    "directApply": <f:if condition="{job.email}" then="true" else="false"/>,
+    "url": <f:format.json value="{f:uri.action(action: 'detail', arguments: {job: job}, absolute: 1)}"/>
+}
+</f:asset.script>
+</html>
