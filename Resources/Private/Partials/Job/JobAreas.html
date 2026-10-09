@@ -1,0 +1,13 @@
+<html lang="en"
+      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+<f:comment>
+    Renders the titles of all occupational fields (job areas) of a job as
+    comma separated list. Expects argument "job".
+</f:comment>
+
+<f:spaceless>
+    <f:for each="{job.jobAreas}" as="jobArea" iteration="iterator">{jobArea.title}<f:if condition="{iterator.isLast}"><f:else>, </f:else></f:if></f:for>
+</f:spaceless>
+</html>

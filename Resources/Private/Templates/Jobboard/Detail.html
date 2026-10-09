@@ -63,7 +63,7 @@
                     <dt>
                         <f:translate key="job.job_areas.title"/>
                     </dt>
-                    <dd><f:for each="{job.jobAreas}" as="jobArea" iteration="jobAreaIterator">{jobArea.title}<f:if condition="{jobAreaIterator.isLast}"><f:else>, </f:else></f:if></f:for></dd>
+                    <dd><f:render partial="Job/JobAreas" arguments="{job: job}"/></dd>
                 </dl>
             </f:if>
             <f:if condition="{job.jobType.title}">
@@ -218,7 +218,7 @@
             </f:if>
             <f:if condition="{job.jobAreas}">
                 <dt><f:translate key="job.job_areas.title"/></dt>
-                <dd><f:for each="{job.jobAreas}" as="jobArea" iteration="jobAreaIterator">{jobArea.title}<f:if condition="{jobAreaIterator.isLast}"><f:else>, </f:else></f:if></f:for></dd>
+                <dd><f:render partial="Job/JobAreas" arguments="{job: job}"/></dd>
             </f:if>
             <f:if condition="{job.tenderType.title}">
                 <dt><f:translate key="job.tenderType.title"/></dt>
