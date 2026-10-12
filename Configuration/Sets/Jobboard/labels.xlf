@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+	<file source-language="en" datatype="plaintext" original="EXT:jobboard/Configuration/Sets/Jobboard/labels.xlf" product-name="jobboard">
+		<header/>
+		<body>
+			<trans-unit id="label">
+				<source>Jobboard - Main</source>
+			</trans-unit>
+			<trans-unit id="categories.jobboard">
+				<source>Jobboard</source>
+			</trans-unit>
+			<trans-unit id="categories.jobboard.templates">
+				<source>Templates</source>
+			</trans-unit>
+			<trans-unit id="categories.jobboard.pages">
+				<source>Pages</source>
+			</trans-unit>
+			<trans-unit id="categories.jobboard.search">
+				<source>Search</source>
+			</trans-unit>
+			<trans-unit id="settings.jobboard.templateRootPath">
+				<source>Templates</source>
+			</trans-unit>
+			<trans-unit id="settings.description.jobboard.templateRootPath">
+				<source>Path to template root</source>
+			</trans-unit>
+			<trans-unit id="settings.jobboard.partialRootPath">
+				<source>Partials</source>
+			</trans-unit>
+			<trans-unit id="settings.description.jobboard.partialRootPath">
+				<source>Path to partial root</source>
+			</trans-unit>
+			<trans-unit id="settings.jobboard.layoutRootPath">
+				<source>Layouts</source>
+			</trans-unit>
+			<trans-unit id="settings.description.jobboard.layoutRootPath">
+				<source>Path to layout root</source>
+			</trans-unit>
+			<trans-unit id="settings.jobboard.storagePid">
+				<source>Default storage PID</source>
+			</trans-unit>
+			<trans-unit id="settings.description.jobboard.storagePid">
+				<source>Comma-separated list of page IDs that store all jobs. If tt_address records for job locations live in additional folders, list those PIDs here too - the address autocomplete search only looks at these pages.</source>
+			</trans-unit>
+			<trans-unit id="settings.jobboard.pidOfDetailPage">
+				<source>Pid of Detail Page</source>
+			</trans-unit>
+			<trans-unit id="settings.description.jobboard.pidOfDetailPage">
+				<source>Page with detail page plugin</source>
+			</trans-unit>
+			<trans-unit id="settings.jobboard.pidOfApplicationForm">
+				<source>Pid of Application Form</source>
+			</trans-unit>
+			<trans-unit id="settings.description.jobboard.pidOfApplicationForm">
+				<source>Page with online application form for a job</source>
+			</trans-unit>
+			<trans-unit id="settings.jobboard.showJobAreaCount">
+				<source>Show number of jobs per job area</source>
+			</trans-unit>
+			<trans-unit id="settings.description.jobboard.showJobAreaCount">
+				<source>Appends the number of jobs to each option of the job area filter in the search form, e.g. "IT (3)". Can be overridden per content element.</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>
