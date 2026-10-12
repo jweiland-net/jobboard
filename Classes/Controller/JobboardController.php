@@ -105,18 +105,45 @@ class JobboardController extends ActionController
     }
 
     /**
+     * With "settings.showJobAreaCount" enabled, each option label contains the
+     * number of jobs having that job area among their job areas, e.g.
+     * "Warehouse (3)". As a job can have several job areas, the numbers may add
+     * up to more than the total number of jobs.
+     *
      * @param Job[] $jobs
+     * @return array<int, string>
      */
     protected function getJobAreas(array $jobs): array
     {
-        $jobAreas = [];
+        $titles = [];
+        $numberOfJobs = [];
         foreach ($jobs as $job) {
             foreach ($job->getJobAreas() as $jobArea) {
-                $jobAreas[$jobArea->getUid()] = $jobArea->getTitle();
+                $titles[$jobArea->getUid()] = $jobArea->getTitle();
+                $numberOfJobs[$jobArea->getUid()] = ($numberOfJobs[$jobArea->getUid()] ?? 0) + 1;
             }
         }
 
+        if (!$this->isJobAreaCountEnabled()) {
+            return $titles;
+        }
+
+        $jobAreas = [];
+        foreach ($titles as $jobAreaUid => $title) {
+            $jobAreas[$jobAreaUid] = sprintf('%s (%d)', $title, $numberOfJobs[$jobAreaUid]);
+        }
+
         return $jobAreas;
+    }
+
+    /**
+     * Only "1" enables the count. The FlexForm uses "-1" to disable it, as an
+     * empty string or "0" makes Extbase fall back to the TypoScript value
+     * (see "ignoreFlexFormSettingsIfEmpty").
+     */
+    private function isJobAreaCountEnabled(): bool
+    {
+        return (int)($this->settings['showJobAreaCount'] ?? 0) === 1;
     }
 
     /**
