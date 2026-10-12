@@ -1,56 +1,38 @@
 categories:
-  jobboard:
-    label: 'jobboard'
+  jobboard: {}
   jobboard.templates:
-    label: 'Templates'
     parent: jobboard
   jobboard.pages:
-    label: 'Pages'
     parent: jobboard
   jobboard.search:
-    label: 'Search'
     parent: jobboard
 
 settings:
   jobboard.templateRootPath:
-    label: 'Templates'
     category: jobboard.templates
-    description: 'Path to template root'
     type: string
     default: 'EXT:jobboard/Resources/Private/Templates/'
   jobboard.partialRootPath:
-    label: 'Partials'
     category: jobboard.templates
-    description: 'Path to partial root'
     type: string
     default: 'EXT:jobboard/Resources/Private/Partials/'
   jobboard.layoutRootPath:
-    label: 'Layouts'
     category: jobboard.templates
-    description: 'Path to layout root'
     type: string
     default: 'EXT:jobboard/Resources/Private/Layouts/'
   jobboard.storagePid:
-    label: 'Default storage PID'
     category: jobboard.pages
-    description: 'Comma-separated list of page IDs that store all jobs. If tt_address records for job locations live in additional folders, list those PIDs here too - the address autocomplete search only looks at these pages.'
     type: string
     default: '0'
   jobboard.pidOfDetailPage:
-    label: 'Pid of Detail Page'
     category: jobboard.pages
-    description: 'Page with detail page plugin'
     type: page
     default: 0
   jobboard.pidOfApplicationForm:
-    label: 'Pid of Application Form'
     category: jobboard.pages
-    description: 'Page with online application form for a job'
     type: page
     default: 0
   jobboard.showJobAreaCount:
-    label: 'Show number of jobs per job area'
     category: jobboard.search
-    description: 'Appends the number of jobs to each option of the job area filter in the search form, e.g. "IT (3)". Can be overridden per content element.'
     type: bool
     default: false

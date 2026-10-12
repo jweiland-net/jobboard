@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+	<file source-language="en" target-language="de" datatype="plaintext" original="EXT:jobboard/Configuration/Sets/Jobboard/labels.xlf" product-name="jobboard">
+		<header/>
+		<body>
+			<trans-unit id="label">
+				<source>Jobboard - Main</source>
+				<target>Jobboard - Basis</target>
+			</trans-unit>
+			<trans-unit id="categories.jobboard">
+				<source>Jobboard</source>
+				<target>Jobboard</target>
+			</trans-unit>
+			<trans-unit id="categories.jobboard.templates">
+				<source>Templates</source>
+				<target>Templates</target>
+			</trans-unit>
+			<trans-unit id="categories.jobboard.pages">
+				<source>Pages</source>
+				<target>Seiten</target>
+			</trans-unit>
+			<trans-unit id="categories.jobboard.search">
+				<source>Search</source>
+				<target>Suche</target>
+			</trans-unit>
+			<trans-unit id="settings.jobboard.templateRootPath">
+				<source>Templates</source>
+				<target>Templates</target>
+			</trans-unit>
+			<trans-unit id="settings.description.jobboard.templateRootPath">
+				<source>Path to template root</source>
+				<target>Pfad zum Template-Verzeichnis</target>
+			</trans-unit>
+			<trans-unit id="settings.jobboard.partialRootPath">
+				<source>Partials</source>
+				<target>Partials</target>
+			</trans-unit>
+			<trans-unit id="settings.description.jobboard.partialRootPath">
+				<source>Path to partial root</source>
+				<target>Pfad zum Partial-Verzeichnis</target>
+			</trans-unit>
+			<trans-unit id="settings.jobboard.layoutRootPath">
+				<source>Layouts</source>
+				<target>Layouts</target>
+			</trans-unit>
+			<trans-unit id="settings.description.jobboard.layoutRootPath">
+				<source>Path to layout root</source>
+				<target>Pfad zum Layout-Verzeichnis</target>
+			</trans-unit>
+			<trans-unit id="settings.jobboard.storagePid">
+				<source>Default storage PID</source>
+				<target>Standard-Datensatzsammlung (PID)</target>
+			</trans-unit>
+			<trans-unit id="settings.description.jobboard.storagePid">
+				<source>Comma-separated list of page IDs that store all jobs. If tt_address records for job locations live in additional folders, list those PIDs here too - the address autocomplete search only looks at these pages.</source>
+				<target>Kommagetrennte Liste der Seiten-IDs, in denen alle Stellen gespeichert sind. Liegen tt_address-Datensätze für Einsatzorte in weiteren Ordnern, müssen diese PIDs hier ebenfalls eingetragen werden - die Autovervollständigung der Adresssuche durchsucht nur diese Seiten.</target>
+			</trans-unit>
+			<trans-unit id="settings.jobboard.pidOfDetailPage">
+				<source>Pid of Detail Page</source>
+				<target>PID der Detailseite</target>
+			</trans-unit>
+			<trans-unit id="settings.description.jobboard.pidOfDetailPage">
+				<source>Page with detail page plugin</source>
+				<target>Seite mit dem Plugin für die Detailansicht</target>
+			</trans-unit>
+			<trans-unit id="settings.jobboard.pidOfApplicationForm">
+				<source>Pid of Application Form</source>
+				<target>PID des Bewerbungsformulars</target>
+			</trans-unit>
+			<trans-unit id="settings.description.jobboard.pidOfApplicationForm">
+				<source>Page with online application form for a job</source>
+				<target>Seite mit dem Online-Bewerbungsformular für eine Stelle</target>
+			</trans-unit>
+			<trans-unit id="settings.jobboard.showJobAreaCount">
+				<source>Show number of jobs per job area</source>
+				<target>Anzahl der Stellen je Berufsfeld anzeigen</target>
+			</trans-unit>
+			<trans-unit id="settings.description.jobboard.showJobAreaCount">
+				<source>Appends the number of jobs to each option of the job area filter in the search form, e.g. "IT (3)". Can be overridden per content element.</source>
+				<target>Ergänzt jeden Eintrag des Berufsfeld-Filters im Suchformular um die Anzahl der Stellen, z. B. "IT (3)". Kann je Inhaltselement überschrieben werden.</target>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>
