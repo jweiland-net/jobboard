@@ -43,6 +43,26 @@
 				<source>Free text search</source>
 				<target>Freitextsuche</target>
 			</trans-unit>
+			<trans-unit id="showJobAreaCount">
+				<source>Show number of jobs per job area</source>
+				<target>Anzahl der Stellen je Berufsfeld anzeigen</target>
+			</trans-unit>
+			<trans-unit id="showJobAreaCount.description">
+				<source>Appends the number of jobs to each option of the job area filter, e.g. "IT (3)".</source>
+				<target>Ergänzt jeden Eintrag des Berufsfeld-Filters um die Anzahl der Stellen, z. B. "IT (3)".</target>
+			</trans-unit>
+			<trans-unit id="showJobAreaCount.typoScript">
+				<source>Use value from TypoScript</source>
+				<target>Wert aus TypoScript übernehmen</target>
+			</trans-unit>
+			<trans-unit id="showJobAreaCount.show">
+				<source>Show</source>
+				<target>Anzeigen</target>
+			</trans-unit>
+			<trans-unit id="showJobAreaCount.hide">
+				<source>Hide</source>
+				<target>Ausblenden</target>
+			</trans-unit>
 			<trans-unit id="maxEntries">
 				<source>Max entries to show (0 for all)</source>
 				<target>Anzahl der anzuzeigenden Einträge (0 für alle)</target>

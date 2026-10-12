@@ -109,6 +109,14 @@ Add the content element via :guilabel:`Content > Create new content element
     Shows or hides the search form (job area, job type, ZIP code/city) above
     the job list.
 
+:guilabel:`Show number of jobs per job area`
+    Appends the number of jobs to each option of the job area filter in the
+    search form, for example :guilabel:`IT (3)`. Choose
+    :guilabel:`Use value from TypoScript` to keep the default configured by
+    your administrator, or :guilabel:`Show` / :guilabel:`Hide` to override
+    it for this content element only. See
+    :ref:`admin-manual-job-area-count` for how the number is calculated.
+
 :guilabel:`Job areas`
     Restricts the content element to one or more job areas. Leave empty to
     show jobs from all areas.

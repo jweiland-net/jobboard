@@ -73,6 +73,29 @@
                             <default>1</default>
                         </config>
                     </settings.showFreeTextSearch>
+                    <settings.showJobAreaCount>
+                        <label>LLL:EXT:jobboard/Resources/Private/Language/FlexForms.xlf:showJobAreaCount</label>
+                        <description>LLL:EXT:jobboard/Resources/Private/Language/FlexForms.xlf:showJobAreaCount.description</description>
+                        <config>
+                            <type>select</type>
+                            <renderType>selectSingle</renderType>
+                            <items type="array">
+                                <numIndex index="0" type="array">
+                                    <label>LLL:EXT:jobboard/Resources/Private/Language/FlexForms.xlf:showJobAreaCount.typoScript</label>
+                                    <value></value>
+                                </numIndex>
+                                <numIndex index="1" type="array">
+                                    <label>LLL:EXT:jobboard/Resources/Private/Language/FlexForms.xlf:showJobAreaCount.show</label>
+                                    <value>1</value>
+                                </numIndex>
+                                <numIndex index="2" type="array">
+                                    <label>LLL:EXT:jobboard/Resources/Private/Language/FlexForms.xlf:showJobAreaCount.hide</label>
+                                    <value>-1</value>
+                                </numIndex>
+                            </items>
+                            <default></default>
+                        </config>
+                    </settings.showJobAreaCount>
                 </el>
             </ROOT>
         </search>

@@ -63,6 +63,44 @@ Settings`:
     :name: jobboard-site-settings
 
 
+..  _admin-manual-job-area-count:
+
+Number of jobs per job area
+===========================
+
+The job area filter of the search form can show the number of jobs behind
+each option, for example :guilabel:`IT (3)`. It is disabled by default and
+can be enabled in two places:
+
+Site setting `jobboard.showJobAreaCount`
+    Enables the number for all "Job board" content elements of the site. It
+    is passed to TypoScript as `plugin.tx_jobboard.settings.showJobAreaCount`,
+    so it can also be set directly in TypoScript:
+
+    ..  code-block:: typoscript
+
+        plugin.tx_jobboard.settings.showJobAreaCount = 1
+
+Content element option :guilabel:`Show number of jobs per job area`
+    Overrides the TypoScript value for a single content element. The
+    default option :guilabel:`Use value from TypoScript` stores an empty
+    value, which Extbase ignores thanks to
+    `plugin.tx_jobboard.ignoreFlexFormSettingsIfEmpty = showJobAreaCount`,
+    so the TypoScript value is used instead.
+
+..  note::
+    Extbase also treats `0` as empty in `ignoreFlexFormSettingsIfEmpty`.
+    That is why the option :guilabel:`Hide` stores `-1` instead of `0`. In
+    TypoScript, only `1` enables the number, any other value disables it.
+
+The number is calculated from the jobs the content element actually lists:
+jobs without resolvable salary information are not counted, and
+:guilabel:`Max entries to show` limits the counted jobs as well. After a
+search, the filter only offers the job areas of the found jobs, and the
+numbers refer to the search result. As a job can belong to several job
+areas, the numbers may add up to more than the total number of jobs.
+
+
 ..  _admin-manual-address-search-scope:
 
 Address search and page scoping

@@ -7,6 +7,9 @@ categories:
   jobboard.pages:
     label: 'Pages'
     parent: jobboard
+  jobboard.search:
+    label: 'Search'
+    parent: jobboard
 
 settings:
   jobboard.templateRootPath:
@@ -45,3 +48,9 @@ settings:
     description: 'Page with online application form for a job'
     type: page
     default: 0
+  jobboard.showJobAreaCount:
+    label: 'Show number of jobs per job area'
+    category: jobboard.search
+    description: 'Appends the number of jobs to each option of the job area filter in the search form, e.g. "IT (3)". Can be overridden per content element.'
+    type: bool
+    default: false

@@ -91,6 +91,7 @@ final class JobboardControllerTest extends FunctionalTestCase
                 layoutRootPaths.1 = EXT:maps2/Resources/Private/Layouts/
             }
             plugin.tx_jobboard.persistence.storagePid = 2
+            plugin.tx_jobboard.ignoreFlexFormSettingsIfEmpty = showJobAreaCount
         ');
     }
 
@@ -103,10 +104,10 @@ final class JobboardControllerTest extends FunctionalTestCase
         return (string)$response->getBody();
     }
 
-    private function fetchSearchFormPageBody(): string
+    private function fetchSearchFormPageBody(int $pageId = 4): string
     {
         $response = $this->executeFrontendSubRequest(
-            (new InternalRequest('https://example.com/'))->withPageId(4),
+            (new InternalRequest('https://example.com/'))->withPageId($pageId),
         );
 
         return (string)$response->getBody();
@@ -256,6 +257,46 @@ final class JobboardControllerTest extends FunctionalTestCase
         // alphabetically wrong, order. f:form.select's sortByOptionLabel handles
         // this in Fluid, not JobboardController::getJobAreas().
         $this->assertAppearsBefore('Assembly', 'Warehouse', $this->fetchSearchFormPageBody());
+    }
+
+    #[Test]
+    public function jobAreaSelectOptionsContainNoNumberOfJobsByDefault(): void
+    {
+        $body = $this->fetchSearchFormPageBody();
+
+        self::assertStringContainsString('Warehouse', $body);
+        self::assertStringNotContainsString('Warehouse (', $body);
+    }
+
+    #[Test]
+    public function jobAreaSelectOptionsContainNumberOfJobsIfEnabledInFlexForm(): void
+    {
+        // "Warehouse" is attached to two eligible jobs (uid 1 and 8), "Assembly"
+        // to one (uid 7). The ineligible job uid 2 also has "Warehouse", but must
+        // not be counted.
+        $body = $this->fetchSearchFormPageBody(5);
+
+        self::assertStringContainsString('Warehouse (2)', $body);
+        self::assertStringContainsString('Assembly (1)', $body);
+    }
+
+    #[Test]
+    public function jobAreaSelectOptionsContainNumberOfJobsIfFlexFormIsEmptyAndEnabledInTypoScript(): void
+    {
+        $this->addTypoScriptToTemplateRecord(1, 'plugin.tx_jobboard.settings.showJobAreaCount = 1');
+
+        self::assertStringContainsString('Warehouse (2)', $this->fetchSearchFormPageBody());
+    }
+
+    #[Test]
+    public function jobAreaSelectOptionsContainNoNumberOfJobsIfDisabledInFlexFormButEnabledInTypoScript(): void
+    {
+        $this->addTypoScriptToTemplateRecord(1, 'plugin.tx_jobboard.settings.showJobAreaCount = 1');
+
+        $body = $this->fetchSearchFormPageBody(6);
+
+        self::assertStringContainsString('Warehouse', $body);
+        self::assertStringNotContainsString('Warehouse (', $body);
     }
 
     #[Test]
