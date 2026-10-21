@@ -18,6 +18,7 @@ use JWeiland\Jobboard\Domain\Model\JobRole;
 use JWeiland\Jobboard\Domain\Model\JobType;
 use JWeiland\Jobboard\Domain\Model\Search;
 use JWeiland\Jobboard\Domain\Repository\JobRepository;
+use JWeiland\Jobboard\PageTitle\JobPageTitleProvider;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Error\Http\PageNotFoundException;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
@@ -26,6 +27,7 @@ class JobboardController extends ActionController
 {
     public function __construct(
         protected JobRepository $jobRepository,
+        protected JobPageTitleProvider $jobPageTitleProvider,
     ) {}
 
     public function listAction(): ResponseInterface
@@ -205,6 +207,8 @@ class JobboardController extends ActionController
                 1753868400,
             );
         }
+
+        $this->jobPageTitleProvider->setTitle($job->getTitle());
 
         $this->view->assign('job', $job);
         $this->view->assign('settings', $this->settings);
