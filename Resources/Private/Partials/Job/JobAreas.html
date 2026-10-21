@@ -3,11 +3,16 @@
       data-namespace-typo3-fluid="true">
 
 <f:comment>
-    Renders the titles of all occupational fields (job areas) of a job as
-    comma separated list. Expects argument "job".
+    Renders the titles of all occupational fields (job areas) of a job, each
+    wrapped in its own span tag. The spans are separated by a comma by default.
+    Use argument "separator" to change it, e.g. separator: '' if the spans are
+    separated by CSS only.
 </f:comment>
 
+<f:argument name="job" type="JWeiland\Jobboard\Domain\Model\Job"/>
+<f:argument name="separator" type="string" optional="{true}" default=", "/>
+
 <f:spaceless>
-    <f:for each="{job.jobAreas}" as="jobArea" iteration="iterator">{jobArea.title}<f:if condition="{iterator.isLast}"><f:else>, </f:else></f:if></f:for>
+    <f:for each="{job.jobAreas}" as="jobArea" iteration="iterator"><span class="job-area">{jobArea.title}</span><f:if condition="{iterator.isLast}"><f:else>{separator}</f:else></f:if></f:for>
 </f:spaceless>
 </html>
