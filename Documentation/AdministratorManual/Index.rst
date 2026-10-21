@@ -201,6 +201,17 @@ site configuration. See :ref:`admin-routing` for setup, the URL segment
 field of jobs and the upgrade wizard for existing jobs.
 
 
+..  _admin-manual-page-title:
+
+Page title of the job detail view
+=================================
+
+On the detail view, the Site Set :guilabel:`Jobboard - Main` shows the job
+title as page title via the page title provider `jobboard`. See
+:ref:`admin-page-title` for the behaviour, the order with other page title
+providers and how to disable or replace it.
+
+
 ..  _admin-manual-import:
 
 Importing jobs automatically
@@ -218,4 +229,5 @@ class step by step.
     :hidden:
 
     Routing/Index
+    PageTitle/Index
     Api/Index
