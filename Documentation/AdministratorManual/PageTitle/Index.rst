@@ -56,9 +56,11 @@ and uses the first non-empty title. See
 Behaviour
 =========
 
-*   Only the detail view of the :guilabel:`Job board` plugin
-    (`jobboard_jobboard`) sets a title: the :sql:`title` field of the
-    displayed job, with surrounding whitespace removed.
+*   The provider reads the job of the detail view from the request
+    argument :samp:`tx_jobboard_jobboard[job]` and uses its :sql:`title`
+    field (translated to the current language), with surrounding whitespace
+    removed. No change of the plugin or the controller is needed.
+*   Hidden, deleted or expired jobs do not set a title.
 *   On every other page, and in the list and search view, the provider
     returns an empty string. The next provider is used then: `seo` (field
     :guilabel:`Title for search engines` of the page), then `record` (the
@@ -125,8 +127,3 @@ Change :typoscript:`before` and :typoscript:`after` to adjust the order.
     config.pageTitleProviders.jobboard {
         provider = MyVendor\MySitePackage\PageTitle\JobPageTitleProvider
     }
-
-..  note::
-    Your own class does not receive the job title from the
-    :guilabel:`Job board` plugin automatically, as the plugin only passes
-    it to :php:class:`\JWeiland\Jobboard\PageTitle\JobPageTitleProvider`.
