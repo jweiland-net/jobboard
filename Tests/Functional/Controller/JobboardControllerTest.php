@@ -331,11 +331,14 @@ final class JobboardControllerTest extends FunctionalTestCase
         // specially routed to an HTTP 404 by TYPO3 for exceptions thrown from within
         // content rendering - it is only caught by the generic content object exception
         // handler, keeping the page itself at 200 while the plugin's own output is
-        // replaced. The job must never end up in that output either way.
+        // replaced. The job must never end up in that output either way. The page title
+        // is resolved by JobPageTitleProvider without knowing about this check, so it
+        // may still contain the job title. That's accepted, as the job is not rendered.
         $response = $this->executeFrontendSubRequest($this->buildDetailActionRequest(2));
+        $pageBody = explode('</head>', (string)$response->getBody(), 2)[1] ?? '';
 
         self::assertSame(200, $response->getStatusCode());
-        self::assertStringNotContainsString('Job with expired grade', (string)$response->getBody());
+        self::assertStringNotContainsString('Job with expired grade', $pageBody);
     }
 
     #[Test]

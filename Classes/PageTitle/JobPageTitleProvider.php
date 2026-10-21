@@ -11,21 +11,75 @@ declare(strict_types=1);
 
 namespace JWeiland\Jobboard\PageTitle;
 
+use JWeiland\Jobboard\Traits\ConnectionPoolTrait;
+use TYPO3\CMS\Core\Database\Connection;
+use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\PageTitle\AbstractPageTitleProvider;
+use TYPO3\CMS\Core\Routing\PageArguments;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Provides the title of the currently displayed job as page title on the
- * detail view. Activated via "config.pageTitleProviders.jobboard" in the
- * "jweiland/jobboard" site set.
- *
- * AbstractPageTitleProvider implements SingletonInterface, so this class is
- * a shared, public service: the instance injected into the controller is the
- * same one the PageTitleProviderManager fetches from the container.
+ * Provides the title of the job requested in the detail view as page title.
+ * Activated via "config.pageTitleProviders.jobboard" in the "jweiland/jobboard"
+ * site set. Returns an empty string on all other pages, so the next provider
+ * is used.
  */
 final class JobPageTitleProvider extends AbstractPageTitleProvider
 {
-    public function setTitle(string $title): void
+    use ConnectionPoolTrait;
+
+    private const PLUGIN_NAMESPACE = 'tx_jobboard_jobboard';
+    private const TABLE_NAME = 'tx_jobboard_domain_model_job';
+
+    public function getTitle(): string
     {
-        $this->title = trim($title);
+        $jobUid = $this->getJobUidFromRequest();
+        if ($jobUid === 0) {
+            return '';
+        }
+
+        return trim((string)($this->getJobRecord($jobUid)['title'] ?? ''));
+    }
+
+    private function getJobUidFromRequest(): int
+    {
+        $routing = $this->request->getAttribute('routing');
+        $arguments = $routing instanceof PageArguments
+            ? $routing->getArguments()
+            : $this->request->getQueryParams();
+
+        $pluginArguments = $arguments[self::PLUGIN_NAMESPACE] ?? [];
+        if (!is_array($pluginArguments)) {
+            return 0;
+        }
+
+        // Argument "job" is only used by the detail action
+        return (int)($pluginArguments['job'] ?? 0);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function getJobRecord(int $jobUid): array
+    {
+        $queryBuilder = $this->getQueryBuilderForTable(self::TABLE_NAME);
+        $jobRecord = $queryBuilder
+            ->select('*')
+            ->from(self::TABLE_NAME)
+            ->where(
+                $queryBuilder->expr()->eq(
+                    'uid',
+                    $queryBuilder->createNamedParameter($jobUid, Connection::PARAM_INT),
+                ),
+            )
+            ->executeQuery()
+            ->fetchAssociative();
+
+        if (!is_array($jobRecord)) {
+            return [];
+        }
+
+        return GeneralUtility::makeInstance(PageRepository::class)
+            ->getLanguageOverlay(self::TABLE_NAME, $jobRecord) ?? [];
     }
 }
