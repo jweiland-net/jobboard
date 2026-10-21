@@ -92,6 +92,10 @@ final class JobboardControllerTest extends FunctionalTestCase
             }
             plugin.tx_jobboard.persistence.storagePid = 2
             plugin.tx_jobboard.ignoreFlexFormSettingsIfEmpty = showJobAreaCount
+            config.pageTitleProviders.jobboard {
+                provider = JWeiland\\Jobboard\\PageTitle\\JobPageTitleProvider
+                before = record, seo
+            }
         ');
     }
 
@@ -332,5 +336,34 @@ final class JobboardControllerTest extends FunctionalTestCase
 
         self::assertSame(200, $response->getStatusCode());
         self::assertStringNotContainsString('Job with expired grade', (string)$response->getBody());
+    }
+
+    #[Test]
+    public function detailActionSetsJobTitleAsPageTitle(): void
+    {
+        $response = $this->executeFrontendSubRequest($this->buildDetailActionRequest(1));
+
+        self::assertStringContainsString(
+            '<title>Job with visible stepped grade</title>',
+            (string)$response->getBody(),
+        );
+    }
+
+    #[Test]
+    public function detailActionKeepsJobTitleAsPageTitleOnCachedPageDelivery(): void
+    {
+        $this->executeFrontendSubRequest($this->buildDetailActionRequest(1));
+        $response = $this->executeFrontendSubRequest($this->buildDetailActionRequest(1));
+
+        self::assertStringContainsString(
+            '<title>Job with visible stepped grade</title>',
+            (string)$response->getBody(),
+        );
+    }
+
+    #[Test]
+    public function listActionKeepsPageTitle(): void
+    {
+        self::assertStringContainsString('<title>Root</title>', $this->fetchListPageBody());
     }
 }
