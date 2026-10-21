@@ -15,7 +15,7 @@
             <div class="jobboard-jobdetails">
                 <p>
                     <f:if condition="{job.jobAreas}">
-                        <span><f:render partial="Job/JobAreas" arguments="{job: job}"/></span>
+                        <f:render partial="Job/JobAreas" arguments="{job: job, separator: ''}"/>
                     </f:if>
                     <f:if condition="{job.jobRole}">
                         <span>{job.jobRole.title}</span>
