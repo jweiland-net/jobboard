@@ -87,6 +87,18 @@ class JobRepositorySearchTest extends FunctionalTestCase
      * @param array<string, mixed> $settings
      * @return string[]
      */
+    private function findJobTitlesBySearchAndSettings(Search $search, array $settings): array
+    {
+        return array_map(
+            static fn(Job $job): string => $job->getTitle(),
+            iterator_to_array($this->subject->findBySearch($search, settings: $settings)),
+        );
+    }
+
+    /**
+     * @param array<string, mixed> $settings
+     * @return string[]
+     */
     private function findJobTitlesBySettings(array $settings): array
     {
         return array_map(
@@ -202,6 +214,50 @@ class JobRepositorySearchTest extends FunctionalTestCase
                 'Job with future application deadline',
             ],
             $this->findJobTitles(new Search($jobArea, null, null, '', '')),
+        );
+    }
+
+    #[Test]
+    public function findBySearchWithJobAreaListFromFlexFormReturnsJobsHavingAnyOfThem(): void
+    {
+        self::assertEqualsCanonicalizing(
+            [
+                'Job in a different city',
+                'Job in Pforzheim but other job area',
+                'Job with future application deadline',
+            ],
+            $this->findJobTitlesBySearchAndSettings(new Search(null, null, null, '', ''), ['jobAreas' => '2']),
+        );
+    }
+
+    #[Test]
+    public function findBySearchWithJobAreaArrayFromTypoScriptReturnsJobsHavingAnyOfThem(): void
+    {
+        self::assertEqualsCanonicalizing(
+            [
+                'Job in a different city',
+                'Job in Pforzheim but other job area',
+                'Job with future application deadline',
+            ],
+            $this->findJobTitlesBySearchAndSettings(new Search(null, null, null, '', ''), ['jobAreas' => ['2']]),
+        );
+    }
+
+    #[Test]
+    public function findBySearchCombinesJobAreaFromFlexFormWithOtherCriteria(): void
+    {
+        self::assertEqualsCanonicalizing(
+            ['Job in Pforzheim but other job area'],
+            $this->findJobTitlesBySearchAndSettings(new Search(null, null, null, '76133', ''), ['jobAreas' => '2']),
+        );
+    }
+
+    #[Test]
+    public function findBySearchWithEmptyJobAreasFromFlexFormIsNotRestricted(): void
+    {
+        self::assertCount(
+            10,
+            $this->findJobTitlesBySearchAndSettings(new Search(null, null, null, '', ''), ['jobAreas' => '']),
         );
     }
 

@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace JWeiland\Jobboard\Domain\Repository;
 
 use JWeiland\Jobboard\Domain\Model\JobArea;
+use JWeiland\Jobboard\Domain\Model\JobAreaRestriction;
 use JWeiland\Jobboard\Domain\Model\JobRole;
 use JWeiland\Jobboard\Domain\Model\JobType;
 use JWeiland\Jobboard\Domain\Model\Search;
@@ -42,12 +43,10 @@ class JobRepository extends Repository
     {
         $query = $this->createQuery();
 
-        $andConstraint = $this->buildAndConstraintForOpenJobs($query);
-
-        $jobAreaConstraints = $this->buildOrConstraintForJobAreas($settings['jobAreas'] ?? [], $query);
-        if ($jobAreaConstraints !== []) {
-            $andConstraint[] = $query->logicalOr(...$jobAreaConstraints);
-        }
+        $andConstraint = [
+            ...$this->buildAndConstraintForOpenJobs($query),
+            ...$this->buildConstraintForJobAreas(JobAreaRestriction::fromSettings($settings), $query),
+        ];
 
         if ($limit) {
             $query->setLimit($limit);
@@ -56,11 +55,34 @@ class JobRepository extends Repository
         return $query->matching($query->logicalAnd(...$andConstraint))->execute();
     }
 
-    public function findBySearch(Search $search, int $limit = 0): QueryResultInterface
+    /**
+     * The job areas configured in the plugin ("settings.jobAreas") restrict
+     * the search results the same way as in findBySettings().
+     *
+     * @param array<string, mixed> $settings
+     */
+    public function findBySearch(Search $search, int $limit = 0, array $settings = []): QueryResultInterface
     {
         $query = $this->createQuery();
 
-        $andConstraint = $this->buildAndConstraintForOpenJobs($query);
+        $andConstraint = [
+            ...$this->buildAndConstraintForOpenJobs($query),
+            ...$this->buildConstraintForJobAreas(JobAreaRestriction::fromSettings($settings), $query),
+            ...$this->buildAndConstraintForRelations($search, $query),
+            ...$this->buildConstraintForAddress($search->getZipCity(), $query),
+            ...$this->buildAndConstraintForSearchWords($search->getSearchWord(), $query),
+        ];
+
+        if ($limit) {
+            $query->setLimit($limit);
+        }
+
+        return $query->matching($query->logicalAnd(...$andConstraint))->execute();
+    }
+
+    private function buildAndConstraintForRelations(Search $search, QueryInterface $query): array
+    {
+        $andConstraint = [];
 
         if ($search->getJobArea() instanceof JobArea) {
             $andConstraint[] = $query->contains('jobAreas', $search->getJobArea());
@@ -74,21 +96,7 @@ class JobRepository extends Repository
             $andConstraint[] = $query->equals('jobType', $search->getJobType());
         }
 
-        $orConstraint = $this->buildOrConstraintForAddress($search->getZipCity(), $query);
-        if ($orConstraint !== []) {
-            $andConstraint[] = $query->logicalOr(...$orConstraint);
-        }
-
-        $andConstraint = [
-            ...$andConstraint,
-            ...$this->buildAndConstraintForSearchWords($search->getSearchWord(), $query),
-        ];
-
-        if ($limit) {
-            $query->setLimit($limit);
-        }
-
-        return $query->matching($query->logicalAnd(...$andConstraint))->execute();
+        return $andConstraint;
     }
 
     /**
@@ -119,32 +127,23 @@ class JobRepository extends Repository
 
     /**
      * A job matches, if any of its job areas is one of the configured job
-     * areas. FlexForm delivers the selected uids as comma-separated string,
-     * TypoScript may deliver them as array.
-     *
-     * @param string|int|int[]|string[] $jobAreas
+     * areas. Returns no constraint at all, if no job area is configured.
      */
-    private function buildOrConstraintForJobAreas(mixed $jobAreas, QueryInterface $query): array
+    private function buildConstraintForJobAreas(JobAreaRestriction $jobAreaRestriction, QueryInterface $query): array
     {
-        if (is_array($jobAreas)) {
-            $jobAreas = implode(',', $jobAreas);
-        }
-
-        if (!is_scalar($jobAreas)) {
-            return [];
-        }
-
         $orConstraint = [];
-        foreach (GeneralUtility::intExplode(',', (string)$jobAreas, true) as $jobAreaUid) {
-            if ($jobAreaUid > 0) {
-                $orConstraint[] = $query->contains('jobAreas', $jobAreaUid);
-            }
+        foreach ($jobAreaRestriction->getJobAreaUids() as $jobAreaUid) {
+            $orConstraint[] = $query->contains('jobAreas', $jobAreaUid);
         }
 
-        return $orConstraint;
+        return $orConstraint === [] ? [] : [$query->logicalOr(...$orConstraint)];
     }
 
-    private function buildOrConstraintForAddress(ZipCity $zipCity, QueryInterface $query): array
+    /**
+     * Zip and city are combined with OR. Returns no constraint at all, if
+     * neither zip nor city was given.
+     */
+    private function buildConstraintForAddress(ZipCity $zipCity, QueryInterface $query): array
     {
         $orConstraint = [];
 
@@ -161,7 +160,7 @@ class JobRepository extends Repository
             );
         }
 
-        return $orConstraint;
+        return $orConstraint === [] ? [] : [$query->logicalOr(...$orConstraint)];
     }
 
     /**
