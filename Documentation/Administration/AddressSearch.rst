@@ -16,7 +16,10 @@ How it works
 
 The JavaScript of the job board sends a POST request with the HTTP header
 :code:`jobboard-address-search` and the form field :code:`zipCity` after
-three characters. The PSR-15 middleware
+three characters. The request goes to the URL of the current page, which
+the search form provides in the attribute
+:html:`data-jobboard-address-search-url`. If the attribute is missing,
+the path of the current page in the browser is used. The PSR-15 middleware
 :php:`JWeiland\Jobboard\Middleware\AddressSearchMiddleware` (identifier
 :code:`jweiland/jobboard-address-search`) answers every frontend request
 with this header with a JSON list of up to five entries:
@@ -25,7 +28,7 @@ with this header with a JSON list of up to five entries:
     :caption: Example request
 
     curl -X POST -H 'jobboard-address-search: 1' \
-        -d 'zipCity=123' https://example.org/index.php
+        -d 'zipCity=123' https://example.org/jobs
 
 ..  code-block:: json
     :caption: Example response
@@ -37,6 +40,20 @@ records (:sql:`tt_address`) in the pages of the site setting
 :confval:`jobboard-storagepid`. It respects the usual frontend
 restrictions (hidden, deleted, start and end time). Each combination of
 ZIP code and city is returned once, sorted by city.
+
+..  _address-search-override:
+
+Own search form templates
+=========================
+
+The attribute is rendered in :file:`Partials/Job/Search.html`. If you
+override this partial, add it to your :html:`<f:form>` as well:
+
+..  code-block:: html
+    :caption: EXT:my_sitepackage/Resources/Private/Extensions/Jobboard/Partials/Job/Search.html
+
+    <f:form action="search"
+            data="{jobboard-address-search-url: '{f:uri.page()}'}">
 
 Security
 ========

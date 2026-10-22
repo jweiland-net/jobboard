@@ -59,7 +59,8 @@ All files are in :path:`EXT:jobboard/Resources/Private/`.
     *   -   :file:`Partials/SearchForm.html`
         -   Search form and map
     *   -   :file:`Partials/Job/Search.html`
-        -   The search form itself
+        -   The search form itself. Provides the URL for the location
+            suggestions, see :ref:`address-search-override`.
     *   -   :file:`Partials/Types/Table.html`
         -   Default list rendering as table
     *   -   :file:`Partials/Types/Card.html`

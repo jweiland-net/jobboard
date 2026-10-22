@@ -57,11 +57,21 @@ For each job of a source:
 *   Occupational fields and employment scopes are assigned by their title.
     They must already exist in TYPO3, the import does not create them.
 
-After all sources have been processed, the import **deletes all imported
-jobs of the storage folder that were not part of this import**. Each
-import always delivers all valid jobs of a source, so jobs that are no
-longer delivered have ended. Jobs that editors created manually are never
-deleted by the import.
+After all sources have been processed, the import **deletes the imported
+jobs of a source that this source no longer delivers**. Each source always
+delivers all of its valid jobs, so jobs that are no longer delivered have
+ended:
+
+*   Jobs are only deleted for sources that were fetched successfully. If a
+    source cannot be fetched (invalid URL, failed request or invalid XML),
+    the error is logged and **all jobs of this source are kept**.
+*   A source that delivers valid XML without any job has no valid jobs any
+    more. All its imported jobs are deleted.
+*   A delivered job that cannot be saved is kept with its previous data.
+*   Jobs that editors created manually are never deleted by the import.
+
+The jobs of a source are recognized by the prefix of their vacancy ID, the
+:php:`NAME` of the source, see :ref:`developer-import-mapping`.
 
 All records are written with the TYPO3 DataHandler. Hooks and events of
 other extensions, for example for search indexing, are triggered for
@@ -82,5 +92,10 @@ Logging
 The import logs to the channel :php:`JWeiland.Jobboard`. If you did not
 configure a writer for this channel yourself, messages of level INFO and
 higher are written to the file :file:`var/log/typo3_jobboard_<hash>.log`.
-A job that cannot be saved is logged and skipped, the import continues
-with the next job.
+These events are logged, the import continues afterwards:
+
+*   A source cannot be fetched (invalid URL, failed request, invalid XML).
+    The source is skipped and its existing jobs are kept.
+*   A job cannot be saved. It is skipped; if it already exists, it is kept
+    with its previous data.
+*   A job has no vacancy ID. It is skipped with a warning.
