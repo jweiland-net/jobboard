@@ -3,17 +3,18 @@ plugin.tx_jobboard {
     templateRootPaths {
       0 = EXT:jobboard/Resources/Private/Templates/
       1 = {$jobboard.templateRootPath}
-      2 = EXT:maps2/Resources/Private/Templates/
     }
     partialRootPaths {
       0 = EXT:jobboard/Resources/Private/Partials/
       1 = {$jobboard.partialRootPath}
+      # Partial "Maps2/PoiCollection" of the optional EXT:maps2. It is only
+      # rendered, if EXT:maps2 is installed. Otherwise, this path resolves
+      # to nothing and is ignored.
       2 = EXT:maps2/Resources/Private/Partials/
     }
     layoutRootPaths {
       0 = EXT:jobboard/Resources/Private/Layouts/
       1 = {$jobboard.layoutRootPath}
-      2 = EXT:maps2/Resources/Private/Layouts/
     }
   }
 

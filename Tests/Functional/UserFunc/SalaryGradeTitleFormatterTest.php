@@ -23,7 +23,6 @@ final class SalaryGradeTitleFormatterTest extends FunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
         'friendsoftypo3/tt-address',
-        'jweiland/maps2',
         'jweiland/jobboard',
     ];
 

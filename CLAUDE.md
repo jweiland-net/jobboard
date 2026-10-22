@@ -13,8 +13,8 @@ combines three building blocks:
 - **Job data** (`tx_jobboard_domain_model_job`) - title, description, dates, reference number, salary
   information, contact person, media attachments, and relations to several taxonomy tables (job area, job
   type, job role, contract type, tender type, benefits). See "3. Domain model" below for the full shape.
-- **Location data** - reuses `tt_address` (via `FriendsOfTYPO3\TtAddress`) and extends it with a relation to
-  `EXT:maps2` (`tx_maps2_uid`) so job locations can be shown on a Google Map.
+- **Location data** - reuses `tt_address` (via `FriendsOfTYPO3\TtAddress`) and, only if the optional `EXT:maps2`
+  is installed, extends it with a relation to `EXT:maps2` (`tx_maps2_uid`) so job locations can be shown on a map.
   Additionally, an `import_key` column is added to `tt_address` to make imported addresses idempotent.
 - **Automated import** - a console command pulls job postings from external XML API endpoints (currently
   several endpoints of "MHM HR") and writes/updates/deletes `tx_jobboard_domain_model_job` and `tt_address`
@@ -24,8 +24,13 @@ combines three building blocks:
 
 - **TYPO3:** 13.4 LTS only (see `composer.json` / `ext_emconf.php` constraints).
 - **PHP:** 8.2+, constructor property promotion used throughout.
-- **Hard dependencies:** `jweiland/maps2`, `friendsoftypo3/tt-address`, `bithost-gmbh/pdfviewhelpers`
+- **Hard dependencies:** `friendsoftypo3/tt-address`, `bithost-gmbh/pdfviewhelpers`
   (PDF export uses `EXT:pdfviewhelpers`, see `Configuration/Sets/Pdf/`).
+- **Optional:** `jweiland/maps2` (composer `suggest`, set `optionalDependencies`). Every maps2 code path must
+  stay guarded: the `tx_maps2_uid` TCA column is only added if maps2 is loaded, the map partial is only
+  rendered if a job has a `PoiCollection`, and `Address::setTxMaps2Uid()` must not get a class type for its
+  parameter (Extbase's `ClassSchema` reflects parameter class types and fails if the class does not exist).
+  Functional tests run without maps2, except `JobPoiCollectionViewHelperTest`.
 - **Site Sets:** this extension ships two TYPO3 Site Sets (`jweiland/jobboard` main set,
   `jweiland/jobboard-pdf` for the PDF variant) instead of classic static TypoScript templates.
 - **State:** `ext_emconf.php` declares `'state' => 'alpha'`, version `0.0.1`. Treat the extension as not yet
@@ -138,7 +143,7 @@ Key points:
   `jobboard-address-search`) against `tt_address` for the frontend search form; registered to run after
   `typo3/cms-frontend/authentication` because it needs the Frontend restriction context.
 - **`JobPoiCollectionViewHelper`** bridges `Job` -> `tt_address` -> `maps2` `PoiCollection` so a job list can
-  be rendered as map markers.
+  be rendered as map markers. Without maps2 it returns an empty `ObjectStorage`.
 - **`Address` domain model** extends `FriendsOfTYPO3\TtAddress\Domain\Model\Address` purely to add the
   `maps2` relation (`txMaps2Uid`). Keep this model in sync if `tt_address`'s own model changes upstream.
 

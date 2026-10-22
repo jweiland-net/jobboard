@@ -10,10 +10,17 @@
         </f:if>
     </div>
 
-    <div class="col-8_md-12 margin-bottom">
-        <f:render partial="Maps2/PoiCollection"
-                  section="showMap"
-                  arguments="{poiCollections: '{jobboard:jobPoiCollection(jobs: jobs)}', override: '{settings: {mapWidth: \'100%\', mapHeight: \'400\', streetViewControl: 0}, extConf: {strokeColor: \'blue\'}}'}"/>
-    </div>
+    <f:comment>
+        The map needs the optional EXT:maps2. Without it, no job has a
+        PoiCollection and the partial of EXT:maps2 is never rendered.
+    </f:comment>
+    <f:variable name="poiCollections" value="{jobboard:jobPoiCollection(jobs: jobs)}"/>
+    <f:if condition="{poiCollections}">
+        <div class="col-8_md-12 margin-bottom">
+            <f:render partial="Maps2/PoiCollection"
+                      section="showMap"
+                      arguments="{poiCollections: poiCollections, override: '{settings: {mapWidth: \'100%\', mapHeight: \'400\', streetViewControl: 0}, extConf: {strokeColor: \'blue\'}}'}"/>
+        </div>
+    </f:if>
 </div>
 </html>
