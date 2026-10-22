@@ -339,6 +339,24 @@ final class JobboardControllerTest extends FunctionalTestCase
     }
 
     #[Test]
+    public function detailActionHidesApplicationLinkWithoutPidOfApplicationForm(): void
+    {
+        $response = $this->executeFrontendSubRequest($this->buildDetailActionRequest(1));
+
+        self::assertStringNotContainsString('jobuid', (string)$response->getBody());
+    }
+
+    #[Test]
+    public function detailActionRendersApplicationLinkWithPidOfApplicationForm(): void
+    {
+        $this->addTypoScriptToTemplateRecord(1, 'plugin.tx_jobboard.settings.pidOfApplicationForm = 1');
+
+        $response = $this->executeFrontendSubRequest($this->buildDetailActionRequest(1));
+
+        self::assertStringContainsString('jobuid=1', (string)$response->getBody());
+    }
+
+    #[Test]
     public function detailActionSetsJobTitleAsPageTitle(): void
     {
         $response = $this->executeFrontendSubRequest($this->buildDetailActionRequest(1));
