@@ -251,8 +251,8 @@
 				<target>Ähnliche Jobangebote</target>
 			</trans-unit>
 			<trans-unit id="tx_jobboard_domain_model_job.link">
-				<source>Link to vacancy of MHM HR</source>
-				<target>Link zum Stellenangebot bei MHM HR</target>
+				<source>Link to vacancy</source>
+				<target>Link zum Stellenangebot</target>
 			</trans-unit>
 			<trans-unit id="tx_jobboard_domain_model_job.is_import">
 				<source>Is imported record?</source>

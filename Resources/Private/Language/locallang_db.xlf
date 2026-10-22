@@ -190,7 +190,7 @@
 				<source>Related jobs</source>
 			</trans-unit>
 			<trans-unit id="tx_jobboard_domain_model_job.link">
-				<source>Link to vacancy of MHM HR</source>
+				<source>Link to vacancy</source>
 			</trans-unit>
 			<trans-unit id="tx_jobboard_domain_model_job.is_import">
 				<source>Is imported record?</source>
