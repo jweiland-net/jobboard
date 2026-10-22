@@ -30,22 +30,19 @@ use TYPO3\CMS\Extbase\Persistence\Repository;
  */
 class JobRepository extends Repository
 {
+    /**
+     * Jobs with the closest application deadline first. Jobs without an
+     * application deadline (0) are sorted to the top by the database.
+     */
     protected $defaultOrderings = [
-        'endingDate' => QueryInterface::ORDER_ASCENDING,
+        'applicationDeadline' => QueryInterface::ORDER_ASCENDING,
     ];
 
     public function findBySettings(array $settings, int $limit = 0): QueryResultInterface
     {
         $query = $this->createQuery();
 
-        $andConstraint = [
-            $query->logicalNot($query->equals('title', '')),
-        ];
-
-        $andConstraint[] = $query->logicalOr(
-            $query->equals('endingDate', 0),
-            $query->greaterThanOrEqual('endingDate', new \DateTime()),
-        );
+        $andConstraint = $this->buildAndConstraintForOpenJobs($query);
 
         $jobAreaConstraints = $this->buildOrConstraintForJobAreas($settings['jobAreas'] ?? [], $query);
         if ($jobAreaConstraints !== []) {
@@ -63,14 +60,7 @@ class JobRepository extends Repository
     {
         $query = $this->createQuery();
 
-        $andConstraint = [
-            $query->logicalNot($query->equals('title', '')),
-        ];
-
-        $andConstraint[] = $query->logicalOr(
-            $query->equals('endingDate', 0),
-            $query->greaterThanOrEqual('endingDate', new \DateTime()),
-        );
+        $andConstraint = $this->buildAndConstraintForOpenJobs($query);
 
         if ($search->getJobArea() instanceof JobArea) {
             $andConstraint[] = $query->contains('jobAreas', $search->getJobArea());
@@ -99,6 +89,32 @@ class JobRepository extends Repository
         }
 
         return $query->matching($query->logicalAnd(...$andConstraint))->execute();
+    }
+
+    /**
+     * Base constraints for every job listed in the frontend: it needs a title,
+     * its application deadline must not have passed and, for fixed-term
+     * positions, its employment must not have ended already.
+     *
+     * Both dates are date-only fields stored as timestamp of midnight. They
+     * are compared with today midnight, so a job is still listed on the day
+     * of its application deadline. 0 means "no date set" and never hides a job.
+     */
+    private function buildAndConstraintForOpenJobs(QueryInterface $query): array
+    {
+        $today = new \DateTime('today');
+
+        return [
+            $query->logicalNot($query->equals('title', '')),
+            $query->logicalOr(
+                $query->equals('applicationDeadline', 0),
+                $query->greaterThanOrEqual('applicationDeadline', $today),
+            ),
+            $query->logicalOr(
+                $query->equals('endingDate', 0),
+                $query->greaterThanOrEqual('endingDate', $today),
+            ),
+        ];
     }
 
     /**

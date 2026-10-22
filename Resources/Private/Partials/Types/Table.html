@@ -7,7 +7,7 @@
         <thead>
         <tr>
             <th>{f:translate(key: 'job.title')}</th>
-            <th>{f:translate(key: 'job.ending_date')}</th>
+            <th>{f:translate(key: 'job.applicationDeadline')}</th>
             <th>{f:translate(key: 'job.address.zip')}</th>
             <th>{f:translate(key: 'job.address.city')}</th>
             <th>{f:translate(key: 'job.employer')}</th>
@@ -20,7 +20,7 @@
         <f:for each="{objects}" as="job">
             <tr data-jobboard-uid="{job.uid}">
                 <f:render partial="Job/TitleLink" arguments="{job: job}"/>
-                <f:render partial="Types/Date" arguments="{value: job.endingDate, format: 'd.m.Y'}"/>
+                <f:render partial="Types/Date" arguments="{value: job.applicationDeadline, format: 'd.m.Y'}"/>
                 <f:render partial="Types/Text" arguments="{value: job.address.zip}"/>
                 <f:render partial="Types/Text" arguments="{value: job.address.city}"/>
                 <f:render partial="Types/Text" arguments="{value: job.employer}"/>

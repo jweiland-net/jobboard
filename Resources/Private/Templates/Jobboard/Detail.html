@@ -50,14 +50,16 @@
         </div>
 
         <aside class="col-3_md-12">
-            <dl>
-                <dt>
-                    <f:translate key="job.ending_date"/>
-                </dt>
-                <dd>
-                    <f:format.date format="{f:translate(key:'dateFormat')}">{job.endingDate}</f:format.date>
-                </dd>
-            </dl>
+            <f:if condition="{job.applicationDeadline}">
+                <dl>
+                    <dt>
+                        <f:translate key="job.applicationDeadline"/>
+                    </dt>
+                    <dd>
+                        <f:format.date format="{f:translate(key:'dateFormat')}">{job.applicationDeadline}</f:format.date>
+                    </dd>
+                </dl>
+            </f:if>
             <f:if condition="{job.jobAreas}">
                 <dl>
                     <dt>

@@ -18,6 +18,7 @@ use JWeiland\Jobboard\Domain\Model\JobType;
 use JWeiland\Jobboard\Domain\Model\Search;
 use JWeiland\Jobboard\Domain\Repository\JobRepository;
 use PHPUnit\Framework\Attributes\Test;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Extbase\Persistence\Generic\QuerySettingsInterface;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
@@ -25,8 +26,9 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 /**
  * Test case.
  *
- * Covers JobRepository::findBySearch(): the "title is not empty" and "not yet
- * ended" base filters, the job area filter (matching any of the MM related
+ * Covers JobRepository::findBySearch(): the "title is not empty", "application
+ * deadline not passed" and "employment not ended" base filters, the job area
+ * filter (matching any of the MM related
  * job areas of a job), the job role/job type equality filters, the zip
  * (exact) / city (LIKE) address filter, and the free text search matching
  * title, address or Job RTE fields word by word, combined with logical AND.
@@ -108,6 +110,7 @@ class JobRepositorySearchTest extends FunctionalTestCase
                 'Job in Pforzheim but other job type',
                 'Job in Pforzheim but other job role',
                 'Job with matching zip in another city',
+                'Job with future application deadline',
             ],
             $this->findJobTitles(new Search(null, null, null, '', '')),
         );
@@ -197,6 +200,7 @@ class JobRepositorySearchTest extends FunctionalTestCase
             [
                 'Job in a different city',
                 'Job in Pforzheim but other job area',
+                'Job with future application deadline',
             ],
             $this->findJobTitles(new Search($jobArea, null, null, '', '')),
         );
@@ -205,7 +209,7 @@ class JobRepositorySearchTest extends FunctionalTestCase
     #[Test]
     public function findBySettingsWithoutJobAreasReturnsAllActiveJobsWithATitle(): void
     {
-        self::assertCount(9, $this->findJobTitlesBySettings([]));
+        self::assertCount(10, $this->findJobTitlesBySettings([]));
     }
 
     #[Test]
@@ -215,6 +219,7 @@ class JobRepositorySearchTest extends FunctionalTestCase
             [
                 'Job in a different city',
                 'Job in Pforzheim but other job area',
+                'Job with future application deadline',
             ],
             $this->findJobTitlesBySettings(['jobAreas' => '2']),
         );
@@ -223,7 +228,59 @@ class JobRepositorySearchTest extends FunctionalTestCase
     #[Test]
     public function findBySettingsWithJobAreaArrayReturnsEveryMatchingJobOnlyOnce(): void
     {
-        self::assertCount(9, $this->findJobTitlesBySettings(['jobAreas' => ['1', '2']]));
+        self::assertCount(10, $this->findJobTitlesBySettings(['jobAreas' => ['1', '2']]));
+    }
+
+    #[Test]
+    public function findBySettingsHidesJobWithPassedApplicationDeadlineEvenIfEmploymentEndsInFuture(): void
+    {
+        self::assertNotContains(
+            'Job with passed application deadline',
+            $this->findJobTitlesBySettings([]),
+        );
+    }
+
+    #[Test]
+    public function findBySettingsListsJobWithEmploymentEndDateInFuture(): void
+    {
+        self::assertContains(
+            'Job with far future ending date in Pforzheim',
+            $this->findJobTitlesBySettings([]),
+        );
+    }
+
+    #[Test]
+    public function findBySettingsHidesJobWithEndedEmploymentEvenIfApplicationDeadlineIsInFuture(): void
+    {
+        $titles = $this->findJobTitlesBySettings([]);
+
+        self::assertNotContains('Job with future application deadline but ended employment', $titles);
+        self::assertNotContains('Expired job in Pforzheim', $titles);
+    }
+
+    #[Test]
+    public function findBySettingsListsJobOnTheDayOfItsApplicationDeadline(): void
+    {
+        $this->get(ConnectionPool::class)
+            ->getConnectionForTable('tx_jobboard_domain_model_job')
+            ->update(
+                'tx_jobboard_domain_model_job',
+                ['application_deadline' => (new \DateTime('today'))->getTimestamp()],
+                ['uid' => 12],
+            );
+
+        self::assertContains(
+            'Job with passed application deadline',
+            $this->findJobTitlesBySettings([]),
+        );
+    }
+
+    #[Test]
+    public function findBySettingsSortsJobsByApplicationDeadline(): void
+    {
+        $titles = $this->findJobTitlesBySettings(['jobAreas' => '2']);
+
+        self::assertSame('Job with future application deadline', end($titles));
     }
 
     #[Test]
