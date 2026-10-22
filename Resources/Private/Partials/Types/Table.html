@@ -17,10 +17,11 @@
         </thead>
 
         <tbody>
+        <f:variable name="dateFormat" value="{f:translate(key: 'dateFormat')}"/>
         <f:for each="{objects}" as="job">
             <tr data-jobboard-uid="{job.uid}">
                 <f:render partial="Job/TitleLink" arguments="{job: job}"/>
-                <f:render partial="Types/Date" arguments="{value: job.applicationDeadline, format: 'd.m.Y'}"/>
+                <f:render partial="Types/Date" arguments="{value: job.applicationDeadline, format: dateFormat}"/>
                 <f:render partial="Types/Text" arguments="{value: job.address.zip}"/>
                 <f:render partial="Types/Text" arguments="{value: job.address.city}"/>
                 <f:render partial="Types/Text" arguments="{value: job.employer}"/>
