@@ -115,6 +115,30 @@ final class JobboardControllerTest extends FunctionalTestCase
         return (string)$response->getBody();
     }
 
+    /**
+     * @param array<string, int|string> $arguments
+     */
+    private function fetchSearchActionPageBody(int $pageId, array $arguments = []): string
+    {
+        $parameters = [
+            'tx_jobboard_jobboard[controller]' => 'Jobboard',
+            'tx_jobboard_jobboard[action]' => 'search',
+        ];
+        foreach ($arguments as $argumentName => $value) {
+            $parameters['tx_jobboard_jobboard[' . $argumentName . ']'] = (string)$value;
+        }
+
+        $request = (new InternalRequest('https://example.com/'))->withPageId($pageId);
+        foreach ($parameters as $parameterName => $value) {
+            $request = $request->withQueryParameter($parameterName, $value);
+        }
+        $cHash = $this->get(CacheHashCalculator::class)->generateForParameters(
+            '&id=' . $pageId . '&' . http_build_query($parameters),
+        );
+
+        return (string)$this->executeFrontendSubRequest($request->withQueryParameter('cHash', $cHash))->getBody();
+    }
+
     private function assertAppearsBefore(string $expectedFirst, string $expectedSecond, string $haystack): void
     {
         self::assertStringContainsString($expectedFirst, $haystack);
@@ -311,6 +335,80 @@ final class JobboardControllerTest extends FunctionalTestCase
             'data-jobboard-address-search-url="/list-with-search"',
             $this->fetchSearchFormPageBody(),
         );
+    }
+
+    #[Test]
+    public function listActionOnlyRendersJobsOfJobAreasConfiguredInFlexForm(): void
+    {
+        $body = $this->fetchSearchFormPageBody(7);
+
+        self::assertStringContainsString('Job with free entry range', $body);
+        self::assertStringNotContainsString('Job with visible stepped grade', $body);
+        self::assertStringNotContainsString('Job with a single free entry amount', $body);
+    }
+
+    #[Test]
+    public function jobAreaSelectOptionsOnlyContainJobAreasConfiguredInFlexForm(): void
+    {
+        // The listed job has the job areas "Assembly" and "Office", but the
+        // plugin is restricted to "Assembly" only.
+        $body = $this->fetchSearchFormPageBody(7);
+
+        self::assertStringContainsString('>Assembly (1)</option>', $body);
+        self::assertStringNotContainsString('>Office', $body);
+        self::assertStringNotContainsString('>Warehouse', $body);
+    }
+
+    #[Test]
+    public function jobAreaSelectOptionsContainAllJobAreasOfListedJobsWithoutRestrictionInFlexForm(): void
+    {
+        $body = $this->fetchSearchFormPageBody(5);
+
+        self::assertStringContainsString('>Office (1)</option>', $body);
+    }
+
+    #[Test]
+    public function searchActionOnlyRendersJobsOfJobAreasConfiguredInFlexForm(): void
+    {
+        $body = $this->fetchSearchActionPageBody(7);
+
+        self::assertStringContainsString('Job with free entry range', $body);
+        self::assertStringNotContainsString('Job with visible stepped grade', $body);
+        self::assertStringNotContainsString('Job with a single free entry amount', $body);
+        self::assertStringContainsString('>Assembly (1)</option>', $body);
+        self::assertStringNotContainsString('>Office', $body);
+    }
+
+    #[Test]
+    public function searchActionIgnoresJobAreaNotConfiguredInFlexForm(): void
+    {
+        // "Warehouse" (uid 1) is not allowed on this page. Selecting it must
+        // neither reveal its jobs nor narrow down the allowed ones.
+        $body = $this->fetchSearchActionPageBody(7, ['jobArea' => 1]);
+
+        self::assertStringContainsString('Job with free entry range', $body);
+        self::assertStringNotContainsString('Job with visible stepped grade', $body);
+        self::assertStringNotContainsString('Job with a single free entry amount', $body);
+        self::assertStringNotContainsString('>Warehouse', $body);
+    }
+
+    #[Test]
+    public function searchActionWithoutRestrictionInFlexFormRendersJobsOfAllJobAreas(): void
+    {
+        $body = $this->fetchSearchActionPageBody(4);
+
+        self::assertStringContainsString('Job with free entry range', $body);
+        self::assertStringContainsString('Job with visible stepped grade', $body);
+        self::assertStringContainsString('Job with a single free entry amount', $body);
+    }
+
+    #[Test]
+    public function searchActionWithoutRestrictionInFlexFormFiltersBySelectedJobArea(): void
+    {
+        $body = $this->fetchSearchActionPageBody(4, ['jobArea' => 1]);
+
+        self::assertStringContainsString('Job with visible stepped grade', $body);
+        self::assertStringNotContainsString('Job with free entry range', $body);
     }
 
     #[Test]

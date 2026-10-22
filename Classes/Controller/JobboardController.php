@@ -14,6 +14,7 @@ namespace JWeiland\Jobboard\Controller;
 use JWeiland\Jobboard\Domain\Model\Address;
 use JWeiland\Jobboard\Domain\Model\Job;
 use JWeiland\Jobboard\Domain\Model\JobArea;
+use JWeiland\Jobboard\Domain\Model\JobAreaRestriction;
 use JWeiland\Jobboard\Domain\Model\JobRole;
 use JWeiland\Jobboard\Domain\Model\JobType;
 use JWeiland\Jobboard\Domain\Model\Search;
@@ -35,13 +36,8 @@ class JobboardController extends ActionController
             (int)($this->settings['maxEntries'] ?? 0),
         );
 
-        $this->view->assignMultiple([
-            'jobs' => $jobs,
-            'jobAreas' => $this->getJobAreas($jobs),
-            'jobRoles' => $this->getJobRoles($jobs),
-            'jobTypes' => $this->getJobTypes($jobs),
-            'jobLocations' => $this->getJobLocations($jobs),
-        ]);
+        $this->view->assign('jobs', $jobs);
+        $this->assignSearchOptions($jobs);
 
         return $this->htmlResponse();
     }
@@ -53,23 +49,46 @@ class JobboardController extends ActionController
         string $address = '',
         string $searchWord = '',
     ): ResponseInterface {
-        $search = new Search($jobArea, $jobRole, $jobType, $address, $searchWord);
+        $search = new Search($this->getAllowedJobArea($jobArea), $jobRole, $jobType, $address, $searchWord);
 
         $jobs = $this->excludeJobsWithoutSalaryInformation(
-            $this->jobRepository->findBySearch($search),
+            $this->jobRepository->findBySearch($search, settings: $this->settings),
             (int)($this->settings['maxEntries'] ?? 0),
         );
 
         $this->view->assignMultiple($search->getSelectedValues());
+        $this->view->assign('jobs', $jobs);
+        $this->assignSearchOptions($jobs);
+
+        return $this->htmlResponse();
+    }
+
+    /**
+     * A job area outside the job areas configured in the plugin is ignored,
+     * as if no job area was selected at all.
+     */
+    private function getAllowedJobArea(?JobArea $jobArea): ?JobArea
+    {
+        if ($jobArea instanceof JobArea
+            && JobAreaRestriction::fromSettings($this->settings)->allows((int)$jobArea->getUid())
+        ) {
+            return $jobArea;
+        }
+
+        return null;
+    }
+
+    /**
+     * @param Job[] $jobs
+     */
+    private function assignSearchOptions(array $jobs): void
+    {
         $this->view->assignMultiple([
-            'jobs' => $jobs,
             'jobAreas' => $this->getJobAreas($jobs),
             'jobRoles' => $this->getJobRoles($jobs),
             'jobTypes' => $this->getJobTypes($jobs),
             'jobLocations' => $this->getJobLocations($jobs),
         ]);
-
-        return $this->htmlResponse();
     }
 
     /**
@@ -110,15 +129,22 @@ class JobboardController extends ActionController
      * "Warehouse (3)". As a job can have several job areas, the numbers may add
      * up to more than the total number of jobs.
      *
+     * A job may have further job areas besides the job areas configured in
+     * the plugin ("settings.jobAreas"). These are neither offered nor counted.
+     *
      * @param Job[] $jobs
      * @return array<int, string>
      */
     protected function getJobAreas(array $jobs): array
     {
+        $jobAreaRestriction = JobAreaRestriction::fromSettings($this->settings);
         $titles = [];
         $numberOfJobs = [];
         foreach ($jobs as $job) {
             foreach ($job->getJobAreas() as $jobArea) {
+                if (!$jobAreaRestriction->allows((int)$jobArea->getUid())) {
+                    continue;
+                }
                 $titles[$jobArea->getUid()] = $jobArea->getTitle();
                 $numberOfJobs[$jobArea->getUid()] = ($numberOfJobs[$jobArea->getUid()] ?? 0) + 1;
             }
