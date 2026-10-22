@@ -187,8 +187,9 @@ return (new \PhpCsFixer\Config())
         (new PhpCsFixer\Finder())
             ->ignoreVCSIgnored(true)
             ->in(__DIR__ . '/../../')
-            ->exclude(__DIR__ . '/../../.Build')
-            ->exclude(__DIR__ . '/../../var'),
+            // Paths relative to in(). Code snippets of the documentation
+            // have their own headers and must not be changed.
+            ->exclude(['.Build', 'Documentation', 'var']),
     )
     ->setRiskyAllowed(true)
     ->setRules($mergedRules);
