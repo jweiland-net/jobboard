@@ -132,6 +132,12 @@
 			<trans-unit id="job.applyOnline">
 				<source>Apply online</source>
 			</trans-unit>
+			<trans-unit id="job.downloadPdf">
+				<source>Download PDF %s</source>
+			</trans-unit>
+			<trans-unit id="job.downloadPdf.addition">
+				<source>file of the job offer</source>
+			</trans-unit>
 			<trans-unit id="job.applicationGuidelines">
 				<source>Application guidelines</source>
 			</trans-unit>
@@ -203,6 +209,28 @@
 
 			<trans-unit id="applicationTo">
 				<source>Application to</source>
+			</trans-unit>
+
+			<trans-unit id="pluginPreview.config">
+				<source>Config</source>
+			</trans-unit>
+			<trans-unit id="pluginPreview.value">
+				<source>Value</source>
+			</trans-unit>
+			<trans-unit id="pluginPreview.plugin">
+				<source>Plugin</source>
+			</trans-unit>
+			<trans-unit id="pluginPreview.jobAreas">
+				<source>Job Areas</source>
+			</trans-unit>
+			<trans-unit id="pluginPreview.maxEntries">
+				<source>Max Entries</source>
+			</trans-unit>
+			<trans-unit id="pluginPreview.showSearch">
+				<source>Show Search</source>
+			</trans-unit>
+			<trans-unit id="pluginPreview.showFreeTextSearch">
+				<source>Show Free Text Search</source>
 			</trans-unit>
 		</body>
 	</file>

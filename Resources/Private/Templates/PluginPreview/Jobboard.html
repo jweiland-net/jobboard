@@ -6,33 +6,33 @@
 <table class="table">
     <thead>
     <tr>
-        <th>Config</th>
-        <th>Value</th>
+        <th><f:translate key="pluginPreview.config" extensionName="Jobboard"/></th>
+        <th><f:translate key="pluginPreview.value" extensionName="Jobboard"/></th>
     </tr>
     </thead>
 
     <tbody>
     <tr>
-        <td><strong>Plugin</strong></td>
-        <td>Job Board</td>
+        <td><strong><f:translate key="pluginPreview.plugin" extensionName="Jobboard"/></strong></td>
+        <td><f:translate key="LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:plugin.jobboard.title"/></td>
     </tr>
 
     <f:if condition="{pi_flexform_transformed.settings.jobAreas}">
         <tr>
-            <td><strong>Job Areas</strong></td>
+            <td><strong><f:translate key="pluginPreview.jobAreas" extensionName="Jobboard"/></strong></td>
             <td>{pi_flexform_transformed.settings.jobAreas}</td>
         </tr>
     </f:if>
 
     <f:if condition="{pi_flexform_transformed.settings.maxEntries}">
         <tr>
-            <td><strong>Max Entries</strong></td>
+            <td><strong><f:translate key="pluginPreview.maxEntries" extensionName="Jobboard"/></strong></td>
             <td>{pi_flexform_transformed.settings.maxEntries}</td>
         </tr>
     </f:if>
 
     <tr>
-        <td><strong>Show Search</strong></td>
+        <td><strong><f:translate key="pluginPreview.showSearch" extensionName="Jobboard"/></strong></td>
         <td>
             <f:if condition="{pi_flexform_transformed.settings.showSearch}">
                 <f:then>
@@ -46,7 +46,7 @@
     </tr>
 
     <tr>
-        <td><strong>Show Free Text Search</strong></td>
+        <td><strong><f:translate key="pluginPreview.showFreeTextSearch" extensionName="Jobboard"/></strong></td>
         <td>
             <f:if condition="{pi_flexform_transformed.settings.showFreeTextSearch}">
                 <f:then>

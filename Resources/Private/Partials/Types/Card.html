@@ -21,7 +21,7 @@
                         <span>{job.jobRole.title}</span>
                     </f:if>
                     <f:if condition="{job.applicationDeadline}">
-                        <span>{f:translate(key: 'job.applicationDeadline')}: {job.applicationDeadline -> f:format.date(format: 'd.m.Y')}</span>
+                        <span>{f:translate(key: 'job.applicationDeadline')}: {job.applicationDeadline -> f:format.date(format: '{f:translate(key: \'dateFormat\')}')}</span>
                     </f:if>
                 </p>
             </div>

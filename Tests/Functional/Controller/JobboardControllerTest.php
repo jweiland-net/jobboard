@@ -13,6 +13,7 @@ namespace JWeiland\Jobboard\Tests\Functional\Controller;
 
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Configuration\SiteWriter;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Frontend\Page\CacheHashCalculator;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
@@ -354,6 +355,31 @@ final class JobboardControllerTest extends FunctionalTestCase
         $response = $this->executeFrontendSubRequest($this->buildDetailActionRequest(1));
 
         self::assertStringContainsString('jobuid=1', (string)$response->getBody());
+    }
+
+    #[Test]
+    public function detailActionRendersTranslatedApplicationLinkLabel(): void
+    {
+        $this->addTypoScriptToTemplateRecord(1, 'plugin.tx_jobboard.settings.pidOfApplicationForm = 1');
+
+        $response = $this->executeFrontendSubRequest($this->buildDetailActionRequest(1));
+
+        self::assertStringContainsString('>Apply online</a>', (string)$response->getBody());
+    }
+
+    #[Test]
+    public function detailActionRendersTranslatedPdfDownloadLabel(): void
+    {
+        $this->get(ConnectionPool::class)
+            ->getConnectionForTable('tx_jobboard_domain_model_job')
+            ->update('tx_jobboard_domain_model_job', ['description' => 'Job description'], ['uid' => 1]);
+
+        $response = $this->executeFrontendSubRequest($this->buildDetailActionRequest(1));
+
+        self::assertStringContainsString(
+            'Download PDF <span class="vhidden-sm">file of the job offer</span>',
+            (string)$response->getBody(),
+        );
     }
 
     #[Test]
