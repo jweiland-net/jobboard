@@ -15,8 +15,9 @@ Requirements
 *   TYPO3 13.4 LTS (:composer:`typo3/cms-core` 13.4.34 or higher)
 *   PHP 8.2 or higher with the PHP extension :code:`intl`
 *   :composer:`friendsoftypo3/tt-address`: job locations are addresses
+    (required dependency, installed automatically)
 *   :composer:`bithost-gmbh/pdfviewhelpers`: renders the PDF version of a
-    job
+    job (required dependency, installed automatically)
 *   Optional: :composer:`jweiland/maps2` shows the job locations on a map
 
 The extension can only be installed with Composer.

@@ -52,8 +52,10 @@ Sheet "General"
         at least one of the selected occupational fields. Empty: jobs of all
         occupational fields are shown.
 
-        The selection applies to the list. After a visitor submits the
-        search form, the criteria of the search form apply.
+        The restriction applies to the list and to the search result. The
+        select box of occupational fields in the search form and the number
+        of jobs per occupational field only consider the selected fields. A
+        submitted occupational field outside of the selection is ignored.
 
     ..  confval:: Max entries to show (0 for all)
         :name: plugin-maxentries
@@ -133,7 +135,10 @@ A job is part of the search result if it is currently open (see
 :ref:`editor-visibility`) and matches all filled fields of the search form:
 
 Occupational field
-    The job has this occupational field among its occupational fields.
+    The job has this occupational field among its occupational fields. If
+    the content element restricts the occupational fields (see
+    :confval:`plugin-jobareas`), only jobs of these fields are found, and a
+    submitted field outside of them is ignored.
 
 Position, employment scope
     The job has exactly this position or employment scope.

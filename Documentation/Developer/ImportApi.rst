@@ -25,11 +25,15 @@ Architecture
      └── ImportService::import()
           ├── for each service tagged "api.model"
           │    ├── XmlClient: GET request to getApiEndpoint()
+          │    │    (failed request or invalid XML: source skipped,
+          │    │     all its jobs are kept)
           │    ├── every child element of the XML root element = one job
+          │    │    (jobs without vacancy_id are skipped)
           │    ├── TtAddressService: address of the primary location
           │    ├── JobService: job record built from getMapping()
           │    └── DataHandler: save address and job
-          └── DataHandler: delete imported jobs that were not delivered
+          └── DataHandler: delete imported jobs that a successfully
+                           fetched source no longer delivers
 
 ..  _developer-import-class:
 
@@ -102,13 +106,16 @@ keys:
     empty value or :code:`0` results in :php:`0`.
 
 :php:`default` (required)
-    Used if the value cannot be converted, for example a date in an
-    unknown format. A missing XML element results in an empty value.
+    Used if the XML element is missing, or if the value cannot be
+    converted, for example a date in an unknown format. The default is
+    stored as it is, without date conversion and without prefix. An XML
+    element that exists but is empty stays empty.
 
 :php:`prefix` (optional)
     Stored as :code:`<prefix>_<value>`. For :php:`vacancy_id`, the prefix
     must be the :php:`NAME` of the source, because the import finds
-    existing jobs by :code:`<NAME>_<vacancy ID>`.
+    existing jobs by :code:`<NAME>_<vacancy ID>` and recognizes the jobs of
+    a source by this prefix.
 
 These columns are set by the import itself and need no mapping:
 :sql:`pid` (the storage page of the command), :sql:`is_import`,
@@ -129,8 +136,9 @@ Root element
     Any name. Each child element is one job.
 
 :code:`vacancy_id`
-    Numeric ID of the job in the source. Required to update existing jobs
-    instead of creating new ones.
+    ID of the job in the source, any string. Surrounding whitespace is
+    removed. Required to update existing jobs instead of creating new ones;
+    jobs without vacancy ID are skipped.
 
 :code:`custom_select_4/de`
     Titles of the occupational fields, one per line.
