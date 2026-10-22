@@ -40,7 +40,7 @@
                         <f:link.action class="btn-outline" action="detail" arguments="{job: job}">{f:translate(key: 'job.readMore')}</f:link.action>
                     </f:else>
                 </f:if>
-                <f:if condition="{settings.pidOfApplicationForm}">
+                <f:if condition="{settings.pidOfApplicationForm} > 0">
                     <p>
                         <f:link.page pageUid="{settings.pidOfApplicationForm}" class="btn-primary" additionalParams="{jobuid: job.uid}">{f:translate(key: 'job.applyOnline')}</f:link.page>
                     </p>
