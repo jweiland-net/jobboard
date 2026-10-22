@@ -1,34 +1,5 @@
-..  More information about this file:
-    https://docs.typo3.org/m/typo3/docs-how-to-document/main/en-us/GeneralConventions/FileStructure.html#includes-rst-txt
-
-..  ----------
-..  text roles
-..  ----------
-
-..  role:: aspect(emphasis)
-..  role:: bash(code)
-..  role:: html(code)
-..  role:: js(code)
-..  role:: php(code)
-..  role:: rst(code)
-..  role:: sep(strong)
-..  role:: sql(code)
-
-..  role:: tsconfig(code)
-    :class: typoscript
-
-..  role:: typoscript(code)
-..  role:: xml(code)
-    :class: html
-
-..  role:: yaml(code)
-
-..  default-role:: code
-
-..  ---------
-..  highlight
-..  ---------
-
-..  By default, code blocks use PHP syntax highlighting
-
-..  highlight:: php
+..  This file is included at the top of every .rst file of this manual.
+..  Text roles like :php:, :typoscript:, :yaml:, :html:, :file:, :guilabel:
+..  and :composer: are provided by the TYPO3 documentation theme
+..  (render-guides), so nothing has to be defined here.
+..  See https://docs.typo3.org/m/typo3/docs-how-to-document/main/en-us/

@@ -1,0 +1,12 @@
+# Clear the cache of the page with the job list (UID 42) when a record
+# in this folder is saved
+TCEMAIN.clearCacheCmd = 42
+
+# Salary steps are maintained inline in their salary grade
+mod.web_list.hideTables := addToList(tx_jobboard_domain_model_salarystep)
+
+# Pre-fill the validity of new salary grades (example: year 2026)
+TCAdefaults.tx_jobboard_domain_model_salarygrade {
+  starttime = 1767225600
+  endtime = 1798761599
+}

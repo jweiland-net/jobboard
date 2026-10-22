@@ -1,57 +1,110 @@
 :navigation-title: Job board
 
 ..  include:: /Includes.rst.txt
-
-
 ..  _start:
 
 =========
 Job board
 =========
 
-..  only:: html
+:Extension key:
+    jobboard
 
-    :Classification:
-        jobboard
+:Package name:
+    jweiland/jobboard
 
-    :Version:
-        |release|
+:Version:
+    |release|
 
-    :Language:
-        en, de
+:Language:
+    en
 
-    :Description:
-        Job board implementation using maps2 and tt_address to display jobs
+:Author:
+    Stefan Froemken
 
-    :Keywords:
-        jobs, jobboard, job board, recruiting
+:License:
+    This extension documentation is published under the
+    `CC BY-NC-SA 4.0 <https://creativecommons.org/licenses/by-nc-sa/4.0/>`__
+    (Creative Commons) license. The extension itself is licensed under
+    GPL-2.0-or-later.
 
-    :Copyright:
-        since 2017
+:Rendered:
+    |today|
 
-    :Author:
-        Markus Kugler, jweiland.net
+----
 
-    :Email:
-        projects@jweiland.net
+The extension shows a searchable list of job offers on your TYPO3 website.
+Visitors filter the list by occupational field, position, employment scope,
+location and keyword, open a detail view with all facts including the
+salary, and can export a job as PDF. Job locations are maintained as
+addresses of EXT:tt_address and can optionally be shown on a map with
+EXT:maps2. A console command can import jobs from external XML sources.
 
-    :License:
-        This document is published under the Open Publication License
-        available from http://www.opencontent.org/openpub/
+..  warning::
 
-    :Rendered:
-        |today|
+    This extension is in **alpha** state (version 0.0.1) and supports
+    TYPO3 13.4 LTS only. PHP classes, template variables and settings can
+    still change without notice until the first stable release.
 
-    The content of this document is related to TYPO3, a GNU/GPL CMS/Framework
-    available from `typo3.org <https://typo3.org/>`__.
+----
 
-    **Table of contents**
+**Table of contents**
+
+..  card-grid::
+    :columns: 1
+    :columns-md: 2
+    :gap: 4
+    :class: pb-4
+    :card-height: 100
+
+    ..  card:: :ref:`Introduction <introduction>`
+
+        What the job board does, which features it offers and how it looks
+        in the frontend.
+
+    ..  card:: :ref:`Installation <installation>`
+
+        Install the extension with Composer, add the site set and prepare
+        the storage folder.
+
+    ..  card:: :ref:`Configuration <configuration>`
+
+        Site sets, site settings, TypoScript, content element options,
+        routing and page title.
+
+    ..  card:: :ref:`Editors <editor>`
+
+        Maintain jobs, salary grades, benefits and addresses and insert the
+        "Job board" content element.
+
+    ..  card:: :ref:`Administration <administration>`
+
+        Templates, PDF export, address search, job import and upgrade
+        wizards.
+
+    ..  card:: :ref:`Developers <developer>`
+
+        Connect your own job source to the import and extend the job
+        board.
 
 ..  toctree::
-    :maxdepth: 3
+    :maxdepth: 2
     :titlesonly:
+    :hidden:
 
     Introduction/Index
-    UsersManual/Index
-    AdministratorManual/Index
-    Links
+    Installation/Index
+    Configuration/Index
+    Editor/Index
+    Administration/Index
+    Developer/Index
+    Contributing/Index
+    KnownProblems/Index
+    Changelog/Index
+
+..  Meta Menu
+
+..  toctree::
+    :hidden:
+
+    Sitemap
