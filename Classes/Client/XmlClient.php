@@ -19,6 +19,10 @@ class XmlClient
 {
     public function __construct(protected RequestFactory $requestFactory) {}
 
+    /**
+     * Returns null, if the API endpoint is not a valid URL. A failed request
+     * throws an exception of Guzzle (GuzzleException).
+     */
     public function sendRequest(string $apiEndpoint): ?ResponseInterface
     {
         if (!GeneralUtility::isValidUrl($apiEndpoint)) {

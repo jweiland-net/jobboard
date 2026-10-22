@@ -19,6 +19,15 @@ class JobModel extends AbstractModel
     }
 
     /**
+     * The ID of the job in the source. It is not cast to int, as a source
+     * may deliver non-numeric IDs. Empty, if the source delivers none.
+     */
+    public function getVacancyId(): string
+    {
+        return trim($this->getValueByPath('vacancy_id'));
+    }
+
+    /**
      * @return LocationModel[]
      */
     public function getLocations(): array
@@ -39,7 +48,7 @@ class JobModel extends AbstractModel
         throw new \RuntimeException(
             sprintf(
                 'No primary location found for vacancy ID: %s',
-                $this->getValueByPath('vacancy_id', 'int', 0),
+                $this->getVacancyId(),
             ),
             1751531883,
         );

@@ -35,7 +35,7 @@ class Job extends AbstractEntity
 
     protected bool $isImport = false;
 
-    protected int $vacancyId = 0;
+    protected string $vacancyId = '';
 
     protected ?Address $address = null;
 
@@ -233,12 +233,12 @@ class Job extends AbstractEntity
         $this->isImport = $isImport;
     }
 
-    public function getVacancyId(): int
+    public function getVacancyId(): string
     {
         return $this->vacancyId;
     }
 
-    public function setVacancyId(int $vacancyId): void
+    public function setVacancyId(string $vacancyId): void
     {
         $this->vacancyId = $vacancyId;
     }

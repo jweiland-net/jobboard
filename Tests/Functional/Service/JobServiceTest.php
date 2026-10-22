@@ -60,6 +60,21 @@ final class JobServiceTest extends FunctionalTestCase
                     'isDate' => true,
                     'default' => '',
                 ],
+                'application_deadline' => [
+                    'apiPath' => 'deadline',
+                    'isDate' => true,
+                    'default' => 0,
+                ],
+                'ending_date' => [
+                    'apiPath' => 'valid_to',
+                    'isDate' => true,
+                    'default' => 0,
+                ],
+                'description' => [
+                    'apiPath' => 'description/de',
+                    'isDate' => false,
+                    'default' => 'fallback',
+                ],
                 'reference_number' => [
                     'apiPath' => 'vacancy_id',
                     'isDate' => false,
@@ -91,6 +106,8 @@ final class JobServiceTest extends FunctionalTestCase
                 <custom_select_4><de>IT</de></custom_select_4>
                 <custom_select_2><de>Vollzeit</de></custom_select_2>
                 <valid_from>2024-01-09 00:00:00 +0100</valid_from>
+                <valid_to>next tuesday-ish</valid_to>
+                <description><de></de></description>
             </job>',
         ));
     }
@@ -100,14 +117,14 @@ final class JobServiceTest extends FunctionalTestCase
     {
         self::assertSame(
             1,
-            $this->subject->getJobUid(4711, $this->buildApiModel()),
+            $this->subject->getJobUid('4711', $this->buildApiModel()),
         );
     }
 
     #[Test]
     public function getJobUidWithUnknownVacancyIdReturnsNewIdentifier(): void
     {
-        $jobUid = $this->subject->getJobUid(9999, $this->buildApiModel());
+        $jobUid = $this->subject->getJobUid('9999', $this->buildApiModel());
 
         self::assertIsString($jobUid);
         self::assertStringStartsWith('NEW', $jobUid);
@@ -125,20 +142,70 @@ final class JobServiceTest extends FunctionalTestCase
         self::assertSame('Fachkraft (m/w/d)', $preparedJob['title']);
         self::assertSame('test_4711', $preparedJob['vacancy_id']);
         self::assertSame('4711', $preparedJob['reference_number']);
-        // JobService reads getValueByPath() without passing the ApiMapping's own
-        // "default", so a missing field resolves to AbstractModel's own default ('')
-        // instead of the mapping's configured one - the try/catch never actually
-        // triggers for a missing path, since getValueByPath() never throws.
-        self::assertSame('', $preparedJob['missing_field']);
+        self::assertSame('fallback', $preparedJob['missing_field']);
         self::assertIsInt($preparedJob['start_date']);
         self::assertGreaterThan(0, $preparedJob['start_date']);
+    }
+
+    #[Test]
+    public function getJobUidWithNonNumericVacancyIdReturnsItsUid(): void
+    {
+        self::assertSame(
+            3,
+            $this->subject->getJobUid('AB-0815', $this->buildApiModel()),
+        );
+    }
+
+    #[Test]
+    public function getPreparedJobByImportedJobUsesDefaultOfMissingDateElementWithoutConversion(): void
+    {
+        $preparedJob = $this->subject->getPreparedJobByImportedJob($this->buildJobModel(), $this->buildApiModel());
+
+        self::assertSame(0, $preparedJob['application_deadline']);
+    }
+
+    #[Test]
+    public function getPreparedJobByImportedJobUsesDefaultOfDateInUnknownFormat(): void
+    {
+        $preparedJob = $this->subject->getPreparedJobByImportedJob($this->buildJobModel(), $this->buildApiModel());
+
+        self::assertSame(0, $preparedJob['ending_date']);
+    }
+
+    #[Test]
+    public function getPreparedJobByImportedJobKeepsEmptyValueOfExistingEmptyElement(): void
+    {
+        $preparedJob = $this->subject->getPreparedJobByImportedJob($this->buildJobModel(), $this->buildApiModel());
+
+        self::assertSame('', $preparedJob['description']);
+    }
+
+    #[Test]
+    public function getPreparedJobByImportedJobUsesDefaultOfMissingElementWithoutPrefix(): void
+    {
+        $preparedJob = $this->subject->getPreparedJobByImportedJob(
+            new JobModel(new \SimpleXMLElement('<job><title><de>Web Developer (m/f/d)</de></title></job>')),
+            $this->buildApiModel(),
+        );
+
+        self::assertSame(0, $preparedJob['vacancy_id']);
+        self::assertSame('000000', $preparedJob['reference_number']);
+    }
+
+    #[Test]
+    public function getJobUidsOfApiModelReturnsJobsWithVacancyIdPrefixOfApiModelOnly(): void
+    {
+        self::assertSame(
+            [1, 3],
+            $this->subject->getJobUidsOfApiModel($this->buildApiModel()),
+        );
     }
 
     #[Test]
     public function getInitialImportStatusOfAlreadyImportedJobsOnlyReturnsJobsWithAVacancyId(): void
     {
         self::assertSame(
-            [1 => false],
+            [1 => false, 3 => false, 4 => false],
             $this->subject->getInitialImportStatusOfAlreadyImportedJobs(new ImportConfiguration(2)),
         );
     }

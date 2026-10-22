@@ -21,7 +21,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 use TYPO3\CMS\Core\Core\Bootstrap;
 
 /**
- * Import jobs from XML API point of www.mhm-hr.com
+ * Import jobs from the XML API endpoints of all registered API models
+ * (services tagged with "api.model").
  * This command can be executed multiple times.
  * It will check for existing tt_address and job records and insert/update them accordingly.
  * It uses the TYPO3 DataHandler to store the records. That way it's not a problem to hook into DataHandler
@@ -29,7 +30,7 @@ use TYPO3\CMS\Core\Core\Bootstrap;
  */
 #[AsCommand(
     name: 'jobboard:import:jobs:mhm',
-    description: 'Import jobs from XML API point of www.mhm-hr.com',
+    description: 'Import jobs from the XML API endpoints of all registered API models',
 )] class ImportJobsMhm extends Command
 {
     public function __construct(
@@ -40,7 +41,6 @@ use TYPO3\CMS\Core\Core\Bootstrap;
 
     public function configure(): void
     {
-        $this->setDescription('Import jobs from XML API endpoint of MHM HR');
         $this->addArgument(
             'storage',
             InputArgument::REQUIRED,

@@ -20,42 +20,48 @@ abstract class AbstractModel
         return $this->xmlElement;
     }
 
-    public function getValueByPath(string $path, string $dataType = 'string', $default = '')
+    public function hasPath(string $path): bool
     {
-        // xpath will always return an array of \SimpleXMLElement
         $elements = $this->xmlElement->xpath($path);
 
-        // On error
-        if ($elements === false) {
-            return $default;
+        return is_array($elements) && $elements !== [];
+    }
+
+    /**
+     * Returns $default, if the path does not exist in the XML. Without a
+     * $default, a missing path returns the empty value of $dataType, e.g.
+     * '' for "string" or 0 for "int". An existing, but empty element is not
+     * missing and returns its (empty) value.
+     */
+    public function getValueByPath(string $path, string $dataType = 'string', mixed $default = null): mixed
+    {
+        // xpath will always return an array of \SimpleXMLElement, an empty
+        // one if the path was not found, false (or null) on error
+        $elements = $this->xmlElement->xpath($path);
+
+        if (!is_array($elements) || $elements === []) {
+            return $default ?? $this->castElements([], $dataType);
         }
 
-        // Not found
-        if ($elements === null) {
-            return $default;
-        }
+        return $this->castElements($elements, $dataType);
+    }
 
-        // \SimpleXMLElement is more a resource as an object.
-        // So, it needs to be cast to the expected data type
-        // See: https://www.php.net/manual/en/class.simplexmlelement.php#100811
-        switch ($dataType) {
-            case 'bool':
-            case 'boolean':
-                return (bool)current($elements);
-            case 'int':
-            case 'integer':
-                return (int)current($elements);
-            case 'float':
-            case 'double':
-                return (float)current($elements);
-            case 'native':
-            case \SimpleXMLElement::class:
-                return $elements;
-            case 'array':
-                return (array)$elements;
-            case 'string':
-            default:
-                return (string)current($elements);
-        }
+    /**
+     * \SimpleXMLElement is more a resource as an object.
+     * So, it needs to be cast to the expected data type
+     * See: https://www.php.net/manual/en/class.simplexmlelement.php#100811
+     *
+     * @param \SimpleXMLElement[] $elements
+     */
+    private function castElements(array $elements, string $dataType): mixed
+    {
+        return match ($dataType) {
+            'bool', 'boolean' => (bool)current($elements),
+            'int', 'integer' => (int)current($elements),
+            'float', 'double' => (float)current($elements),
+            'native', \SimpleXMLElement::class => $elements,
+            'array' => (array)$elements,
+            default => (string)current($elements),
+        };
     }
 }
