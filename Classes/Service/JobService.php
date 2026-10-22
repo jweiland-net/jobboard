@@ -88,6 +88,7 @@ readonly class JobService
                         $queryBuilder->createNamedParameter($vacancyIdPrefix . '%'),
                     ),
                 )
+                ->orderBy('uid')
                 ->executeQuery()
                 ->fetchFirstColumn();
         } catch (\Doctrine\DBAL\Exception) {
@@ -196,7 +197,7 @@ readonly class JobService
             ), $queryBuilder->expr()->neq(
                 'vacancy_id',
                 $queryBuilder->createNamedParameter(''),
-            ))->executeQuery();
+            ))->orderBy('uid')->executeQuery();
 
         $alreadyImportedJobs = [];
         try {
