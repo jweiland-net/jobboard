@@ -1,0 +1,44 @@
+plugin.tx_jobboard {
+  view {
+    templateRootPaths {
+      0 = EXT:jobboard/Resources/Private/Templates/
+      1 = {$jobboard.templateRootPath}
+    }
+    partialRootPaths {
+      0 = EXT:jobboard/Resources/Private/Partials/
+      1 = {$jobboard.partialRootPath}
+      # Partial "Maps2/PoiCollection" of the optional EXT:maps2. It is only
+      # rendered, if EXT:maps2 is installed. Otherwise, this path resolves
+      # to nothing and is ignored.
+      2 = EXT:maps2/Resources/Private/Partials/
+    }
+    layoutRootPaths {
+      0 = EXT:jobboard/Resources/Private/Layouts/
+      1 = {$jobboard.layoutRootPath}
+    }
+  }
+
+  persistence {
+    storagePid = {$jobboard.storagePid}
+    recursive = 3
+  }
+
+  settings {
+    pidOfDetailPage = {$jobboard.pidOfDetailPage}
+    pidOfApplicationForm = {$jobboard.pidOfApplicationForm}
+    showJobAreaCount = {$jobboard.showJobAreaCount}
+  }
+
+  # Use the TypoScript value, if the FlexForm option is empty
+  ignoreFlexFormSettingsIfEmpty = showJobAreaCount
+}
+
+# Show the job title as page title on the detail view. Must be ordered before
+# "seo" (page field "seo_title") and "record" (page title) as the first
+# provider returning a non-empty title wins.
+config.pageTitleProviders {
+  jobboard {
+    provider = JWeiland\Jobboard\PageTitle\JobPageTitleProvider
+    before = record, seo
+  }
+}

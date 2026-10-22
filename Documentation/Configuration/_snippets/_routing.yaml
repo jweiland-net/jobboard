@@ -1,0 +1,6 @@
+imports:
+  - { resource: 'EXT:jobboard/Configuration/Routes/Default.yaml' }
+
+routeEnhancers:
+  JobboardPlugin:
+    limitToPages: [42]

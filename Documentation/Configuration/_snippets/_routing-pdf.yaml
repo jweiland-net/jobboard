@@ -1,0 +1,6 @@
+routeEnhancers:
+  PageTypeSuffix:
+    type: PageType
+    default: ''
+    map:
+      job.pdf: 1575903427

@@ -1,0 +1,14 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  MyVendor\MySitepackage\:
+    resource: '../Classes/*'
+
+  # Only needed without the #[Autoconfigure] attribute
+  MyVendor\MySitepackage\Import\ExampleJobBoardApiModel:
+    shared: false
+    tags:
+      - name: api.model

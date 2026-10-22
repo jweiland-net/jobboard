@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jobs>
+    <job>
+        <vacancy_id>4711</vacancy_id>
+        <title><de>Web Developer (m/f/d)</de></title>
+        <description><de>&lt;p&gt;We are looking for ...&lt;/p&gt;</de></description>
+        <company><de>Sample Company Ltd.</de></company>
+        <application_email>jobs@example.org</application_email>
+        <publication_link>https://example.org/jobs/4711</publication_link>
+        <start_date>2026-12-01</start_date>
+        <application_deadline>2026-11-15 00:00:00 +0100</application_deadline>
+        <salary_mode>1</salary_mode>
+        <salary>
+            <min>4200.00</min>
+            <max>5600.00</max>
+        </salary>
+        <!-- Titles of occupational fields, one per line -->
+        <custom_select_4><de>IT
+Administration</de></custom_select_4>
+        <!-- Title of the employment scope -->
+        <custom_select_2><de>Full-time</de></custom_select_2>
+        <manager_name>Jane Doe</manager_name>
+        <manager_email>jobs@example.org</manager_email>
+        <locations>
+            <location primary="true">
+                <technical_name>location-1</technical_name>
+                <de>Sample Company Ltd.</de>
+                <street>Example Street 1</street>
+                <zipcode>12345</zipcode>
+                <city>Sample Town</city>
+            </location>
+        </locations>
+    </job>
+</jobs>
