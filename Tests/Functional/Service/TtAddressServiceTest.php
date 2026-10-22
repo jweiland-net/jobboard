@@ -26,6 +26,7 @@ final class TtAddressServiceTest extends FunctionalTestCase
     private const STORAGE_PAGE = 2;
 
     protected array $testExtensionsToLoad = [
+        'bithost-gmbh/pdfviewhelpers',
         'friendsoftypo3/tt-address',
         'jweiland/jobboard',
     ];

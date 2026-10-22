@@ -28,6 +28,7 @@ final class JobAreaToJobAreasMigrationTest extends FunctionalTestCase
     ];
 
     protected array $testExtensionsToLoad = [
+        'bithost-gmbh/pdfviewhelpers',
         'friendsoftypo3/tt-address',
         'jweiland/jobboard',
     ];
