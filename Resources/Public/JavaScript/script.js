@@ -69,13 +69,25 @@
     Cookies.set(cookieName, JSON.stringify(currentJobs));
   });
 
+  // The search form provides the URL of the current page, which passes the
+  // frontend middleware stack (site and language resolved) and is answered by
+  // AddressSearchMiddleware. Overridden templates without this attribute fall
+  // back to the path of the current page. A relative "index.php" must not be
+  // used: it resolves below the current page path and ends up in a 404.
+  function getAddressSearchUrl (addressField) {
+    const url = $(addressField).closest('form').data('jobboard-address-search-url');
+
+    return url ? url : window.location.pathname;
+  }
+
   $('#address').on('keyup', function () {
     let value = $(this).val();
+    const addressSearchUrl = getAddressSearchUrl(this);
 
     $('#address').autocomplete({
       source: function( request, response ) {
         $.ajax( {
-          url: 'index.php',
+          url: addressSearchUrl,
           type: 'POST',
           data: {
             zipCity: value
