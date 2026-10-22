@@ -155,12 +155,12 @@
 				<target>Beginn</target>
 			</trans-unit>
 			<trans-unit id="job.startEndDate.endDate">
-				<source>End Date</source>
-				<target>Ende</target>
+				<source>End of employment</source>
+				<target>Ende der Beschäftigung</target>
 			</trans-unit>
 			<trans-unit id="job.ending_date">
-				<source>Application deadline</source>
-				<target>Bewerbungsfrist</target>
+				<source>End of employment</source>
+				<target>Ende der Beschäftigung</target>
 			</trans-unit>
 			<trans-unit id="job.applicationDeadline">
 				<source>Application deadline</source>

@@ -36,11 +36,11 @@ class JobPoiCollectionViewHelper extends AbstractViewHelper
         foreach ($this->arguments['jobs'] as $job) {
             if ($job->getAddress() && $poiCollection = $job->getAddress()->getTxMaps2Uid()) {
                 $poiCollection->setTitle($job->getTitle());
-                if ($job->getEndingDate() && $job->getJobType()) {
+                if ($job->getApplicationDeadline() && $job->getJobType()) {
                     $poiCollection->setInfoWindowContent(
                         LocalizationUtility::translate('poi_collection.apply_until', 'jobboard')
                         . '&nbsp;'
-                        . $job->getEndingDate()->format('d.m.Y')
+                        . $job->getApplicationDeadline()->format('d.m.Y')
                         . '<br />'
                         . $job->getJobType()->getTitle(),
                     );

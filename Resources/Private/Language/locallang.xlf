@@ -118,10 +118,10 @@
 				<source>Start Date</source>
 			</trans-unit>
 			<trans-unit id="job.startEndDate.endDate">
-				<source>End Date</source>
+				<source>End of employment</source>
 			</trans-unit>
 			<trans-unit id="job.ending_date">
-				<source>Application deadline</source>
+				<source>End of employment</source>
 			</trans-unit>
 			<trans-unit id="job.applicationDeadline">
 				<source>Application deadline</source>

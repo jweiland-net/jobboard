@@ -17,10 +17,12 @@
         </pdf:text>
         <pdf:headline type="title">{job.title}</pdf:headline>
 
-        <pdf:html>
-            <strong><f:translate key="job.ending_date"/>:</strong>
-            <f:format.date format="{f:translate(key:'dateFormat')}">{job.endingDate}</f:format.date>
-        </pdf:html>
+        <f:if condition="{job.applicationDeadline}">
+            <pdf:html>
+                <strong><f:translate key="job.applicationDeadline"/>:</strong>
+                <f:format.date format="{f:translate(key:'dateFormat')}">{job.applicationDeadline}</f:format.date>
+            </pdf:html>
+        </f:if>
 
         <pdf:lineBreak height="5"/>
 

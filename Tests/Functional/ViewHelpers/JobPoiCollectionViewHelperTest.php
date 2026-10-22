@@ -56,7 +56,7 @@ final class JobPoiCollectionViewHelperTest extends FunctionalTestCase
         $address->setTxMaps2Uid(new PoiCollection());
 
         $job = new Job();
-        $job->setTitle('Job without ending date and job type');
+        $job->setTitle('Job without application deadline and job type');
         $job->setAddress($address);
 
         return $job;
@@ -71,9 +71,11 @@ final class JobPoiCollectionViewHelperTest extends FunctionalTestCase
         $jobType->setTitle('Vollzeit');
 
         $job = new Job();
-        $job->setTitle('Job with ending date and job type');
+        $job->setTitle('Job with application deadline and job type');
         $job->setAddress($address);
-        $job->setEndingDate(new \DateTime('2026-12-24'));
+        $job->setApplicationDeadline(new \DateTime('2026-12-24'));
+        // The employment end date must not be shown as "apply until" date
+        $job->setEndingDate(new \DateTime('2027-06-30'));
         $job->setJobType($jobType);
 
         return $job;
@@ -124,13 +126,13 @@ final class JobPoiCollectionViewHelperTest extends FunctionalTestCase
 
         self::assertCount(1, $poiCollections);
         self::assertSame(
-            'Job without ending date and job type',
+            'Job without application deadline and job type',
             $poiCollections->current()->getTitle(),
         );
     }
 
     #[Test]
-    public function renderLeavesInfoWindowContentEmptyWithoutEndingDateAndJobType(): void
+    public function renderLeavesInfoWindowContentEmptyWithoutApplicationDeadlineAndJobType(): void
     {
         $subject = new JobPoiCollectionViewHelper();
         $subject->setArguments(['jobs' => [$this->buildJobWithPoiCollectionOnly()]]);
@@ -141,7 +143,7 @@ final class JobPoiCollectionViewHelperTest extends FunctionalTestCase
     }
 
     #[Test]
-    public function renderSetsInfoWindowContentWithEndingDateAndJobType(): void
+    public function renderSetsInfoWindowContentWithApplicationDeadlineAndJobType(): void
     {
         $subject = new JobPoiCollectionViewHelper();
         $subject->setArguments(['jobs' => [$this->buildJobWithPoiCollectionAndInfoWindowContent()]]);
@@ -150,5 +152,6 @@ final class JobPoiCollectionViewHelperTest extends FunctionalTestCase
 
         self::assertStringContainsString('24.12.2026', $infoWindowContent);
         self::assertStringContainsString('Vollzeit', $infoWindowContent);
+        self::assertStringNotContainsString('30.06.2027', $infoWindowContent);
     }
 }
