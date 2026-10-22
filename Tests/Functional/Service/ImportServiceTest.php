@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace JWeiland\Jobboard\Tests\Functional\Service;
 
+use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Utils;
 use JWeiland\Jobboard\ApiModel\ApiModelInterface;
 use JWeiland\Jobboard\ApiModel\ApiModelTrait;
@@ -47,9 +49,9 @@ final class ImportServiceTest extends FunctionalTestCase
         $GLOBALS['BE_USER']->backendCheckLogin();
     }
 
-    private function buildApiModel(): ApiModelInterface
+    private function buildApiModel(string $name = 'test'): ApiModelInterface
     {
-        return new class () implements ApiModelInterface {
+        $apiModel = new class () implements ApiModelInterface {
             use ApiModelTrait;
 
             private const NAME = 'test';
@@ -65,7 +67,7 @@ final class ImportServiceTest extends FunctionalTestCase
                 'vacancy_id' => [
                     'apiPath' => 'vacancy_id',
                     'isDate' => false,
-                    'default' => 0,
+                    'default' => '',
                     'prefix' => self::NAME,
                 ],
                 'salary_mode' => [
@@ -76,21 +78,96 @@ final class ImportServiceTest extends FunctionalTestCase
             ];
 
             private int $storagePid = 0;
+
+            private string $name = self::NAME;
+
+            public function getName(): string
+            {
+                return $this->name;
+            }
+
+            public function withName(string $name): self
+            {
+                $clonedApiModel = clone $this;
+                $clonedApiModel->name = $name;
+
+                return $clonedApiModel;
+            }
         };
+
+        return $apiModel->withName($name);
     }
 
-    private function buildImportService(string $xmlResponse): ImportService
-    {
+    private function buildImportService(
+        string $xmlResponse,
+        ?LoggerInterface $logger = null,
+    ): ImportService {
         $xmlClient = self::createStub(XmlClient::class);
         $xmlClient->method('sendRequest')->willReturn(new Response(Utils::streamFor($xmlResponse)));
 
+        return $this->buildImportServiceWithXmlClient($xmlClient, [$this->buildApiModel()], $logger);
+    }
+
+    /**
+     * @param ApiModelInterface[] $apiModels
+     */
+    private function buildImportServiceWithXmlClient(
+        XmlClient $xmlClient,
+        array $apiModels,
+        ?LoggerInterface $logger = null,
+    ): ImportService {
         return new ImportService(
             $xmlClient,
             $this->get(JobService::class),
             $this->get(TtAddressService::class),
-            [$this->buildApiModel()],
-            self::createStub(LoggerInterface::class),
+            $apiModels,
+            $logger ?? self::createStub(LoggerInterface::class),
         );
+    }
+
+    private function buildJobXml(string $vacancyId, string $title, bool $withPrimaryLocation = true): string
+    {
+        return '<job>'
+            . '<vacancy_id>' . $vacancyId . '</vacancy_id>'
+            . '<title><de>' . $title . '</de></title>'
+            . '<custom_select_4><de>IT</de></custom_select_4>'
+            . '<custom_select_2><de>Vollzeit</de></custom_select_2>'
+            . '<salary_mode>1</salary_mode>'
+            . '<locations><location primary="' . ($withPrimaryLocation ? 'true' : 'false') . '">'
+            . '<technical_name>location-1</technical_name>'
+            . '<de>Sample Company Ltd.</de>'
+            . '<street>Example Street 1</street>'
+            . '<zipcode>12345</zipcode>'
+            . '<city>Sample Town</city>'
+            . '</location></locations>'
+            . '</job>';
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function getJobRecords(): array
+    {
+        $queryBuilder = $this->get(ConnectionPool::class)->getQueryBuilderForTable('tx_jobboard_domain_model_job');
+        $queryBuilder->getRestrictions()->removeAll();
+
+        return $queryBuilder
+            ->select('uid', 'title', 'vacancy_id', 'deleted')
+            ->from('tx_jobboard_domain_model_job')
+            ->orderBy('uid')
+            ->executeQuery()
+            ->fetchAllAssociative();
+    }
+
+    private function isJobDeleted(int $jobUid): bool
+    {
+        foreach ($this->getJobRecords() as $jobRecord) {
+            if ((int)$jobRecord['uid'] === $jobUid) {
+                return (bool)$jobRecord['deleted'];
+            }
+        }
+
+        self::fail('Job with UID ' . $jobUid . ' does not exist');
     }
 
     #[Test]
@@ -100,19 +177,19 @@ final class ImportServiceTest extends FunctionalTestCase
             '<jobs>
                 <job>
                     <vacancy_id>4711</vacancy_id>
-                    <title><de>Fachkraft (m/w/d)</de></title>
+                    <title><de>Web Developer (m/f/d)</de></title>
                     <custom_select_4><de>IT</de></custom_select_4>
                     <custom_select_2><de>Vollzeit</de></custom_select_2>
                     <salary_mode>1</salary_mode>
-                    <manager_name>Max Mustermann</manager_name>
-                    <manager_email>max@example.org</manager_email>
+                    <manager_name>Jane Doe</manager_name>
+                    <manager_email>jobs@example.org</manager_email>
                     <locations>
                         <location primary="true">
                             <technical_name>loc-1</technical_name>
-                            <de>Example Company GmbH</de>
-                            <street>Bahnhofstrasse 1</street>
-                            <zipcode>76133</zipcode>
-                            <city>Pforzheim</city>
+                            <de>Sample Company Ltd.</de>
+                            <street>Example Street 1</street>
+                            <zipcode>12345</zipcode>
+                            <city>Sample Town</city>
                         </location>
                     </locations>
                 </job>
@@ -133,7 +210,7 @@ final class ImportServiceTest extends FunctionalTestCase
             ->fetchAssociative();
 
         self::assertIsArray($job);
-        self::assertSame('Fachkraft (m/w/d)', $job['title']);
+        self::assertSame('Web Developer (m/f/d)', $job['title']);
         self::assertSame(1, (int)$job['job_areas']);
         self::assertSame(
             [1],
@@ -158,12 +235,12 @@ final class ImportServiceTest extends FunctionalTestCase
             ->fetchAssociative();
 
         self::assertIsArray($address);
-        self::assertSame('Example Company GmbH', $address['company']);
-        self::assertSame('Bahnhofstrasse 1', $address['address']);
-        self::assertSame('76133', $address['zip']);
-        self::assertSame('Pforzheim', $address['city']);
-        self::assertSame('Max Mustermann', $address['name']);
-        self::assertSame('max@example.org', $address['email']);
+        self::assertSame('Sample Company Ltd.', $address['company']);
+        self::assertSame('Example Street 1', $address['address']);
+        self::assertSame('12345', $address['zip']);
+        self::assertSame('Sample Town', $address['city']);
+        self::assertSame('Jane Doe', $address['name']);
+        self::assertSame('jobs@example.org', $address['email']);
         self::assertSame('loc-1', $address['import_key']);
     }
 
@@ -222,5 +299,157 @@ final class ImportServiceTest extends FunctionalTestCase
             ->fetchOne();
 
         self::assertSame(1, (int)$deletedFlag);
+    }
+
+    #[Test]
+    public function importWithInvalidApiEndpointKeepsJobsAndLogsError(): void
+    {
+        $xmlClient = self::createStub(XmlClient::class);
+        $xmlClient->method('sendRequest')->willReturn(null);
+
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects($this->once())
+            ->method('error')
+            ->with(self::stringContains('API endpoint is not a valid URL'));
+
+        $importService = $this->buildImportServiceWithXmlClient($xmlClient, [$this->buildApiModel()], $logger);
+
+        self::assertTrue($importService->import(new ImportConfiguration(2)));
+        self::assertFalse($this->isJobDeleted(1));
+    }
+
+    #[Test]
+    public function importWithFailedRequestKeepsJobsAndLogsError(): void
+    {
+        $xmlClient = self::createStub(XmlClient::class);
+        $xmlClient->method('sendRequest')->willThrowException(
+            new ConnectException('Connection refused', new Request('GET', 'https://example.org/api/jobs.xml')),
+        );
+
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects($this->once())
+            ->method('error')
+            ->with(self::stringContains('Request failed: Connection refused'));
+
+        $importService = $this->buildImportServiceWithXmlClient($xmlClient, [$this->buildApiModel()], $logger);
+
+        self::assertTrue($importService->import(new ImportConfiguration(2)));
+        self::assertFalse($this->isJobDeleted(1));
+    }
+
+    #[Test]
+    public function importWithInvalidXmlKeepsJobsAndLogsError(): void
+    {
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects($this->once())
+            ->method('error')
+            ->with(self::stringContains('Response is not valid XML'));
+
+        $importService = $this->buildImportService('<jobs><job>', $logger);
+
+        self::assertTrue($importService->import(new ImportConfiguration(2)));
+        self::assertFalse($this->isJobDeleted(1));
+    }
+
+    #[Test]
+    public function importWithFailedApiModelStillDeletesNotDeliveredJobsOfOtherApiModels(): void
+    {
+        $this->get(ConnectionPool::class)
+            ->getConnectionForTable('tx_jobboard_domain_model_job')
+            ->insert('tx_jobboard_domain_model_job', [
+                'uid' => 2,
+                'pid' => 2,
+                'title' => 'Job of failing source',
+                'vacancy_id' => 'failing_1',
+            ]);
+
+        $failingApiModel = $this->buildApiModel('failing');
+        $xmlClient = self::createStub(XmlClient::class);
+        $xmlClient->method('sendRequest')->willReturnOnConsecutiveCalls(
+            null,
+            new Response(Utils::streamFor('<jobs></jobs>')),
+        );
+
+        $importService = $this->buildImportServiceWithXmlClient($xmlClient, [$failingApiModel, $this->buildApiModel()]);
+
+        self::assertTrue($importService->import(new ImportConfiguration(2)));
+        self::assertFalse($this->isJobDeleted(2));
+        self::assertTrue($this->isJobDeleted(1));
+    }
+
+    #[Test]
+    public function importUpdatesExistingJobWithNonNumericVacancyIdInsteadOfCreatingANewOne(): void
+    {
+        $importService = $this->buildImportService(
+            '<jobs>' . $this->buildJobXml('AB-0815', 'Web Developer (m/f/d)') . '</jobs>',
+        );
+
+        self::assertTrue($importService->import(new ImportConfiguration(2)));
+        $importService = $this->buildImportService(
+            '<jobs>' . $this->buildJobXml('AB-0815', 'Senior Web Developer (m/f/d)') . '</jobs>',
+        );
+        self::assertTrue($importService->import(new ImportConfiguration(2)));
+
+        $jobRecords = array_values(array_filter(
+            $this->getJobRecords(),
+            static fn(array $jobRecord): bool => $jobRecord['vacancy_id'] === 'test_AB-0815',
+        ));
+        self::assertCount(1, $jobRecords);
+        self::assertSame('Senior Web Developer (m/f/d)', $jobRecords[0]['title']);
+        self::assertSame(0, (int)$jobRecords[0]['deleted']);
+    }
+
+    #[Test]
+    public function importKeepsExistingJobWhichCouldNotBeSaved(): void
+    {
+        // A job without primary location can not be saved, but it was still
+        // delivered by the source and must not be deleted.
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects($this->once())
+            ->method('error')
+            ->with(self::stringContains('vacancy ID "9999"'));
+
+        $importService = $this->buildImportService(
+            '<jobs>' . $this->buildJobXml('9999', 'Old job to be deleted', false) . '</jobs>',
+            $logger,
+        );
+
+        self::assertTrue($importService->import(new ImportConfiguration(2)));
+        self::assertFalse($this->isJobDeleted(1));
+    }
+
+    #[Test]
+    public function importSkipsJobWithoutVacancyId(): void
+    {
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects($this->once())
+            ->method('warning')
+            ->with(self::stringContains('Job without vacancy ID'));
+
+        $importService = $this->buildImportService(
+            '<jobs>' . $this->buildJobXml('', 'Web Developer (m/f/d)') . '</jobs>',
+            $logger,
+        );
+
+        self::assertTrue($importService->import(new ImportConfiguration(2)));
+        self::assertCount(1, $this->getJobRecords());
+    }
+
+    #[Test]
+    public function importLogsDataHandlerErrorWithVacancyId(): void
+    {
+        // Jobs are not allowed on standard pages like page 1, so DataHandler
+        // refuses to insert the job
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects($this->atLeastOnce())
+            ->method('error')
+            ->with(self::stringContains('Internal DataHandler error with vacancy ID "AB-0815"'));
+
+        $importService = $this->buildImportService(
+            '<jobs>' . $this->buildJobXml('AB-0815', 'Web Developer (m/f/d)') . '</jobs>',
+            $logger,
+        );
+
+        self::assertTrue($importService->import(new ImportConfiguration(1)));
     }
 }

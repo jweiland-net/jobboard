@@ -22,6 +22,22 @@ use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 class JobModelTest extends UnitTestCase
 {
     #[Test]
+    public function getVacancyIdReturnsNonNumericVacancyIdAsString(): void
+    {
+        $subject = new JobModel(new \SimpleXMLElement('<job><vacancy_id> AB-0815 </vacancy_id></job>'));
+
+        self::assertSame('AB-0815', $subject->getVacancyId());
+    }
+
+    #[Test]
+    public function getVacancyIdWithoutVacancyIdReturnsEmptyString(): void
+    {
+        $subject = new JobModel(new \SimpleXMLElement('<job><title>Web Developer (m/f/d)</title></job>'));
+
+        self::assertSame('', $subject->getVacancyId());
+    }
+
+    #[Test]
     public function getLocationsReturnsOneLocationModelPerLocation(): void
     {
         $subject = new JobModel(new \SimpleXMLElement(
@@ -61,7 +77,7 @@ class JobModelTest extends UnitTestCase
     {
         $subject = new JobModel(new \SimpleXMLElement(
             '<job>
-                <vacancy_id>4711</vacancy_id>
+                <vacancy_id>AB-0815</vacancy_id>
                 <locations>
                     <location primary="false"><technical_name>loc1</technical_name></location>
                 </locations>
@@ -70,6 +86,7 @@ class JobModelTest extends UnitTestCase
 
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionCode(1751531883);
+        $this->expectExceptionMessage('No primary location found for vacancy ID: AB-0815');
 
         $subject->getPrimaryLocation();
     }

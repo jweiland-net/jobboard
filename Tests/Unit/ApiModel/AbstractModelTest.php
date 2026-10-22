@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace JWeiland\Jobboard\Tests\Unit\ApiModel;
 
 use JWeiland\Jobboard\ApiModel\AbstractModel;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
@@ -111,15 +112,59 @@ class AbstractModelTest extends UnitTestCase
     }
 
     #[Test]
-    public function getValueByPathWithNonExistingPathReturnsEmptyString(): void
+    public function getValueByPathWithNonExistingPathReturnsDefault(): void
     {
         $subject = $this->buildSubject('<job><title>Foo</title></job>');
 
-        // xpath() returns an empty array (not false) for a path that simply
-        // does not match anything, so current() on it is false and casts to
-        // '' - the $default is never reached in this case, only on an
-        // actually invalid xpath expression (see next test).
-        self::assertSame('', $subject->getValueByPath('does/not/exist', 'string', 'fallback'));
+        self::assertSame('fallback', $subject->getValueByPath('does/not/exist', 'string', 'fallback'));
+        self::assertSame(42, $subject->getValueByPath('does/not/exist', 'int', 42));
+    }
+
+    public static function emptyValueOfDataTypeDataProvider(): array
+    {
+        return [
+            'string' => ['string', ''],
+            'int' => ['int', 0],
+            'bool' => ['bool', false],
+            'float' => ['float', 0.0],
+            'native' => ['native', []],
+            'array' => ['array', []],
+        ];
+    }
+
+    #[Test]
+    #[DataProvider('emptyValueOfDataTypeDataProvider')]
+    public function getValueByPathWithNonExistingPathAndWithoutDefaultReturnsEmptyValueOfDataType(
+        string $dataType,
+        mixed $expectedValue,
+    ): void {
+        $subject = $this->buildSubject('<job><title>Foo</title></job>');
+
+        self::assertSame($expectedValue, $subject->getValueByPath('does/not/exist', $dataType));
+    }
+
+    #[Test]
+    public function getValueByPathWithExistingEmptyElementReturnsEmptyValueInsteadOfDefault(): void
+    {
+        $subject = $this->buildSubject('<job><title></title></job>');
+
+        self::assertSame('', $subject->getValueByPath('title', 'string', 'fallback'));
+    }
+
+    #[Test]
+    public function hasPathWithExistingElementReturnsTrue(): void
+    {
+        $subject = $this->buildSubject('<job><title></title></job>');
+
+        self::assertTrue($subject->hasPath('title'));
+    }
+
+    #[Test]
+    public function hasPathWithNonExistingElementReturnsFalse(): void
+    {
+        $subject = $this->buildSubject('<job><title>Foo</title></job>');
+
+        self::assertFalse($subject->hasPath('does/not/exist'));
     }
 
     #[Test]

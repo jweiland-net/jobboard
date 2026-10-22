@@ -15,6 +15,8 @@
 ,"uid","pid","title","vacancy_id","address","job_areas","job_type"
 ,1,2,"Existing imported job","test_4711",0,1,1
 ,2,2,"Job without vacancy id","",0,1,1
+,3,2,"Existing imported job with non-numeric vacancy id","test_AB-0815",0,1,1
+,4,2,"Job of another API model","other_4711",0,1,1
 
 "tx_jobboard_job_jobarea_mm"
 ,"uid_local","uid_foreign","sorting","sorting_foreign"

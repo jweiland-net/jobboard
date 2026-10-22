@@ -230,10 +230,10 @@ class JobTest extends UnitTestCase
     }
 
     #[Test]
-    public function getVacancyIdInitiallyReturnsZero(): void
+    public function getVacancyIdInitiallyReturnsEmptyString(): void
     {
         self::assertSame(
-            0,
+            '',
             $this->subject->getVacancyId(),
         );
     }
@@ -241,10 +241,10 @@ class JobTest extends UnitTestCase
     #[Test]
     public function setVacancyIdSetsVacancyId(): void
     {
-        $this->subject->setVacancyId(12345);
+        $this->subject->setVacancyId('example_4711');
 
         self::assertSame(
-            12345,
+            'example_4711',
             $this->subject->getVacancyId(),
         );
     }

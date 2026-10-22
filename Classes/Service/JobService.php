@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace JWeiland\Jobboard\Service;
 
 use Doctrine\DBAL\Driver\Exception;
+use JWeiland\Jobboard\ApiModel\ApiMapping;
 use JWeiland\Jobboard\ApiModel\ApiModelInterface;
 use JWeiland\Jobboard\ApiModel\JobModel;
 use JWeiland\Jobboard\Configuration\ImportConfiguration;
@@ -35,9 +36,10 @@ readonly class JobService
     ) {}
 
     /**
+     * @param string $vacancyId ID of the job in the source, without prefix
      * @return int|string INT, if a record was found. STRING: creates NEW[hash] to store new record
      */
-    public function getJobUid(int $vacancyId, ApiModelInterface $apiModel): string|int
+    public function getJobUid(string $vacancyId, ApiModelInterface $apiModel): string|int
     {
         $queryBuilder = $this->getQueryBuilderForTable(self::TABLE);
 
@@ -61,6 +63,40 @@ readonly class JobService
             : (int)$jobRecord['uid'];
     }
 
+    /**
+     * Returns the UIDs of all jobs in the storage folder of the API model,
+     * which were imported from this API model ("<NAME>_<vacancy ID>").
+     *
+     * @return int[]
+     */
+    public function getJobUidsOfApiModel(ApiModelInterface $apiModel): array
+    {
+        $queryBuilder = $this->getQueryBuilderForTable(self::TABLE);
+        $vacancyIdPrefix = $queryBuilder->escapeLikeWildcards($apiModel->getName() . '_');
+
+        try {
+            $jobUids = $queryBuilder
+                ->select('uid')
+                ->from(self::TABLE)
+                ->where(
+                    $queryBuilder->expr()->eq(
+                        'pid',
+                        $queryBuilder->createNamedParameter($apiModel->getStoragePid(), Connection::PARAM_INT),
+                    ),
+                    $queryBuilder->expr()->like(
+                        'vacancy_id',
+                        $queryBuilder->createNamedParameter($vacancyIdPrefix . '%'),
+                    ),
+                )
+                ->executeQuery()
+                ->fetchFirstColumn();
+        } catch (\Doctrine\DBAL\Exception) {
+            return [];
+        }
+
+        return array_map(intval(...), $jobUids);
+    }
+
     public function getPreparedJobByImportedJob(JobModel $importedJob, ApiModelInterface $apiModel): array
     {
         $preparedJob = [
@@ -75,21 +111,36 @@ readonly class JobService
         ];
 
         foreach ($apiModel->getMapping() as $dbColumn => $apiMapping) {
-            try {
-                $valueFromAPI = $importedJob->getValueByPath($apiMapping->getApiPath());
-                if ($apiMapping->isDate()) {
-                    $valueFromAPI = $this->getDateAsTimestamp($valueFromAPI);
-                }
-                if ($apiMapping->getPrefix() !== '') {
-                    $valueFromAPI = $apiMapping->getPrefix() . '_' . $valueFromAPI;
-                }
-                $preparedJob[$dbColumn] = $valueFromAPI;
-            } catch (\RuntimeException|\InvalidArgumentException) {
-                $preparedJob[$dbColumn] = $apiMapping->getDefault();
-            }
+            $preparedJob[$dbColumn] = $this->getMappedValue($importedJob, $apiMapping);
         }
 
         return $preparedJob;
+    }
+
+    /**
+     * The "default" of the mapping is used as it is, if the XML element is
+     * missing or its value can not be converted (e.g. a date in an unknown
+     * format). An existing, but empty XML element is not missing.
+     */
+    private function getMappedValue(JobModel $importedJob, ApiMapping $apiMapping): int|string
+    {
+        if (!$importedJob->hasPath($apiMapping->getApiPath())) {
+            return $apiMapping->getDefault();
+        }
+
+        try {
+            $valueFromApi = $importedJob->getValueByPath($apiMapping->getApiPath());
+            if ($apiMapping->isDate()) {
+                $valueFromApi = $this->getDateAsTimestamp($valueFromApi);
+            }
+            if ($apiMapping->getPrefix() !== '') {
+                $valueFromApi = $apiMapping->getPrefix() . '_' . $valueFromApi;
+            }
+        } catch (\RuntimeException|\InvalidArgumentException) {
+            $valueFromApi = $apiMapping->getDefault();
+        }
+
+        return $valueFromApi;
     }
 
     /**

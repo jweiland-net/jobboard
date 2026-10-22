@@ -18,10 +18,12 @@ use JWeiland\Jobboard\Client\XmlClient;
 use JWeiland\Jobboard\Configuration\ImportConfiguration;
 use JWeiland\Jobboard\Traits\ConnectionPoolTrait;
 use JWeiland\Jobboard\Traits\DataHandlerTrait;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 
 /**
- * This service imports jobs from the XML API endpoint of MHM HR.
+ * This service imports jobs from the XML API endpoints of all registered
+ * API models (services tagged with "api.model").
  */
 readonly class ImportService
 {
@@ -36,40 +38,63 @@ readonly class ImportService
         private LoggerInterface $logger,
     ) {}
 
+    /**
+     * Imported jobs, which were not delivered by their API model anymore,
+     * are deleted after all API models have been processed. If the jobs of
+     * an API model could not be fetched completely, all its jobs are kept.
+     */
     public function import(ImportConfiguration $importConfiguration): bool
     {
-        $initialImportStatusOfAlreadyImportedJobs = $this->jobService->getInitialImportStatusOfAlreadyImportedJobs(
-            $importConfiguration,
-        );
+        $importStatus = $this->jobService->getInitialImportStatusOfAlreadyImportedJobs($importConfiguration);
 
         foreach ($this->getApiModels($importConfiguration) as $apiModel) {
-            $jobModelsFromApiEndpoint = $this->getJobModelsFromApiEndpoint($apiModel->getApiEndpoint());
-            if ($jobModelsFromApiEndpoint === []) {
-                continue;
-            }
+            $jobModels = $this->getJobModelsFromApiEndpoint($apiModel);
+            $jobUids = $jobModels === null
+                ? $this->jobService->getJobUidsOfApiModel($apiModel)
+                : $this->importJobModels($jobModels, $apiModel);
 
-            foreach ($jobModelsFromApiEndpoint as $jobModel) {
-                $jobUidOrNew = $this->jobService->getJobUid(
-                    $jobModel->getValueByPath('vacancy_id', 'int', 0),
-                    $apiModel,
-                );
-
-                if (($realJobUid = $this->saveImportedJob($jobModel, $jobUidOrNew, $apiModel)) === null) {
-                    continue;
-                }
-
-                $initialImportStatusOfAlreadyImportedJobs[$realJobUid] = true;
+            foreach ($jobUids as $jobUid) {
+                $importStatus[$jobUid] = true;
             }
         }
 
-        $this->deleteAlreadyImportedJobsNotInImport(
-            $this->getNotImportedVacancyIds($initialImportStatusOfAlreadyImportedJobs),
-        );
+        $this->deleteAlreadyImportedJobsNotInImport($this->getNotImportedVacancyIds($importStatus));
 
-        // Cache Clear is not needed as we are using DataHandler to store the records,
-        // and on page 28535 we have added a TCEMAIN.clearCacheCmd to Page TSconfig.
+        // Cache Clear is not needed as we are using DataHandler to store the
+        // records. Configure TCEMAIN.clearCacheCmd for the storage folder.
 
         return true;
+    }
+
+    /**
+     * Returns the UIDs of all jobs delivered by the API model. That includes
+     * existing jobs, which could not be updated, as they still exist in the
+     * API and must not be deleted.
+     *
+     * @param JobModel[] $jobModels
+     * @return int[]
+     */
+    private function importJobModels(array $jobModels, ApiModelInterface $apiModel): array
+    {
+        $jobUids = [];
+        foreach ($jobModels as $jobModel) {
+            if ($jobModel->getVacancyId() === '') {
+                $this->logger->warning(sprintf('Job without vacancy ID of API model "%s" skipped', $apiModel->getName()));
+                continue;
+            }
+
+            $jobUidOrNew = $this->jobService->getJobUid($jobModel->getVacancyId(), $apiModel);
+            $jobUid = $this->saveImportedJob($jobModel, $jobUidOrNew, $apiModel);
+            if ($jobUid === null && is_int($jobUidOrNew)) {
+                $jobUid = $jobUidOrNew;
+            }
+
+            if ($jobUid !== null) {
+                $jobUids[] = $jobUid;
+            }
+        }
+
+        return $jobUids;
     }
 
     /**
@@ -99,8 +124,8 @@ readonly class ImportService
             if ($dataHandler->errorLog !== []) {
                 foreach ($dataHandler->errorLog as $errorLog) {
                     $this->logger->error(sprintf(
-                        'Internal DataHandler error with vacancy_id %d: %s',
-                        $importedJob['vacancy_id'] ?? 0,
+                        'Internal DataHandler error with vacancy ID "%s": %s',
+                        $importedJob->getVacancyId(),
                         $errorLog,
                     ));
                 }
@@ -112,8 +137,8 @@ readonly class ImportService
         } catch (\Exception $exception) {
             $this->logger->error(
                 sprintf(
-                    'Error while processing via DataHandler for job with vacancy ID: %d: %s',
-                    $importedJob->getValueByPath('vacancy_id', 'int', 0),
+                    'Error while processing via DataHandler for job with vacancy ID "%s": %s',
+                    $importedJob->getVacancyId(),
                     $exception->getMessage(),
                 ),
                 [
@@ -180,27 +205,65 @@ readonly class ImportService
     }
 
     /**
-     * @return JobModel[]
+     * Returns null, if the jobs could not be fetched completely. An empty
+     * array means: the API model delivered valid XML without any job.
+     *
+     * @return JobModel[]|null
      */
-    private function getJobModelsFromApiEndpoint(string $endpoint): array
+    private function getJobModelsFromApiEndpoint(ApiModelInterface $apiModel): ?array
     {
-        try {
-            $response = $this->xmlClient->sendRequest($endpoint);
-
-            $xml = simplexml_load_string((string)$response->getBody());
-            if ($xml === false) {
-                return [];
-            }
-
-            $publications = [];
-            foreach ($xml->children() as $publication) {
-                $publications[] = new JobModel($publication);
-            }
-
-            return $publications;
-        } catch (GuzzleException) {
+        $xml = $this->fetchXml($apiModel);
+        if (!$xml instanceof \SimpleXMLElement) {
+            return null;
         }
 
-        return [];
+        $jobModels = [];
+        foreach ($xml->children() as $publication) {
+            $jobModels[] = new JobModel($publication);
+        }
+
+        return $jobModels;
+    }
+
+    private function fetchXml(ApiModelInterface $apiModel): ?\SimpleXMLElement
+    {
+        try {
+            $response = $this->xmlClient->sendRequest($apiModel->getApiEndpoint());
+        } catch (GuzzleException $exception) {
+            $this->logFetchError($apiModel, 'Request failed: ' . $exception->getMessage());
+            return null;
+        }
+
+        if (!$response instanceof ResponseInterface) {
+            $this->logFetchError($apiModel, 'API endpoint is not a valid URL');
+            return null;
+        }
+
+        $xml = $this->parseXml((string)$response->getBody());
+        if (!$xml instanceof \SimpleXMLElement) {
+            $this->logFetchError($apiModel, 'Response is not valid XML');
+        }
+
+        return $xml;
+    }
+
+    private function parseXml(string $xmlString): ?\SimpleXMLElement
+    {
+        $useInternalErrors = libxml_use_internal_errors(true);
+        $xml = simplexml_load_string($xmlString);
+        libxml_clear_errors();
+        libxml_use_internal_errors($useInternalErrors);
+
+        return $xml instanceof \SimpleXMLElement ? $xml : null;
+    }
+
+    private function logFetchError(ApiModelInterface $apiModel, string $reason): void
+    {
+        $this->logger->error(sprintf(
+            'Jobs of API model "%s" could not be fetched from "%s". Its jobs are kept. %s',
+            $apiModel->getName(),
+            $apiModel->getApiEndpoint(),
+            $reason,
+        ));
     }
 }
