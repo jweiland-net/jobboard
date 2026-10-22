@@ -28,6 +28,7 @@ use TYPO3Fluid\Fluid\View\TemplateView;
 final class JobPoiCollectionViewHelperTest extends FunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
+        'bithost-gmbh/pdfviewhelpers',
         'friendsoftypo3/tt-address',
         'jweiland/maps2',
         'jweiland/jobboard',

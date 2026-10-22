@@ -46,6 +46,7 @@ class JobRepositorySearchTest extends FunctionalTestCase
     protected JobRepository $subject;
 
     protected array $testExtensionsToLoad = [
+        'bithost-gmbh/pdfviewhelpers',
         'friendsoftypo3/tt-address',
         'jweiland/jobboard',
     ];

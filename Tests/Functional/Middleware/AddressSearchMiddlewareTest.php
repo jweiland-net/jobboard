@@ -31,6 +31,7 @@ class AddressSearchMiddlewareTest extends FunctionalTestCase
     protected AddressSearchMiddleware $subject;
 
     protected array $testExtensionsToLoad = [
+        'bithost-gmbh/pdfviewhelpers',
         'friendsoftypo3/tt-address',
         'jweiland/jobboard',
     ];

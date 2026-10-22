@@ -28,6 +28,7 @@ final class SalaryGradeToSalaryGradesMigrationTest extends FunctionalTestCase
     ];
 
     protected array $testExtensionsToLoad = [
+        'bithost-gmbh/pdfviewhelpers',
         'friendsoftypo3/tt-address',
         'jweiland/jobboard',
     ];

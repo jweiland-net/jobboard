@@ -19,6 +19,7 @@ $EM_CONF[$_EXTKEY] = [
         'depends' => [
             'typo3' => '13.4.34-13.4.99',
             'tt_address' => '*',
+            'pdfviewhelpers' => '*',
         ],
         'conflicts' => [
         ],
