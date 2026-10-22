@@ -1,4 +1,7 @@
-(function () {
+// Uses the jQuery shipped with the job board (see JobListAssets.html), which
+// jQuery UI and DataTables were attached to. noConflict(true) restores the
+// globals "jQuery" and "$" of a jQuery the site may have loaded before.
+(function ($) {
   'use strict';
 
   // Resolve sibling resources relative to this script's own (possibly hashed/rewritten) URL,
@@ -56,7 +59,7 @@
       }
     } else {
       if (currentJobs.indexOf(jobUid) !== -1) {
-        currentJobs = jQuery.grep(currentJobs, function (value) {
+        currentJobs = $.grep(currentJobs, function (value) {
           return value !== jobUid;
         });
         highlightJobInDatatable(jobUid, false);
@@ -89,4 +92,4 @@
       minLength: 3
     });
   });
-}());
+}(window.jQuery.noConflict(true)));
