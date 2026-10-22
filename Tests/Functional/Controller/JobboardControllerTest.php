@@ -38,7 +38,6 @@ final class JobboardControllerTest extends FunctionalTestCase
 
     protected array $testExtensionsToLoad = [
         'friendsoftypo3/tt-address',
-        'jweiland/maps2',
         'jweiland/jobboard',
     ];
 
@@ -84,11 +83,9 @@ final class JobboardControllerTest extends FunctionalTestCase
             }
             plugin.tx_jobboard.view {
                 templateRootPaths.0 = EXT:jobboard/Resources/Private/Templates/
-                templateRootPaths.1 = EXT:maps2/Resources/Private/Templates/
                 partialRootPaths.0 = EXT:jobboard/Resources/Private/Partials/
-                partialRootPaths.1 = EXT:maps2/Resources/Private/Partials/
+                partialRootPaths.2 = EXT:maps2/Resources/Private/Partials/
                 layoutRootPaths.0 = EXT:jobboard/Resources/Private/Layouts/
-                layoutRootPaths.1 = EXT:maps2/Resources/Private/Layouts/
             }
             plugin.tx_jobboard.persistence.storagePid = 2
             plugin.tx_jobboard.ignoreFlexFormSettingsIfEmpty = showJobAreaCount
@@ -368,5 +365,16 @@ final class JobboardControllerTest extends FunctionalTestCase
     public function listActionKeepsPageTitle(): void
     {
         self::assertStringContainsString('<title>Root</title>', $this->fetchListPageBody());
+    }
+
+    #[Test]
+    public function listActionRendersJobsWithoutMapIfMaps2IsNotInstalled(): void
+    {
+        // EXT:maps2 is not loaded in this test case. The list must render
+        // without the map instead of failing on the missing maps2 partial.
+        $body = $this->fetchListPageBody();
+
+        self::assertStringContainsString('Job with visible stepped grade', $body);
+        self::assertStringNotContainsString('maps2', $body);
     }
 }

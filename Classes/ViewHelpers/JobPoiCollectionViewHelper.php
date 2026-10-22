@@ -16,6 +16,11 @@ use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
+/**
+ * Collects the PoiCollections of EXT:maps2 of all given jobs to show them
+ * as markers on a map. EXT:maps2 is optional: without it, no address has a
+ * PoiCollection and an empty ObjectStorage is returned.
+ */
 class JobPoiCollectionViewHelper extends AbstractViewHelper
 {
     public function initializeArguments(): void
