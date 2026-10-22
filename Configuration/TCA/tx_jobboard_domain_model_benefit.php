@@ -33,16 +33,20 @@ return [
     ],
     'types' => [
         0 => [
-            'showitem' => '
-                --palette--;;titleColor,
-                description,
+            'showitem' => '--palette--;;languageHidden, l10n_diffsource,
+                --palette--;;titleColor, description,
                 --div--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_benefit.media,
                 image,
-            ',
+                --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_tca.xlf:pages.tabs.access,
+                --palette--;LLL:EXT:frontend/Resources/Private/Language/locallang_tca.xlf:pages.palettes.access;access',
         ],
     ],
     'palettes' => [
+        'languageHidden' => ['showitem' => 'sys_language_uid, l10n_parent, hidden'],
         'titleColor' => ['showitem' => 'title, color'],
+        'access' => [
+            'showitem' => 'starttime;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:starttime_formlabel,endtime;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:endtime_formlabel',
+        ],
     ],
     'columns' => [
         'title' => [
