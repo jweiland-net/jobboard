@@ -1,0 +1,37 @@
+<html lang="en"
+      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+<f:layout name="Default"/>
+
+<f:comment>
+    Uncached action: "jobs" (limited, ordered by application deadline) and
+    "rememberedJobs" (UIDs as keys) belong to the current visitor, so the
+    checkboxes can be rendered checked here. data-jobboard-remembered-view
+    tells remember-jobs.js to grey out unchecked rows (until the next page
+    load) instead of highlighting checked rows.
+</f:comment>
+<f:section name="main">
+    <f:render partial="JobListAssets"/>
+    <f:render partial="RememberedJobs/Feedback"/>
+    <f:flashMessages/>
+
+    <section class="jobboard-remembered-jobs" data-jobboard-remembered-view>
+        <h2 class="mb-3">{f:translate(key: 'rememberedJobs.header')}</h2>
+
+        <f:if condition="{jobs}">
+            <f:then>
+                <p class="text-body-secondary">{f:translate(key: 'rememberedJobs.description')}</p>
+                <f:render partial="Types/Table" arguments="{objects: jobs, rememberedJobs: rememberedJobs}"/>
+            </f:then>
+            <f:else>
+                <p class="alert alert-info" role="status">{f:translate(key: 'rememberedJobs.empty')}</p>
+            </f:else>
+        </f:if>
+
+        <p class="mt-4 mb-0">
+            <f:link.action action="list" class="btn btn-outline-primary">{f:translate(key: 'rememberedJobs.backToList')}</f:link.action>
+        </p>
+    </section>
+</f:section>
+</html>

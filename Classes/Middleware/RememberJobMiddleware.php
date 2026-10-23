@@ -11,8 +11,11 @@ declare(strict_types=1);
 
 namespace JWeiland\Jobboard\Middleware;
 
+use JWeiland\Jobboard\Database\Query\JobLanguageConstraint;
+use JWeiland\Jobboard\Database\Query\Restriction\OpenJobRestriction;
 use JWeiland\Jobboard\Domain\Model\RememberedJobs;
 use JWeiland\Jobboard\Service\RememberedJobsServiceInterface;
+use JWeiland\Jobboard\Service\StoragePidResolverInterface;
 use JWeiland\Jobboard\Traits\ConnectionPoolTrait;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -20,10 +23,9 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Core\Database\Connection;
-use TYPO3\CMS\Core\Domain\Repository\PageRepository;
+use TYPO3\CMS\Core\Database\Query\Expression\CompositeExpression;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Http\JsonResponse;
-use TYPO3\CMS\Core\Site\Entity\Site;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Remembers a job for the current visitor or forgets it again. Answers POST
@@ -31,9 +33,15 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * (job UID of the default language) and "remember" ("1" or "0") with the
  * UIDs of all remembered jobs as JSON: {"rememberedJobs": [12, 7]}.
  *
- * Only jobs that exist and are visible in the pages of the site setting
- * "jobboard.storagePid" can be remembered. The jobs are stored in the session
- * of the TYPO3 frontend user, see RememberedJobsService. Does not use Extbase.
+ * A POST request with the header and an empty body only reads: it answers
+ * the remembered jobs the same way, but never creates or writes a session.
+ * The cached job list uses it to check the remembered jobs by JavaScript.
+ *
+ * Only jobs that exist and are listed in the pages of the site setting
+ * "jobboard.storagePid" (see StoragePidResolver) in the site language of the
+ * request can be remembered. The jobs
+ * are stored in the session of the TYPO3 frontend user, see
+ * RememberedJobsService. Does not use Extbase.
  */
 #[Autoconfigure(public: true)]
 final readonly class RememberJobMiddleware implements MiddlewareInterface
@@ -44,13 +52,9 @@ final readonly class RememberJobMiddleware implements MiddlewareInterface
 
     private const TABLE = 'tx_jobboard_domain_model_job';
 
-    /**
-     * Same depth as "plugin.tx_jobboard.persistence.recursive" of the site set
-     */
-    private const STORAGE_DEPTH = 3;
-
     public function __construct(
         private RememberedJobsServiceInterface $rememberedJobsService,
+        private StoragePidResolverInterface $storagePidResolver,
     ) {}
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -61,12 +65,20 @@ final readonly class RememberJobMiddleware implements MiddlewareInterface
 
         // Reject before the session is read: no remembered jobs for other methods
         if ($request->getMethod() !== 'POST') {
-            return (new JsonResponse(['error' => 'methodNotAllowed'], 405))->withHeader('Allow', 'POST');
+            return (new JsonResponse(['error' => 'methodNotAllowed'], 405))
+                ->withHeader('Allow', 'POST')
+                ->withHeader('Cache-Control', 'no-store');
         }
 
         // @todo TYPO3 14: limit requests per IP with the native
         //       RateLimiterFactoryInterface::createRequestBasedLimiter()
         $rememberedJobs = $this->rememberedJobsService->getRememberedJobs($request);
+        if ($this->getParsedBody($request) === []) {
+            // Never writes the session, but answers the listed jobs only, so
+            // the count badge matches the remembered jobs view
+            return $this->createResponse($this->getVisibleRememberedJobs($request, $rememberedJobs));
+        }
+
         $jobUid = $this->getJobUidFromRequest($request);
         $remember = $this->getRememberFromRequest($request);
         if ($jobUid === 0 || $remember === null) {
@@ -75,7 +87,22 @@ final readonly class RememberJobMiddleware implements MiddlewareInterface
 
         return $remember
             ? $this->rememberJob($request, $rememberedJobs, $jobUid)
-            : $this->storeAndRespond($request, $rememberedJobs, $rememberedJobs->without($jobUid));
+            : $this->storeAndRespond(
+                $request,
+                $rememberedJobs,
+                $this->getVisibleRememberedJobs($request, $rememberedJobs->without($jobUid)),
+            );
+    }
+
+    /**
+     * Without jobs, which are not listed anymore (e.g. the application
+     * deadline has passed). Same visibility as the remembered jobs view.
+     */
+    private function getVisibleRememberedJobs(ServerRequestInterface $request, RememberedJobs $rememberedJobs): RememberedJobs
+    {
+        $uids = $rememberedJobs->getUids();
+
+        return $uids === [] ? $rememberedJobs : $rememberedJobs->intersect($this->getVisibleJobUids($request, $uids));
     }
 
     /**
@@ -123,7 +150,8 @@ final readonly class RememberJobMiddleware implements MiddlewareInterface
             $data['error'] = $error;
         }
 
-        return new JsonResponse($data, $status);
+        // Data of the current visitor: must never be stored by any cache
+        return (new JsonResponse($data, $status))->withHeader('Cache-Control', 'no-store');
     }
 
     /**
@@ -164,63 +192,59 @@ final readonly class RememberJobMiddleware implements MiddlewareInterface
     }
 
     /**
-     * Returns the given job UIDs, which belong to visible jobs of the default
-     * language in the storage pages of the current site. Hidden, deleted,
-     * scheduled and access-restricted jobs are excluded by the frontend
-     * restrictions of the QueryBuilder.
+     * Returns the given job UIDs (default language), whose jobs are listed in
+     * the site language of the request: the same jobs as
+     * JobRepository::findByUids() returns for the remembered jobs view. The
+     * job rows are selected with the language statement of Extbase
+     * (JobLanguageConstraint) in the storage pages of the current site.
+     * Hidden, deleted, scheduled and access-restricted jobs are excluded by
+     * the frontend restrictions of the QueryBuilder, expired jobs and jobs
+     * without salary information by OpenJobRestriction - both checked on the
+     * selected row, i.e. on the translation, like Extbase does.
      *
      * @param int[] $jobUids
      * @return int[]
      */
     private function getVisibleJobUids(ServerRequestInterface $request, array $jobUids): array
     {
-        $storagePids = $this->getStoragePids($request);
+        $storagePids = $this->storagePidResolver->getStoragePids($request);
         if ($storagePids === []) {
             return [];
         }
 
         $queryBuilder = $this->getQueryBuilderForTable(self::TABLE);
+        $queryBuilder->getRestrictions()->add(OpenJobRestriction::forToday());
         $queryBuilder
-            ->select('uid')
+            ->select('uid', 'l10n_parent')
             ->from(self::TABLE)
             ->where(
-                $queryBuilder->expr()->in(
-                    'uid',
-                    $queryBuilder->createNamedParameter($jobUids, Connection::PARAM_INT_ARRAY),
-                ),
+                $this->buildUidConstraint($queryBuilder, $jobUids),
                 $queryBuilder->expr()->in(
                     'pid',
                     $queryBuilder->createNamedParameter($storagePids, Connection::PARAM_INT_ARRAY),
                 ),
-                $queryBuilder->expr()->in(
-                    'sys_language_uid',
-                    $queryBuilder->createNamedParameter([0, -1], Connection::PARAM_INT_ARRAY),
-                ),
+                JobLanguageConstraint::fromRequest($request)->buildExpression($queryBuilder),
             );
 
-        return array_map(intval(...), $queryBuilder->executeQuery()->fetchFirstColumn());
+        $rows = $queryBuilder->executeQuery()->fetchAllAssociative();
+
+        return array_values(array_unique(array_map(JobLanguageConstraint::getDefaultLanguageUid(...), $rows)));
     }
 
     /**
-     * Reads "jobboard.storagePid" from the Site Settings instead of accepting it
-     * from the request, so the pages of remembered jobs can not be widened by a
-     * manipulated request. Includes sub pages like the plugin does.
+     * The default record (uid) or its translations (l10n_parent), like
+     * JobRepository::findByUids(). The language constraint selects one row
+     * per job at most.
      *
-     * @return int[]
+     * @param int[] $jobUids
      */
-    private function getStoragePids(ServerRequestInterface $request): array
+    private function buildUidConstraint(QueryBuilder $queryBuilder, array $jobUids): CompositeExpression
     {
-        $site = $request->getAttribute('site');
-        if (!$site instanceof Site) {
-            return [];
-        }
+        $jobUidsParameter = $queryBuilder->createNamedParameter($jobUids, Connection::PARAM_INT_ARRAY);
 
-        $storagePids = array_filter(
-            GeneralUtility::intExplode(',', (string)$site->getSettings()->get('jobboard.storagePid', '0'), true),
-            static fn(int $storagePid): bool => $storagePid > 0,
+        return $queryBuilder->expr()->or(
+            $queryBuilder->expr()->in('uid', $jobUidsParameter),
+            $queryBuilder->expr()->in('l10n_parent', $jobUidsParameter),
         );
-
-        return GeneralUtility::makeInstance(PageRepository::class)
-            ->getPageIdsRecursive(array_values($storagePids), self::STORAGE_DEPTH);
     }
 }

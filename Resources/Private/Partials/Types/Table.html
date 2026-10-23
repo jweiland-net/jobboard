@@ -3,7 +3,12 @@
       data-namespace-typo3-fluid="true">
 
 <f:comment>
-    rememberedJobs: UIDs of the jobs remembered by the visitor as keys.
+    objects: jobs to render.
+    rememberedJobs (optional): UIDs of the jobs remembered by the visitor as
+    keys, renders their checkboxes checked. Pass it from uncached actions only
+    (rememberedJobs). List is cached, so List and Search render the same
+    markup for every visitor: there remember-jobs.js checks the boxes and adds
+    "highlight-row" after asking RememberJobMiddleware.
     data-jobboard-remember-url: endpoint of remember-jobs.js (answered by
     RememberJobMiddleware). Rendered as URL of the current page, so it always
     resolves to this site and language.
@@ -26,7 +31,7 @@
         <f:variable name="dateFormat" value="{f:translate(key: 'dateFormat')}"/>
         <f:for each="{objects}" as="job">
             <f:variable name="isRemembered" value="{f:if(condition: '{rememberedJobs.{job.uid}}', then: 1, else: 0)}"/>
-            <tr data-jobboard-uid="{job.uid}"{f:if(condition: isRemembered, then: ' class="highlight-row"')}>
+            <tr data-jobboard-uid="{job.uid}">
                 <f:render partial="Job/TitleLink" arguments="{job: job}"/>
                 <f:render partial="Types/Date" arguments="{value: job.applicationDeadline, format: dateFormat}"/>
                 <f:render partial="Types/Text" arguments="{value: job.address.zip}"/>
