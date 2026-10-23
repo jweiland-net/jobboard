@@ -3,16 +3,16 @@
       data-namespace-typo3-fluid="true">
 
 <div class="table-responsive">
-    <table class="jobboard-table">
+    <table class="jobboard-table table table-hover align-middle">
         <thead>
         <tr>
-            <th>{f:translate(key: 'job.title')}</th>
-            <th>{f:translate(key: 'job.applicationDeadline')}</th>
-            <th>{f:translate(key: 'job.address.zip')}</th>
-            <th>{f:translate(key: 'job.address.city')}</th>
-            <th>{f:translate(key: 'job.employer')}</th>
-            <th>{f:translate(key: 'job.job_type.title')}</th>
-            <th>{f:translate(key: 'remember')}</th>
+            <th scope="col">{f:translate(key: 'job.title')}</th>
+            <th scope="col">{f:translate(key: 'job.applicationDeadline')}</th>
+            <th scope="col">{f:translate(key: 'job.address.zip')}</th>
+            <th scope="col">{f:translate(key: 'job.address.city')}</th>
+            <th scope="col">{f:translate(key: 'job.employer')}</th>
+            <th scope="col">{f:translate(key: 'job.job_type.title')}</th>
+            <th scope="col" class="text-center">{f:translate(key: 'remember')}</th>
         </tr>
         </thead>
 
@@ -26,7 +26,7 @@
                 <f:render partial="Types/Text" arguments="{value: job.address.city}"/>
                 <f:render partial="Types/Text" arguments="{value: job.employer}"/>
                 <f:render partial="Types/Text" arguments="{value: job.jobType.title}"/>
-                <td><input type="checkbox" name="remember_job" value="{job.uid}"></td>
+                <td class="text-center"><input type="checkbox" class="form-check-input" name="remember_job" value="{job.uid}" aria-label="{f:translate(key: 'remember')} {job.title}"></td>
             </tr>
         </f:for>
         </tbody>

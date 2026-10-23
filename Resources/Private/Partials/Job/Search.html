@@ -2,9 +2,9 @@
       xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
       data-namespace-typo3-fluid="true">
 
-<div class="search-jobboard">
-    <fieldset>
-        <legend class="fontsize3">{f:translate(key: 'search.label')}</legend>
+<div class="search-jobboard card">
+    <fieldset class="card-body">
+        <legend class="h5 mb-3">{f:translate(key: 'search.label')}</legend>
         <f:comment>
             data-jobboard-address-search-url: endpoint for the zip/city
             suggestions of address-suggestions.js (answered by
@@ -26,8 +26,8 @@
             <f:if condition="{settings.showFreeTextSearch}">
                 <f:render partial="Types/Textfield" arguments="{label: 'search.search_word', name: 'searchWord', value: selected_search_word}"/>
             </f:if>
-            <div class="form-group">
-                <f:form.submit class="submit-btn" value="{f:translate(key: 'search.submit')}"/>
+            <div class="d-grid">
+                <f:form.submit class="btn btn-primary" value="{f:translate(key: 'search.submit')}"/>
             </div>
         </f:form>
     </fieldset>

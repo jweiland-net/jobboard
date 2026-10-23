@@ -3,8 +3,8 @@
       xmlns:jobboard="http://typo3.org/ns/JWeiland/Jobboard/ViewHelpers"
       data-namespace-typo3-fluid="true">
 
-<div class="grid">
-    <div class="col-4_md-12">
+<div class="row g-4 mb-4">
+    <div class="col-12 col-lg-4">
         <f:if condition="{settings.showSearch}">
             <f:render partial="Job/Search" arguments="{_all}"/>
         </f:if>
@@ -16,7 +16,7 @@
     </f:comment>
     <f:variable name="poiCollections" value="{jobboard:jobPoiCollection(jobs: jobs)}"/>
     <f:if condition="{poiCollections}">
-        <div class="col-8_md-12 margin-bottom">
+        <div class="col-12 col-lg-8">
             <f:render partial="Maps2/PoiCollection"
                       section="showMap"
                       arguments="{poiCollections: poiCollections, override: '{settings: {mapWidth: \'100%\', mapHeight: \'400\', streetViewControl: 0}, extConf: {strokeColor: \'blue\'}}'}"/>

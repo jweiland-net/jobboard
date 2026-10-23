@@ -15,7 +15,7 @@
             <f:render partial="Pagination" arguments="{pagination: pagination, paginator: paginator, numberOfJobs: numberOfJobs, actionName: actionName}"/>
         </f:then>
         <f:else>
-            <p>{f:translate(key: 'search.no_jobs_found')}</p>
+            <p class="alert alert-info" role="status">{f:translate(key: 'search.no_jobs_found')}</p>
         </f:else>
     </f:if>
 </f:section>

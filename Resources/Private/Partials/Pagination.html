@@ -8,30 +8,30 @@
     search form, so the filter is still applied on the next page.
 </f:comment>
 <f:if condition="{pagination.lastPageNumber} > 1">
-    <nav class="jobboard-pagination" aria-label="{f:translate(key: 'pageBrowser.label')}">
-        <p>{f:translate(key: 'pageBrowser.records', arguments: {0: pagination.startRecordNumber, 1: pagination.endRecordNumber, 2: numberOfJobs})}</p>
-        <ul>
+    <nav class="jobboard-pagination mt-4" aria-label="{f:translate(key: 'pageBrowser.label')}">
+        <p class="small text-body-secondary mb-2">{f:translate(key: 'pageBrowser.records', arguments: {0: pagination.startRecordNumber, 1: pagination.endRecordNumber, 2: numberOfJobs})}</p>
+        <ul class="pagination flex-wrap">
             <f:if condition="{paginator.currentPageNumber} > 1">
-                <li class="first">
+                <li class="page-item first">
                     <f:render section="RenderPageLink"
                               arguments="{linkArguments: pagination.firstPageArguments, transKey: 'pageBrowser.first', actionName: actionName}"/>
                 </li>
             </f:if>
             <f:if condition="{pagination.previousPageNumber}">
-                <li class="previous">
+                <li class="page-item previous">
                     <f:render section="RenderPageLink"
                               arguments="{linkArguments: pagination.previousPageArguments, transKey: 'pageBrowser.previous', actionName: actionName}"/>
                 </li>
             </f:if>
-            <li class="current" aria-current="page">{paginator.currentPageNumber} / {pagination.lastPageNumber}</li>
+            <li class="page-item active current" aria-current="page"><span class="page-link">{paginator.currentPageNumber} / {pagination.lastPageNumber}</span></li>
             <f:if condition="{pagination.nextPageNumber}">
-                <li class="next">
+                <li class="page-item next">
                     <f:render section="RenderPageLink"
                               arguments="{linkArguments: pagination.nextPageArguments, transKey: 'pageBrowser.next', actionName: actionName}"/>
                 </li>
             </f:if>
             <f:if condition="{paginator.currentPageNumber} < {pagination.lastPageNumber}">
-                <li class="last">
+                <li class="page-item last">
                     <f:render section="RenderPageLink"
                               arguments="{linkArguments: pagination.lastPageArguments, transKey: 'pageBrowser.last', actionName: actionName}"/>
                 </li>
@@ -42,6 +42,6 @@
 
 <f:section name="RenderPageLink">
     <f:variable name="actionName">{f:if(condition: actionName, then: actionName, else: 'list')}</f:variable>
-    <f:link.action action="{actionName}" arguments="{linkArguments}">{f:translate(key: transKey)}</f:link.action>
+    <f:link.action action="{actionName}" arguments="{linkArguments}" class="page-link">{f:translate(key: transKey)}</f:link.action>
 </f:section>
 </html>
