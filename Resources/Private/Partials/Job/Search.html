@@ -7,9 +7,9 @@
         <legend class="fontsize3">{f:translate(key: 'search.label')}</legend>
         <f:comment>
             data-jobboard-address-search-url: endpoint for the zip/city
-            suggestions of script.js (answered by AddressSearchMiddleware).
-            Rendered as URL of the current page, so it always resolves to
-            this site and language.
+            suggestions of address-suggestions.js (answered by
+            AddressSearchMiddleware). Rendered as URL of the current page,
+            so it always resolves to this site and language.
         </f:comment>
         <f:form action="search" data="{jobboard-address-search-url: '{f:uri.page()}'}">
             <f:render partial="Types/Select" arguments="{label: 'search.job_area', options: jobAreas, name: 'jobArea', value: selected_job_area}"/>

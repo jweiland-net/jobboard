@@ -77,7 +77,7 @@ $submenu-bg: $white;
 .tx-jobfair2 .jobs-links a {
     margin-right: 1.45rem; }
 
-/* Jobs remembered by the visitor (see script.js) */
+/* Jobs remembered by the visitor (see remember-jobs.js) */
 .tx-jobboard .highlight-row,
 .tx-jobboard .highlight-row > td {
     background-color: #f3f4f4; }

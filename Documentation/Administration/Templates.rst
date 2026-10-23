@@ -182,10 +182,15 @@ asset collector of TYPO3:
 
 *   :file:`Css/style.css`
 *   :file:`JavaScript/js.cookie-2.2.1.min.js` (cookie of remembered jobs)
-*   :file:`JavaScript/script.js` (job board logic)
+*   :file:`JavaScript/remember-jobs.js` (remembered jobs)
+*   :file:`JavaScript/address-suggestions.js` (suggestions of the location
+    field)
 
-:file:`script.js` is plain JavaScript. It remembers jobs and shows the
-suggestions of the location field as a native :html:`<datalist>`.
+Both JavaScript files are plain JavaScript. :file:`remember-jobs.js`
+stores the remembered jobs in a cookie and highlights them. It needs
+:file:`js.cookie-2.2.1.min.js`, which must be loaded before.
+:file:`address-suggestions.js` shows the suggestions of the location field
+as a native :html:`<datalist>`, see :ref:`address-search`.
 
 To use other libraries or files, override the partial
 :file:`Partials/JobListAssets.html`.

@@ -14,7 +14,9 @@ suggests ZIP codes and cities while the visitor types.
 How it works
 ============
 
-The JavaScript of the job board sends a POST request with the HTTP header
+The JavaScript file
+:file:`EXT:jobboard/Resources/Public/JavaScript/address-suggestions.js`
+sends a POST request with the HTTP header
 :code:`jobboard-address-search` and the form field :code:`zipCity` after
 three characters and shows the answer as a native :html:`<datalist>` of
 the location field. The request goes to the URL of the current page, which

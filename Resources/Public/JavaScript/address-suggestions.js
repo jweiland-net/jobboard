@@ -1,44 +1,10 @@
-// Plain JavaScript without any framework. Remembers jobs in a cookie and
-// offers zip/city suggestions for the location field of the search form.
+// Plain JavaScript without any framework. Offers zip/city suggestions for the
+// location field of the search form, answered by AddressSearchMiddleware.
 (() => {
   'use strict';
 
-  const COOKIE_NAME = 'jobboard_remembered_jobs';
   const MIN_LENGTH_ADDRESS_SEARCH = 3;
   const DELAY_ADDRESS_SEARCH = 250;
-
-  const getRememberedJobs = () => {
-    const cookieValue = Cookies.get(COOKIE_NAME);
-
-    try {
-      return cookieValue ? JSON.parse(cookieValue) : [];
-    } catch (error) {
-      return [];
-    }
-  };
-
-  const highlightJob = (jobUid, highlight = true) => {
-    document.querySelectorAll(`[data-jobboard-uid="${jobUid}"]`).forEach((element) => {
-      element.classList.toggle('highlight-row', highlight);
-      element.querySelectorAll('input[name="remember_job"]').forEach((checkbox) => {
-        checkbox.checked = highlight;
-      });
-    });
-  };
-
-  const toggleRememberedJob = (checkbox) => {
-    const jobUid = checkbox.value;
-    let rememberedJobs = getRememberedJobs();
-
-    if (checkbox.checked && !rememberedJobs.includes(jobUid)) {
-      rememberedJobs.push(jobUid);
-    } else if (!checkbox.checked) {
-      rememberedJobs = rememberedJobs.filter((value) => value !== jobUid);
-    }
-
-    highlightJob(jobUid, checkbox.checked);
-    Cookies.set(COOKIE_NAME, JSON.stringify(rememberedJobs));
-  };
 
   // The search form provides the URL of the current page, which passes the
   // frontend middleware stack (site and language resolved) and is answered by
@@ -100,12 +66,6 @@
   };
 
   const initialize = () => {
-    getRememberedJobs().forEach((jobUid) => highlightJob(jobUid));
-
-    document.querySelectorAll('input[name="remember_job"]').forEach((checkbox) => {
-      checkbox.addEventListener('change', () => toggleRememberedJob(checkbox));
-    });
-
     document.querySelectorAll('input#address[type="text"]').forEach(initializeAddressSearch);
   };
 
