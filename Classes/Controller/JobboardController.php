@@ -26,6 +26,7 @@ use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Error\Http\PageNotFoundException;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
+use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 
 class JobboardController extends ActionController
 {
@@ -172,10 +173,10 @@ class JobboardController extends ActionController
      * stops iterating as soon as the limit is reached instead of always walking every
      * matched job.
      *
-     * @param iterable<Job> $jobs
+     * @param QueryResultInterface<int, Job> $jobs
      * @return Job[]
      */
-    private function excludeJobsWithoutSalaryInformation(iterable $jobs, int $limit = 0): array
+    private function excludeJobsWithoutSalaryInformation(QueryResultInterface $jobs, int $limit = 0): array
     {
         $eligibleJobs = [];
         foreach ($jobs as $job) {
