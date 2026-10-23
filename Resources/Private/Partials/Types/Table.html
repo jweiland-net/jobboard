@@ -26,7 +26,16 @@
                 <f:render partial="Types/Text" arguments="{value: job.address.city}"/>
                 <f:render partial="Types/Text" arguments="{value: job.employer}"/>
                 <f:render partial="Types/Text" arguments="{value: job.jobType.title}"/>
-                <td class="text-center"><input type="checkbox" class="form-check-input" name="remember_job" value="{job.uid}" aria-label="{f:translate(key: 'remember')} {job.title}"></td>
+                <td class="text-center">
+                    <f:comment>
+                        Visible label as large click target. The hidden job title
+                        makes the accessible name unique per row.
+                    </f:comment>
+                    <label class="jobboard-remember">
+                        <input type="checkbox" class="form-check-input" name="remember_job" value="{job.uid}">
+                        <span>{f:translate(key: 'remember')}<span class="visually-hidden">: {job.title}</span></span>
+                    </label>
+                </td>
             </tr>
         </f:for>
         </tbody>

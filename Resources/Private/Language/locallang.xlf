@@ -201,7 +201,7 @@
 			</trans-unit>
 
 			<trans-unit id="remember">
-				<source>Remember?</source>
+				<source>Remember</source>
 			</trans-unit>
 			<trans-unit id="dateFormat">
 				<source>Y-m-d</source>

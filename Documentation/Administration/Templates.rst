@@ -92,7 +92,7 @@ The partial :file:`Partials/Types/Card.html` renders each job as a card
 with occupational fields, position, application deadline, title, a
 shortened description, a "Read more" button and, if
 :confval:`jobboard-pidofapplicationform` is set, an "Apply online" button.
-It has no "Remember?" checkbox.
+It has no "Remember" checkbox.
 
 To use it, override :file:`Templates/Jobboard/List.html` and
 :file:`Templates/Jobboard/Search.html` and replace the table partial:
