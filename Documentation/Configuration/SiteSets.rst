@@ -32,14 +32,10 @@ Dependencies
 
 :yaml:`jweiland/jobboard` depends on :yaml:`jweiland/jobboard-pdf`.
 
-If EXT:maps2 is installed, :yaml:`jweiland/jobboard` also loads the sets
-:yaml:`jweiland/maps2-default` and :yaml:`jweiland/maps2-googlemaps`
-(optional dependencies). Without EXT:maps2, these sets are skipped.
-
-..  attention::
-
-    With EXT:maps2 installed, the main set always loads the Google Maps set
-    of EXT:maps2. See :ref:`installation-maps2`.
+The job board does not load any set of EXT:maps2. If EXT:maps2 is
+installed, add one of its provider sets to your site, for example
+:yaml:`jweiland/maps2-openstreetmap` or :yaml:`jweiland/maps2-googlemaps`.
+Both load :yaml:`jweiland/maps2-default`. See :ref:`installation-maps2`.
 
 The PDF version of a job is rendered with EXT:pdfviewhelpers. Add the set
 :yaml:`bithost/pdfviewhelpers` to your site, see
