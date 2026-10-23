@@ -1,0 +1,22 @@
+"pages"
+,"uid","pid","title","slug","deleted","hidden","doktype","is_siteroot"
+,1,0,"Root","/",0,0,1,1
+,2,1,"Job storage","/jobs",0,0,254,0
+
+"tx_jobboard_domain_model_job"
+,"uid","pid","sys_language_uid","l10n_parent","hidden","starttime","title","effective_salary_min","effective_salary_max"
+,1,2,0,0,0,0,"Translated job",3000.00,3000.00
+,11,2,1,1,0,0,"Übersetzte Stelle",3000.00,3000.00
+,2,2,0,0,0,0,"Untranslated job",3000.00,3000.00
+,3,2,0,0,1,0,"Hidden job with visible translation",3000.00,3000.00
+,13,2,1,3,0,0,"Sichtbare Übersetzung einer verborgenen Stelle",3000.00,3000.00
+,4,2,0,0,0,0,"Job with hidden translation",3000.00,3000.00
+,14,2,1,4,1,0,"Verborgene Übersetzung",3000.00,3000.00
+,15,2,1,0,0,0,"Schwebende Übersetzung ohne Standardsprache",3000.00,3000.00
+,6,2,-1,0,0,0,"Job in all languages",3000.00,3000.00
+,7,2,0,0,0,4102444800,"Scheduled job with visible translation",3000.00,3000.00
+,17,2,1,7,0,0,"Sichtbare Übersetzung einer geplanten Stelle",3000.00,3000.00
+,8,2,0,0,0,0,"Job translated into language 2 only",3000.00,3000.00
+,28,2,2,8,0,0,"Job in language 2",3000.00,3000.00
+,9,2,0,0,0,0,"Job with scheduled translation",3000.00,3000.00
+,19,2,1,9,0,4102444800,"Geplante Übersetzung",3000.00,3000.00

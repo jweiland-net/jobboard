@@ -196,13 +196,48 @@
 				<source>Keyword search</source>
 			</trans-unit>
 
-			<trans-unit id="poi_collection.apply_until">
-				<source>Apply until</source>
+			<trans-unit id="map.infoWindow.numberOfJobs.singular">
+				<source>1 job at this location</source>
+			</trans-unit>
+			<trans-unit id="map.infoWindow.numberOfJobs.plural">
+				<source>%d jobs at this location</source>
 			</trans-unit>
 
 			<trans-unit id="remember">
 				<source>Remember</source>
 			</trans-unit>
+			<trans-unit id="rememberedJobs.link">
+				<source>Remembered jobs</source>
+			</trans-unit>
+			<trans-unit id="rememberedJobs.header">
+				<source>Your remembered jobs</source>
+			</trans-unit>
+			<trans-unit id="rememberedJobs.description">
+				<source>Uncheck a job to remove it from your remembered jobs. It stays visible until you reload the page.</source>
+			</trans-unit>
+			<trans-unit id="rememberedJobs.empty">
+				<source>You have not remembered any jobs yet.</source>
+			</trans-unit>
+			<trans-unit id="rememberedJobs.backToList">
+				<source>Back to all jobs</source>
+			</trans-unit>
+			<trans-unit id="rememberedJobs.status">
+				<source>Remembered jobs: %d</source>
+			</trans-unit>
+			<trans-unit id="rememberedJobs.close">
+				<source>Close message</source>
+			</trans-unit>
+
+			<trans-unit id="rememberedJobs.error.limitReached">
+				<source>You have reached the maximum number of remembered jobs. Please remove a job from your remembered jobs first.</source>
+			</trans-unit>
+			<trans-unit id="rememberedJobs.error.unknownJob">
+				<source>This job is no longer available and cannot be remembered.</source>
+			</trans-unit>
+			<trans-unit id="rememberedJobs.error.failed">
+				<source>Your change could not be saved. Please try again.</source>
+			</trans-unit>
+
 			<trans-unit id="dateFormat">
 				<source>Y-m-d</source>
 			</trans-unit>

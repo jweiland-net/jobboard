@@ -14,6 +14,7 @@ namespace JWeiland\Jobboard\Tests\Functional\Middleware;
 use JWeiland\Jobboard\Domain\Model\RememberedJobs;
 use JWeiland\Jobboard\Middleware\RememberJobMiddleware;
 use JWeiland\Jobboard\Service\RememberedJobsServiceInterface;
+use JWeiland\Jobboard\Service\StoragePidResolver;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
@@ -128,7 +129,7 @@ final class RememberJobMiddlewareTest extends FunctionalTestCase
             }
         };
 
-        return [new RememberJobMiddleware($rememberedJobsService), $rememberedJobsService];
+        return [new RememberJobMiddleware($rememberedJobsService, new StoragePidResolver()), $rememberedJobsService];
     }
 
     /**
@@ -222,6 +223,103 @@ final class RememberJobMiddlewareTest extends FunctionalTestCase
         self::assertSame('POST', $response->getHeaderLine('Allow'));
         self::assertSame(['error' => 'methodNotAllowed'], $this->decode($response));
         self::assertSame(0, $rememberedJobsService->numberOfStoreCalls);
+    }
+
+    #[Test]
+    public function requestWithEmptyBodyReturnsRememberedJobsWithoutCreatingSession(): void
+    {
+        $response = $this->sendFrontendRequest([]);
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertSame(['rememberedJobs' => []], $this->decode($response));
+        self::assertSame('', $this->getSessionCookie($response));
+        self::assertSame('no-store', $response->getHeaderLine('Cache-Control'));
+    }
+
+    #[Test]
+    public function requestWithEmptyBodyReturnsJobsRememberedInSession(): void
+    {
+        $sessionCookie = $this->getSessionCookie($this->sendFrontendRequest(['job' => '1', 'remember' => '1']));
+        $this->sendFrontendRequest(['job' => '3', 'remember' => '1'], $sessionCookie);
+
+        $response = $this->sendFrontendRequest([], $sessionCookie);
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertSame(['rememberedJobs' => [1, 3]], $this->decode($response));
+    }
+
+    /**
+     * @return array<string, array{array<string, mixed>|null}>
+     */
+    public static function emptyBodyDataProvider(): array
+    {
+        return [
+            'empty form data' => [[]],
+            'no parsed body' => [null],
+        ];
+    }
+
+    /**
+     * @param array<string, mixed>|null $parsedBody
+     */
+    #[Test]
+    #[DataProvider('emptyBodyDataProvider')]
+    public function requestWithEmptyBodyOnlyReads(?array $parsedBody): void
+    {
+        // Remembered job 4 is hidden meanwhile: it is not answered (the count
+        // badge matches the remembered jobs view), but reading never writes
+        [$subject, $rememberedJobsService] = $this->createSubject([2, 4]);
+
+        $response = $subject->process($this->buildRequest($parsedBody), $this->createFailingHandler());
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertSame(['rememberedJobs' => [2]], $this->decode($response));
+        self::assertSame(0, $rememberedJobsService->numberOfStoreCalls);
+    }
+
+    /**
+     * @return array<string, array{array<string, mixed>|null, string, int}>
+     */
+    public static function jsonResponseDataProvider(): array
+    {
+        return [
+            'read remembered jobs' => [[], 'POST', 200],
+            'remember job' => [['job' => '1', 'remember' => '1'], 'POST', 200],
+            'forget job' => [['job' => '2', 'remember' => '0'], 'POST', 200],
+            'invalid arguments' => [['job' => 'abc', 'remember' => '1'], 'POST', 400],
+            'unknown job' => [['job' => '999', 'remember' => '1'], 'POST', 404],
+            'method not allowed' => [null, 'GET', 405],
+        ];
+    }
+
+    /**
+     * @param array<string, mixed>|null $parsedBody
+     */
+    #[Test]
+    #[DataProvider('jsonResponseDataProvider')]
+    public function everyJsonResponseMustNotBeStoredByCaches(?array $parsedBody, string $method, int $expectedStatus): void
+    {
+        [$subject] = $this->createSubject([2]);
+
+        $response = $subject->process($this->buildRequest($parsedBody, $method), $this->createFailingHandler());
+
+        self::assertSame($expectedStatus, $response->getStatusCode());
+        self::assertSame('no-store', $response->getHeaderLine('Cache-Control'));
+        self::assertStringStartsWith('application/json', $response->getHeaderLine('Content-Type'));
+    }
+
+    #[Test]
+    public function responseOfMaximumReachedMustNotBeStoredByCaches(): void
+    {
+        [$subject] = $this->createSubject($this->insertVisibleJobs(RememberedJobs::MAXIMUM, 100));
+
+        $response = $subject->process(
+            $this->buildRequest(['job' => '1', 'remember' => '1']),
+            $this->createFailingHandler(),
+        );
+
+        self::assertSame(409, $response->getStatusCode());
+        self::assertSame('no-store', $response->getHeaderLine('Cache-Control'));
     }
 
     public static function invalidArgumentsDataProvider(): array
@@ -380,6 +478,167 @@ final class RememberJobMiddlewareTest extends FunctionalTestCase
     }
 
     /**
+     * Jobs which are visible (not hidden, in the storage), but not listed:
+     * 20 without salary information, 21 with passed application deadline,
+     * 22 with ended employment, 23 without title. 24 is listed through the
+     * end of its deadline day.
+     */
+    private function insertJobsWhichAreNotListed(): void
+    {
+        $today = (new \DateTimeImmutable('today'))->getTimestamp();
+        $connection = $this->get(ConnectionPool::class)->getConnectionForTable('tx_jobboard_domain_model_job');
+        $jobs = [
+            20 => ['effective_salary_min' => 0, 'effective_salary_max' => 0],
+            21 => ['application_deadline' => $today - 1],
+            22 => ['ending_date' => $today - 1],
+            23 => ['title' => ''],
+            24 => ['application_deadline' => $today],
+        ];
+        foreach ($jobs as $jobUid => $values) {
+            $connection->insert('tx_jobboard_domain_model_job', array_replace([
+                'uid' => $jobUid,
+                'pid' => 2,
+                'title' => 'Job ' . $jobUid,
+                'effective_salary_min' => 3000,
+            ], $values));
+        }
+    }
+
+    /**
+     * @return array<string, array{string}>
+     */
+    public static function jobWhichIsNotListedDataProvider(): array
+    {
+        return [
+            'no salary information' => ['20'],
+            'application deadline passed' => ['21'],
+            'employment ended' => ['22'],
+            'no title' => ['23'],
+        ];
+    }
+
+    #[Test]
+    #[DataProvider('jobWhichIsNotListedDataProvider')]
+    public function jobWhichIsNotListedCanNotBeRemembered(string $jobUid): void
+    {
+        $this->insertJobsWhichAreNotListed();
+        [$subject, $rememberedJobsService] = $this->createSubject([2]);
+
+        $response = $subject->process(
+            $this->buildRequest(['job' => $jobUid, 'remember' => '1']),
+            $this->createFailingHandler(),
+        );
+
+        self::assertSame(404, $response->getStatusCode());
+        self::assertSame(['rememberedJobs' => [2], 'error' => 'unknownJob'], $this->decode($response));
+        self::assertSame(0, $rememberedJobsService->numberOfStoreCalls);
+    }
+
+    #[Test]
+    public function jobOnTheDayOfItsApplicationDeadlineCanBeRemembered(): void
+    {
+        $this->insertJobsWhichAreNotListed();
+        [$subject, $rememberedJobsService] = $this->createSubject();
+
+        $subject->process($this->buildRequest(['job' => '24', 'remember' => '1']), $this->createFailingHandler());
+
+        self::assertSame([24], $rememberedJobsService->rememberedJobs->getUids());
+    }
+
+    #[Test]
+    public function readOnlyRequestAnswersListedJobsOnlyAndNeverWrites(): void
+    {
+        $this->insertJobsWhichAreNotListed();
+        [$subject, $rememberedJobsService] = $this->createSubject([20, 1, 21, 22, 23, 24]);
+
+        $response = $subject->process($this->buildRequest([]), $this->createFailingHandler());
+
+        self::assertSame(['rememberedJobs' => [1, 24]], $this->decode($response));
+        self::assertSame(0, $rememberedJobsService->numberOfStoreCalls);
+        self::assertSame([20, 1, 21, 22, 23, 24], $rememberedJobsService->rememberedJobs->getUids());
+    }
+
+    #[Test]
+    public function readOnlyRequestWithoutStoragePidAnswersNoJobsAndNeverWrites(): void
+    {
+        [$subject, $rememberedJobsService] = $this->createSubject([1, 2]);
+
+        $response = $subject->process(
+            $this->buildRequest([])->withAttribute('site', new Site('main', 1, [])),
+            $this->createFailingHandler(),
+        );
+
+        self::assertSame(['rememberedJobs' => []], $this->decode($response));
+        self::assertSame(0, $rememberedJobsService->numberOfStoreCalls);
+    }
+
+    #[Test]
+    public function forgetJobAnswersAndStoresListedJobsOnly(): void
+    {
+        $this->insertJobsWhichAreNotListed();
+        [$subject, $rememberedJobsService] = $this->createSubject([20, 1, 21, 2, 22, 23]);
+
+        $response = $subject->process(
+            $this->buildRequest(['job' => '2', 'remember' => '0']),
+            $this->createFailingHandler(),
+        );
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertSame(['rememberedJobs' => [1]], $this->decode($response));
+        self::assertSame(1, $rememberedJobsService->numberOfStoreCalls);
+        self::assertSame([1], $rememberedJobsService->rememberedJobs->getUids());
+    }
+
+    #[Test]
+    public function rememberJobRemovesJobsWhichAreNotListedAnymore(): void
+    {
+        $this->insertJobsWhichAreNotListed();
+        [$subject, $rememberedJobsService] = $this->createSubject([20, 2, 21]);
+
+        $response = $subject->process(
+            $this->buildRequest(['job' => '1', 'remember' => '1']),
+            $this->createFailingHandler(),
+        );
+
+        self::assertSame(['rememberedJobs' => [2, 1]], $this->decode($response));
+        self::assertSame([2, 1], $rememberedJobsService->rememberedJobs->getUids());
+    }
+
+    #[Test]
+    public function jobsWhichAreNotListedDoNotCountAgainstTheMaximum(): void
+    {
+        $this->insertJobsWhichAreNotListed();
+        $jobUids = $this->insertVisibleJobs(RememberedJobs::MAXIMUM - 1, 100);
+        [$subject, $rememberedJobsService] = $this->createSubject([20, ...$jobUids]);
+
+        $response = $subject->process(
+            $this->buildRequest(['job' => '1', 'remember' => '1']),
+            $this->createFailingHandler(),
+        );
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertSame([...$jobUids, 1], $rememberedJobsService->rememberedJobs->getUids());
+    }
+
+    #[Test]
+    public function readOnlyFrontendRequestDoesNotPruneSession(): void
+    {
+        $sessionCookie = $this->getSessionCookie($this->sendFrontendRequest(['job' => '1', 'remember' => '1']));
+        $this->sendFrontendRequest(['job' => '3', 'remember' => '1'], $sessionCookie);
+        $connection = $this->get(ConnectionPool::class)->getConnectionForTable('tx_jobboard_domain_model_job');
+
+        // Job 3 loses its salary information: it is not answered, but stays
+        // in the session, as reading never writes
+        $connection->update('tx_jobboard_domain_model_job', ['effective_salary_min' => 0], ['uid' => 3]);
+        $readResponse = $this->sendFrontendRequest([], $sessionCookie);
+        $connection->update('tx_jobboard_domain_model_job', ['effective_salary_min' => 3000], ['uid' => 3]);
+
+        self::assertSame(['rememberedJobs' => [1]], $this->decode($readResponse));
+        self::assertSame('', $readResponse->getHeaderLine('Set-Cookie'));
+        self::assertSame(['rememberedJobs' => [1, 3]], $this->decode($this->sendFrontendRequest([], $sessionCookie)));
+    }
+
+    /**
      * @return int[]
      */
     private function insertVisibleJobs(int $numberOfJobs, int $firstUid): array
@@ -387,7 +646,12 @@ final class RememberJobMiddlewareTest extends FunctionalTestCase
         $connection = $this->get(ConnectionPool::class)->getConnectionForTable('tx_jobboard_domain_model_job');
         $jobUids = range($firstUid, $firstUid + $numberOfJobs - 1);
         foreach ($jobUids as $jobUid) {
-            $connection->insert('tx_jobboard_domain_model_job', ['uid' => $jobUid, 'pid' => 2, 'title' => 'Job ' . $jobUid]);
+            $connection->insert('tx_jobboard_domain_model_job', [
+                'uid' => $jobUid,
+                'pid' => 2,
+                'title' => 'Job ' . $jobUid,
+                'effective_salary_min' => 3000,
+            ]);
         }
 
         return $jobUids;

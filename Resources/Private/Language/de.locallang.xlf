@@ -258,15 +258,61 @@
 				<target>Stichwortsuche</target>
 			</trans-unit>
 
-			<trans-unit id="poi_collection.apply_until">
-				<source>Apply until</source>
-				<target>Bewerbungsschluss</target>
+			<trans-unit id="map.infoWindow.numberOfJobs.singular">
+				<source>1 job at this location</source>
+				<target>1 Stelle an diesem Standort</target>
+			</trans-unit>
+			<trans-unit id="map.infoWindow.numberOfJobs.plural">
+				<source>%d jobs at this location</source>
+				<target>%d Stellen an diesem Standort</target>
 			</trans-unit>
 
 			<trans-unit id="remember">
 				<source>Remember</source>
 				<target>Merken</target>
 			</trans-unit>
+			<trans-unit id="rememberedJobs.link">
+				<source>Remembered jobs</source>
+				<target>Merkliste</target>
+			</trans-unit>
+			<trans-unit id="rememberedJobs.header">
+				<source>Your remembered jobs</source>
+				<target>Ihre Merkliste</target>
+			</trans-unit>
+			<trans-unit id="rememberedJobs.description">
+				<source>Uncheck a job to remove it from your remembered jobs. It stays visible until you reload the page.</source>
+				<target>Entfernen Sie den Haken, um eine Stelle von Ihrer Merkliste zu nehmen. Sie bleibt sichtbar, bis Sie die Seite neu laden.</target>
+			</trans-unit>
+			<trans-unit id="rememberedJobs.empty">
+				<source>You have not remembered any jobs yet.</source>
+				<target>Sie haben sich noch keine Stellen gemerkt.</target>
+			</trans-unit>
+			<trans-unit id="rememberedJobs.backToList">
+				<source>Back to all jobs</source>
+				<target>Zurück zu allen Stellen</target>
+			</trans-unit>
+			<trans-unit id="rememberedJobs.status">
+				<source>Remembered jobs: %d</source>
+				<target>Stellen auf der Merkliste: %d</target>
+			</trans-unit>
+			<trans-unit id="rememberedJobs.close">
+				<source>Close message</source>
+				<target>Hinweis schließen</target>
+			</trans-unit>
+
+			<trans-unit id="rememberedJobs.error.limitReached">
+				<source>You have reached the maximum number of remembered jobs. Please remove a job from your remembered jobs first.</source>
+				<target>Sie haben die maximale Anzahl gemerkter Stellen erreicht. Bitte entfernen Sie zuerst eine Stelle von Ihrer Merkliste.</target>
+			</trans-unit>
+			<trans-unit id="rememberedJobs.error.unknownJob">
+				<source>This job is no longer available and cannot be remembered.</source>
+				<target>Diese Stelle ist nicht mehr verfügbar und kann nicht gemerkt werden.</target>
+			</trans-unit>
+			<trans-unit id="rememberedJobs.error.failed">
+				<source>Your change could not be saved. Please try again.</source>
+				<target>Ihre Änderung konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.</target>
+			</trans-unit>
+
 			<trans-unit id="dateFormat">
 				<source>Y-m-d</source>
 				<target>d.m.Y</target>

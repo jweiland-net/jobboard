@@ -7,12 +7,15 @@
     table row. List/Search render Types/Table by default, but either template can
     render this partial instead - keep it even if nothing in this extension itself
     references it yet, a consuming project may switch to it via template override.
+    The markup is the same for every visitor (List is cached):
+    remember-jobs.js adds "highlight-row" to remembered cards via
+    data-jobboard-uid.
 </f:comment>
 
 <ul class="row row-cols-1 row-cols-md-2 g-4 list-unstyled">
     <f:for each="{objects}" as="job">
         <li class="col">
-            <article class="jobboard-job card h-100{f:if(condition: '{rememberedJobs.{job.uid}}', then: ' highlight-row')}" data-jobboard-uid="{job.uid}">
+            <article class="jobboard-job card h-100" data-jobboard-uid="{job.uid}">
                 <div class="jobboard-jobdetails card-header d-flex flex-wrap align-items-center gap-2 small">
                     <f:if condition="{job.jobAreas}">
                         <f:render partial="Job/JobAreas" arguments="{job: job, separator: ''}"/>

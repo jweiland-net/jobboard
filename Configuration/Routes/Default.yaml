@@ -21,6 +21,10 @@ routeEnhancers:
     extension: Jobboard
     plugin: Jobboard
     routes:
+      # Static route before '/{job_title}', so it is matched first
+      -
+        routePath: '/remembered'
+        _controller: 'Jobboard::rememberedJobs'
       -
         routePath: '/{job_title}'
         _controller: 'Jobboard::detail'

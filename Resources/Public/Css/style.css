@@ -68,3 +68,29 @@
 .tx-jobboard .jobboard-remember .form-check-input:focus-visible {
     outline: 3px solid var(--jobboard-accent);
     outline-offset: 2px; }
+
+/*
+ * Row unchecked on the view of the remembered jobs (remember-jobs.js), until
+ * the next page load. The secondary text color still reaches 6.9:1 on white,
+ * the line-through marks the state without relying on color alone. The
+ * remember cell stays untouched, so the job can be checked again.
+ */
+.tx-jobboard .jobboard-table > tbody > tr.jobboard-removed > :not(:last-child) {
+    --bs-table-color: var(--bs-secondary-color);
+    color: var(--bs-secondary-color);
+    text-decoration: line-through; }
+
+.tx-jobboard .jobboard-table > tbody > tr.jobboard-removed > :not(:last-child) a {
+    color: inherit; }
+
+/*
+ * Count badge of the link to the remembered jobs. It is rendered invisible
+ * (not hidden) and wide enough for two digits, so filling it after the
+ * request does not move anything.
+ */
+.tx-jobboard .jobboard-remembered-count {
+    min-width: 2.25em; }
+
+/* Above sticky headers and cookie banners of most site packages */
+.tx-jobboard .jobboard-remember-toast {
+    z-index: 1090; }
