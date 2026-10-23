@@ -1,0 +1,45 @@
+"pages"
+,"uid","pid","title","slug","deleted","hidden","doktype","is_siteroot"
+,1,0,"Root","/",0,0,1,1
+,2,1,"Storage for jobs","/storage",0,0,254,0
+
+"tx_jobboard_domain_model_jobarea"
+,"uid","pid","sys_language_uid","l10n_parent","title"
+,1,2,0,0,"IT"
+,2,2,0,0,"Crafts"
+,3,2,1,1,"IT (de)"
+,4,2,1,2,"Handwerk"
+
+"tx_jobboard_domain_model_jobrole"
+,"uid","pid","sys_language_uid","l10n_parent","title"
+,1,2,0,0,"Specialist"
+,2,2,0,0,"Apprentice"
+,3,2,1,1,"Fachkraft"
+,4,2,1,2,"Auszubildender"
+
+"tx_jobboard_domain_model_jobtype"
+,"uid","pid","sys_language_uid","l10n_parent","title"
+,1,2,0,0,"Full-time"
+,2,2,0,0,"Part-time"
+,3,2,1,1,"Vollzeit"
+,4,2,1,2,"Teilzeit"
+
+"tx_jobboard_domain_model_job"
+,"uid","pid","sys_language_uid","l10n_parent","title","job_areas","job_role","job_type","application_deadline","effective_salary_min","effective_salary_max"
+,1,2,0,0,"Full-time specialist in IT",1,1,1,0,3000.00,3000.00
+,2,2,0,0,"Part-time apprentice in crafts",1,2,2,0,3000.00,3000.00
+,3,2,0,0,"Part-time specialist in IT without translation",1,1,2,0,3000.00,3000.00
+,4,2,0,0,"Expired full-time specialist in IT",1,1,1,946684800,3000.00,3000.00
+,11,2,1,1,"Fachkraft in Vollzeit in der IT",1,1,1,0,3000.00,3000.00
+,12,2,1,2,"Auszubildender in Teilzeit im Handwerk",1,2,2,0,3000.00,3000.00
+,14,2,1,4,"Abgelaufene Fachkraft in Vollzeit in der IT",1,1,1,946684800,3000.00,3000.00
+
+"tx_jobboard_job_jobarea_mm"
+,"uid_local","uid_foreign","sorting","sorting_foreign"
+,1,1,1,0
+,2,2,1,0
+,3,1,1,0
+,4,1,1,0
+,11,1,1,0
+,12,2,1,0
+,14,1,1,0

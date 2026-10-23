@@ -536,6 +536,84 @@ class JobTest extends UnitTestCase
     }
 
     #[Test]
+    public function getEffectiveSalaryMinInitiallyReturnsZero(): void
+    {
+        self::assertSame(
+            0.0,
+            $this->subject->getEffectiveSalaryMin(),
+        );
+    }
+
+    #[Test]
+    public function setEffectiveSalaryMinSetsEffectiveSalaryMin(): void
+    {
+        $this->subject->setEffectiveSalaryMin(2500.5);
+
+        self::assertSame(
+            2500.5,
+            $this->subject->getEffectiveSalaryMin(),
+        );
+    }
+
+    #[Test]
+    public function getEffectiveSalaryMaxInitiallyReturnsZero(): void
+    {
+        self::assertSame(
+            0.0,
+            $this->subject->getEffectiveSalaryMax(),
+        );
+    }
+
+    #[Test]
+    public function setEffectiveSalaryMaxSetsEffectiveSalaryMax(): void
+    {
+        $this->subject->setEffectiveSalaryMax(3500.5);
+
+        self::assertSame(
+            3500.5,
+            $this->subject->getEffectiveSalaryMax(),
+        );
+    }
+
+    /**
+     * @return array<string, array{float, float, bool}>
+     */
+    public static function effectiveSalaryDataProvider(): array
+    {
+        return [
+            'no effective salary' => [0.0, 0.0, false],
+            'minimum only' => [2500.0, 0.0, true],
+            'maximum only' => [0.0, 3200.0, true],
+            'minimum and maximum' => [2500.0, 3200.0, true],
+        ];
+    }
+
+    #[Test]
+    #[DataProvider('effectiveSalaryDataProvider')]
+    public function getHasEffectiveSalaryInformationRequiresPositiveMinimumOrMaximum(
+        float $effectiveSalaryMin,
+        float $effectiveSalaryMax,
+        bool $expected,
+    ): void {
+        $this->subject->setEffectiveSalaryMin($effectiveSalaryMin);
+        $this->subject->setEffectiveSalaryMax($effectiveSalaryMax);
+
+        self::assertSame($expected, $this->subject->getHasEffectiveSalaryInformation());
+    }
+
+    #[Test]
+    public function getHasEffectiveSalaryInformationIgnoresNotPrecomputedSalary(): void
+    {
+        // The detail action relies on the precomputed columns only: a free
+        // entry salary without effective salary is not displayed.
+        $this->subject->setSalaryMode(1);
+        $this->subject->setSalaryMin(2500.0);
+
+        self::assertTrue($this->subject->getHasSalaryInformation());
+        self::assertFalse($this->subject->getHasEffectiveSalaryInformation());
+    }
+
+    #[Test]
     public function getBenefitsInitiallyReturnsObjectStorage(): void
     {
         self::assertEquals(

@@ -1,6 +1,6 @@
-# Clear the cache of the page with the job list (UID 42) when a record
-# in this folder is saved
-TCEMAIN.clearCacheCmd = 42
+# Clear the cache of the pages with the job board (UIDs 42 and 87) when a
+# record in this folder is saved. Must be set for the storage folder.
+TCEMAIN.clearCacheCmd = 42, 87
 
 # Salary steps are maintained inline in their salary grade
 mod.web_list.hideTables := addToList(tx_jobboard_domain_model_salarystep)

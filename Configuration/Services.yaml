@@ -6,7 +6,12 @@ services:
 
   JWeiland\Jobboard\:
     resource: '../Classes/*'
-    exclude: '../Classes/Domain/Model/*'
+    exclude:
+      - '../Classes/Domain/Model/*'
+      # Restrictions and constraints, created with "new"
+      - '../Classes/Database/Query/*'
+      # Listens to an event of the optional EXT:maps2, see Services.php
+      - '../Classes/EventListener/RenderJobLocationInfoWindowContentEventListener.php'
 
   JWeiland\Jobboard\ApiModel\ApiMapping:
     shared: false

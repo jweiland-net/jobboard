@@ -18,6 +18,8 @@ use JWeiland\Jobboard\Domain\Model\JobType;
 use JWeiland\Jobboard\Domain\Model\Search;
 use JWeiland\Jobboard\Domain\Model\ZipCity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\DomainObject\AbstractDomainObject;
+use TYPO3\CMS\Extbase\Persistence\Generic\Qom\ConstraintInterface;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 use TYPO3\CMS\Extbase\Persistence\Repository;
@@ -25,18 +27,27 @@ use TYPO3\CMS\Extbase\Persistence\Repository;
 /**
  * Allows to help search for jobs by various search criteria
  *
- * Deliberately does not filter out jobs without resolvable salary information -
- * that is a display rule, not a data access concern, and belongs in
- * JobboardController (see excludeJobsWithoutSalaryInformation()).
+ * Every query for the frontend lists open jobs with salary information only,
+ * see buildAndConstraintForOpenJobs(). The salary information is filtered in
+ * SQL by the precomputed effective salary (see EffectiveSalaryUpdater), so
+ * limits and pagination are applied by the database.
  */
 class JobRepository extends Repository
 {
     /**
+     * Column "l10n_parent" (TCA transOrigPointerField), not mapped in the
+     * model: Extbase uses the column name of the property name.
+     */
+    private const TRANSLATION_PARENT_PROPERTY = 'l10nParent';
+
+    /**
      * Jobs with the closest application deadline first. Jobs without an
-     * application deadline (0) are sorted to the top by the database.
+     * application deadline (0) are sorted to the top by the database. The
+     * UID makes the order unique, so pages of the page browser never overlap.
      */
     protected $defaultOrderings = [
         'applicationDeadline' => QueryInterface::ORDER_ASCENDING,
+        'uid' => QueryInterface::ORDER_ASCENDING,
     ];
 
     public function findBySettings(array $settings, int $limit = 0): QueryResultInterface
@@ -80,29 +91,98 @@ class JobRepository extends Repository
         return $query->matching($query->logicalAnd(...$andConstraint))->execute();
     }
 
+    /**
+     * The remembered jobs of a visitor, which are still listed in the
+     * frontend. Ordered like the job list.
+     *
+     * The query keeps the language handling of findBySettings()
+     * (Typo3DbQueryParser::getLanguageStatement()), so exactly the jobs of the
+     * job list in the current language are returned and overlaid by Extbase.
+     * Depending on the fallback type, the selected rows are the translations
+     * ("strict", "free"), the translations plus the untranslated default
+     * records ("fallback") or the default records (default language). A
+     * translation has its own UID, so the given UIDs of the default language
+     * are matched against "uid" and "l10n_parent".
+     *
+     * @param int[] $jobUids UIDs of jobs in the default language
+     */
+    public function findByUids(array $jobUids): QueryResultInterface
+    {
+        $query = $this->createQuery();
+
+        return $query->matching($query->logicalAnd(
+            $this->buildConstraintForUidsOfDefaultLanguage($jobUids, $query),
+            ...$this->buildAndConstraintForOpenJobs($query),
+        ))->execute();
+    }
+
+    /**
+     * Matches the default record (uid) and its translations (l10n_parent).
+     * The language statement of Extbase decides, which of them is selected.
+     * Never matches anything without UIDs: "l10n_parent IN (0)" would match
+     * every record of the default language.
+     *
+     * @param int[] $jobUids
+     */
+    private function buildConstraintForUidsOfDefaultLanguage(array $jobUids, QueryInterface $query): ConstraintInterface
+    {
+        $jobUids = array_values(array_filter($jobUids, static fn(int $jobUid): bool => $jobUid > 0));
+        if ($jobUids === []) {
+            return $query->equals('uid', 0);
+        }
+
+        return $query->logicalOr(
+            $query->in('uid', $jobUids),
+            $query->in(self::TRANSLATION_PARENT_PROPERTY, $jobUids),
+        );
+    }
+
     private function buildAndConstraintForRelations(Search $search, QueryInterface $query): array
     {
         $andConstraint = [];
 
         if ($search->getJobArea() instanceof JobArea) {
-            $andConstraint[] = $query->contains('jobAreas', $search->getJobArea());
+            $andConstraint[] = $query->contains('jobAreas', (int)$search->getJobArea()->getUid());
         }
 
         if ($search->getJobRole() instanceof JobRole) {
-            $andConstraint[] = $query->equals('jobRole', $search->getJobRole());
+            $andConstraint[] = $query->in('jobRole', $this->getUidsOfRelatedObject($search->getJobRole()));
         }
 
         if ($search->getJobType() instanceof JobType) {
-            $andConstraint[] = $query->equals('jobType', $search->getJobType());
+            $andConstraint[] = $query->in('jobType', $this->getUidsOfRelatedObject($search->getJobType()));
         }
 
         return $andConstraint;
     }
 
     /**
-     * Base constraints for every job listed in the frontend: it needs a title,
-     * its application deadline must not have passed and, for fixed-term
-     * positions, its employment must not have ended already.
+     * Never compare a relation with the domain object itself: for a
+     * translated object, Typo3DbQueryParser::createTypedNamedParameter()
+     * binds its localized UID ("_localizedUid"), but the jobs of all languages
+     * reference the UID of the default language (DataHandler copies the
+     * value into the translations). With fallback type "fallback", the
+     * translated job rows are queried, so no job would match. The localized
+     * UID is accepted as well, for jobs referencing the translation directly.
+     *
+     * @return int[]
+     */
+    private function getUidsOfRelatedObject(AbstractDomainObject $domainObject): array
+    {
+        return array_values(array_unique(array_filter([
+            (int)$domainObject->getUid(),
+            (int)$domainObject->_getProperty(AbstractDomainObject::PROPERTY_LOCALIZED_UID),
+        ])));
+    }
+
+    /**
+     * Base constraints for every job listed in the frontend: it needs a title
+     * and salary information, its application deadline must not have passed
+     * and, for fixed-term positions, its employment must not have ended
+     * already. Deadline and ending date are compared with the start of today,
+     * so a job is listed through the end of that day (see also
+     * LimitJobListCacheLifetimeEventListener). Keep in sync with the
+     * QueryBuilder version OpenJobRestriction (map info window).
      */
     private function buildAndConstraintForOpenJobs(QueryInterface $query): array
     {
@@ -110,6 +190,10 @@ class JobRepository extends Repository
 
         return [
             $query->logicalNot($query->equals('title', '')),
+            $query->logicalOr(
+                $query->greaterThan('effectiveSalaryMin', 0),
+                $query->greaterThan('effectiveSalaryMax', 0),
+            ),
             $query->logicalOr(
                 $query->equals('applicationDeadline', 0),
                 $query->greaterThanOrEqual('applicationDeadline', $today),

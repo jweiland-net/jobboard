@@ -14,16 +14,18 @@ namespace JWeiland\Jobboard\EventListener;
 use JWeiland\Jobboard\Event\PostProcessFluidVariablesEvent;
 use JWeiland\Jobboard\Pagination\GetPostPagination;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
-use TYPO3\CMS\Core\Pagination\ArrayPaginator;
 use TYPO3\CMS\Core\Pagination\PaginationInterface;
 use TYPO3\CMS\Core\Pagination\PaginatorInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
+use TYPO3\CMS\Extbase\Pagination\QueryResultPaginator;
+use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 
 /**
- * Paginates the jobs of the list and search action. Adds the Fluid variables
- * "paginator", "pagination", "numberOfJobs" and "actionName" and replaces
- * "jobs" with the jobs of the current page.
+ * Paginates the jobs of the list and search action in the database
+ * (QueryResultPaginator: COUNT() query plus LIMIT/OFFSET). Adds the Fluid
+ * variables "paginator", "pagination", "numberOfJobs" and "actionName" and
+ * replaces "jobs" with the jobs of the current page.
  */
 #[AsEventListener('jobboard/addPaginator')]
 final readonly class AddPaginatorEventListener
@@ -49,13 +51,13 @@ final readonly class AddPaginatorEventListener
         $jobs = $event->getFluidVariables()[self::FLUID_VARIABLE_NAME] ?? null;
         if (!$this->isValidRequest($event)
             || !$this->isPageBrowserEnabled($event)
-            || !is_array($jobs)
-            || $jobs === []
+            || !$jobs instanceof QueryResultInterface
+            || $jobs->count() === 0
         ) {
             return;
         }
 
-        $paginator = new ArrayPaginator($jobs, $this->getCurrentPage($event), $this->getItemsPerPage($event));
+        $paginator = new QueryResultPaginator($jobs, $this->getCurrentPage($event), $this->getItemsPerPage($event));
 
         $event->addFluidVariable('actionName', $event->getActionName());
         $event->addFluidVariable('numberOfJobs', count($jobs));
@@ -74,10 +76,10 @@ final readonly class AddPaginatorEventListener
     }
 
     /**
-     * A limited list ("maxEntries") is never paginated. Otherwise, only "-1"
-     * of the FlexForm or "0" of the site setting disable the page browser. An
-     * empty FlexForm value falls back to the TypoScript value (see
-     * "ignoreFlexFormSettingsIfEmpty").
+     * A limited list ("maxEntries", already limited in the database) is never
+     * paginated. Otherwise, only "-1" of the FlexForm or "0" of the site
+     * setting disable the page browser. An empty FlexForm value falls back to
+     * the TypoScript value (see "ignoreFlexFormSettingsIfEmpty").
      */
     private function isPageBrowserEnabled(PostProcessFluidVariablesEvent $event): bool
     {

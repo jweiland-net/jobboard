@@ -96,6 +96,32 @@ Import the route enhancer
 For speaking URLs of the detail view, import the shipped route enhancer in
 your site configuration. See :ref:`configuration-routing`.
 
+..  _installation-clear-cache:
+
+Clear the cache of the job board pages
+======================================
+
+List and detail view are cached. Add the UIDs of all pages with the job
+board to the page TSconfig of the storage folder, so that changes in the
+folder clear the cache of these pages:
+
+..  code-block:: typoscript
+    :caption: Page TSconfig of the storage folder
+
+    TCEMAIN.clearCacheCmd = 42
+
+See :ref:`configuration-page-tsconfig-cache` for details.
+
+..  _installation-salary-update:
+
+Schedule the daily salary update
+================================
+
+The validity of salary grades and steps decides which jobs are listed.
+Create a task :guilabel:`Execute console commands` in the backend module
+:guilabel:`System > Scheduler`, select :code:`jobboard:salary:update` and
+let it run once a day, preferably at night. See :ref:`salary-update`.
+
 ..  _installation-maps2:
 
 Optional: show job locations on a map
@@ -138,3 +164,6 @@ First steps
     :ref:`editor-content-element`.
 #.  If you migrate from EXT:jobfair2, run the upgrade wizards, see
     :ref:`upgrade`.
+#.  If the storage folder already contains jobs, for example after a
+    migration or a direct database import, calculate their salary once:
+    :bash:`vendor/bin/typo3 jobboard:salary:update --all`.

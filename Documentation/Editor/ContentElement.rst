@@ -56,9 +56,8 @@ Show only a few jobs, for example on the start page
 
     The jobs are not sorted by their creation date. Jobs without an
     application deadline come first, then the jobs whose application
-    deadline ends soonest. The number limits this order. Jobs the visitor
-    remembered are moved to the top of these jobs, see
-    :ref:`remember-jobs`.
+    deadline ends soonest. The number limits this order. Remembered jobs
+    keep their place in this order, see :ref:`remember-jobs`.
 
 Show all jobs on one page
     Set :guilabel:`Show page browser` (sheet :guilabel:`General`) to

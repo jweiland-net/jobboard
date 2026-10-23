@@ -98,6 +98,9 @@ Free salary entry
 
     Salary mode "Free salary entry" with minimum and maximum salary
 
+In a translated job, the salary fields show the values of the default
+language and are read-only, see :ref:`editor-salary-translation`.
+
 ..  important::
 
     Jobs without salary information are never shown in the frontend. See
@@ -152,7 +155,7 @@ Contact person
 
 :guilabel:`Application deadline` (Bewerbungsfrist)
     Optional. Last day for applications. It is shown in the list, the
-    detail view, the PDF version and the map. The job is listed until the
+    detail view and the PDF version. The job is listed until the
     end of this day.
 
 :guilabel:`Application guidelines` (Hinweise zur Bewerbung)

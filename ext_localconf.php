@@ -9,6 +9,7 @@
 
 use JWeiland\Jobboard\Backend\Element\LocalizedDecimalElement;
 use JWeiland\Jobboard\Controller\JobboardController;
+use JWeiland\Jobboard\Hook\UpdateEffectiveSalaryHook;
 use Psr\Log\LogLevel;
 use TYPO3\CMS\Core\Log\Writer\FileWriter;
 use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
@@ -21,14 +22,20 @@ ExtensionUtility::configurePlugin(
     'Jobboard',
     'Jobboard',
     [
-        JobboardController::class => 'list, search, detail',
+        JobboardController::class => 'list, search, detail, rememberedJobs',
     ],
     [
-        // list/search render visitor-specific session data: never cache them
-        JobboardController::class => 'list, search',
+        // search: arbitrary POST criteria, rememberedJobs: visitor session
+        JobboardController::class => 'search, rememberedJobs',
     ],
     ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT,
 );
+
+// Recalculate the effective salary of jobs on changes of jobs and salaries
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass']['jobboard']
+    = UpdateEffectiveSalaryHook::class;
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass']['jobboard']
+    = UpdateEffectiveSalaryHook::class;
 
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][] = [
     'nodeName' => 'jobboardLocalizedDecimal',

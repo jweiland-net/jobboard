@@ -120,6 +120,24 @@
 			<trans-unit id="tx_jobboard_domain_model_job.salary_max.description">
 				<source>For an exact salary, please enter the same amount as in minimum salary. You may enter the amount with a thousands separator and decimal comma (e.g. 3.842,17) — it is normalized automatically once you leave the field.</source>
 			</trans-unit>
+			<trans-unit id="palette.effective_salary">
+				<source>Effective salary</source>
+			</trans-unit>
+			<trans-unit id="tx_jobboard_domain_model_job.effective_salary_min">
+				<source>Effective minimum salary</source>
+			</trans-unit>
+			<trans-unit id="tx_jobboard_domain_model_job.effective_salary_max">
+				<source>Effective maximum salary</source>
+			</trans-unit>
+			<trans-unit id="tx_jobboard_domain_model_job.effective_salary.description">
+				<source>Calculated from the salary of this job and its currently valid salary grades and steps. Jobs without effective salary are not shown in the frontend. The value is updated when the job, a salary grade or a step is saved, and by the scheduler task.</source>
+			</trans-unit>
+			<trans-unit id="tx_jobboard_domain_model_job.effective_salary_valid_until">
+				<source>Effective salary valid until</source>
+			</trans-unit>
+			<trans-unit id="tx_jobboard_domain_model_job.effective_salary_valid_until.description">
+				<source>Next date on which a start or end date of a salary grade or step changes the effective salary. The scheduler task recalculates the job then. Empty, if no change is scheduled.</source>
+			</trans-unit>
 			<trans-unit id="tx_jobboard_domain_model_job.employer">
 				<source>Employer</source>
 			</trans-unit>

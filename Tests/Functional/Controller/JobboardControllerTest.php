@@ -11,10 +11,17 @@ declare(strict_types=1);
 
 namespace JWeiland\Jobboard\Tests\Functional\Controller;
 
+use JWeiland\Jobboard\Controller\JobboardController;
 use JWeiland\Jobboard\Middleware\RememberJobMiddleware;
+use JWeiland\Jobboard\Service\EffectiveSalaryUpdaterInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
+use TYPO3\CMS\Core\Authentication\CommandLineUserAuthentication;
+use TYPO3\CMS\Core\Cache\Backend\Typo3DatabaseBackend;
 use TYPO3\CMS\Core\Configuration\SiteWriter;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\DataHandling\DataHandler;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Page\CacheHashCalculator;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
@@ -30,6 +37,11 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
  * "jobboard_jobboard" content element through a frontend sub-request and
  * checking only the resulting HTML - the same path a visitor's browser goes
  * through, not the controller's internals.
+ *
+ * The fixture contains no effective salary at all: setUp() calculates it
+ * with EffectiveSalaryUpdater (like the command "jobboard:salary:update
+ * --all"), so the visibility tests cover calculator, updater and the SQL
+ * filter of JobRepository end-to-end. Listed jobs: 1, 7 and 8.
  */
 final class JobboardControllerTest extends FunctionalTestCase
 {
@@ -44,11 +56,31 @@ final class JobboardControllerTest extends FunctionalTestCase
         'jweiland/jobboard',
     ];
 
+    /**
+     * The testing framework disables the page cache (NullBackend). List and
+     * detail are cached in production, so the page cache is enabled here:
+     * remembered jobs must never end up in a cached page.
+     */
+    protected array $configurationToUseInTestInstance = [
+        'SYS' => [
+            'caching' => [
+                'cacheConfigurations' => [
+                    'pages' => [
+                        'backend' => Typo3DatabaseBackend::class,
+                    ],
+                ],
+            ],
+        ],
+    ];
+
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/JobVisibilityBySalaryInformation.csv');
+        $this->withBackendUser(
+            fn(): int => $this->get(EffectiveSalaryUpdaterInterface::class)->updateJobs(range(1, 9)),
+        );
 
         $siteWriter = $this->get(SiteWriter::class);
         $siteWriter->write('main', [
@@ -100,6 +132,59 @@ final class JobboardControllerTest extends FunctionalTestCase
                 before = record, seo
             }
         ');
+    }
+
+    /**
+     * DataHandler needs a backend user, the frontend requests must not have
+     * one (no preview of hidden records).
+     */
+    private function withBackendUser(callable $callable): void
+    {
+        $GLOBALS['BE_USER'] = GeneralUtility::makeInstance(CommandLineUserAuthentication::class);
+        $GLOBALS['BE_USER']->backendCheckLogin();
+        try {
+            $callable();
+        } finally {
+            unset($GLOBALS['BE_USER']);
+        }
+    }
+
+    /**
+     * @param array<string, array<int|string, array<string, mixed>>> $dataMap
+     */
+    private function processDataMap(array $dataMap): void
+    {
+        $this->withBackendUser(static function () use ($dataMap): void {
+            $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+            $dataHandler->start($dataMap, []);
+            $dataHandler->process_datamap();
+        });
+    }
+
+    /**
+     * Raw SQL: neither the hook nor any cache clearing is triggered
+     *
+     * @param array<string, mixed> $values
+     */
+    private function updateRecordWithoutDataHandler(string $table, int $uid, array $values): void
+    {
+        $this->get(ConnectionPool::class)->getConnectionForTable($table)->update($table, $values, ['uid' => $uid]);
+    }
+
+    private function fetchRememberedJobsPageBody(string $sessionCookie = ''): string
+    {
+        $queryString = '&id=1'
+            . '&tx_jobboard_jobboard[controller]=Jobboard'
+            . '&tx_jobboard_jobboard[action]=rememberedJobs';
+        $cHash = $this->get(CacheHashCalculator::class)->generateForParameters($queryString);
+
+        $request = (new InternalRequest('https://example.com/'))
+            ->withPageId(1)
+            ->withQueryParameter('tx_jobboard_jobboard[controller]', 'Jobboard')
+            ->withQueryParameter('tx_jobboard_jobboard[action]', 'rememberedJobs')
+            ->withQueryParameter('cHash', $cHash);
+
+        return (string)$this->executeFrontendSubRequest($this->withSession($request, $sessionCookie))->getBody();
     }
 
     private function fetchListPageBody(string $sessionCookie = ''): string
@@ -197,58 +282,75 @@ final class JobboardControllerTest extends FunctionalTestCase
             ->withQueryParameter('cHash', $cHash);
     }
 
-    #[Test]
-    public function excludesJobWithExpiredSalaryGrade(): void
+    /**
+     * @return array<string, array{int, string}>
+     */
+    public static function jobWithoutValidSalaryInformationDataProvider(): array
     {
-        self::assertStringNotContainsString(
-            'Job with expired grade',
-            $this->fetchListPageBody(),
-        );
+        return [
+            'expired salary grade' => [2, 'Job with expired grade'],
+            'hidden salary grade' => [3, 'Job with hidden grade'],
+            'not yet started salary grade' => [4, 'Job with not yet started grade'],
+            'salary grade with all steps expired' => [5, 'Job with all steps expired'],
+            'no salary grade selected' => [6, 'Job without any salary grade selected'],
+            'free entry without any amount' => [9, 'Job with free entry but no amount at all'],
+        ];
     }
 
     #[Test]
-    public function excludesJobWithHiddenSalaryGrade(): void
+    #[DataProvider('jobWithoutValidSalaryInformationDataProvider')]
+    public function updaterStoresNoEffectiveSalaryForJobWithoutValidSalaryInformation(int $jobUid): void
     {
-        self::assertStringNotContainsString(
-            'Job with hidden grade',
-            $this->fetchListPageBody(),
-        );
+        $row = $this->get(ConnectionPool::class)
+            ->getConnectionForTable('tx_jobboard_domain_model_job')
+            ->select(['effective_salary_min', 'effective_salary_max'], 'tx_jobboard_domain_model_job', ['uid' => $jobUid])
+            ->fetchAssociative();
+
+        self::assertSame([0.0, 0.0], [(float)$row['effective_salary_min'], (float)$row['effective_salary_max']]);
     }
 
     #[Test]
-    public function excludesJobWithNotYetStartedSalaryGrade(): void
+    #[DataProvider('jobWithoutValidSalaryInformationDataProvider')]
+    public function listActionExcludesJobWithoutValidSalaryInformation(int $jobUid, string $title): void
     {
-        self::assertStringNotContainsString(
-            'Job with not yet started grade',
-            $this->fetchListPageBody(),
-        );
+        $body = $this->fetchListPageBody();
+
+        self::assertStringNotContainsString($title, $body);
+        self::assertStringNotContainsString('data-jobboard-uid="' . $jobUid . '"', $body);
     }
 
     #[Test]
-    public function excludesJobWhoseSalaryGradeStepsAreAllExpired(): void
+    #[DataProvider('jobWithoutValidSalaryInformationDataProvider')]
+    public function searchActionExcludesJobWithoutValidSalaryInformation(int $jobUid, string $title): void
     {
-        self::assertStringNotContainsString(
-            'Job with all steps expired',
-            $this->fetchListPageBody(),
-        );
+        self::assertStringNotContainsString($title, $this->fetchSearchActionPageBody(4));
     }
 
     #[Test]
-    public function excludesJobWithoutAnySalaryGradeSelected(): void
+    public function hidingSalaryGradeInBackendRemovesJobFromCachedList(): void
     {
-        self::assertStringNotContainsString(
-            'Job without any salary grade selected',
-            $this->fetchListPageBody(),
-        );
+        // Cache the list first
+        self::assertStringContainsString('Job with visible stepped grade', $this->fetchListPageBody());
+
+        // The hook recalculates job 1 and DataHandler clears the page cache
+        $this->processDataMap(['tx_jobboard_domain_model_salarygrade' => [1 => ['hidden' => 1]]]);
+
+        $body = $this->fetchListPageBody();
+        self::assertStringNotContainsString('Job with visible stepped grade', $body);
+        self::assertStringContainsString('Job with free entry range', $body);
     }
 
     #[Test]
-    public function excludesFreeEntryJobWithoutAnyAmount(): void
+    public function addingAmountInBackendAddsJobToCachedList(): void
     {
-        self::assertStringNotContainsString(
-            'Job with free entry but no amount at all',
-            $this->fetchListPageBody(),
-        );
+        // A job, which was not listed, has no cache tag on the list page: the
+        // documented TCEMAIN.clearCacheCmd of the storage folder clears it
+        $this->updateRecordWithoutDataHandler('pages', 2, ['TSconfig' => 'TCEMAIN.clearCacheCmd = 1']);
+        self::assertStringNotContainsString('Job with free entry but no amount at all', $this->fetchListPageBody());
+
+        $this->processDataMap(['tx_jobboard_domain_model_job' => [9 => ['salary_min' => '1800.00']]]);
+
+        self::assertStringContainsString('Job with free entry but no amount at all', $this->fetchListPageBody());
     }
 
     #[Test]
@@ -279,32 +381,16 @@ final class JobboardControllerTest extends FunctionalTestCase
     }
 
     #[Test]
-    public function appliesConfiguredMaxEntriesLimitAfterFilteringOutIneligibleJobs(): void
+    public function appliesConfiguredMaxEntriesLimitInDatabaseAfterSalaryFilter(): void
     {
-        // Only 3 jobs are eligible in total (see the fixture): "Job with visible
-        // stepped grade", "Job with free entry range" and "Job with a single free
-        // entry amount". A limit of 2 must still render exactly 2 of those - never
-        // fewer just because ineligible jobs were skipped internally. Page 3 hosts a
-        // second plugin instance whose FlexForm sets settings.maxEntries to 2.
-        $response = $this->executeFrontendSubRequest(
-            (new InternalRequest('https://example.com/'))->withPageId(3),
-        );
-        $body = (string)$response->getBody();
-        $eligibleTitles = [
-            'Job with visible stepped grade',
-            'Job with free entry range',
-            'Job with a single free entry amount',
-        ];
+        // Page 3 hosts a plugin with settings.maxEntries = 2. Jobs 2 to 6 come
+        // before job 7 in the default order (uid), but have no effective salary:
+        // the limit must still render the first 2 listed jobs, 1 and 7.
+        $body = $this->fetchSearchFormPageBody(3);
 
-        $containedTitles = array_filter(
-            $eligibleTitles,
-            static fn(string $title): bool => str_contains($body, $title),
-        );
-
-        self::assertCount(
-            2,
-            $containedTitles,
-        );
+        self::assertSame(2, substr_count($body, 'data-jobboard-uid="'));
+        $this->assertAppearsBefore('data-jobboard-uid="1"', 'data-jobboard-uid="7"', $body);
+        self::assertStringNotContainsString('data-jobboard-uid="8"', $body);
     }
 
     #[Test]
@@ -565,6 +651,17 @@ final class JobboardControllerTest extends FunctionalTestCase
         self::assertStringNotContainsString('maps2', $body);
     }
 
+    #[Test]
+    public function listActionRendersNoMapAlertIfMaps2IsNotInstalled(): void
+    {
+        // Without EXT:maps2 a missing geo position is no configuration error
+        $body = $this->fetchSearchFormPageBody();
+
+        self::assertStringContainsString('Job with visible stepped grade', $body);
+        self::assertStringNotContainsString('alert alert-warning', $body);
+        self::assertStringNotContainsString('The map cannot be shown', $body);
+    }
+
     private function setItemsPerPage(int $itemsPerPage): void
     {
         $this->addTypoScriptToTemplateRecord(
@@ -654,75 +751,12 @@ final class JobboardControllerTest extends FunctionalTestCase
     }
 
     #[Test]
-    public function listActionRendersRememberedJobsFirst(): void
-    {
-        $body = $this->fetchListPageBody($this->rememberJobs(8));
-
-        $this->assertAppearsBefore('data-jobboard-uid="8"', 'data-jobboard-uid="1"', $body);
-        $this->assertAppearsBefore('data-jobboard-uid="1"', 'data-jobboard-uid="7"', $body);
-    }
-
-    #[Test]
-    public function listActionKeepsOrderOfQueryWithinRememberedJobs(): void
-    {
-        $body = $this->fetchListPageBody($this->rememberJobs(8, 1));
-
-        $this->assertAppearsBefore('data-jobboard-uid="1"', 'data-jobboard-uid="8"', $body);
-        $this->assertAppearsBefore('data-jobboard-uid="8"', 'data-jobboard-uid="7"', $body);
-    }
-
-    #[Test]
-    public function listActionRendersRememberedJobsCheckedAndHighlighted(): void
-    {
-        $body = $this->fetchListPageBody($this->rememberJobs(8));
-
-        self::assertStringContainsString('<tr data-jobboard-uid="8" class="highlight-row">', $body);
-        self::assertStringContainsString('name="remember_job" value="8" checked>', $body);
-        self::assertStringContainsString('<tr data-jobboard-uid="1">', $body);
-        self::assertStringContainsString('name="remember_job" value="1">', $body);
-    }
-
-    #[Test]
-    public function listActionRendersRememberedJobsOnFirstPage(): void
-    {
-        $this->setItemsPerPage(1);
-
-        $body = $this->fetchListPageBody($this->rememberJobs(8));
-
-        self::assertSame(1, substr_count($body, 'data-jobboard-uid="'));
-        self::assertStringContainsString('data-jobboard-uid="8"', $body);
-    }
-
-    #[Test]
-    public function listActionRendersDefaultOrderForOtherVisitors(): void
-    {
-        // The list is not cached, so the order of one visitor must never be
-        // delivered to another visitor.
-        $this->fetchListPageBody($this->rememberJobs(8));
-
-        $body = $this->fetchListPageBody();
-
-        $this->assertAppearsBefore('data-jobboard-uid="1"', 'data-jobboard-uid="8"', $body);
-        self::assertStringNotContainsString('highlight-row', $body);
-        self::assertStringNotContainsString(' checked>', $body);
-    }
-
-    #[Test]
     public function listActionContainsUrlOfCurrentPageForRememberedJobs(): void
     {
         self::assertStringContainsString(
             'data-jobboard-remember-url="/list-with-search"',
             $this->fetchSearchFormPageBody(),
         );
-    }
-
-    #[Test]
-    public function searchActionRendersRememberedJobsFirst(): void
-    {
-        $body = $this->fetchSearchActionPageBody(4, ['jobArea' => 1], $this->rememberJobs(8));
-
-        $this->assertAppearsBefore('data-jobboard-uid="8"', 'data-jobboard-uid="1"', $body);
-        self::assertStringContainsString('<tr data-jobboard-uid="8" class="highlight-row">', $body);
     }
 
     #[Test]
@@ -769,6 +803,175 @@ final class JobboardControllerTest extends FunctionalTestCase
         $body = $this->fetchSearchFormPageBody(3);
 
         self::assertSame(2, substr_count($body, 'data-jobboard-uid="'));
+        self::assertStringNotContainsString('currentPage', $body);
+    }
+
+    #[Test]
+    public function pluginConfigurationCachesListAndDetailOnly(): void
+    {
+        $controllerConfiguration = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['extbase']['extensions']['Jobboard']['plugins']
+            ['Jobboard']['controllers'][JobboardController::class];
+
+        self::assertSame(['list', 'search', 'detail', 'rememberedJobs'], $controllerConfiguration['actions']);
+        self::assertSame(['search', 'rememberedJobs'], $controllerConfiguration['nonCacheableActions']);
+    }
+
+    #[Test]
+    public function listActionIsCached(): void
+    {
+        $this->fetchListPageBody();
+        $this->updateRecordWithoutDataHandler('tx_jobboard_domain_model_job', 7, ['title' => 'Changed title']);
+
+        $body = $this->fetchListPageBody();
+
+        self::assertStringContainsString('Job with free entry range', $body);
+        self::assertStringNotContainsString('Changed title', $body);
+    }
+
+    #[Test]
+    public function detailActionIsCached(): void
+    {
+        $this->executeFrontendSubRequest($this->buildDetailActionRequest(1));
+        $this->updateRecordWithoutDataHandler('tx_jobboard_domain_model_job', 1, ['title' => 'Changed title']);
+
+        $body = (string)$this->executeFrontendSubRequest($this->buildDetailActionRequest(1))->getBody();
+
+        self::assertStringContainsString('Job with visible stepped grade', $body);
+        self::assertStringNotContainsString('Changed title', $body);
+    }
+
+    #[Test]
+    public function searchActionIsNotCached(): void
+    {
+        $this->fetchSearchActionPageBody(4);
+        $this->updateRecordWithoutDataHandler('tx_jobboard_domain_model_job', 7, ['title' => 'Changed title']);
+
+        self::assertStringContainsString('Changed title', $this->fetchSearchActionPageBody(4));
+    }
+
+    #[Test]
+    public function listActionRendersNoVisitorSpecificMarkupForVisitorWithRememberedJobs(): void
+    {
+        // The visitor with remembered jobs renders the page first, so it
+        // would end up in the page cache for every other visitor
+        $sessionCookie = $this->rememberJobs(8);
+        $bodyOfVisitorWithRememberedJobs = $this->fetchListPageBody($sessionCookie);
+        $bodyOfOtherVisitor = $this->fetchListPageBody();
+
+        self::assertSame($bodyOfOtherVisitor, $bodyOfVisitorWithRememberedJobs);
+        self::assertStringNotContainsString('highlight-row', $bodyOfVisitorWithRememberedJobs);
+        self::assertStringNotContainsString(' checked>', $bodyOfVisitorWithRememberedJobs);
+        self::assertStringContainsString('name="remember_job" value="8">', $bodyOfVisitorWithRememberedJobs);
+    }
+
+    #[Test]
+    public function listActionDoesNotSortRememberedJobsFirst(): void
+    {
+        $body = $this->fetchListPageBody($this->rememberJobs(8));
+
+        $this->assertAppearsBefore('data-jobboard-uid="1"', 'data-jobboard-uid="7"', $body);
+        $this->assertAppearsBefore('data-jobboard-uid="7"', 'data-jobboard-uid="8"', $body);
+    }
+
+    #[Test]
+    public function listActionDoesNotMoveRememberedJobsToFirstPage(): void
+    {
+        $this->setItemsPerPage(1);
+
+        $body = $this->fetchListPageBody($this->rememberJobs(8));
+
+        self::assertSame(1, substr_count($body, 'data-jobboard-uid="'));
+        self::assertStringContainsString('data-jobboard-uid="1"', $body);
+    }
+
+    #[Test]
+    public function searchActionRendersNoVisitorSpecificMarkupForVisitorWithRememberedJobs(): void
+    {
+        $body = $this->fetchSearchActionPageBody(4, ['jobArea' => 1], $this->rememberJobs(8));
+
+        $this->assertAppearsBefore('data-jobboard-uid="1"', 'data-jobboard-uid="8"', $body);
+        self::assertStringNotContainsString('highlight-row', $body);
+        self::assertStringNotContainsString(' checked>', $body);
+    }
+
+    #[Test]
+    public function listActionContainsLinkToRememberedJobs(): void
+    {
+        self::assertStringContainsString('tx_jobboard_jobboard%5Baction%5D=rememberedJobs', $this->fetchListPageBody());
+    }
+
+    #[Test]
+    public function rememberedJobsActionListsRememberedJobsCheckedInOrderOfJobList(): void
+    {
+        $body = $this->fetchRememberedJobsPageBody($this->rememberJobs(8, 1));
+
+        self::assertSame(2, substr_count($body, 'data-jobboard-uid="'));
+        $this->assertAppearsBefore('data-jobboard-uid="1"', 'data-jobboard-uid="8"', $body);
+        self::assertStringContainsString('name="remember_job" value="1" checked>', $body);
+        self::assertStringContainsString('name="remember_job" value="8" checked>', $body);
+        self::assertStringNotContainsString('data-jobboard-uid="7"', $body);
+    }
+
+    #[Test]
+    public function rememberedJobsActionIgnoresRememberedJobsWhichAreNotListed(): void
+    {
+        // After they were remembered, job 7 is hidden, job 8 expires and job 10
+        // loses its salary information (RememberJobMiddleware does not accept
+        // such jobs, but they may still be in the session).
+        $this->get(ConnectionPool::class)
+            ->getConnectionForTable('tx_jobboard_domain_model_job')
+            ->insert('tx_jobboard_domain_model_job', [
+                'uid' => 10,
+                'pid' => 2,
+                'title' => 'Job losing its salary information',
+                'effective_salary_min' => 2500,
+            ]);
+        $sessionCookie = $this->rememberJobs(7, 8, 10, 1);
+        $this->updateRecordWithoutDataHandler('tx_jobboard_domain_model_job', 7, ['hidden' => 1]);
+        $this->updateRecordWithoutDataHandler('tx_jobboard_domain_model_job', 8, ['application_deadline' => 946684800]);
+        $this->updateRecordWithoutDataHandler(
+            'tx_jobboard_domain_model_job',
+            10,
+            ['effective_salary_min' => 0, 'effective_salary_max' => 0],
+        );
+
+        $body = $this->fetchRememberedJobsPageBody($sessionCookie);
+
+        self::assertSame(1, substr_count($body, 'data-jobboard-uid="'));
+        self::assertStringContainsString('data-jobboard-uid="1"', $body);
+    }
+
+    #[Test]
+    public function rememberedJobsActionWithoutRememberedJobsRendersHint(): void
+    {
+        $body = $this->fetchRememberedJobsPageBody();
+
+        self::assertSame(0, substr_count($body, 'data-jobboard-uid="'));
+        self::assertStringContainsString('You have not remembered any jobs yet.', $body);
+    }
+
+    #[Test]
+    public function rememberedJobsActionIsNotCached(): void
+    {
+        self::assertStringContainsString(
+            'data-jobboard-uid="8"',
+            $this->fetchRememberedJobsPageBody($this->rememberJobs(8)),
+        );
+
+        $body = $this->fetchRememberedJobsPageBody();
+
+        self::assertSame(0, substr_count($body, 'data-jobboard-uid="'));
+        self::assertStringContainsString('You have not remembered any jobs yet.', $body);
+    }
+
+    #[Test]
+    public function rememberedJobsActionIsNotPaginated(): void
+    {
+        $this->setItemsPerPage(1);
+
+        $body = $this->fetchRememberedJobsPageBody($this->rememberJobs(8, 1, 7));
+
+        self::assertSame(3, substr_count($body, 'data-jobboard-uid="'));
         self::assertStringNotContainsString('currentPage', $body);
     }
 }

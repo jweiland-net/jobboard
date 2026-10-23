@@ -45,15 +45,20 @@ Search form
     matching jobs, for example "IT (3)".
 
 Remember jobs
-    In the table layout, visitors can tick "Remember" for single jobs. The
-    list and the search result show the remembered jobs of this visitor
-    first, highlighted with a tinted background and a colored bar in front
-    of the row. The selection is stored in the TYPO3 session of the
-    visitor, see :ref:`remember-jobs`.
+    In the table layout, visitors can tick "Remember" for single jobs.
+    Remembered jobs are highlighted with a tinted background and a colored
+    bar in front of the row. A link "Remembered jobs" with the number of
+    remembered jobs leads to a view of all remembered jobs, where visitors
+    can also remove them. The selection is stored in the TYPO3 session of
+    the visitor, see :ref:`remember-jobs`.
 
 Map
     If the optional extension :composer:`jweiland/maps2` is installed, the
-    locations of the listed jobs are shown on a map above the list.
+    locations of the jobs on the current page of the list are shown on a
+    map, one marker per address. A click on a marker opens an info window
+    with the number of jobs at this location and links to them. You choose
+    the map provider, OpenStreetMap or Google Maps, with a site set of
+    EXT:maps2, see :ref:`installation-maps2`.
 
 Detail view
     All facts of a job grouped in sections: description, offer,
@@ -68,6 +73,13 @@ Salary information
     salary grades (with or without steps) or a free minimum and maximum
     amount. Jobs without salary information are never shown. The extension
     is built for employers who must publish the salary of each job offer.
+    A daily console command applies the validity periods of salary grades,
+    see :ref:`salary-update`.
+
+Caching
+    The list and the detail view are cached and identical for all
+    visitors. The page browser loads only the jobs of the current page
+    from the database, see :ref:`configuration-plugin-caching`.
 
 Speaking URLs and page title
     A shipped route enhancer creates URLs like :file:`/jobs/web-developer-m-f-d`
