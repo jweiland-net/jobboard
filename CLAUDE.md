@@ -156,8 +156,9 @@ Key points:
   `RememberedJobs` (pure `final readonly` value object in `Domain/Model/`) sanitizes untrusted session
   data and caps the list at `RememberedJobs::MAXIMUM` (50).
   - `RememberJobMiddleware` (header `jobboard-remember-job`, POST only, fields `job` = digits only,
-    `remember` = `1`/`0`) answers `{"rememberedJobs": [...]}` plus `error` on 400/404/405/409. It runs
-    after `typo3/cms-frontend/authentication` and before `typo3/cms-frontend/page-resolver` (no page,
+    `remember` = `1`/`0`) answers `{"rememberedJobs": [...]}` plus `error` on 400/404/409. A non-POST
+    request is rejected before the session is read and answers `{"error": "methodNotAllowed"}` (405)
+    only. It runs after `typo3/cms-frontend/authentication` and before `typo3/cms-frontend/page-resolver` (no page,
     no TypoScript needed). No Extbase: it checks visibility with the `ConnectionPoolTrait` QueryBuilder
     (frontend restrictions, `sys_language_uid IN (0,-1)`, pid in site setting `jobboard.storagePid`
     expanded 3 levels like `persistence.recursive`). It writes the session only if the list changed,

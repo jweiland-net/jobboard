@@ -70,7 +70,8 @@ case of an error, it also contains an error code:
             their sub pages (3 levels, like the content element).
     *   -   405
         -   :code:`methodNotAllowed`
-        -   The request is not a POST request.
+        -   The request is not a POST request. The answer contains the error
+            code only, no remembered jobs.
     *   -   409
         -   :code:`limitReached`
         -   The visitor has remembered 50 jobs already.
