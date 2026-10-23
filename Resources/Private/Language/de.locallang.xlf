@@ -375,6 +375,14 @@
 				<source>Jobs %1$d to %2$d of %3$d</source>
 				<target>Stellen %1$d bis %2$d von %3$d</target>
 			</trans-unit>
+			<trans-unit id="map.noGeoPosition.header">
+				<source>The map cannot be shown</source>
+				<target>Die Karte kann nicht angezeigt werden</target>
+			</trans-unit>
+			<trans-unit id="map.noGeoPosition">
+				<source>None of the addresses of the listed jobs has a geo position. Please save the addresses of the jobs in the backend, so that EXT:maps2 can determine their positions.</source>
+				<target>Keine der Adressen der aufgelisteten Stellen hat eine Geoposition. Bitte speichern Sie die Adressen der Stellen im Backend, damit EXT:maps2 ihre Position ermitteln kann.</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>
