@@ -59,12 +59,12 @@ final readonly class RememberJobMiddleware implements MiddlewareInterface
             return $handler->handle($request);
         }
 
-        $rememberedJobs = $this->rememberedJobsService->getRememberedJobs($request);
+        // Reject before the session is read: no remembered jobs for other methods
         if ($request->getMethod() !== 'POST') {
-            return $this->createResponse($rememberedJobs, 405, 'methodNotAllowed')
-                ->withHeader('Allow', 'POST');
+            return (new JsonResponse(['error' => 'methodNotAllowed'], 405))->withHeader('Allow', 'POST');
         }
 
+        $rememberedJobs = $this->rememberedJobsService->getRememberedJobs($request);
         $jobUid = $this->getJobUidFromRequest($request);
         $remember = $this->getRememberFromRequest($request);
         if ($jobUid === 0 || $remember === null) {

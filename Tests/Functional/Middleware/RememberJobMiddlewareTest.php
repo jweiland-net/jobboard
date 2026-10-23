@@ -220,7 +220,7 @@ final class RememberJobMiddlewareTest extends FunctionalTestCase
 
         self::assertSame(405, $response->getStatusCode());
         self::assertSame('POST', $response->getHeaderLine('Allow'));
-        self::assertSame(['rememberedJobs' => [2], 'error' => 'methodNotAllowed'], $this->decode($response));
+        self::assertSame(['error' => 'methodNotAllowed'], $this->decode($response));
         self::assertSame(0, $rememberedJobsService->numberOfStoreCalls);
     }
 
