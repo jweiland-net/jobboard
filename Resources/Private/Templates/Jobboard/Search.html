@@ -7,14 +7,21 @@
 <f:section name="main">
     <f:render partial="JobListAssets"/>
     <f:render partial="SearchForm" arguments="{_all}"/>
+    <f:render partial="RememberedJobs/Link"/>
+    <f:render partial="RememberedJobs/Feedback"/>
 
     <f:if condition="{jobs}">
         <f:then>
-            <f:comment>Types/Card can be rendered here instead for a card-based layout.</f:comment>
+            <f:comment>
+                Types/Card can be rendered here instead for a card-based layout.
+                This action is cached: never pass "rememberedJobs" here, the
+                remembered jobs are highlighted by remember-jobs.js.
+            </f:comment>
             <f:render partial="Types/Table" arguments="{objects: jobs}"/>
+            <f:render partial="Pagination" arguments="{pagination: pagination, paginator: paginator, numberOfJobs: numberOfJobs, actionName: actionName}"/>
         </f:then>
         <f:else>
-            <p>{f:translate(key: 'search.no_jobs_found')}</p>
+            <p class="alert alert-info" role="status">{f:translate(key: 'search.no_jobs_found')}</p>
         </f:else>
     </f:if>
 </f:section>

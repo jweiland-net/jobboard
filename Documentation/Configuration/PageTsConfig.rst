@@ -16,22 +16,54 @@ The extension loads its page TSconfig automatically through
     important options (template
     :file:`EXT:jobboard/Resources/Private/Templates/PluginPreview/Jobboard.html`).
 
+..  _configuration-page-tsconfig-cache:
+
+Clear the cache of the job board pages
+======================================
+
+..  important::
+
+    Add :typoscript:`TCEMAIN.clearCacheCmd` to the page TSconfig of the
+    storage folder. List and detail view are cached. Without this setting,
+    changes in the storage folder appear on the job board pages only when
+    their cache expires.
+
+..  code-block:: typoscript
+    :caption: Page TSconfig of the storage folder
+
+    # UIDs of all pages with the content element "Job board"
+    TCEMAIN.clearCacheCmd = 42, 87
+
+:typoscript:`TCEMAIN.clearCacheCmd` clears the cache of the given pages
+whenever a record in the storage folder is saved, deleted, hidden or
+moved. This applies to:
+
+*   changes of editors in the backend,
+*   the :ref:`job import <import>`,
+*   the daily command :bash:`jobboard:salary:update`, which saves jobs with
+    changed salary information with the DataHandler, see
+    :ref:`salary-update`.
+
+List all pages that contain the content element, for example the job
+board page and a start page with a short list of jobs. Changes of the dates
+of jobs (application deadline, end of employment, publish and expiration
+date) do not need a cache clearing, see :ref:`configuration-plugin-caching`.
+
 ..  _configuration-page-tsconfig-recipes:
 
 Recommended page TSconfig
 =========================
 
-The following snippets are optional. Add them to the page TSconfig of the
-storage folder or of your site package.
+Except for :typoscript:`TCEMAIN.clearCacheCmd`, the following snippets are
+optional. Add them to the page TSconfig of the storage folder.
 
 ..  literalinclude:: _snippets/_page.tsconfig
     :language: typoscript
-    :caption: EXT:my_sitepackage/Configuration/page.tsconfig
+    :caption: Page TSconfig of the storage folder
 
 Clear the cache of the list page
-    The list page is cached. :typoscript:`TCEMAIN.clearCacheCmd` clears the
-    cache of the given pages whenever a record in the storage folder is
-    saved, also by the :ref:`job import <import>`.
+    Required in the page TSconfig of the storage folder, see
+    :ref:`configuration-page-tsconfig-cache`.
 
 Hide salary steps in the list module
     Salary steps are maintained inside their salary grade. Hiding the table

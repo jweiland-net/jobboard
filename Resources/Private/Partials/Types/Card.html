@@ -7,13 +7,16 @@
     table row. List/Search render Types/Table by default, but either template can
     render this partial instead - keep it even if nothing in this extension itself
     references it yet, a consuming project may switch to it via template override.
+    The markup is the same for every visitor (List is cached):
+    remember-jobs.js adds "highlight-row" to remembered cards via
+    data-jobboard-uid.
 </f:comment>
 
-<div class="cards-responsive">
+<ul class="row row-cols-1 row-cols-md-2 g-4 list-unstyled">
     <f:for each="{objects}" as="job">
-        <div class="jobboard-job" data-jobboard-uid="{job.uid}">
-            <div class="jobboard-jobdetails">
-                <p>
+        <li class="col">
+            <article class="jobboard-job card h-100" data-jobboard-uid="{job.uid}">
+                <div class="jobboard-jobdetails card-header d-flex flex-wrap align-items-center gap-2 small">
                     <f:if condition="{job.jobAreas}">
                         <f:render partial="Job/JobAreas" arguments="{job: job, separator: ''}"/>
                     </f:if>
@@ -23,30 +26,31 @@
                     <f:if condition="{job.applicationDeadline}">
                         <span>{f:translate(key: 'job.applicationDeadline')}: {job.applicationDeadline -> f:format.date(format: '{f:translate(key: \'dateFormat\')}')}</span>
                     </f:if>
-                </p>
-            </div>
-            <div class="jobboard-content">
-                <h2>{job.title}</h2>
-                <f:format.raw>
-                    {job.description -> f:format.crop(maxCharacters: 400)}
-                </f:format.raw>
-            </div>
-            <div class="jobboard-footer">
-                <f:if condition="{job.link}">
-                    <f:then>
-                        <f:link.external class="btn-outline" uri="{job.link}" target="_blank">{f:translate(key: 'job.readMore')}</f:link.external>
-                    </f:then>
-                    <f:else>
-                        <f:link.action class="btn-outline" action="detail" arguments="{job: job}">{f:translate(key: 'job.readMore')}</f:link.action>
-                    </f:else>
-                </f:if>
-                <f:if condition="{settings.pidOfApplicationForm} > 0">
-                    <p>
-                        <f:link.page pageUid="{settings.pidOfApplicationForm}" class="btn-primary" additionalParams="{jobuid: job.uid}">{f:translate(key: 'job.applyOnline')}</f:link.page>
-                    </p>
-                </f:if>
-            </div>
-        </div>
+                </div>
+                <div class="jobboard-content card-body">
+                    <h2 class="card-title h5 text-break">{job.title}</h2>
+                    <div class="card-text">
+                        <f:format.raw>
+                            {job.description -> f:format.crop(maxCharacters: 400)}
+                        </f:format.raw>
+                    </div>
+                </div>
+                <div class="jobboard-footer card-footer d-flex flex-wrap gap-2">
+                    <f:comment>The visually hidden job title makes "Read more" unique for screen readers.</f:comment>
+                    <f:if condition="{job.link}">
+                        <f:then>
+                            <f:link.external class="btn btn-outline-primary" uri="{job.link}" target="_blank">{f:translate(key: 'job.readMore')}<span class="visually-hidden">: {job.title}</span></f:link.external>
+                        </f:then>
+                        <f:else>
+                            <f:link.action class="btn btn-outline-primary" action="detail" arguments="{job: job}">{f:translate(key: 'job.readMore')}<span class="visually-hidden">: {job.title}</span></f:link.action>
+                        </f:else>
+                    </f:if>
+                    <f:if condition="{settings.pidOfApplicationForm} > 0">
+                        <f:link.page pageUid="{settings.pidOfApplicationForm}" class="btn btn-primary" additionalParams="{jobuid: job.uid}">{f:translate(key: 'job.applyOnline')}</f:link.page>
+                    </f:if>
+                </div>
+            </article>
+        </li>
     </f:for>
-</div>
+</ul>
 </html>

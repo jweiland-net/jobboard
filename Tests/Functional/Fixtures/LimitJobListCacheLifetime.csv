@@ -1,0 +1,18 @@
+"pages"
+,"uid","pid","title","slug","deleted","hidden","doktype","is_siteroot"
+,1,0,"Root with plugin using the storage of the site","/",0,0,1,1
+,2,1,"Storage of the site","/storage",0,0,254,0
+,3,2,"Sub folder of the storage of the site","/storage/sub",0,0,254,0
+,4,1,"Page without plugin","/without-plugin",0,0,1,0
+,5,1,"Page with plugin using its own storage","/own-storage",0,0,1,0
+,6,1,"Page with hidden plugin","/hidden-plugin",0,0,1,0
+,7,1,"Own storage of plugin","/own-storage-folder",0,0,254,0
+,8,7,"Sub folder of own storage (not recursive)","/own-storage-folder/sub",0,0,254,0
+,99,1,"Unrelated storage","/other",0,0,254,0
+
+"tt_content"
+,"uid","pid","CType","header","hidden","pages","recursive"
+,1,1,"jobboard_jobboard","Jobboard",0,"",0
+,2,4,"text","Text",0,"",0
+,3,5,"jobboard_jobboard","Jobboard with own storage",0,"7",0
+,4,6,"jobboard_jobboard","Hidden jobboard",1,"",0

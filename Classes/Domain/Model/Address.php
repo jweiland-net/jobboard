@@ -28,6 +28,14 @@ use JWeiland\Maps2\Domain\Model\PoiCollection;
  */
 class Address extends TtAddress
 {
+    /**
+     * Extbase reads the type of the property by PhpDocExtractor first,
+     * before the ReflectionExtractor prefers the untyped setter parameter.
+     * Without this annotation, the relation is not mapped (Relation::NONE)
+     * and the PoiCollection is never loaded.
+     *
+     * @var PoiCollection|null
+     */
     protected ?PoiCollection $txMaps2Uid = null;
 
     public function getTxMaps2Uid(): ?PoiCollection

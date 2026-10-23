@@ -1,0 +1,49 @@
+<html lang="en"
+      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+<f:comment>
+    Info window of a job location (marker) on the map of the optional EXT:maps2.
+    Rendered by RenderJobLocationInfoWindowContentEventListener in a middleware:
+    there is no Extbase request. Use "extensionName" for f:translate and the
+    prepared URIs of the job links instead of f:link.action.
+
+    Variables: jobLocation (JWeiland\Jobboard\Domain\Model\JobLocation)
+</f:comment>
+<f:spaceless>
+<div class="jobboard-info-window small">
+    <f:if condition="{jobLocation.name}">
+        <h3 class="h6 mb-1">{jobLocation.name}</h3>
+    </f:if>
+    <f:if condition="{jobLocation.street} || {jobLocation.zip} || {jobLocation.city}">
+        <address class="mb-2 text-body-secondary">
+            <f:if condition="{jobLocation.street}">{jobLocation.street}<br></f:if>
+            {jobLocation.zip} {jobLocation.city}
+        </address>
+    </f:if>
+    <f:variable name="numberOfJobsKey" value="{f:if(condition: '{jobLocation.numberOfJobs} == 1', then: 'map.infoWindow.numberOfJobs.singular', else: 'map.infoWindow.numberOfJobs.plural')}"/>
+    <p class="mb-1 fw-semibold">{f:translate(key: numberOfJobsKey, extensionName: 'jobboard', arguments: {0: jobLocation.numberOfJobs})}</p>
+    <ul class="list-unstyled mb-0">
+        <f:for each="{jobLocation.jobLinks}" as="jobLink">
+            <li class="mb-1">
+                <f:if condition="{jobLink.uri}">
+                    <f:then>
+                        <f:if condition="{jobLink.isExternal}">
+                            <f:then>
+                                <a href="{jobLink.uri}" target="_blank" rel="noopener">{jobLink.title}</a>
+                            </f:then>
+                            <f:else>
+                                <a href="{jobLink.uri}">{jobLink.title}</a>
+                            </f:else>
+                        </f:if>
+                    </f:then>
+                    <f:else>
+                        {jobLink.title}
+                    </f:else>
+                </f:if>
+            </li>
+        </f:for>
+    </ul>
+</div>
+</f:spaceless>
+</html>

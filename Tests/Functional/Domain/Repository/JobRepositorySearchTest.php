@@ -17,10 +17,13 @@ use JWeiland\Jobboard\Domain\Model\JobRole;
 use JWeiland\Jobboard\Domain\Model\JobType;
 use JWeiland\Jobboard\Domain\Model\Search;
 use JWeiland\Jobboard\Domain\Repository\JobRepository;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Extbase\Persistence\Generic\QuerySettingsInterface;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
+use TYPO3\CMS\Extbase\Persistence\QueryInterface;
+use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 /**
@@ -32,7 +35,9 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
  * job areas of a job), the job role/job type equality filters, the zip
  * (exact) / city (LIKE) address filter, and the free text search matching
  * title, address or Job RTE fields word by word, combined with logical AND.
- * Additionally covers the job area filter of JobRepository::findBySettings().
+ * Additionally covers the job area filter of JobRepository::findBySettings(),
+ * the salary filter by the precomputed effective salary, the default
+ * ordering, the limit in the database and JobRepository::findByUids().
  *
  * JobArea/JobRole/JobType have no dedicated repository (they are plain lookup
  * entities only ever read as a relation of Job), so single entities are
@@ -473,5 +478,127 @@ class JobRepositorySearchTest extends FunctionalTestCase
             ['Job with exact zip match'],
             $this->findJobTitles(new Search(null, null, null, '', 'Pforzheim exact')),
         );
+    }
+
+    /**
+     * @param iterable<Job> $jobs
+     * @return int[]
+     */
+    private function getUids(iterable $jobs): array
+    {
+        $uids = [];
+        foreach ($jobs as $job) {
+            $uids[] = (int)$job->getUid();
+        }
+
+        return $uids;
+    }
+
+    /**
+     * @param array<string, float> $effectiveSalary
+     */
+    private function updateJob(int $jobUid, array $effectiveSalary): void
+    {
+        $this->get(ConnectionPool::class)
+            ->getConnectionForTable('tx_jobboard_domain_model_job')
+            ->update('tx_jobboard_domain_model_job', $effectiveSalary, ['uid' => $jobUid]);
+    }
+
+    /**
+     * @return array<string, array{array<string, float>, bool}>
+     */
+    public static function effectiveSalaryDataProvider(): array
+    {
+        return [
+            'no effective salary' => [['effective_salary_min' => 0.0, 'effective_salary_max' => 0.0], false],
+            'effective minimum only' => [['effective_salary_min' => 2500.0, 'effective_salary_max' => 0.0], true],
+            'effective maximum only' => [['effective_salary_min' => 0.0, 'effective_salary_max' => 3200.0], true],
+        ];
+    }
+
+    /**
+     * The salary is filtered by the precomputed effective salary only, the
+     * free entry salary of the job ("salary_min" = 3000) is not considered.
+     *
+     * @param array<string, float> $effectiveSalary
+     */
+    #[Test]
+    #[DataProvider('effectiveSalaryDataProvider')]
+    public function findBySettingsAndFindBySearchFilterByEffectiveSalaryInDatabase(
+        array $effectiveSalary,
+        bool $expectedListed,
+    ): void {
+        $this->updateJob(1, $effectiveSalary);
+
+        self::assertSame($expectedListed, in_array(1, $this->getUids($this->subject->findBySettings([])), true));
+        self::assertSame(
+            $expectedListed,
+            in_array(1, $this->getUids($this->subject->findBySearch(new Search(null, null, null, '', ''))), true),
+        );
+    }
+
+    #[Test]
+    public function findBySettingsSortsByApplicationDeadlineAndUid(): void
+    {
+        $this->updateJob(1, ['application_deadline' => 4102444800]);
+
+        $jobs = $this->subject->findBySettings([]);
+
+        self::assertSame([2, 3, 4, 7, 8, 9, 10, 11, 1, 13], $this->getUids($jobs));
+        self::assertSame(
+            [
+                'applicationDeadline' => QueryInterface::ORDER_ASCENDING,
+                'uid' => QueryInterface::ORDER_ASCENDING,
+            ],
+            $jobs->getQuery()->getOrderings(),
+        );
+    }
+
+    #[Test]
+    public function findBySettingsAppliesLimitInDatabaseAfterSalaryFilter(): void
+    {
+        // The first two jobs in default order are jobs 1 and 2
+        $this->updateJob(1, ['effective_salary_min' => 0.0, 'effective_salary_max' => 0.0]);
+
+        $jobs = $this->subject->findBySettings([], 2);
+
+        self::assertSame(2, $jobs->getQuery()->getLimit());
+        self::assertSame([2, 3], $this->getUids($jobs));
+    }
+
+    #[Test]
+    public function findBySettingsReturnsUnexecutedQueryResult(): void
+    {
+        $jobs = $this->subject->findBySettings([]);
+
+        self::assertInstanceOf(QueryResultInterface::class, $jobs);
+        self::assertSame(10, $jobs->count());
+    }
+
+    #[Test]
+    public function findBySearchAppliesLimitInDatabase(): void
+    {
+        $jobs = $this->subject->findBySearch(new Search(null, null, null, '76133', ''), 2);
+
+        self::assertSame(2, $jobs->getQuery()->getLimit());
+        self::assertSame([1, 7], $this->getUids($jobs));
+    }
+
+    #[Test]
+    public function findByUidsReturnsListedJobsOnlyOrderedLikeTheList(): void
+    {
+        $this->updateJob(3, ['effective_salary_min' => 0.0, 'effective_salary_max' => 0.0]);
+
+        // 3: no salary, 5: ended employment, 6: no title, 12: deadline
+        // passed, 999: does not exist
+        $jobs = $this->subject->findByUids([13, 999, 12, 6, 5, 3, 2, 1]);
+
+        self::assertSame([1, 2, 13], $this->getUids($jobs));
+    }
+
+    #[Test]
+    public function findByUidsWithoutUidsReturnsNoJobs(): void
+    {
+        self::assertSame([], $this->getUids($this->subject->findByUids([])));
     }
 }

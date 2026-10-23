@@ -75,9 +75,10 @@ The jobs of a source are recognized by the prefix of their vacancy ID, the
 
 All records are written with the TYPO3 DataHandler. Hooks and events of
 other extensions, for example for search indexing, are triggered for
-every imported record. The import does not clear caches itself. Configure
-:typoscript:`TCEMAIN.clearCacheCmd` for the storage folder, see
-:ref:`configuration-page-tsconfig-recipes`.
+every imported record. This also calculates the effective salary of the
+imported jobs, see :ref:`salary-update`. The import does not clear caches
+itself. Configure :typoscript:`TCEMAIN.clearCacheCmd` for the storage
+folder, see :ref:`configuration-page-tsconfig-cache`.
 
 ..  note::
 

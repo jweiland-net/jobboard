@@ -7,7 +7,8 @@
 Speaking URLs (route enhancer)
 ==============================
 
-The extension ships a route enhancer for the detail view in
+The extension ships a route enhancer for the detail view, the page browser
+and the view of the remembered jobs in
 :file:`EXT:jobboard/Configuration/Routes/Default.yaml`. It creates URLs like
 :file:`https://example.org/jobs/web-developer-m-f-d` instead of URLs with
 query parameters.
@@ -29,8 +30,18 @@ page below the same key, as shown above.
 How it works
 ============
 
+*   Route :yaml:`/remembered` maps to the action :php:`rememberedJobs`,
+    the view of the remembered jobs of the visitor, for example
+    :file:`https://example.org/jobs/remembered`, see
+    :ref:`remember-jobs-view`. It is defined before :yaml:`/{job_title}`.
+    Do not use the URL segment "remembered" for a job.
 *   Route :yaml:`/{job_title}` maps to the action :php:`detail` with the
     argument :code:`job`. The default action is :php:`list`.
+*   Route :yaml:`/page/{page}` maps to the action :php:`list` with the
+    argument :code:`currentPage` of the page browser, for example
+    :file:`https://example.org/jobs/page/2`. The aspect
+    :yaml:`StaticRangeMapper` allows the pages 1 to 999. The pages of a
+    search result keep their search criteria as query parameters.
 *   The aspect :yaml:`PersistedAliasMapper` resolves :yaml:`job_title`
     with the field "URL segment" (:sql:`path_segment`) of the job.
 *   The URL segment is created from the job title when a job is saved, also

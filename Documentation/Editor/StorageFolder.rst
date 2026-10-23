@@ -70,3 +70,6 @@ translating records in the list module, the storage folder itself needs a
 translation into the target language: use
 :guilabel:`Create a new translation of this page` at the top of the list
 module first.
+
+The salary of a job is taken from the default language and cannot be
+changed in a translation, see :ref:`editor-salary-translation`.

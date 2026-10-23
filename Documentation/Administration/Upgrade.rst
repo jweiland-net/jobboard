@@ -24,6 +24,33 @@ All wizards require an up-to-date database. Run
 so that the new tables exist, and remove old tables and columns only
 afterwards.
 
+..  _upgrade-update:
+
+After updating the extension
+============================
+
+Run these steps after every update of the extension:
+
+#.  Update the database schema: :bash:`vendor/bin/typo3 extension:setup`
+    or the database analyzer in :guilabel:`Admin Tools > Maintenance >
+    Analyze Database Structure`. It creates the columns of the effective
+    salary of the jobs, see :ref:`salary-update-columns`.
+#.  Run the upgrade wizards, if any are listed.
+#.  Calculate the effective salary of all jobs once:
+
+    ..  code-block:: bash
+        :caption: Recalculate the effective salary of all jobs
+
+        vendor/bin/typo3 jobboard:salary:update --all
+
+    Jobs without a calculated effective salary are not listed.
+#.  Make sure the TYPO3 Scheduler runs :code:`jobboard:salary:update` once
+    a day, see :ref:`salary-update-command`.
+#.  Make sure the page TSconfig of the storage folder contains
+    :typoscript:`TCEMAIN.clearCacheCmd` with the UIDs of all pages with
+    the job board, see :ref:`configuration-page-tsconfig-cache`.
+#.  Flush all caches: :bash:`vendor/bin/typo3 cache:flush`.
+
 ..  _upgrade-wizards:
 
 Available wizards
@@ -70,6 +97,8 @@ Migrate from EXT:jobfair2
 #.  Run :code:`jweilandJobboardJobfairToJobboardMigration`.
 #.  Run :code:`jweilandJobboardJobfairToJobboardCTypeMigration`.
 #.  Run :code:`jweilandJobboardJobPathSegmentUpdate`.
+#.  Calculate the effective salary of the migrated jobs:
+    :bash:`vendor/bin/typo3 jobboard:salary:update --all`.
 #.  Replace the TypoScript of EXT:jobfair2 by the site set of the job board
     and check the site settings, see :ref:`configuration`.
 #.  Check the options of the migrated content elements.
@@ -79,7 +108,10 @@ Migrate from EXT:jobfair2
 #.  Check the salary information of the migrated jobs (salary mode and
     salary grades or minimum and maximum salary). Jobs without salary
     information are not shown.
+#.  Set up the daily salary update and :typoscript:`TCEMAIN.clearCacheCmd`,
+    see :ref:`upgrade-update`.
 #.  Remove EXT:jobfair2 and its tables.
 
-Because the UIDs of the jobs are kept, jobs that visitors have remembered
-in the job list stay remembered.
+The UIDs of the jobs are kept. Jobs that visitors remembered with
+EXT:jobfair2 are not taken over: they were stored in the browser, the job
+board stores them in the TYPO3 session, see :ref:`remember-jobs`.

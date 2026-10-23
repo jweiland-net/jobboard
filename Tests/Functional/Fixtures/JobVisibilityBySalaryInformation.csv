@@ -7,6 +7,8 @@
 ,5,1,"List page with job area count shown","/list-with-job-area-count",0,0,1,0
 ,6,1,"List page with job area count hidden","/list-without-job-area-count",0,0,1,0
 ,7,1,"List page restricted to job area Assembly","/list-restricted-to-assembly",0,0,1,0
+,8,1,"List page with page browser hidden","/list-without-page-browser",0,0,1,0
+,9,1,"List page with page browser shown","/list-with-page-browser",0,0,1,0
 
 "tt_content"
 ,"uid","pid","CType","header","colPos","pi_flexform"
@@ -16,6 +18,8 @@
 ,4,5,"jobboard_jobboard","Jobboard with job area count shown",0,"<T3FlexForms><data><sheet index=""sDEF""><language index=""lDEF""><field index=""settings.maxEntries""><value index=""vDEF"">0</value></field><field index=""settings.showSearch""><value index=""vDEF"">1</value></field><field index=""settings.showJobAreaCount""><value index=""vDEF"">1</value></field></language></sheet></data></T3FlexForms>"
 ,5,6,"jobboard_jobboard","Jobboard with job area count hidden",0,"<T3FlexForms><data><sheet index=""sDEF""><language index=""lDEF""><field index=""settings.maxEntries""><value index=""vDEF"">0</value></field><field index=""settings.showSearch""><value index=""vDEF"">1</value></field><field index=""settings.showJobAreaCount""><value index=""vDEF"">-1</value></field></language></sheet></data></T3FlexForms>"
 ,6,7,"jobboard_jobboard","Jobboard restricted to job area Assembly",0,"<T3FlexForms><data><sheet index=""sDEF""><language index=""lDEF""><field index=""settings.jobAreas""><value index=""vDEF"">2</value></field><field index=""settings.maxEntries""><value index=""vDEF"">0</value></field><field index=""settings.showSearch""><value index=""vDEF"">1</value></field><field index=""settings.showJobAreaCount""><value index=""vDEF"">1</value></field></language></sheet></data></T3FlexForms>"
+,7,8,"jobboard_jobboard","Jobboard with page browser hidden",0,"<T3FlexForms><data><sheet index=""sDEF""><language index=""lDEF""><field index=""settings.maxEntries""><value index=""vDEF"">0</value></field><field index=""settings.pageBrowser.enable""><value index=""vDEF"">-1</value></field><field index=""settings.showSearch""><value index=""vDEF"">0</value></field></language></sheet></data></T3FlexForms>"
+,8,9,"jobboard_jobboard","Jobboard with page browser shown",0,"<T3FlexForms><data><sheet index=""sDEF""><language index=""lDEF""><field index=""settings.maxEntries""><value index=""vDEF"">0</value></field><field index=""settings.pageBrowser.enable""><value index=""vDEF"">1</value></field><field index=""settings.showSearch""><value index=""vDEF"">0</value></field></language></sheet></data></T3FlexForms>"
 
 "tt_address"
 ,"uid","pid","company","city","zip"

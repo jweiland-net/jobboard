@@ -1,0 +1,6 @@
+base: 'https://example.org/'
+dependencies:
+  - jweiland/jobboard
+  - bithost/pdfviewhelpers
+  # One provider set of EXT:maps2, either OpenStreetMap or Google Maps
+  - jweiland/maps2-openstreetmap

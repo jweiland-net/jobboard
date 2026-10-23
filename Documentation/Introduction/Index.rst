@@ -33,9 +33,8 @@ Job list
     The list shows all jobs that are currently open (see
     :ref:`editor-visibility`). By default it is rendered as a table with the
     columns job title, application deadline, ZIP code, city, employer,
-    employment scope and "Remember?". Visitors can sort the table in the
-    browser. A card layout ships as an alternative partial, see
-    :ref:`templates-card-layout`.
+    employment scope and "Remember". A card layout ships as an alternative
+    partial, see :ref:`templates-card-layout`.
 
 Search form
     Visitors filter by occupational field, position, employment scope and
@@ -46,14 +45,20 @@ Search form
     matching jobs, for example "IT (3)".
 
 Remember jobs
-    In the table layout, visitors can tick "Remember?" for single jobs.
-    Remembered jobs are highlighted and sorted to the top. The selection is
-    stored in the browser cookie :code:`jobboard_remembered_jobs`. Mention this
-    cookie in the privacy information of your site.
+    In the table layout, visitors can tick "Remember" for single jobs.
+    Remembered jobs are highlighted with a tinted background and a colored
+    bar in front of the row. A link "Remembered jobs" with the number of
+    remembered jobs leads to a view of all remembered jobs, where visitors
+    can also remove them. The selection is stored in the TYPO3 session of
+    the visitor, see :ref:`remember-jobs`.
 
 Map
     If the optional extension :composer:`jweiland/maps2` is installed, the
-    locations of the listed jobs are shown on a map above the list.
+    locations of the jobs on the current page of the list are shown on a
+    map, one marker per address. A click on a marker opens an info window
+    with the number of jobs at this location and links to them. You choose
+    the map provider, OpenStreetMap or Google Maps, with a site set of
+    EXT:maps2, see :ref:`installation-maps2`.
 
 Detail view
     All facts of a job grouped in sections: description, offer,
@@ -68,6 +73,13 @@ Salary information
     salary grades (with or without steps) or a free minimum and maximum
     amount. Jobs without salary information are never shown. The extension
     is built for employers who must publish the salary of each job offer.
+    A daily console command applies the validity periods of salary grades,
+    see :ref:`salary-update`.
+
+Caching
+    The list and the detail view are cached and identical for all
+    visitors. The page browser loads only the jobs of the current page
+    from the database, see :ref:`configuration-plugin-caching`.
 
 Speaking URLs and page title
     A shipped route enhancer creates URLs like :file:`/jobs/web-developer-m-f-d`

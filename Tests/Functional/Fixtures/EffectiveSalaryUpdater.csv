@@ -1,0 +1,48 @@
+"be_users"
+,"uid","pid","username","password","admin","deleted","disable"
+,1,0,"admin","$1$tCrlLajZ$C0sikFQQ3SWaFAZ1Me0Z/1",1,0,0
+,2,0,"editor without any permission","$1$tCrlLajZ$C0sikFQQ3SWaFAZ1Me0Z/1",0,0,0
+
+"pages"
+,"uid","pid","title","slug","deleted","hidden","doktype","is_siteroot"
+,1,0,"Root","/",0,0,1,1
+,2,1,"Storage for jobs","/storage",0,0,254,0
+
+"tx_jobboard_domain_model_salarytable"
+,"uid","pid","title","salary_grades"
+,1,2,"Salary table",1
+
+"tx_jobboard_domain_model_salarygrade"
+,"uid","pid","title","has_steps","flat_amount","salary_table","starttime","endtime"
+,1,2,"Stepped grade of the salary table",1,0.00,1,0,0
+,2,2,"Flat grade",0,4000.00,0,0,0
+,3,2,"Flat grade expiring in two days",0,1000.00,0,0,1767398400
+,4,2,"Other stepped grade",1,0.00,0,0,0
+
+"tx_jobboard_domain_model_salarystep"
+,"uid","pid","salary_grade","step_label","amount"
+,1,2,1,"1",3000.00
+,2,2,1,"2",3500.00
+,3,2,4,"1",6000.00
+
+"tx_jobboard_domain_model_job"
+,"uid","pid","tstamp","title","sys_language_uid","l10n_parent","deleted","salary_mode","salary_grades","salary_min","salary_max","effective_salary_min","effective_salary_max","effective_salary_valid_until"
+,1,2,1,"Outdated free entry",0,0,0,1,0,2500.00,3200.00,0.00,0.00,0
+,2,2,1,"Up-to-date stepped grade",0,0,0,0,1,0.00,0.00,3000.00,3500.00,0
+,3,2,1,"Outdated translation of up-to-date job",1,2,0,0,1,0.00,0.00,0.00,0.00,0
+,4,2,1,"Up-to-date flat grade",0,0,0,0,1,0.00,0.00,4000.00,4000.00,0
+,5,2,1,"Up-to-date translation",1,4,0,0,1,0.00,0.00,4000.00,4000.00,0
+,6,2,1,"Deleted job",0,0,1,1,0,2500.00,0.00,0.00,0.00,0
+,7,2,1,"Outdated job with translation",0,0,0,1,0,2000.00,0.00,0.00,0.00,0
+,8,2,1,"Outdated translation of outdated job",1,7,0,1,0,2000.00,0.00,0.00,0.00,0
+,9,2,1,"Grade with upcoming endtime",0,0,0,0,1,0.00,0.00,0.00,0.00,0
+,10,2,1,"Up-to-date other stepped grade",0,0,0,0,1,0.00,0.00,6000.00,6000.00,0
+
+"tx_jobboard_job_salarygrade_mm"
+,"uid_local","uid_foreign","sorting","sorting_foreign"
+,2,1,1,0
+,3,1,1,0
+,4,2,1,0
+,5,2,1,0
+,9,3,1,0
+,10,4,1,0

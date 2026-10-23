@@ -258,15 +258,61 @@
 				<target>Stichwortsuche</target>
 			</trans-unit>
 
-			<trans-unit id="poi_collection.apply_until">
-				<source>Apply until</source>
-				<target>Bewerbungsschluss</target>
+			<trans-unit id="map.infoWindow.numberOfJobs.singular">
+				<source>1 job at this location</source>
+				<target>1 Stelle an diesem Standort</target>
+			</trans-unit>
+			<trans-unit id="map.infoWindow.numberOfJobs.plural">
+				<source>%d jobs at this location</source>
+				<target>%d Stellen an diesem Standort</target>
 			</trans-unit>
 
 			<trans-unit id="remember">
-				<source>Remember?</source>
-				<target>Merken?</target>
+				<source>Remember</source>
+				<target>Merken</target>
 			</trans-unit>
+			<trans-unit id="rememberedJobs.link">
+				<source>Remembered jobs</source>
+				<target>Merkliste</target>
+			</trans-unit>
+			<trans-unit id="rememberedJobs.header">
+				<source>Your remembered jobs</source>
+				<target>Ihre Merkliste</target>
+			</trans-unit>
+			<trans-unit id="rememberedJobs.description">
+				<source>Uncheck a job to remove it from your remembered jobs. It stays visible until you reload the page.</source>
+				<target>Entfernen Sie den Haken, um eine Stelle von Ihrer Merkliste zu nehmen. Sie bleibt sichtbar, bis Sie die Seite neu laden.</target>
+			</trans-unit>
+			<trans-unit id="rememberedJobs.empty">
+				<source>You have not remembered any jobs yet.</source>
+				<target>Sie haben sich noch keine Stellen gemerkt.</target>
+			</trans-unit>
+			<trans-unit id="rememberedJobs.backToList">
+				<source>Back to all jobs</source>
+				<target>Zurück zu allen Stellen</target>
+			</trans-unit>
+			<trans-unit id="rememberedJobs.status">
+				<source>Remembered jobs: %d</source>
+				<target>Stellen auf der Merkliste: %d</target>
+			</trans-unit>
+			<trans-unit id="rememberedJobs.close">
+				<source>Close message</source>
+				<target>Hinweis schließen</target>
+			</trans-unit>
+
+			<trans-unit id="rememberedJobs.error.limitReached">
+				<source>You have reached the maximum number of remembered jobs. Please remove a job from your remembered jobs first.</source>
+				<target>Sie haben die maximale Anzahl gemerkter Stellen erreicht. Bitte entfernen Sie zuerst eine Stelle von Ihrer Merkliste.</target>
+			</trans-unit>
+			<trans-unit id="rememberedJobs.error.unknownJob">
+				<source>This job is no longer available and cannot be remembered.</source>
+				<target>Diese Stelle ist nicht mehr verfügbar und kann nicht gemerkt werden.</target>
+			</trans-unit>
+			<trans-unit id="rememberedJobs.error.failed">
+				<source>Your change could not be saved. Please try again.</source>
+				<target>Ihre Änderung konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.</target>
+			</trans-unit>
+
 			<trans-unit id="dateFormat">
 				<source>Y-m-d</source>
 				<target>d.m.Y</target>
@@ -304,6 +350,38 @@
 			<trans-unit id="pluginPreview.showFreeTextSearch">
 				<source>Show Free Text Search</source>
 				<target>Freitextsuche anzeigen</target>
+			</trans-unit>
+			<trans-unit id="pageBrowser.label">
+				<source>Pagination</source>
+				<target>Seitennavigation</target>
+			</trans-unit>
+			<trans-unit id="pageBrowser.first">
+				<source>First</source>
+				<target>Erste</target>
+			</trans-unit>
+			<trans-unit id="pageBrowser.previous">
+				<source>Previous</source>
+				<target>Zurück</target>
+			</trans-unit>
+			<trans-unit id="pageBrowser.next">
+				<source>Next</source>
+				<target>Weiter</target>
+			</trans-unit>
+			<trans-unit id="pageBrowser.last">
+				<source>Last</source>
+				<target>Letzte</target>
+			</trans-unit>
+			<trans-unit id="pageBrowser.records">
+				<source>Jobs %1$d to %2$d of %3$d</source>
+				<target>Stellen %1$d bis %2$d von %3$d</target>
+			</trans-unit>
+			<trans-unit id="map.noGeoPosition.header">
+				<source>The map cannot be shown</source>
+				<target>Die Karte kann nicht angezeigt werden</target>
+			</trans-unit>
+			<trans-unit id="map.noGeoPosition">
+				<source>None of the addresses of the listed jobs has a geo position. Please save the addresses of the jobs in the backend, so that EXT:maps2 can determine their positions.</source>
+				<target>Keine der Adressen der aufgelisteten Stellen hat eine Geoposition. Bitte speichern Sie die Adressen der Stellen im Backend, damit EXT:maps2 ihre Position ermitteln kann.</target>
 			</trans-unit>
 		</body>
 	</file>

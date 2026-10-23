@@ -13,10 +13,11 @@ namespace JWeiland\Jobboard\Tests\Functional\ViewHelpers;
 
 use JWeiland\Jobboard\Domain\Model\Address;
 use JWeiland\Jobboard\Domain\Model\Job;
-use JWeiland\Jobboard\Domain\Model\JobType;
 use JWeiland\Jobboard\ViewHelpers\JobPoiCollectionViewHelper;
 use JWeiland\Maps2\Domain\Model\PoiCollection;
 use PHPUnit\Framework\Attributes\Test;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Extbase\DomainObject\AbstractDomainObject;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextFactory;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
@@ -63,21 +64,11 @@ final class JobPoiCollectionViewHelperTest extends FunctionalTestCase
         return $job;
     }
 
-    private function buildJobWithPoiCollectionAndInfoWindowContent(): Job
+    private function buildJobWithAddress(Address $address, string $title): Job
     {
-        $address = new Address();
-        $address->setTxMaps2Uid(new PoiCollection());
-
-        $jobType = new JobType();
-        $jobType->setTitle('Vollzeit');
-
         $job = new Job();
-        $job->setTitle('Job with application deadline and job type');
+        $job->setTitle($title);
         $job->setAddress($address);
-        $job->setApplicationDeadline(new \DateTime('2026-12-24'));
-        // The employment end date must not be shown as "apply until" date
-        $job->setEndingDate(new \DateTime('2027-06-30'));
-        $job->setJobType($jobType);
 
         return $job;
     }
@@ -100,12 +91,12 @@ final class JobPoiCollectionViewHelperTest extends FunctionalTestCase
     }
 
     #[Test]
-    public function renderAttachesOnePoiCollectionPerJobWithAddressAndPoiCollection(): void
+    public function renderAttachesOnePoiCollectionPerAddressWithPoiCollection(): void
     {
         $jobs = new ObjectStorage();
         $jobs->attach($this->buildJobWithoutAddress());
         $jobs->attach($this->buildJobWithPoiCollectionOnly());
-        $jobs->attach($this->buildJobWithPoiCollectionAndInfoWindowContent());
+        $jobs->attach($this->buildJobWithPoiCollectionOnly());
 
         $context = $this->get(RenderingContextFactory::class)->create();
         $context->getTemplatePaths()->setTemplateSource(
@@ -118,41 +109,225 @@ final class JobPoiCollectionViewHelperTest extends FunctionalTestCase
     }
 
     #[Test]
-    public function renderSetsTitleOnEveryAttachedPoiCollection(): void
+    public function renderAttachesAPoiCollectionSharedBySeveralJobsOnlyOnce(): void
     {
+        $address = new Address();
+        $address->setTxMaps2Uid(new PoiCollection());
+
         $subject = new JobPoiCollectionViewHelper();
-        $subject->setArguments(['jobs' => [$this->buildJobWithPoiCollectionOnly()]]);
+        $subject->setArguments(['jobs' => [
+            $this->buildJobWithAddress($address, 'First job'),
+            $this->buildJobWithAddress($address, 'Second job'),
+        ]]);
+
+        self::assertCount(1, $subject->render());
+    }
+
+    #[Test]
+    public function renderAttachesPoiCollectionsWithTheSameUidOnlyOnce(): void
+    {
+        $firstPoiCollection = new PoiCollection();
+        $firstPoiCollection->_setProperty('uid', 12);
+        $firstAddress = new Address();
+        $firstAddress->setTxMaps2Uid($firstPoiCollection);
+
+        $secondPoiCollection = new PoiCollection();
+        $secondPoiCollection->_setProperty('uid', 12);
+        $secondAddress = new Address();
+        $secondAddress->setTxMaps2Uid($secondPoiCollection);
+
+        $subject = new JobPoiCollectionViewHelper();
+        $subject->setArguments(['jobs' => [
+            $this->buildJobWithAddress($firstAddress, 'First job'),
+            $this->buildJobWithAddress($secondAddress, 'Second job'),
+        ]]);
 
         $poiCollections = $subject->render();
 
         self::assertCount(1, $poiCollections);
-        self::assertSame(
-            'Job without application deadline and job type',
-            $poiCollections->current()->getTitle(),
-        );
+        self::assertSame($firstPoiCollection, $poiCollections->current());
     }
 
     #[Test]
-    public function renderLeavesInfoWindowContentEmptyWithoutApplicationDeadlineAndJobType(): void
+    public function renderDoesNotChangeTitleAndInfoWindowContentOfPoiCollection(): void
     {
+        $poiCollection = new PoiCollection();
+        $poiCollection->setTitle('Stuttgart City Hall');
+        $address = new Address();
+        $address->setTxMaps2Uid($poiCollection);
+
         $subject = new JobPoiCollectionViewHelper();
-        $subject->setArguments(['jobs' => [$this->buildJobWithPoiCollectionOnly()]]);
+        $subject->setArguments(['jobs' => [$this->buildJobWithAddress($address, 'Job title')]]);
 
-        $poiCollection = $subject->render()->current();
+        $subject->render();
 
+        self::assertSame('Stuttgart City Hall', $poiCollection->getTitle());
+        self::assertSame('', $poiCollection->getInfoWindowContent());
+    }
+
+    /**
+     * Default address 1 references PoiCollection 5, its translation 2 has
+     * no relation yet (EXT:maps2 writes it into the default address only).
+     */
+    private function insertAddressWithPoiCollection(): void
+    {
+        $connectionPool = $this->get(ConnectionPool::class);
+        $connectionPool->getConnectionForTable('tx_maps2_domain_model_poicollection')->insert(
+            'tx_maps2_domain_model_poicollection',
+            ['uid' => 5, 'pid' => 2, 'title' => 'Example Employer Ltd.', 'collection_type' => 'Point'],
+        );
+        $addressConnection = $connectionPool->getConnectionForTable('tt_address');
+        $addressConnection->insert('tt_address', [
+            'uid' => 1,
+            'pid' => 2,
+            'company' => 'Example Employer Ltd.',
+            'tx_maps2_uid' => 5,
+        ]);
+        $addressConnection->insert('tt_address', [
+            'uid' => 2,
+            'pid' => 2,
+            'sys_language_uid' => 1,
+            'l10n_parent' => 1,
+            'company' => 'Beispiel Arbeitgeber GmbH',
+            'tx_maps2_uid' => 0,
+        ]);
+    }
+
+    /**
+     * Like Extbase maps a translated address: UID of the default language,
+     * localized UID of the translation.
+     */
+    private function buildAddress(int $uid, int $localizedUid, ?PoiCollection $poiCollection = null): Address
+    {
+        $address = new Address();
+        $address->_setProperty('uid', $uid);
+        $address->_setProperty(AbstractDomainObject::PROPERTY_LOCALIZED_UID, $localizedUid);
+        if ($poiCollection !== null) {
+            $address->setTxMaps2Uid($poiCollection);
+        }
+
+        return $address;
+    }
+
+    #[Test]
+    public function renderFallsBackToPoiCollectionOfDefaultAddressForTranslatedAddressWithoutRelation(): void
+    {
+        $this->insertAddressWithPoiCollection();
+
+        $subject = new JobPoiCollectionViewHelper();
+        $subject->setArguments(['jobs' => [$this->buildJobWithAddress($this->buildAddress(1, 2), 'Translated job')]]);
+
+        $poiCollections = $subject->render();
+
+        self::assertCount(1, $poiCollections);
+        $poiCollections->rewind();
+        self::assertInstanceOf(PoiCollection::class, $poiCollections->current());
+        self::assertSame(5, $poiCollections->current()->getUid());
+    }
+
+    #[Test]
+    public function renderAttachesFallbackPoiCollectionOnlyOnceForSeveralTranslatedJobs(): void
+    {
+        $this->insertAddressWithPoiCollection();
+
+        $subject = new JobPoiCollectionViewHelper();
+        $subject->setArguments(['jobs' => [
+            $this->buildJobWithAddress($this->buildAddress(1, 2), 'First translated job'),
+            $this->buildJobWithAddress($this->buildAddress(1, 2), 'Second translated job'),
+        ]]);
+
+        self::assertCount(1, $subject->render());
+    }
+
+    #[Test]
+    public function renderAttachesFallbackPoiCollectionAndPoiCollectionOfDefaultAddressOnlyOnce(): void
+    {
+        $this->insertAddressWithPoiCollection();
+        $poiCollection = new PoiCollection();
+        $poiCollection->_setProperty('uid', 5);
+
+        $subject = new JobPoiCollectionViewHelper();
+        $subject->setArguments(['jobs' => [
+            $this->buildJobWithAddress($this->buildAddress(1, 1, $poiCollection), 'Default job'),
+            $this->buildJobWithAddress($this->buildAddress(1, 2), 'Translated job'),
+        ]]);
+
+        $poiCollections = $subject->render();
+
+        self::assertCount(1, $poiCollections);
+        $poiCollections->rewind();
+        self::assertSame($poiCollection, $poiCollections->current());
+    }
+
+    #[Test]
+    public function renderPrefersPoiCollectionOfTranslatedAddress(): void
+    {
+        $this->insertAddressWithPoiCollection();
+        $poiCollection = new PoiCollection();
+        $poiCollection->_setProperty('uid', 9);
+
+        $subject = new JobPoiCollectionViewHelper();
+        $subject->setArguments(['jobs' => [
+            $this->buildJobWithAddress($this->buildAddress(1, 2, $poiCollection), 'Translated job'),
+        ]]);
+
+        $poiCollections = $subject->render();
+        $poiCollections->rewind();
+
+        self::assertSame($poiCollection, $poiCollections->current());
+    }
+
+    #[Test]
+    public function renderDoesNotLookUpPoiCollectionForDefaultAddressWithoutRelation(): void
+    {
+        $this->insertAddressWithPoiCollection();
+
+        $subject = new JobPoiCollectionViewHelper();
+        // Default address (localized UID = UID) without loaded relation
+        $subject->setArguments(['jobs' => [$this->buildJobWithAddress($this->buildAddress(1, 1), 'Default job')]]);
+
+        self::assertCount(0, $subject->render());
+    }
+
+    #[Test]
+    public function renderSkipsTranslatedAddressIfDefaultAddressHasNoPoiCollection(): void
+    {
+        $this->insertAddressWithPoiCollection();
+        $this->get(ConnectionPool::class)->getConnectionForTable('tt_address')
+            ->update('tt_address', ['tx_maps2_uid' => 0], ['uid' => 1]);
+
+        $subject = new JobPoiCollectionViewHelper();
+        $subject->setArguments(['jobs' => [$this->buildJobWithAddress($this->buildAddress(1, 2), 'Translated job')]]);
+
+        self::assertCount(0, $subject->render());
+    }
+
+    #[Test]
+    public function renderDoesNotChangeTitleOfFallbackPoiCollection(): void
+    {
+        $this->insertAddressWithPoiCollection();
+
+        $subject = new JobPoiCollectionViewHelper();
+        $subject->setArguments(['jobs' => [$this->buildJobWithAddress($this->buildAddress(1, 2), 'Translated job')]]);
+
+        $poiCollections = $subject->render();
+        $poiCollections->rewind();
+        $poiCollection = $poiCollections->current();
+
+        self::assertInstanceOf(PoiCollection::class, $poiCollection);
+        self::assertSame('Example Employer Ltd.', $poiCollection->getTitle());
         self::assertSame('', $poiCollection->getInfoWindowContent());
     }
 
     #[Test]
-    public function renderSetsInfoWindowContentWithApplicationDeadlineAndJobType(): void
+    public function extensionLoadedViewHelperReturnsTrueForMaps2(): void
     {
-        $subject = new JobPoiCollectionViewHelper();
-        $subject->setArguments(['jobs' => [$this->buildJobWithPoiCollectionAndInfoWindowContent()]]);
+        $context = $this->get(RenderingContextFactory::class)->create();
+        $context->getTemplatePaths()->setTemplateSource(
+            '{namespace jobboard=JWeiland\Jobboard\ViewHelpers}'
+            . '<f:if condition="{jobboard:extensionLoaded(extensionKey: \'maps2\')}" then="loaded" else="not loaded"/>',
+        );
 
-        $infoWindowContent = $subject->render()->current()->getInfoWindowContent();
-
-        self::assertStringContainsString('24.12.2026', $infoWindowContent);
-        self::assertStringContainsString('Vollzeit', $infoWindowContent);
-        self::assertStringNotContainsString('30.06.2027', $infoWindowContent);
+        self::assertSame('loaded', (string)(new TemplateView($context))->render());
     }
 }

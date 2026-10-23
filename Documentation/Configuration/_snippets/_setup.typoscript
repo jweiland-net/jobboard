@@ -27,10 +27,16 @@ plugin.tx_jobboard {
     pidOfDetailPage = {$jobboard.pidOfDetailPage}
     pidOfApplicationForm = {$jobboard.pidOfApplicationForm}
     showJobAreaCount = {$jobboard.showJobAreaCount}
+
+    pageBrowser {
+      enable = {$jobboard.pageBrowser.enable}
+      class = JWeiland\Jobboard\Pagination\GetPostPagination
+      itemsPerPage = {$jobboard.pageBrowser.itemsPerPage}
+    }
   }
 
   # Use the TypoScript value, if the FlexForm option is empty
-  ignoreFlexFormSettingsIfEmpty = showJobAreaCount
+  ignoreFlexFormSettingsIfEmpty = showJobAreaCount, pageBrowser.enable
 }
 
 # Show the job title as page title on the detail view. Must be ordered before

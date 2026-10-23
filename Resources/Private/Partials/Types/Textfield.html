@@ -2,11 +2,12 @@
       xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
       data-namespace-typo3-fluid="true">
 
-<div class="form-group">
-    <label for="{name}">{f:translate(key: '{label}')}</label>
+<div class="mb-3">
+    <label for="{name}" class="form-label">{f:translate(key: '{label}')}</label>
     <f:form.textfield
         name="{name}"
         id="{name}"
+        class="form-control"
         value="{value}"/>
 </div>
 </html>

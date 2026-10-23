@@ -8,7 +8,8 @@ For administrators and integrators
 ==================================
 
 This chapter is for integrators who adapt the output of the job board and
-for administrators who operate the job import and update the extension.
+for administrators who operate the job import and the daily salary
+update or update the extension.
 
 ..  toctree::
     :maxdepth: 1
@@ -17,5 +18,7 @@ for administrators who operate the job import and update the extension.
     Templates
     Pdf
     AddressSearch
+    RememberJobs
     Import
+    SalaryUpdate
     Upgrade

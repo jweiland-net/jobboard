@@ -64,6 +64,16 @@ class Job extends AbstractEntity
     protected float $salaryMax = 0.0;
 
     /**
+     * Precomputed by EffectiveSalaryUpdater, never set by editors
+     */
+    protected float $effectiveSalaryMin = 0.0;
+
+    /**
+     * Precomputed by EffectiveSalaryUpdater, never set by editors
+     */
+    protected float $effectiveSalaryMax = 0.0;
+
+    /**
      * @var ObjectStorage<Benefit>
      */
     protected ObjectStorage $benefits;
@@ -401,6 +411,36 @@ class Job extends AbstractEntity
     public function setSalaryMax(float $salaryMax): void
     {
         $this->salaryMax = $salaryMax;
+    }
+
+    public function getEffectiveSalaryMin(): float
+    {
+        return $this->effectiveSalaryMin;
+    }
+
+    public function setEffectiveSalaryMin(float $effectiveSalaryMin): void
+    {
+        $this->effectiveSalaryMin = $effectiveSalaryMin;
+    }
+
+    public function getEffectiveSalaryMax(): float
+    {
+        return $this->effectiveSalaryMax;
+    }
+
+    public function setEffectiveSalaryMax(float $effectiveSalaryMax): void
+    {
+        $this->effectiveSalaryMax = $effectiveSalaryMax;
+    }
+
+    /**
+     * Same rule as the frontend queries of JobRepository: a job without any
+     * effective salary is never displayed. Uses the precomputed columns, so
+     * no salary grade or step has to be loaded.
+     */
+    public function getHasEffectiveSalaryInformation(): bool
+    {
+        return $this->effectiveSalaryMin > 0.0 || $this->effectiveSalaryMax > 0.0;
     }
 
     /**
