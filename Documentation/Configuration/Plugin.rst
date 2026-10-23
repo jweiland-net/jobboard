@@ -37,7 +37,7 @@ Sheet "General"
 ===============
 
 ..  figure:: /Images/Editor/plugin-sheet-general.png
-    :alt: Sheet General with the options Job areas and Max entries to show
+    :alt: Sheet General with the options Job areas, Max entries to show and Show page browser
     :class: with-border with-shadow
     :zoom: lightbox
 
@@ -72,6 +72,25 @@ Sheet "General"
         the list and in the search result. Jobs without salary information
         are removed before the limit applies, so visitors always get up to
         this number of jobs. :code:`0` shows all jobs.
+
+        A number greater than :code:`0` also switches off the page browser:
+        the limited list is shown on one page, independent of
+        :confval:`plugin-pagebrowser-enable` and the site setting
+        :confval:`jobboard-pagebrowser-enable`.
+
+    ..  confval:: Show page browser
+        :name: plugin-pagebrowser-enable
+        :type: :code:`''`, :code:`1` or :code:`-1`
+        :default: :code:`''` (Use value from TypoScript)
+
+        FlexForm field :code:`settings.pageBrowser.enable`. "Use value from
+        TypoScript" uses the site setting
+        :confval:`jobboard-pagebrowser-enable`. "Show" (:code:`1`) and "Hide"
+        (:code:`-1`) override it for this content element. With "Hide", the
+        list and the search result show all jobs on one page.
+
+        Has no effect, if :confval:`plugin-maxentries` is greater than
+        :code:`0`. Then the page browser is never shown.
 
 ..  _configuration-plugin-search:
 

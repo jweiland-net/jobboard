@@ -51,6 +51,21 @@
 			<trans-unit id="maxEntries">
 				<source>Max entries to show (0 for all)</source>
 			</trans-unit>
+			<trans-unit id="pageBrowser.enable">
+				<source>Show page browser</source>
+			</trans-unit>
+			<trans-unit id="pageBrowser.enable.description">
+				<source>Splits the list into pages. The page browser is never shown, if "Max entries to show" is set.</source>
+			</trans-unit>
+			<trans-unit id="pageBrowser.enable.typoScript">
+				<source>Use value from TypoScript</source>
+			</trans-unit>
+			<trans-unit id="pageBrowser.enable.show">
+				<source>Show</source>
+			</trans-unit>
+			<trans-unit id="pageBrowser.enable.hide">
+				<source>Hide</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

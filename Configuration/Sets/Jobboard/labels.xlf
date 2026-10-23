@@ -63,6 +63,12 @@
 			<trans-unit id="settings.description.jobboard.showJobAreaCount">
 				<source>Appends the number of jobs to each option of the job area filter in the search form, e.g. "IT (3)". Can be overridden per content element.</source>
 			</trans-unit>
+			<trans-unit id="settings.jobboard.pageBrowser.enable">
+				<source>Show page browser</source>
+			</trans-unit>
+			<trans-unit id="settings.description.jobboard.pageBrowser.enable">
+				<source>Splits the list and the search results into pages. Never shown, if a content element limits the number of jobs ("Max entries to show"). Can be overridden per content element.</source>
+			</trans-unit>
 			<trans-unit id="settings.jobboard.pageBrowser.itemsPerPage">
 				<source>Jobs per page</source>
 			</trans-unit>

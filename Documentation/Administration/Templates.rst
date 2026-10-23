@@ -153,6 +153,16 @@ The page browser is added by the PSR-14 event listener
 :html:`{numberOfJobs}`
     Number of all jobs of the list or search result.
 
+If the page browser is disabled (see :confval:`jobboard-pagebrowser-enable`
+and :confval:`plugin-pagebrowser-enable`) or the content element limits the
+list with :confval:`plugin-maxentries`, the event listener adds nothing:
+:html:`{jobs}` contains all jobs of the list or search result, and the
+variables :html:`{paginator}`, :html:`{pagination}`,
+:html:`{numberOfJobs}` and :html:`{actionName}` are not assigned. The
+shipped partial :file:`Partials/Pagination.html` then renders nothing.
+Check these variables with :html:`<f:if>` before you use them in own
+templates.
+
 The jobs remembered by the visitor are sorted to the top before the jobs
 are paginated, so they are always on the first page, see
 :ref:`remember-jobs`.

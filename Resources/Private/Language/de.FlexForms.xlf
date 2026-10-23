@@ -67,6 +67,26 @@
 				<source>Max entries to show (0 for all)</source>
 				<target>Anzahl der anzuzeigenden Einträge (0 für alle)</target>
 			</trans-unit>
+			<trans-unit id="pageBrowser.enable">
+				<source>Show page browser</source>
+				<target>Seitennavigation anzeigen</target>
+			</trans-unit>
+			<trans-unit id="pageBrowser.enable.description">
+				<source>Splits the list into pages. The page browser is never shown, if "Max entries to show" is set.</source>
+				<target>Teilt die Liste in Seiten auf. Ist "Anzahl der anzuzeigenden Einträge" gesetzt, wird die Seitennavigation nie angezeigt.</target>
+			</trans-unit>
+			<trans-unit id="pageBrowser.enable.typoScript">
+				<source>Use value from TypoScript</source>
+				<target>Wert aus TypoScript übernehmen</target>
+			</trans-unit>
+			<trans-unit id="pageBrowser.enable.show">
+				<source>Show</source>
+				<target>Anzeigen</target>
+			</trans-unit>
+			<trans-unit id="pageBrowser.enable.hide">
+				<source>Hide</source>
+				<target>Ausblenden</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>
