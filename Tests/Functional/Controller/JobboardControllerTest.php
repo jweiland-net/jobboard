@@ -489,7 +489,7 @@ final class JobboardControllerTest extends FunctionalTestCase
         $response = $this->executeFrontendSubRequest($this->buildDetailActionRequest(1));
 
         self::assertStringContainsString(
-            'Download PDF <span class="vhidden-sm">file of the job offer</span>',
+            'Download PDF <span class="d-none d-sm-inline">file of the job offer</span>',
             (string)$response->getBody(),
         );
     }

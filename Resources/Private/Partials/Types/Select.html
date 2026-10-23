@@ -3,8 +3,12 @@
       data-namespace-typo3-fluid="true">
 
 <f:if condition="{options}">
-    <div class="form-group">
-        <label for="{name}">{f:translate(key: '{label}')}</label>
+    <f:comment>
+        The id is prefixed to keep the id "address" reserved for the zip/city
+        textfield, which gets the suggestions of address-suggestions.js.
+    </f:comment>
+    <div class="mb-3">
+        <label for="jobboard-{name}" class="form-label">{f:translate(key: '{label}')}</label>
         <f:form.select
             options="{options}"
             sortByOptionLabel="true"
@@ -13,6 +17,8 @@
             optionLabelField="title"
             optionValueField="uid"
             name="{name}"
+            id="jobboard-{name}"
+            class="form-select"
             value="{value}"/>
     </div>
 </f:if>
