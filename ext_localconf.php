@@ -24,7 +24,8 @@ ExtensionUtility::configurePlugin(
         JobboardController::class => 'list, search, detail',
     ],
     [
-        JobboardController::class => 'search',
+        // list/search render visitor-specific session data: never cache them
+        JobboardController::class => 'list, search',
     ],
     ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT,
 );

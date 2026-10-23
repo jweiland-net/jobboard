@@ -29,9 +29,11 @@ storage folder or of your site package.
     :caption: EXT:my_sitepackage/Configuration/page.tsconfig
 
 Clear the cache of the list page
-    The list page is cached. :typoscript:`TCEMAIN.clearCacheCmd` clears the
-    cache of the given pages whenever a record in the storage folder is
-    saved, also by the :ref:`job import <import>`.
+    The detail view and the rest of the list page are cached, only the
+    list and the search result are rendered on every request.
+    :typoscript:`TCEMAIN.clearCacheCmd` clears the cache of the given pages
+    whenever a record in the storage folder is saved, also by the
+    :ref:`job import <import>`.
 
 Hide salary steps in the list module
     Salary steps are maintained inside their salary grade. Hiding the table

@@ -17,5 +17,6 @@ for administrators who operate the job import and update the extension.
     Templates
     Pdf
     AddressSearch
+    RememberJobs
     Import
     Upgrade

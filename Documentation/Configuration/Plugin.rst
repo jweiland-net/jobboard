@@ -13,13 +13,19 @@ with three actions:
 
 :php:`list`
     Default action. Shows the search form, the map and all current jobs.
+    Not cached.
 
 :php:`search`
     Shows the jobs matching the submitted search form. Not cached.
 
 :php:`detail`
-    Shows one job. The shipped templates render the detail view on the same
-    page as the list.
+    Shows one job. Cached. The shipped templates render the detail view on
+    the same page as the list.
+
+:php:`list` and :php:`search` show the jobs remembered by the visitor
+first, so their output differs per visitor and is rendered on every
+request, see :ref:`remember-jobs-caching`. The rest of the page stays
+cached.
 
 The options of the content element are in the tab
 :guilabel:`Configuration`. See :ref:`editor-content-element` for the

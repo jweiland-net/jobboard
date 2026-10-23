@@ -148,10 +148,35 @@ Key points:
   `pagination`, `numberOfJobs` and `actionName`. Search options are built from all jobs before the event.
   `GetPostPagination` keeps the (GET merged with POST) plugin arguments in the page links, so search
   criteria survive paging. Items per page: site setting `jobboard.pageBrowser.itemsPerPage`.
-- **Frontend JavaScript** in `Resources/Public/JavaScript/` is plain JavaScript, one file per feature:
-  `remember-jobs.js` (remembered jobs, cookie via the global `Cookies` of `js.cookie`, so it must be
-  loaded after `js.cookie-2.2.1.min.js`) and `address-suggestions.js` (zip/city suggestions of
-  `AddressSearchMiddleware` as native `<datalist>`). Both are added in `Partials/JobListAssets.html`.
+- **Remembered jobs** live in the TYPO3 frontend user session (also for anonymous visitors), key
+  `tx_jobboard_remembered_jobs`, value a plain `int[]` of default-language job UIDs. Only
+  `RememberedJobsService` (`final readonly`, behind `RememberedJobsServiceInterface`) reads/writes it, via
+  the request attribute `frontend.user` (`getKey('ses', ...)` / `setAndSaveSessionData()`; an empty list
+  stores `null`, so TYPO3 drops an otherwise empty anonymous session and its `fe_typo_user` cookie).
+  `RememberedJobs` (pure `final readonly` value object in `Domain/Model/`) sanitizes untrusted session
+  data and caps the list at `RememberedJobs::MAXIMUM` (50).
+  - `RememberJobMiddleware` (header `jobboard-remember-job`, POST only, fields `job` = digits only,
+    `remember` = `1`/`0`) answers `{"rememberedJobs": [...]}` plus `error` on 400/404/405/409. It runs
+    after `typo3/cms-frontend/authentication` and before `typo3/cms-frontend/page-resolver` (no page,
+    no TypoScript needed). No Extbase: it checks visibility with the `ConnectionPoolTrait` QueryBuilder
+    (frontend restrictions, `sys_language_uid IN (0,-1)`, pid in site setting `jobboard.storagePid`
+    expanded 3 levels like `persistence.recursive`). It writes the session only if the list changed,
+    so rejected/no-op requests never create a session. CSRF stance: custom header + POST (forces a CORS
+    preflight cross-origin) + `SameSite` session cookie, no request token - see
+    `Documentation/Administration/RememberJobs.rst`.
+  - `JobboardController::getJobVariables()` moves remembered jobs to the top (stable partition of the
+    already filtered/limited array, query order kept within both groups) before
+    `PostProcessFluidVariablesEvent`, so they land on page 1, and assigns `rememberedJobs` (UIDs as
+    keys) for the server-side `highlight-row`/`checked` in `Partials/Types/Table.html` (and `Card.html`).
+    Reordering happens in PHP, not in the query: Extbase's `QueryInterface` cannot order by an
+    expression (`FIELD()`/`CASE`), and `maxEntries` must keep selecting the same jobs for everyone.
+  - Consequently `list` and `search` are non-cacheable actions in `ext_localconf.php`; `detail` is cached.
+- **Frontend JavaScript** in `Resources/Public/JavaScript/` is plain JavaScript without libraries, one file
+  per feature: `remember-jobs.js` (posts checkbox changes to `RememberJobMiddleware` via `fetch` to the
+  table's `data-jobboard-remember-url`, syncs highlight/checkboxes from the JSON answer, reverts the
+  checkbox on network errors; rows are not moved until the next page load) and `address-suggestions.js`
+  (zip/city suggestions of `AddressSearchMiddleware` as native `<datalist>`). Both are added in
+  `Partials/JobListAssets.html`.
 - **`JobPoiCollectionViewHelper`** bridges `Job` -> `tt_address` -> `maps2` `PoiCollection` so a job list can
   be rendered as map markers. Without maps2 it returns an empty `ObjectStorage`.
 - **`Address` domain model** extends `FriendsOfTYPO3\TtAddress\Domain\Model\Address` purely to add the
@@ -161,8 +186,7 @@ Key points:
 
 - **`JobfairToJobboardMigration`** copies rows from the pre-rename `tx_jobfair2_domain_model_*` tables into
   the current `tx_jobboard_domain_model_*` tables, preserving every row's original `uid` (so foreign keys
-  between these tables, and client-side "remembered jobs" in the cookie `jobboard_remembered_jobs`, stay
-  valid). It copies columns generically by diffing the *actual* schema of the old and new table
+  between these tables stay valid). It copies columns generically by diffing the *actual* schema of the old and new table
   (`getCommonColumns()`), not via a hardcoded field list - adding or removing a plain `Job` column normally needs no wizard change. FAL
   fields are the exception: `sys_file_reference.tablenames` is rewritten only for the columns listed in
   `JOB_FAL_FIELDS` (`employer_logo`, `header_logo`, `tender_file`, `pdf_files`), so a *new* FAL column that
