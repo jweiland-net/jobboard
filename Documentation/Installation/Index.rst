@@ -136,19 +136,54 @@ install EXT:maps2:
     composer require jweiland/maps2
     vendor/bin/typo3 extension:setup
 
-If EXT:maps2 is installed, the site set :yaml:`jweiland/jobboard`
-automatically loads the sets :yaml:`jweiland/maps2-default` and
-:yaml:`jweiland/maps2-googlemaps`. The address records of the job
-locations get an additional field for the map location. The map is shown
-as soon as at least one listed job has an address with a map location.
-Configure EXT:maps2 as described in its
-`documentation <https://docs.typo3.org/p/jweiland/maps2/main/en-us/>`__.
+The job board does not select a map provider. Add one of the provider
+sets of EXT:maps2 to your site, either in the backend module
+:guilabel:`Site Management > Sites` (tab :guilabel:`Sets`) or in the site
+configuration file:
+
+:yaml:`jweiland/maps2-openstreetmap`
+    Label "Maps2 - OpenStreetMap". Needs no API key.
+
+:yaml:`jweiland/maps2-googlemaps`
+    Label "Maps2 - Google Maps".
+
+Both sets load the set :yaml:`jweiland/maps2-default` automatically.
+
+..  literalinclude:: _snippets/_site-config-maps2.yaml
+    :language: yaml
+    :caption: config/sites/<site-identifier>/config.yaml
+
+..  important::
+
+    If EXT:maps2 is installed, the site must contain one of its provider
+    sets. Without such a set, EXT:maps2 has neither TypoScript nor site
+    settings on this site and cannot render the map.
 
 ..  attention::
 
-    With EXT:maps2, the job board uses **Google Maps**. You need a Google
-    Maps API key, and visitors' browsers load the map from Google. Check
-    the privacy information and the consent handling of your site.
+    If you use Google Maps, you need Google Maps API keys, and the
+    browsers of the visitors load the map from Google. Check the privacy
+    information and the consent handling of your site. See the
+    documentation of EXT:maps2 for the API keys and the options to ask
+    visitors for consent before a map is loaded.
+
+Configure EXT:maps2 as described in its
+`documentation <https://docs.typo3.org/p/jweiland/maps2/main/en-us/>`__.
+Its extension configuration (option :code:`mapProvider`) decides which
+map providers are available for the map locations in the backend. Choose
+a provider set that matches this option.
+
+The address records of the job locations get an additional field for the
+map location. EXT:maps2 determines the position when an address is saved
+in the backend, see :ref:`editor-addresses-map`. The map shows the
+locations of the jobs on the current page of the list, one marker per
+address. A click on a marker opens an info window with links to the open
+jobs at this location, see :ref:`templates-info-window`.
+
+The map is shown as soon as at least one listed job has an address with a
+map location. If none of the listed jobs has one, the job board shows the
+message "The map cannot be shown" instead of the map. Save the addresses
+in the backend, so that EXT:maps2 determines their positions.
 
 Without EXT:maps2, the job board works the same, but shows no map and the
 addresses have no map location field.

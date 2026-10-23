@@ -37,6 +37,8 @@ ExtensionManagementUtility::addToAllTCAtypes(
 
 // EXT:maps2 is optional. Only if it is installed, add the column
 // "tx_maps2_uid" to tt_address to show the job locations on a map.
+// The title of the PoiCollection (marker) is synchronized on every save of
+// the address: company, otherwise first and last name, otherwise city.
 if (ExtensionManagementUtility::isLoaded('maps2')) {
     Maps2Registry::getInstance()->add(
         'tt_address',
@@ -44,6 +46,12 @@ if (ExtensionManagementUtility::isLoaded('maps2')) {
         [
             'addressColumns' => ['address', 'zip', 'city'],
             'countryColumn' => 'country',
+            // The position does not depend on the language. EXT:maps2 writes
+            // the relation of a new PoiCollection into the default language
+            // only, DataHandler copies it into the translations on the next
+            // save. JobPoiCollectionViewHelper covers the time in between.
+            'l10n_mode' => 'exclude',
+            'l10n_display' => 'defaultAsReadonly',
             'synchronizeColumns' => [
                 [
                     'foreignColumnName' => [
@@ -58,6 +66,7 @@ if (ExtensionManagementUtility::isLoaded('maps2')) {
                                 ],
                                 'glue' => ' ',
                             ],
+                            'city',
                         ],
                     ],
                     'poiCollectionColumnName' => 'title',

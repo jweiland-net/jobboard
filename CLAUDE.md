@@ -26,10 +26,16 @@ combines three building blocks:
 - **PHP:** 8.2+, constructor property promotion used throughout.
 - **Hard dependencies:** `friendsoftypo3/tt-address`, `bithost-gmbh/pdfviewhelpers`
   (PDF export uses `EXT:pdfviewhelpers`, see `Configuration/Sets/Pdf/`).
-- **Optional:** `jweiland/maps2` (composer `suggest`, set `optionalDependencies`). Every maps2 code path must
+- **Optional:** `jweiland/maps2` (composer `suggest`; the set declares no maps2 dependency, integrators add a
+  maps2 provider set like `jweiland/maps2-openstreetmap` or `jweiland/maps2-googlemaps` to their site). Every maps2 code path must
   stay guarded: the `tx_maps2_uid` TCA column is only added if maps2 is loaded, the map partial is only
   rendered if a job has a `PoiCollection`, and `Address::setTxMaps2Uid()` must not get a class type for its
   parameter (Extbase's `ClassSchema` reflects parameter class types and fails if the class does not exist).
+  The property `Address::$txMaps2Uid` therefore needs its `@var PoiCollection|null` annotation: Extbase's
+  PhpDocExtractor runs before the ReflectionExtractor, which would take the untyped setter (`?object`) - without
+  the annotation the column map is `Relation::NONE` and the PoiCollection is never loaded.
+  Code using maps2 classes in signatures must not be autowired without maps2: such classes are excluded in
+  `Services.yaml` and registered conditionally in `Configuration/Services.php` (see "Map" in section 4).
   Functional tests run without maps2, except `JobPoiCollectionViewHelperTest`.
 - **Site Sets:** this extension ships two TYPO3 Site Sets (`jweiland/jobboard` main set,
   `jweiland/jobboard-pdf` for the PDF variant) instead of classic static TypoScript templates.

@@ -1,0 +1,41 @@
+"pages"
+,"uid","pid","title","slug","deleted","hidden","doktype","is_siteroot","sys_language_uid","l10n_parent"
+,1,0,"Root","/",0,0,1,1,0,0
+,2,1,"Job storage","/storage",0,0,254,0,0,0
+,3,2,"Sub folder of job storage","/storage/sub",0,0,254,0,0,0
+,4,1,"Job detail","/job-detail",0,0,1,0,0,0
+,5,1,"Map of job locations","/map",0,0,1,0,0,0
+,6,0,"Wurzel","/",0,0,1,1,1,1
+,7,1,"Stellendetails","/stellendetails",0,0,1,0,1,4
+,8,1,"Karte der Standorte","/karte",0,0,1,0,1,5
+,99,1,"Unrelated storage elsewhere on the site","/other",0,0,254,0,0,0
+
+"tt_address"
+,"uid","pid","sys_language_uid","l10n_parent","hidden","deleted","company","first_name","last_name","address","zip","city","tx_maps2_uid"
+,1,2,0,0,0,0,"Example Employer Ltd.","","","Example Street 1","12345","Example City",1
+,2,2,1,1,0,0,"Beispiel Arbeitgeber GmbH","","","Beispielstraße 1","12345","Beispielstadt",1
+,3,2,0,0,0,0,"Employer with expired jobs only","","","","23456","Expired City",2
+,4,2,0,0,1,0,"Hidden employer","","","","34567","Hidden City",3
+,5,2,0,0,0,0,"","Jane","Doe","","45678","Person City",4
+,6,2,0,0,0,0,"Employer with jobs outside of the storage","","","","56789","Other City",6
+,7,2,0,0,0,1,"Deleted employer","","","","67890","Deleted City",7
+
+"tx_jobboard_domain_model_job"
+,"uid","pid","sys_language_uid","l10n_parent","hidden","deleted","title","path_segment","address","application_deadline","ending_date","effective_salary_min","effective_salary_max"
+,1,2,0,0,0,0,"Second job","second-job",1,4102444800,0,3000.00,3000.00
+,2,3,0,0,0,0,"First job in sub folder","first-job-in-sub-folder",1,0,0,0.00,2500.00
+,3,2,0,0,0,0,"Third job without translation","third-job-without-translation",1,4102444800,0,3000.00,0.00
+,4,2,0,0,1,0,"Hidden job","hidden-job",1,0,0,3000.00,3000.00
+,5,2,0,0,0,0,"Job without salary information","job-without-salary-information",1,0,0,0.00,0.00
+,6,2,0,0,0,0,"Job with passed application deadline","job-with-passed-application-deadline",1,946684800,0,3000.00,3000.00
+,7,2,0,0,0,0,"Job with ended employment","job-with-ended-employment",1,0,946684800,3000.00,3000.00
+,8,2,0,0,0,0,"","job-without-title",1,0,0,3000.00,3000.00
+,9,99,0,0,0,0,"Job outside of the storage","job-outside-of-the-storage",1,0,0,3000.00,3000.00
+,10,2,0,0,0,1,"Deleted job","deleted-job",1,0,0,3000.00,3000.00
+,11,2,1,1,0,0,"Zweite Stelle","zweite-stelle",1,4102444800,0,3000.00,3000.00
+,12,3,1,2,0,0,"Erste Stelle im Unterordner","erste-stelle-im-unterordner",1,0,0,0.00,2500.00
+,13,2,0,0,0,0,"Expired job of another employer","expired-job-of-another-employer",3,946684800,0,3000.00,3000.00
+,14,2,0,0,0,0,"Job of a hidden employer","job-of-a-hidden-employer",4,0,0,3000.00,3000.00
+,15,2,0,0,0,0,"Job of a person","job-of-a-person",5,0,0,3000.00,3000.00
+,16,99,0,0,0,0,"Job of an employer outside of the storage","job-of-an-employer-outside-of-the-storage",6,0,0,3000.00,3000.00
+,17,2,0,0,0,0,"Job of a deleted employer","job-of-a-deleted-employer",7,0,0,3000.00,3000.00

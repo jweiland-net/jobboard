@@ -40,10 +40,28 @@ Map location
 ============
 
 If EXT:maps2 is installed, address records have an additional tab
-:guilabel:`Maps2` with the map location of the address. The title of the
-map location is taken from the company, or from first and last name if
-the company is empty. Only jobs with an address that has a map location
-appear on the map.
+:guilabel:`Maps2` with the map location of the address. EXT:maps2 creates
+the map location and determines its position from address, ZIP code, city
+and country when you save the address in the backend. Save the address in
+the default language.
+
+The title of the map location is the title of the marker on the map.
+EXT:maps2 takes it from the address on every save: the company, otherwise
+first and last name, otherwise the city.
+
+The map location is the same in all languages. In a translated address,
+the field is read-only and shows the map location of the address in the
+default language. Change it in the address of the default language.
+
+Only jobs with an address that has a map location appear on the map. Jobs
+at the same address share one marker. If no listed job has one, the
+frontend shows the message "The map cannot be shown" instead of the map.
+Save the addresses of these jobs in the backend, so that EXT:maps2
+determines their positions.
+
+A click on a marker opens an info window with the name, ZIP code and city
+of the address and links to all open jobs at this location, sorted
+alphabetically by job title, see :ref:`templates-info-window`.
 
 ..  _editor-addresses-select:
 
