@@ -2,9 +2,3 @@ name: jweiland/jobboard
 
 dependencies:
   - jweiland/jobboard-pdf
-
-# EXT:maps2 is optional. If it is installed, its sets are loaded
-# automatically and the job locations are shown on a map.
-optionalDependencies:
-  - jweiland/maps2-default
-  - jweiland/maps2-googlemaps
