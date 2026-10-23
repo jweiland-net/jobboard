@@ -103,10 +103,6 @@ class JobRepository extends Repository
      * Base constraints for every job listed in the frontend: it needs a title,
      * its application deadline must not have passed and, for fixed-term
      * positions, its employment must not have ended already.
-     *
-     * Both dates are date-only fields stored as timestamp of midnight. They
-     * are compared with today midnight, so a job is still listed on the day
-     * of its application deadline. 0 means "no date set" and never hides a job.
      */
     private function buildAndConstraintForOpenJobs(QueryInterface $query): array
     {
