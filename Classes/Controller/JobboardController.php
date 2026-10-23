@@ -17,9 +17,11 @@ use JWeiland\Jobboard\Domain\Model\JobArea;
 use JWeiland\Jobboard\Domain\Model\JobAreaRestriction;
 use JWeiland\Jobboard\Domain\Model\JobRole;
 use JWeiland\Jobboard\Domain\Model\JobType;
+use JWeiland\Jobboard\Domain\Model\RememberedJobs;
 use JWeiland\Jobboard\Domain\Model\Search;
 use JWeiland\Jobboard\Domain\Repository\JobRepository;
 use JWeiland\Jobboard\Event\PostProcessFluidVariablesEvent;
+use JWeiland\Jobboard\Service\RememberedJobsServiceInterface;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Error\Http\PageNotFoundException;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
@@ -28,6 +30,7 @@ class JobboardController extends ActionController
 {
     public function __construct(
         protected JobRepository $jobRepository,
+        protected RememberedJobsServiceInterface $rememberedJobsService,
     ) {}
 
     public function listAction(): ResponseInterface
@@ -37,7 +40,7 @@ class JobboardController extends ActionController
             (int)($this->settings['maxEntries'] ?? 0),
         );
 
-        $this->assignPostProcessedFluidVariables(['jobs' => $jobs] + $this->getSearchOptions($jobs));
+        $this->assignPostProcessedFluidVariables($this->getJobVariables($jobs) + $this->getSearchOptions($jobs));
 
         return $this->htmlResponse();
     }
@@ -57,7 +60,7 @@ class JobboardController extends ActionController
         );
 
         $this->assignPostProcessedFluidVariables(
-            ['jobs' => $jobs] + $search->getSelectedValues() + $this->getSearchOptions($jobs),
+            $this->getJobVariables($jobs) + $search->getSelectedValues() + $this->getSearchOptions($jobs),
         );
 
         return $this->htmlResponse();
@@ -77,6 +80,52 @@ class JobboardController extends ActionController
         $this->eventDispatcher->dispatch($event);
 
         $this->view->assignMultiple($event->getFluidVariables());
+    }
+
+    /**
+     * "jobs" are all jobs with the jobs remembered by the visitor first,
+     * "rememberedJobs" has the UIDs of the remembered jobs as keys for the
+     * checkbox and the highlight in the template.
+     *
+     * @param Job[] $jobs
+     * @return array<string, mixed>
+     */
+    private function getJobVariables(array $jobs): array
+    {
+        $rememberedJobs = $this->rememberedJobsService->getRememberedJobs($this->request);
+
+        return [
+            'jobs' => $this->sortRememberedJobsFirst($jobs, $rememberedJobs),
+            'rememberedJobs' => $rememberedJobs->getUidsAsKeys(),
+        ];
+    }
+
+    /**
+     * Moves the remembered jobs to the top before the jobs are paginated, so
+     * they are on the first page. Both groups keep the order of the query.
+     * The limit "maxEntries" was applied before, so remembering a job never
+     * changes which jobs are listed, only their order.
+     *
+     * @param Job[] $jobs
+     * @return Job[]
+     */
+    private function sortRememberedJobsFirst(array $jobs, RememberedJobs $rememberedJobs): array
+    {
+        if ($rememberedJobs->isEmpty()) {
+            return $jobs;
+        }
+
+        $firstJobs = [];
+        $otherJobs = [];
+        foreach ($jobs as $job) {
+            if ($rememberedJobs->contains((int)$job->getUid())) {
+                $firstJobs[] = $job;
+            } else {
+                $otherJobs[] = $job;
+            }
+        }
+
+        return [...$firstJobs, ...$otherJobs];
     }
 
     /**

@@ -2,8 +2,14 @@
       xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
       data-namespace-typo3-fluid="true">
 
+<f:comment>
+    rememberedJobs: UIDs of the jobs remembered by the visitor as keys.
+    data-jobboard-remember-url: endpoint of remember-jobs.js (answered by
+    RememberJobMiddleware). Rendered as URL of the current page, so it always
+    resolves to this site and language.
+</f:comment>
 <div class="table-responsive">
-    <table class="jobboard-table table table-hover align-middle">
+    <table class="jobboard-table table table-hover align-middle" data-jobboard-remember-url="{f:uri.page()}">
         <thead>
         <tr>
             <th scope="col">{f:translate(key: 'job.title')}</th>
@@ -19,7 +25,8 @@
         <tbody>
         <f:variable name="dateFormat" value="{f:translate(key: 'dateFormat')}"/>
         <f:for each="{objects}" as="job">
-            <tr data-jobboard-uid="{job.uid}">
+            <f:variable name="isRemembered" value="{f:if(condition: '{rememberedJobs.{job.uid}}', then: 1, else: 0)}"/>
+            <tr data-jobboard-uid="{job.uid}"{f:if(condition: isRemembered, then: ' class="highlight-row"')}>
                 <f:render partial="Job/TitleLink" arguments="{job: job}"/>
                 <f:render partial="Types/Date" arguments="{value: job.applicationDeadline, format: dateFormat}"/>
                 <f:render partial="Types/Text" arguments="{value: job.address.zip}"/>
@@ -32,7 +39,7 @@
                         makes the accessible name unique per row.
                     </f:comment>
                     <label class="jobboard-remember">
-                        <input type="checkbox" class="form-check-input" name="remember_job" value="{job.uid}">
+                        <input type="checkbox" class="form-check-input" name="remember_job" value="{job.uid}"{f:if(condition: isRemembered, then: ' checked')}>
                         <span>{f:translate(key: 'remember')}<span class="visually-hidden">: {job.title}</span></span>
                     </label>
                 </td>

@@ -92,7 +92,8 @@ The partial :file:`Partials/Types/Card.html` renders each job as a card
 with occupational fields, position, application deadline, title, a
 shortened description, a "Read more" button and, if
 :confval:`jobboard-pidofapplicationform` is set, an "Apply online" button.
-It has no "Remember" checkbox.
+It has no "Remember" checkbox, but highlights jobs remembered in the
+table layout, if it gets the variable :html:`{rememberedJobs}`.
 
 To use it, override :file:`Templates/Jobboard/List.html` and
 :file:`Templates/Jobboard/Search.html` and replace the table partial:
@@ -100,7 +101,7 @@ To use it, override :file:`Templates/Jobboard/List.html` and
 ..  code-block:: html
     :caption: EXT:my_sitepackage/Resources/Private/Extensions/Jobboard/Templates/Jobboard/List.html
 
-    <f:render partial="Types/Card" arguments="{objects: jobs}"/>
+    <f:render partial="Types/Card" arguments="{objects: jobs, rememberedJobs: rememberedJobs}"/>
 
 ..  _templates-job-areas:
 
@@ -152,6 +153,10 @@ The page browser is added by the PSR-14 event listener
 :html:`{numberOfJobs}`
     Number of all jobs of the list or search result.
 
+The jobs remembered by the visitor are sorted to the top before the jobs
+are paginated, so they are always on the first page, see
+:ref:`remember-jobs`.
+
 The options of the search form are still built from all jobs, not only
 from the jobs of the current page.
 
@@ -181,14 +186,13 @@ The partial :file:`Partials/JobListAssets.html` adds these files with the
 asset collector of TYPO3:
 
 *   :file:`Css/style.css`
-*   :file:`JavaScript/js.cookie-2.2.1.min.js` (cookie of remembered jobs)
 *   :file:`JavaScript/remember-jobs.js` (remembered jobs)
 *   :file:`JavaScript/address-suggestions.js` (suggestions of the location
     field)
 
 Both JavaScript files are plain JavaScript. :file:`remember-jobs.js`
-stores the remembered jobs in a cookie and highlights them. It needs
-:file:`js.cookie-2.2.1.min.js`, which must be loaded before.
+sends a ticked or unticked "Remember" checkbox to the server and updates
+the highlight, see :ref:`remember-jobs`. Neither file needs a library.
 :file:`address-suggestions.js` shows the suggestions of the location field
 as a native :html:`<datalist>`, see :ref:`address-search`.
 

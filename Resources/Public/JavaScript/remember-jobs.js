@@ -1,48 +1,70 @@
 // Plain JavaScript without any framework. Remembers jobs selected with the
-// checkbox "remember_job" in a cookie and highlights them. Requires the
-// global "Cookies" of js.cookie-2.2.1.min.js.
+// checkbox "remember_job" in the TYPO3 session of the visitor. The state
+// after loading the page is rendered by the server (checked checkbox, class
+// "highlight-row"), remembered jobs are listed first on the next page load.
 (() => {
   'use strict';
 
-  const COOKIE_NAME = 'jobboard_remembered_jobs';
+  const HEADER_NAME = 'jobboard-remember-job';
+  const HIGHLIGHT_CLASS = 'highlight-row';
+  const CHECKBOX_SELECTOR = 'input[name="remember_job"]';
 
-  const getRememberedJobs = () => {
-    const cookieValue = Cookies.get(COOKIE_NAME);
+  // The table provides the URL of the current page, which passes the
+  // frontend middleware stack (site and language resolved) and is answered
+  // by RememberJobMiddleware. Overridden templates without this attribute
+  // fall back to the path of the current page.
+  const getRememberUrl = (checkbox) => {
+    const container = checkbox.closest('[data-jobboard-remember-url]');
 
-    try {
-      return cookieValue ? JSON.parse(cookieValue) : [];
-    } catch (error) {
-      return [];
-    }
+    return container?.dataset.jobboardRememberUrl || window.location.pathname;
   };
 
-  const highlightJob = (jobUid, highlight = true) => {
-    document.querySelectorAll(`[data-jobboard-uid="${jobUid}"]`).forEach((element) => {
-      element.classList.toggle('highlight-row', highlight);
-      element.querySelectorAll('input[name="remember_job"]').forEach((checkbox) => {
-        checkbox.checked = highlight;
+  const showRememberedJobs = (rememberedJobs) => {
+    document.querySelectorAll('[data-jobboard-uid]').forEach((element) => {
+      const isRemembered = rememberedJobs.includes(Number(element.dataset.jobboardUid));
+      element.classList.toggle(HIGHLIGHT_CLASS, isRemembered);
+      element.querySelectorAll(CHECKBOX_SELECTOR).forEach((checkbox) => {
+        checkbox.checked = isRemembered;
       });
     });
   };
 
-  const toggleRememberedJob = (checkbox) => {
-    const jobUid = checkbox.value;
-    let rememberedJobs = getRememberedJobs();
+  // The server answers errors (unknown job, too many remembered jobs) with
+  // the current list as well, which then wins over the checkbox state.
+  const sendRememberRequest = async (checkbox) => {
+    const response = await fetch(getRememberUrl(checkbox), {
+      method: 'POST',
+      headers: {
+        [HEADER_NAME]: '1',
+        Accept: 'application/json',
+      },
+      body: new URLSearchParams({ job: checkbox.value, remember: checkbox.checked ? '1' : '0' }),
+    });
+    const data = await response.json();
 
-    if (checkbox.checked && !rememberedJobs.includes(jobUid)) {
-      rememberedJobs.push(jobUid);
-    } else if (!checkbox.checked) {
-      rememberedJobs = rememberedJobs.filter((value) => value !== jobUid);
+    if (!Array.isArray(data?.rememberedJobs)) {
+      throw new Error('Invalid response');
     }
 
-    highlightJob(jobUid, checkbox.checked);
-    Cookies.set(COOKIE_NAME, JSON.stringify(rememberedJobs));
+    return data.rememberedJobs;
+  };
+
+  const toggleRememberedJob = async (checkbox) => {
+    const requestedState = checkbox.checked;
+    const row = checkbox.closest('[data-jobboard-uid]');
+    row?.classList.toggle(HIGHLIGHT_CLASS, requestedState);
+
+    try {
+      showRememberedJobs(await sendRememberRequest(checkbox));
+    } catch (error) {
+      // Network error or unexpected answer: revert to the previous state
+      checkbox.checked = !requestedState;
+      row?.classList.toggle(HIGHLIGHT_CLASS, !requestedState);
+    }
   };
 
   const initialize = () => {
-    getRememberedJobs().forEach((jobUid) => highlightJob(jobUid));
-
-    document.querySelectorAll('input[name="remember_job"]').forEach((checkbox) => {
+    document.querySelectorAll(CHECKBOX_SELECTOR).forEach((checkbox) => {
       checkbox.addEventListener('change', () => toggleRememberedJob(checkbox));
     });
   };

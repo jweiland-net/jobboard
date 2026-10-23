@@ -52,6 +52,8 @@ salary grade has expired in the meantime.
 Changes are not visible yet
 ===========================
 
-The list page is cached. If changes appear only after some time, ask
-your administrator to configure :typoscript:`TCEMAIN.clearCacheCmd` for
-the storage folder, see :ref:`configuration-page-tsconfig-recipes`.
+The list is rendered on every request and shows changes at once, but the
+detail view of a job is cached. If changes appear there only after some
+time, ask your administrator to configure
+:typoscript:`TCEMAIN.clearCacheCmd` for the storage folder, see
+:ref:`configuration-page-tsconfig-recipes`.

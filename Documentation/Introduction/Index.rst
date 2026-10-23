@@ -45,11 +45,11 @@ Search form
     matching jobs, for example "IT (3)".
 
 Remember jobs
-    In the table layout, visitors can tick "Remember" for single jobs.
-    Remembered jobs are highlighted with a tinted background and a colored
-    bar in front of the row. The selection is stored in the browser cookie
-    :code:`jobboard_remembered_jobs`. Mention this cookie in the privacy
-    information of your site.
+    In the table layout, visitors can tick "Remember" for single jobs. The
+    list and the search result show the remembered jobs of this visitor
+    first, highlighted with a tinted background and a colored bar in front
+    of the row. The selection is stored in the TYPO3 session of the
+    visitor, see :ref:`remember-jobs`.
 
 Map
     If the optional extension :composer:`jweiland/maps2` is installed, the

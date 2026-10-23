@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace JWeiland\Jobboard\Tests\Functional\Controller;
 
+use JWeiland\Jobboard\Middleware\RememberJobMiddleware;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Configuration\SiteWriter;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -49,7 +50,8 @@ final class JobboardControllerTest extends FunctionalTestCase
 
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/JobVisibilityBySalaryInformation.csv');
 
-        $this->get(SiteWriter::class)->write('main', [
+        $siteWriter = $this->get(SiteWriter::class);
+        $siteWriter->write('main', [
             'rootPageId' => 1,
             'base' => 'https://example.com/',
             'languages' => [
@@ -63,6 +65,8 @@ final class JobboardControllerTest extends FunctionalTestCase
                 ],
             ],
         ]);
+        // Storage of the jobs, which can be remembered (RememberJobMiddleware)
+        $siteWriter->writeSettings('main', ['jobboard' => ['storagePid' => '2']]);
 
         $this->setUpFrontendRootPage(
             1,
@@ -98,13 +102,38 @@ final class JobboardControllerTest extends FunctionalTestCase
         ');
     }
 
-    private function fetchListPageBody(): string
+    private function fetchListPageBody(string $sessionCookie = ''): string
     {
-        $response = $this->executeFrontendSubRequest(
-            (new InternalRequest('https://example.com/'))->withPageId(1),
-        );
+        $request = (new InternalRequest('https://example.com/'))->withPageId(1);
 
-        return (string)$response->getBody();
+        return (string)$this->executeFrontendSubRequest($this->withSession($request, $sessionCookie))->getBody();
+    }
+
+    private function withSession(InternalRequest $request, string $sessionCookie): InternalRequest
+    {
+        return $sessionCookie === '' ? $request : $request->withCookieParams(['fe_typo_user' => $sessionCookie]);
+    }
+
+    /**
+     * Remembers the jobs through RememberJobMiddleware like the browser does
+     * and returns the cookie of the TYPO3 frontend user session.
+     */
+    private function rememberJobs(int ...$jobUids): string
+    {
+        $sessionCookie = '';
+        foreach ($jobUids as $jobUid) {
+            $request = (new InternalRequest('https://example.com/'))
+                ->withMethod('POST')
+                ->withHeader(RememberJobMiddleware::HEADER_NAME, '1')
+                ->withParsedBody(['job' => (string)$jobUid, 'remember' => '1']);
+            $response = $this->executeFrontendSubRequest($this->withSession($request, $sessionCookie));
+            self::assertSame(200, $response->getStatusCode(), (string)$response->getBody());
+            if (preg_match('/^fe_typo_user=([^;]+)/', $response->getHeaderLine('Set-Cookie'), $matches) === 1) {
+                $sessionCookie = $matches[1];
+            }
+        }
+
+        return $sessionCookie;
     }
 
     private function fetchSearchFormPageBody(int $pageId = 4): string
@@ -119,7 +148,7 @@ final class JobboardControllerTest extends FunctionalTestCase
     /**
      * @param array<string, int|string> $arguments
      */
-    private function fetchSearchActionPageBody(int $pageId, array $arguments = []): string
+    private function fetchSearchActionPageBody(int $pageId, array $arguments = [], string $sessionCookie = ''): string
     {
         $parameters = [
             'tx_jobboard_jobboard[controller]' => 'Jobboard',
@@ -137,7 +166,9 @@ final class JobboardControllerTest extends FunctionalTestCase
             '&id=' . $pageId . '&' . http_build_query($parameters),
         );
 
-        return (string)$this->executeFrontendSubRequest($request->withQueryParameter('cHash', $cHash))->getBody();
+        $request = $this->withSession($request->withQueryParameter('cHash', $cHash), $sessionCookie);
+
+        return (string)$this->executeFrontendSubRequest($request)->getBody();
     }
 
     private function assertAppearsBefore(string $expectedFirst, string $expectedSecond, string $haystack): void
@@ -620,5 +651,77 @@ final class JobboardControllerTest extends FunctionalTestCase
         self::assertStringContainsString('Warehouse', $body);
         self::assertStringContainsString('Assembly', $body);
         self::assertStringContainsString('Office', $body);
+    }
+
+    #[Test]
+    public function listActionRendersRememberedJobsFirst(): void
+    {
+        $body = $this->fetchListPageBody($this->rememberJobs(8));
+
+        $this->assertAppearsBefore('data-jobboard-uid="8"', 'data-jobboard-uid="1"', $body);
+        $this->assertAppearsBefore('data-jobboard-uid="1"', 'data-jobboard-uid="7"', $body);
+    }
+
+    #[Test]
+    public function listActionKeepsOrderOfQueryWithinRememberedJobs(): void
+    {
+        $body = $this->fetchListPageBody($this->rememberJobs(8, 1));
+
+        $this->assertAppearsBefore('data-jobboard-uid="1"', 'data-jobboard-uid="8"', $body);
+        $this->assertAppearsBefore('data-jobboard-uid="8"', 'data-jobboard-uid="7"', $body);
+    }
+
+    #[Test]
+    public function listActionRendersRememberedJobsCheckedAndHighlighted(): void
+    {
+        $body = $this->fetchListPageBody($this->rememberJobs(8));
+
+        self::assertStringContainsString('<tr data-jobboard-uid="8" class="highlight-row">', $body);
+        self::assertStringContainsString('name="remember_job" value="8" checked>', $body);
+        self::assertStringContainsString('<tr data-jobboard-uid="1">', $body);
+        self::assertStringContainsString('name="remember_job" value="1">', $body);
+    }
+
+    #[Test]
+    public function listActionRendersRememberedJobsOnFirstPage(): void
+    {
+        $this->setItemsPerPage(1);
+
+        $body = $this->fetchListPageBody($this->rememberJobs(8));
+
+        self::assertSame(1, substr_count($body, 'data-jobboard-uid="'));
+        self::assertStringContainsString('data-jobboard-uid="8"', $body);
+    }
+
+    #[Test]
+    public function listActionRendersDefaultOrderForOtherVisitors(): void
+    {
+        // The list is not cached, so the order of one visitor must never be
+        // delivered to another visitor.
+        $this->fetchListPageBody($this->rememberJobs(8));
+
+        $body = $this->fetchListPageBody();
+
+        $this->assertAppearsBefore('data-jobboard-uid="1"', 'data-jobboard-uid="8"', $body);
+        self::assertStringNotContainsString('highlight-row', $body);
+        self::assertStringNotContainsString(' checked>', $body);
+    }
+
+    #[Test]
+    public function listActionContainsUrlOfCurrentPageForRememberedJobs(): void
+    {
+        self::assertStringContainsString(
+            'data-jobboard-remember-url="/list-with-search"',
+            $this->fetchSearchFormPageBody(),
+        );
+    }
+
+    #[Test]
+    public function searchActionRendersRememberedJobsFirst(): void
+    {
+        $body = $this->fetchSearchActionPageBody(4, ['jobArea' => 1], $this->rememberJobs(8));
+
+        $this->assertAppearsBefore('data-jobboard-uid="8"', 'data-jobboard-uid="1"', $body);
+        self::assertStringContainsString('<tr data-jobboard-uid="8" class="highlight-row">', $body);
     }
 }

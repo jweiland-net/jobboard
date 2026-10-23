@@ -10,6 +10,7 @@ declare(strict_types=1);
  */
 
 use JWeiland\Jobboard\Middleware\AddressSearchMiddleware;
+use JWeiland\Jobboard\Middleware\RememberJobMiddleware;
 
 return [
     'frontend' => [
@@ -19,6 +20,21 @@ return [
                 // Must be loaded after "frontend.user" aspect (Context API) was initialized.
                 // Needed for FrontendUserRestrictionContainer of QueryBuilder.
                 'typo3/cms-frontend/authentication',
+            ],
+        ],
+        'jweiland/jobboard-remember-job' => [
+            'target' => RememberJobMiddleware::class,
+            'after' => [
+                // Needs the request attribute "frontend.user" (session of the
+                // visitor) and the "frontend.user" aspect for the restrictions
+                // of the QueryBuilder.
+                'typo3/cms-frontend/authentication',
+                // Needs the request attribute "site" for "jobboard.storagePid".
+                'typo3/cms-frontend/site',
+            ],
+            'before' => [
+                // Needs neither the page nor TypoScript, so answer early.
+                'typo3/cms-frontend/page-resolver',
             ],
         ],
     ],

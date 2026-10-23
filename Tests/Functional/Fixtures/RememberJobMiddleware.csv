@@ -1,0 +1,16 @@
+"pages"
+,"uid","pid","title","slug","deleted","hidden","doktype","is_siteroot"
+,1,0,"Root","/",0,0,1,1
+,2,1,"Job storage","/jobs",0,0,254,0
+,3,2,"Sub folder of job storage","/jobs/sub",0,0,254,0
+,99,1,"Unrelated storage elsewhere on the site","/other",0,0,254,0
+
+"tx_jobboard_domain_model_job"
+,"uid","pid","title","sys_language_uid","l10n_parent","hidden","deleted"
+,1,2,"Visible job",0,0,0,0
+,2,2,"Another visible job",0,0,0,0
+,3,3,"Visible job in sub folder",0,0,0,0
+,4,2,"Hidden job",0,0,1,0
+,5,2,"Deleted job",0,0,0,1
+,6,99,"Job outside of the storage",0,0,0,0
+,7,2,"Translated visible job",1,1,0,0

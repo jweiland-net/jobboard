@@ -23,7 +23,7 @@ use TYPO3\CMS\Install\Updates\UpgradeWizardInterface;
  * Copies existing rows from the old "tx_jobfair2_domain_model_*" tables (as they existed before the
  * internal rename to "Jobboard") into the new "tx_jobboard_domain_model_*" tables, preserving the
  * original uid of every row so that foreign key relations between these tables (e.g. job -> jobarea)
- * and client-side stored job uids (e.g. "remembered jobs" in localStorage) stay valid.
+ * and job uids stored elsewhere (e.g. links to the detail view) stay valid.
  *
  * This wizard does not remove the old tables. Once the migration was verified, they can be removed
  * manually via "Admin Tools > Maintenance > Analyze Database Structure > Remove".

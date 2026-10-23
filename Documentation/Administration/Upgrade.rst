@@ -81,5 +81,6 @@ Migrate from EXT:jobfair2
     information are not shown.
 #.  Remove EXT:jobfair2 and its tables.
 
-Because the UIDs of the jobs are kept, jobs that visitors have remembered
-in the job list stay remembered.
+The UIDs of the jobs are kept. Jobs that visitors remembered with
+EXT:jobfair2 are not taken over: they were stored in the browser, the job
+board stores them in the TYPO3 session, see :ref:`remember-jobs`.
