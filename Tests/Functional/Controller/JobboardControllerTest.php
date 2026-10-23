@@ -94,7 +94,7 @@ final class JobboardControllerTest extends FunctionalTestCase
                 layoutRootPaths.0 = EXT:jobboard/Resources/Private/Layouts/
             }
             plugin.tx_jobboard.persistence.storagePid = 2
-            plugin.tx_jobboard.ignoreFlexFormSettingsIfEmpty = showJobAreaCount
+            plugin.tx_jobboard.ignoreFlexFormSettingsIfEmpty = showJobAreaCount, pageBrowser.enable
             config.pageTitleProviders.jobboard {
                 provider = JWeiland\\Jobboard\\PageTitle\\JobPageTitleProvider
                 before = record, seo
@@ -723,5 +723,52 @@ final class JobboardControllerTest extends FunctionalTestCase
 
         $this->assertAppearsBefore('data-jobboard-uid="8"', 'data-jobboard-uid="1"', $body);
         self::assertStringContainsString('<tr data-jobboard-uid="8" class="highlight-row">', $body);
+    }
+
+    #[Test]
+    public function listActionRendersAllJobsIfPageBrowserIsDisabledByTypoScript(): void
+    {
+        $this->setItemsPerPage(1);
+        $this->addTypoScriptToTemplateRecord(1, 'plugin.tx_jobboard.settings.pageBrowser.enable = 0');
+
+        $body = $this->fetchListPageBody();
+
+        self::assertSame(3, substr_count($body, 'data-jobboard-uid="'));
+        self::assertStringNotContainsString('currentPage', $body);
+    }
+
+    #[Test]
+    public function listActionRendersAllJobsIfPageBrowserIsHiddenByContentElement(): void
+    {
+        $this->setItemsPerPage(1);
+
+        $body = $this->fetchSearchFormPageBody(8);
+
+        self::assertSame(3, substr_count($body, 'data-jobboard-uid="'));
+        self::assertStringNotContainsString('currentPage', $body);
+    }
+
+    #[Test]
+    public function listActionRendersPageBrowserIfContentElementOverridesDisabledTypoScript(): void
+    {
+        $this->setItemsPerPage(1);
+        $this->addTypoScriptToTemplateRecord(1, 'plugin.tx_jobboard.settings.pageBrowser.enable = 0');
+
+        $body = $this->fetchSearchFormPageBody(9);
+
+        self::assertSame(1, substr_count($body, 'data-jobboard-uid="'));
+        self::assertStringContainsString('Jobs 1 to 1 of 3', $body);
+    }
+
+    #[Test]
+    public function listActionRendersNoPageBrowserIfMaxEntriesIsSet(): void
+    {
+        // Page 3 limits the list to 2 jobs ("maxEntries")
+        $this->setItemsPerPage(1);
+
+        $body = $this->fetchSearchFormPageBody(3);
+
+        self::assertSame(2, substr_count($body, 'data-jobboard-uid="'));
+        self::assertStringNotContainsString('currentPage', $body);
     }
 }

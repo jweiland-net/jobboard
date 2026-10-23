@@ -47,7 +47,11 @@ final readonly class AddPaginatorEventListener
     public function __invoke(PostProcessFluidVariablesEvent $event): void
     {
         $jobs = $event->getFluidVariables()[self::FLUID_VARIABLE_NAME] ?? null;
-        if (!$this->isValidRequest($event) || !is_array($jobs) || $jobs === []) {
+        if (!$this->isValidRequest($event)
+            || !$this->isPageBrowserEnabled($event)
+            || !is_array($jobs)
+            || $jobs === []
+        ) {
             return;
         }
 
@@ -67,6 +71,22 @@ final readonly class AddPaginatorEventListener
             self::ALLOWED_CONTROLLER_ACTIONS[$event->getControllerName()] ?? [],
             true,
         );
+    }
+
+    /**
+     * A limited list ("maxEntries") is never paginated. Otherwise, only "-1"
+     * of the FlexForm or "0" of the site setting disable the page browser. An
+     * empty FlexForm value falls back to the TypoScript value (see
+     * "ignoreFlexFormSettingsIfEmpty").
+     */
+    private function isPageBrowserEnabled(PostProcessFluidVariablesEvent $event): bool
+    {
+        $settings = $event->getSettings();
+        if ((int)($settings['maxEntries'] ?? 0) > 0) {
+            return false;
+        }
+
+        return (int)($settings['pageBrowser']['enable'] ?? 1) === 1;
     }
 
     private function getCurrentPage(PostProcessFluidVariablesEvent $event): int

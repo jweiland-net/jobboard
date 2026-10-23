@@ -83,6 +83,14 @@
 				<source>Appends the number of jobs to each option of the job area filter in the search form, e.g. "IT (3)". Can be overridden per content element.</source>
 				<target>Ergänzt jeden Eintrag des Berufsfeld-Filters im Suchformular um die Anzahl der Stellen, z. B. "IT (3)". Kann je Inhaltselement überschrieben werden.</target>
 			</trans-unit>
+			<trans-unit id="settings.jobboard.pageBrowser.enable">
+				<source>Show page browser</source>
+				<target>Seitennavigation anzeigen</target>
+			</trans-unit>
+			<trans-unit id="settings.description.jobboard.pageBrowser.enable">
+				<source>Splits the list and the search results into pages. Never shown, if a content element limits the number of jobs ("Max entries to show"). Can be overridden per content element.</source>
+				<target>Teilt die Liste und die Suchergebnisse in Seiten auf. Wird nie angezeigt, wenn ein Inhaltselement die Anzahl der Stellen begrenzt ("Anzahl der anzuzeigenden Einträge"). Kann je Inhaltselement überschrieben werden.</target>
+			</trans-unit>
 			<trans-unit id="settings.jobboard.pageBrowser.itemsPerPage">
 				<source>Jobs per page</source>
 				<target>Stellen pro Seite</target>

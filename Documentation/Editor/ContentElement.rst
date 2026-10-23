@@ -48,9 +48,21 @@ Typical configurations
 Show only jobs of some occupational fields
     Select them in :guilabel:`Job areas` (sheet :guilabel:`General`).
 
-Show only the latest jobs, for example on the start page
-    Set :guilabel:`Max entries to show` to a number and disable
-    :guilabel:`Show Search`. Jobs are sorted by application deadline.
+Show only a few jobs, for example on the start page
+    Set :guilabel:`Max entries to show` (sheet :guilabel:`General`) to a
+    number and disable :guilabel:`Show Search` (sheet :guilabel:`Search`).
+    The list shows at most this number of jobs on one page, without page
+    browser.
+
+    The jobs are not sorted by their creation date. Jobs without an
+    application deadline come first, then the jobs whose application
+    deadline ends soonest. The number limits this order. Jobs the visitor
+    remembered are moved to the top of these jobs, see
+    :ref:`remember-jobs`.
+
+Show all jobs on one page
+    Set :guilabel:`Show page browser` (sheet :guilabel:`General`) to
+    :guilabel:`Hide`.
 
 Location as select box instead of a text field
     Set :guilabel:`Address search field` to :guilabel:`Job location select

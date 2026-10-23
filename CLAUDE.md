@@ -147,7 +147,10 @@ Key points:
   current page (`ArrayPaginator`, as the jobs are already filtered into an array) and adds `paginator`,
   `pagination`, `numberOfJobs` and `actionName`. Search options are built from all jobs before the event.
   `GetPostPagination` keeps the (GET merged with POST) plugin arguments in the page links, so search
-  criteria survive paging. Items per page: site setting `jobboard.pageBrowser.itemsPerPage`.
+  criteria survive paging. Items per page: site setting `jobboard.pageBrowser.itemsPerPage`. The page
+  browser is switched off by site setting `jobboard.pageBrowser.enable` (FlexForm `settings.pageBrowser.enable`
+  overrides it: `''` = site setting via `ignoreFlexFormSettingsIfEmpty`, `1` = show, `-1` = hide) and
+  always, if the content element sets `maxEntries` - a limited list (e.g. a teaser) is never paginated.
 - **Remembered jobs** live in the TYPO3 frontend user session (also for anonymous visitors), key
   `tx_jobboard_remembered_jobs`, value a plain `int[]` of default-language job UIDs. Only
   `RememberedJobsService` (`final readonly`, behind `RememberedJobsServiceInterface`) reads/writes it, via

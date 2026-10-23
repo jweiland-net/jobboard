@@ -107,6 +107,24 @@ them in the backend module :guilabel:`Site Management > Settings`
         Can be overridden per content element, see
         :confval:`plugin-showjobareacount`.
 
+    ..  confval:: jobboard.pageBrowser.enable
+        :name: jobboard-pagebrowser-enable
+        :type: bool
+        :default: :yaml:`true`
+
+        Splits the list and the search result into pages of
+        :confval:`jobboard-pagebrowser-itemsperpage` jobs and shows the page
+        browser, see :ref:`templates-pagination`. With :yaml:`false`, the
+        list and the search result show all jobs on one page.
+
+        Can be overridden per content element, see
+        :confval:`plugin-pagebrowser-enable`. A content element with
+        :confval:`plugin-maxentries` greater than :code:`0` never shows the
+        page browser, independent of this setting.
+
+        Mapped to
+        :typoscript:`plugin.tx_jobboard.settings.pageBrowser.enable`.
+
     ..  confval:: jobboard.pageBrowser.itemsPerPage
         :name: jobboard-pagebrowser-itemsperpage
         :type: int
@@ -114,6 +132,8 @@ them in the backend module :guilabel:`Site Management > Settings`
 
         Number of jobs on one page of the list and of the search result.
         Further jobs are reached with the page browser, see
-        :ref:`templates-pagination`.
+        :ref:`templates-pagination`. Has no effect, if the page browser is
+        disabled, see :confval:`jobboard-pagebrowser-enable`.
 
-        Mapped to :typoscript:`plugin.tx_jobboard.settings.pageBrowser.itemsPerPage`.
+        Mapped to
+        :typoscript:`plugin.tx_jobboard.settings.pageBrowser.itemsPerPage`.

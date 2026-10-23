@@ -38,6 +38,10 @@ settings:
     category: jobboard.search
     type: bool
     default: false
+  jobboard.pageBrowser.enable:
+    category: jobboard.pageBrowser
+    type: bool
+    default: true
   jobboard.pageBrowser.itemsPerPage:
     category: jobboard.pageBrowser
     type: int

@@ -51,12 +51,20 @@ of the plugin, together with the options of the content element
 *   :typoscript:`settings.pidOfDetailPage`
 *   :typoscript:`settings.pidOfApplicationForm`
 *   :typoscript:`settings.showJobAreaCount`
+*   :typoscript:`settings.pageBrowser.enable`
 *   :typoscript:`settings.pageBrowser.itemsPerPage`
 
 ..  _configuration-typoscript-pagebrowser:
 
 Page browser
 ============
+
+:typoscript:`settings.pageBrowser.enable` comes from the site setting
+:confval:`jobboard-pagebrowser-enable`. The option
+:confval:`plugin-pagebrowser-enable` of the content element overrides it.
+Only the value :code:`1` shows the page browser. If the content element
+sets :confval:`plugin-maxentries` to a number greater than :code:`0`, the
+page browser is never shown.
 
 :typoscript:`settings.pageBrowser.class` is the class that builds the
 links of the page browser. It must implement
@@ -71,12 +79,13 @@ setting :confval:`jobboard-pagebrowser-itemsperpage`.
 Empty content element options
 =============================
 
-:typoscript:`ignoreFlexFormSettingsIfEmpty = showJobAreaCount` lets an
-empty option "Show number of jobs per job area" of the content element
-fall back to the TypoScript value. Extbase treats an empty string and
-:code:`0` as empty. That is why the option "Hide" of the content element
-stores the value :code:`-1`. Only the value :code:`1` shows the number of
-jobs.
+:typoscript:`ignoreFlexFormSettingsIfEmpty` with the value
+:typoscript:`showJobAreaCount, pageBrowser.enable` lets the empty options
+"Show number of jobs per job area" and "Show page browser" of the content
+element fall back to the TypoScript value. Extbase treats an empty string
+and :code:`0` as empty. That is why the option "Hide" of the content
+element stores the value :code:`-1`. Only the value :code:`1` shows the
+number of jobs or the page browser.
 
 ..  _configuration-typoscript-pagetitle:
 
