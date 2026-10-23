@@ -23,6 +23,10 @@
 				<source>Search</source>
 				<target>Suche</target>
 			</trans-unit>
+			<trans-unit id="categories.jobboard.pageBrowser">
+				<source>Page browser</source>
+				<target>Seitennavigation</target>
+			</trans-unit>
 			<trans-unit id="settings.jobboard.templateRootPath">
 				<source>Templates</source>
 				<target>Templates</target>
@@ -78,6 +82,14 @@
 			<trans-unit id="settings.description.jobboard.showJobAreaCount">
 				<source>Appends the number of jobs to each option of the job area filter in the search form, e.g. "IT (3)". Can be overridden per content element.</source>
 				<target>Ergänzt jeden Eintrag des Berufsfeld-Filters im Suchformular um die Anzahl der Stellen, z. B. "IT (3)". Kann je Inhaltselement überschrieben werden.</target>
+			</trans-unit>
+			<trans-unit id="settings.jobboard.pageBrowser.itemsPerPage">
+				<source>Jobs per page</source>
+				<target>Stellen pro Seite</target>
+			</trans-unit>
+			<trans-unit id="settings.description.jobboard.pageBrowser.itemsPerPage">
+				<source>Number of jobs shown on one page of the list and of the search results. Further jobs are reached with the page browser.</source>
+				<target>Anzahl der Stellen, die auf einer Seite der Liste und der Suchergebnisse angezeigt werden. Weitere Stellen erreicht man über die Seitennavigation.</target>
 			</trans-unit>
 		</body>
 	</file>

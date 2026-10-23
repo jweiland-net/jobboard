@@ -232,6 +232,24 @@
 			<trans-unit id="pluginPreview.showFreeTextSearch">
 				<source>Show Free Text Search</source>
 			</trans-unit>
+			<trans-unit id="pageBrowser.label">
+				<source>Pagination</source>
+			</trans-unit>
+			<trans-unit id="pageBrowser.first">
+				<source>First</source>
+			</trans-unit>
+			<trans-unit id="pageBrowser.previous">
+				<source>Previous</source>
+			</trans-unit>
+			<trans-unit id="pageBrowser.next">
+				<source>Next</source>
+			</trans-unit>
+			<trans-unit id="pageBrowser.last">
+				<source>Last</source>
+			</trans-unit>
+			<trans-unit id="pageBrowser.records">
+				<source>Jobs %1$d to %2$d of %3$d</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

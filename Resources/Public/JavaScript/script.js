@@ -1,107 +1,117 @@
-// Uses the jQuery shipped with the job board (see JobListAssets.html), which
-// jQuery UI and DataTables were attached to. noConflict(true) restores the
-// globals "jQuery" and "$" of a jQuery the site may have loaded before.
-(function ($) {
+// Plain JavaScript without any framework. Remembers jobs in a cookie and
+// offers zip/city suggestions for the location field of the search form.
+(() => {
   'use strict';
 
-  // Resolve sibling resources relative to this script's own (possibly hashed/rewritten) URL,
-  // since TYPO3 does not expose the extension's public path (typo3conf/ext vs. _assets) to plain JS.
-  let scriptBaseUrl = document.currentScript.src.replace(/[^/]+$/, '');
+  const COOKIE_NAME = 'jobboard_remembered_jobs';
+  const MIN_LENGTH_ADDRESS_SEARCH = 3;
+  const DELAY_ADDRESS_SEARCH = 250;
 
-  let dataTable = $('.dataTable').DataTable({
-    'bLengthChange': false,
-    'language': {
-      'url': scriptBaseUrl + 'dataTables/i18n/de_DE.json'
-    },
-    'paging': false,
-    'bInfo': false
-  });
+  const getRememberedJobs = () => {
+    const cookieValue = Cookies.get(COOKIE_NAME);
 
-  let cookieName = 'jobboard_remembered_jobs';
+    try {
+      return cookieValue ? JSON.parse(cookieValue) : [];
+    } catch (error) {
+      return [];
+    }
+  };
 
-  $.each(getRememberedJobs(), function (index, value) {
-    highlightJobInDatatable(value);
-  });
-
-  dataTable.rows().invalidate();
-  dataTable.order([dataTable.column('.dataTable .rememberJob').index(), 'desc']);
-
-  function highlightJobInDatatable (jobUid, highlight = true) {
-    $('[data-jobboard-uid=' + jobUid + ']').each(function () {
-      if (highlight) {
-        $(this).addClass('highlight-row');
-      } else {
-        $(this).removeClass('highlight-row');
-      }
-      dataTable.cells($(this).find('input[name=remember_job]').parent('td')).invalidate();
-      $(this).find('input[name=remember_job]').prop('checked', highlight);
-      $(this).find('input[name=remember_job]').parent('td').attr('data-sort', highlight ? 1 : 0);
+  const highlightJob = (jobUid, highlight = true) => {
+    document.querySelectorAll(`[data-jobboard-uid="${jobUid}"]`).forEach((element) => {
+      element.classList.toggle('highlight-row', highlight);
+      element.querySelectorAll('input[name="remember_job"]').forEach((checkbox) => {
+        checkbox.checked = highlight;
+      });
     });
-  }
+  };
 
-  function getRememberedJobs () {
-    let cookieValue = Cookies.get(cookieName);
-    if (!cookieValue) {
-      cookieValue = JSON.stringify([]);
+  const toggleRememberedJob = (checkbox) => {
+    const jobUid = checkbox.value;
+    let rememberedJobs = getRememberedJobs();
+
+    if (checkbox.checked && !rememberedJobs.includes(jobUid)) {
+      rememberedJobs.push(jobUid);
+    } else if (!checkbox.checked) {
+      rememberedJobs = rememberedJobs.filter((value) => value !== jobUid);
     }
 
-    return JSON.parse(cookieValue);
-  }
-
-  $('[name=remember_job]').on('click', function () {
-    let jobUid = $(this).val();
-    let currentJobs = getRememberedJobs();
-
-    if ($(this).is(':checked')) {
-      if (currentJobs.indexOf(jobUid) === -1) {
-        currentJobs.push(jobUid);
-        highlightJobInDatatable(jobUid);
-      }
-    } else {
-      if (currentJobs.indexOf(jobUid) !== -1) {
-        currentJobs = $.grep(currentJobs, function (value) {
-          return value !== jobUid;
-        });
-        highlightJobInDatatable(jobUid, false);
-      }
-    }
-
-    Cookies.set(cookieName, JSON.stringify(currentJobs));
-  });
+    highlightJob(jobUid, checkbox.checked);
+    Cookies.set(COOKIE_NAME, JSON.stringify(rememberedJobs));
+  };
 
   // The search form provides the URL of the current page, which passes the
   // frontend middleware stack (site and language resolved) and is answered by
   // AddressSearchMiddleware. Overridden templates without this attribute fall
   // back to the path of the current page. A relative "index.php" must not be
   // used: it resolves below the current page path and ends up in a 404.
-  function getAddressSearchUrl (addressField) {
-    const url = $(addressField).closest('form').data('jobboard-address-search-url');
+  const getAddressSearchUrl = (addressField) => {
+    const form = addressField.closest('form');
 
-    return url ? url : window.location.pathname;
-  }
+    return form?.dataset.jobboardAddressSearchUrl || window.location.pathname;
+  };
 
-  $('#address').on('keyup', function () {
-    let value = $(this).val();
-    const addressSearchUrl = getAddressSearchUrl(this);
-
-    $('#address').autocomplete({
-      source: function( request, response ) {
-        $.ajax( {
-          url: addressSearchUrl,
-          type: 'POST',
-          data: {
-            zipCity: value
-          },
-          dataType: 'json',
-          headers: {
-            'jobboard-address-search': 1
-          },
-          success: function(data) {
-            response(data);
-          }
-        });
+  const fetchAddressSuggestions = async (addressField) => {
+    const response = await fetch(getAddressSearchUrl(addressField), {
+      method: 'POST',
+      headers: {
+        'jobboard-address-search': '1',
       },
-      minLength: 3
+      body: new URLSearchParams({ zipCity: addressField.value }),
     });
-  });
-}(window.jQuery.noConflict(true)));
+
+    return response.ok ? response.json() : [];
+  };
+
+  const renderAddressSuggestions = (datalist, suggestions) => {
+    datalist.replaceChildren(...suggestions.map((suggestion) => {
+      const option = document.createElement('option');
+      option.value = suggestion;
+
+      return option;
+    }));
+  };
+
+  // Suggestions are shown with a native <datalist>. Only text fields get
+  // suggestions, the location can also be a <select> of job locations.
+  const initializeAddressSearch = (addressField) => {
+    const datalist = document.createElement('datalist');
+    datalist.id = `${addressField.id}-suggestions`;
+    addressField.after(datalist);
+    addressField.setAttribute('list', datalist.id);
+    addressField.setAttribute('autocomplete', 'off');
+
+    let timeout;
+    addressField.addEventListener('input', () => {
+      clearTimeout(timeout);
+      if (addressField.value.length < MIN_LENGTH_ADDRESS_SEARCH) {
+        renderAddressSuggestions(datalist, []);
+        return;
+      }
+
+      timeout = setTimeout(async () => {
+        try {
+          renderAddressSuggestions(datalist, await fetchAddressSuggestions(addressField));
+        } catch (error) {
+          renderAddressSuggestions(datalist, []);
+        }
+      }, DELAY_ADDRESS_SEARCH);
+    });
+  };
+
+  const initialize = () => {
+    getRememberedJobs().forEach((jobUid) => highlightJob(jobUid));
+
+    document.querySelectorAll('input[name="remember_job"]').forEach((checkbox) => {
+      checkbox.addEventListener('change', () => toggleRememberedJob(checkbox));
+    });
+
+    document.querySelectorAll('input#address[type="text"]').forEach(initializeAddressSearch);
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initialize);
+  } else {
+    initialize();
+  }
+})();

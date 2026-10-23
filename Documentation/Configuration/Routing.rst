@@ -31,6 +31,11 @@ How it works
 
 *   Route :yaml:`/{job_title}` maps to the action :php:`detail` with the
     argument :code:`job`. The default action is :php:`list`.
+*   Route :yaml:`/page/{page}` maps to the action :php:`list` with the
+    argument :code:`currentPage` of the page browser, for example
+    :file:`https://example.org/jobs/page/2`. The aspect
+    :yaml:`StaticRangeMapper` allows the pages 1 to 999. The pages of a
+    search result keep their search criteria as query parameters.
 *   The aspect :yaml:`PersistedAliasMapper` resolves :yaml:`job_title`
     with the field "URL segment" (:sql:`path_segment`) of the job.
 *   The URL segment is created from the job title when a job is saved, also

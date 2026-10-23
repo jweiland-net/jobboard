@@ -16,7 +16,8 @@ How it works
 
 The JavaScript of the job board sends a POST request with the HTTP header
 :code:`jobboard-address-search` and the form field :code:`zipCity` after
-three characters. The request goes to the URL of the current page, which
+three characters and shows the answer as a native :html:`<datalist>` of
+the location field. The request goes to the URL of the current page, which
 the search form provides in the attribute
 :html:`data-jobboard-address-search-url`. If the attribute is missing,
 the path of the current page in the browser is used. The PSR-15 middleware

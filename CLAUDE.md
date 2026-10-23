@@ -142,6 +142,14 @@ Key points:
 - **`AddressSearchMiddleware`** answers city/zip autocomplete requests (custom header
   `jobboard-address-search`) against `tt_address` for the frontend search form; registered to run after
   `typo3/cms-frontend/authentication` because it needs the Frontend restriction context.
+- **Pagination**: `JobboardController` dispatches `PostProcessFluidVariablesEvent` in `list`/`search` right
+  before assigning the view variables. `AddPaginatorEventListener` replaces `jobs` with the jobs of the
+  current page (`ArrayPaginator`, as the jobs are already filtered into an array) and adds `paginator`,
+  `pagination`, `numberOfJobs` and `actionName`. Search options are built from all jobs before the event.
+  `GetPostPagination` keeps the (GET merged with POST) plugin arguments in the page links, so search
+  criteria survive paging. Items per page: site setting `jobboard.pageBrowser.itemsPerPage`.
+- **Frontend JavaScript** (`Resources/Public/JavaScript/script.js`) is plain JavaScript: remembered
+  jobs (cookie via `js.cookie`) and the zip/city suggestions as native `<datalist>`.
 - **`JobPoiCollectionViewHelper`** bridges `Job` -> `tt_address` -> `maps2` `PoiCollection` so a job list can
   be rendered as map markers. Without maps2 it returns an empty `ObjectStorage`.
 - **`Address` domain model** extends `FriendsOfTYPO3\TtAddress\Domain\Model\Address` purely to add the
@@ -151,9 +159,9 @@ Key points:
 
 - **`JobfairToJobboardMigration`** copies rows from the pre-rename `tx_jobfair2_domain_model_*` tables into
   the current `tx_jobboard_domain_model_*` tables, preserving every row's original `uid` (so foreign keys
-  between these tables, and client-side "remembered jobs" in `localStorage`, stay valid). It copies columns
-  generically by diffing the *actual* schema of the old and new table (`getCommonColumns()`), not via a
-  hardcoded field list - adding or removing a plain `Job` column normally needs no wizard change. FAL
+  between these tables, and client-side "remembered jobs" in the cookie `jobboard_remembered_jobs`, stay
+  valid). It copies columns generically by diffing the *actual* schema of the old and new table
+  (`getCommonColumns()`), not via a hardcoded field list - adding or removing a plain `Job` column normally needs no wizard change. FAL
   fields are the exception: `sys_file_reference.tablenames` is rewritten only for the columns listed in
   `JOB_FAL_FIELDS` (`employer_logo`, `header_logo`, `tender_file`, `pdf_files`), so a *new* FAL column that
   already existed under the old `tx_jobfair2_*` table name must be added to that constant, or its file

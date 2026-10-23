@@ -19,6 +19,7 @@ use JWeiland\Jobboard\Domain\Model\JobRole;
 use JWeiland\Jobboard\Domain\Model\JobType;
 use JWeiland\Jobboard\Domain\Model\Search;
 use JWeiland\Jobboard\Domain\Repository\JobRepository;
+use JWeiland\Jobboard\Event\PostProcessFluidVariablesEvent;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Error\Http\PageNotFoundException;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
@@ -36,8 +37,7 @@ class JobboardController extends ActionController
             (int)($this->settings['maxEntries'] ?? 0),
         );
 
-        $this->view->assign('jobs', $jobs);
-        $this->assignSearchOptions($jobs);
+        $this->assignPostProcessedFluidVariables(['jobs' => $jobs] + $this->getSearchOptions($jobs));
 
         return $this->htmlResponse();
     }
@@ -56,11 +56,27 @@ class JobboardController extends ActionController
             (int)($this->settings['maxEntries'] ?? 0),
         );
 
-        $this->view->assignMultiple($search->getSelectedValues());
-        $this->view->assign('jobs', $jobs);
-        $this->assignSearchOptions($jobs);
+        $this->assignPostProcessedFluidVariables(
+            ['jobs' => $jobs] + $search->getSelectedValues() + $this->getSearchOptions($jobs),
+        );
 
         return $this->htmlResponse();
+    }
+
+    /**
+     * Listeners of PostProcessFluidVariablesEvent can add or replace variables
+     * before they are assigned, e.g. AddPaginatorEventListener paginates the jobs.
+     * The search options are built from all jobs, not only the jobs of the
+     * current page.
+     *
+     * @param array<string, mixed> $fluidVariables
+     */
+    private function assignPostProcessedFluidVariables(array $fluidVariables): void
+    {
+        $event = new PostProcessFluidVariablesEvent($this->request, $this->settings, $fluidVariables);
+        $this->eventDispatcher->dispatch($event);
+
+        $this->view->assignMultiple($event->getFluidVariables());
     }
 
     /**
@@ -80,15 +96,16 @@ class JobboardController extends ActionController
 
     /**
      * @param Job[] $jobs
+     * @return array<string, array<int|string, string>>
      */
-    private function assignSearchOptions(array $jobs): void
+    private function getSearchOptions(array $jobs): array
     {
-        $this->view->assignMultiple([
+        return [
             'jobAreas' => $this->getJobAreas($jobs),
             'jobRoles' => $this->getJobRoles($jobs),
             'jobTypes' => $this->getJobTypes($jobs),
             'jobLocations' => $this->getJobLocations($jobs),
-        ]);
+        ];
     }
 
     /**

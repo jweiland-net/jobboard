@@ -7,8 +7,16 @@
 Extending the job board
 =======================
 
-The extension does not dispatch own PSR-14 events yet. These extension
-points exist:
+These extension points exist:
+
+PSR-14 event :php:`PostProcessFluidVariablesEvent`
+    :php:`JWeiland\Jobboard\Event\PostProcessFluidVariablesEvent` is
+    dispatched by the actions :php:`list` and :php:`search` right before
+    the variables are assigned to the view. Listeners can read the
+    request and the settings and add or replace variables with
+    :php:`addFluidVariable()`. The page browser is built this way, see
+    :php:`JWeiland\Jobboard\EventListener\AddPaginatorEventListener`
+    and :ref:`templates-pagination`.
 
 Templates
     All templates, partials and layouts can be overridden, see

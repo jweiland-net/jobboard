@@ -1,4 +1,5 @@
-# Route enhancer for speaking URLs of the job detail view.
+# Route enhancer for speaking URLs of the job detail view and the pages of
+# the job list.
 #
 # Import this file in your site configuration (config/sites/<site>/config.yaml)
 # or in any YAML file imported from there:
@@ -25,11 +26,21 @@ routeEnhancers:
         _controller: 'Jobboard::detail'
         _arguments:
           job_title: job
+      -
+        routePath: '/page/{page}'
+        _controller: 'Jobboard::list'
+        _arguments:
+          page: currentPage
     requirements:
       job_title: '^[[:alnum:]\-]+$'
+      page: '\d+'
     defaultController: 'Jobboard::list'
     aspects:
       job_title:
         type: PersistedAliasMapper
         tableName: tx_jobboard_domain_model_job
         routeFieldName: path_segment
+      page:
+        type: StaticRangeMapper
+        start: '1'
+        end: '999'

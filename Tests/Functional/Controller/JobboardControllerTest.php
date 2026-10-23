@@ -532,4 +532,92 @@ final class JobboardControllerTest extends FunctionalTestCase
         self::assertStringContainsString('Job with visible stepped grade', $body);
         self::assertStringNotContainsString('maps2', $body);
     }
+
+    private function setItemsPerPage(int $itemsPerPage): void
+    {
+        $this->addTypoScriptToTemplateRecord(
+            1,
+            'plugin.tx_jobboard.settings.pageBrowser.itemsPerPage = ' . $itemsPerPage,
+        );
+    }
+
+    private function fetchListPageBodyOfPage(int $currentPage): string
+    {
+        $queryString = '&id=1'
+            . '&tx_jobboard_jobboard[controller]=Jobboard'
+            . '&tx_jobboard_jobboard[action]=list'
+            . '&tx_jobboard_jobboard[currentPage]=' . $currentPage;
+        $cHash = $this->get(CacheHashCalculator::class)->generateForParameters($queryString);
+
+        $request = (new InternalRequest('https://example.com/'))
+            ->withPageId(1)
+            ->withQueryParameter('tx_jobboard_jobboard[controller]', 'Jobboard')
+            ->withQueryParameter('tx_jobboard_jobboard[action]', 'list')
+            ->withQueryParameter('tx_jobboard_jobboard[currentPage]', $currentPage)
+            ->withQueryParameter('cHash', $cHash);
+
+        return (string)$this->executeFrontendSubRequest($request)->getBody();
+    }
+
+    #[Test]
+    public function listActionRendersNoPageBrowserIfAllJobsFitOnOnePage(): void
+    {
+        $body = $this->fetchListPageBody();
+
+        self::assertSame(3, substr_count($body, 'data-jobboard-uid="'));
+        self::assertStringNotContainsString('Jobs 1 to', $body);
+        self::assertStringNotContainsString('currentPage', $body);
+    }
+
+    #[Test]
+    public function listActionRendersConfiguredNumberOfJobsPerPage(): void
+    {
+        $this->setItemsPerPage(2);
+
+        $body = $this->fetchListPageBody();
+
+        self::assertSame(2, substr_count($body, 'data-jobboard-uid="'));
+        self::assertStringContainsString('Jobs 1 to 2 of 3', $body);
+        self::assertStringContainsString('tx_jobboard_jobboard%5BcurrentPage%5D=2', $body);
+    }
+
+    #[Test]
+    public function listActionRendersRemainingJobsOnLastPage(): void
+    {
+        $this->setItemsPerPage(2);
+
+        $body = $this->fetchListPageBodyOfPage(2);
+
+        self::assertSame(1, substr_count($body, 'data-jobboard-uid="'));
+        self::assertStringContainsString('Jobs 3 to 3 of 3', $body);
+        self::assertStringContainsString('tx_jobboard_jobboard%5BcurrentPage%5D=1', $body);
+    }
+
+    #[Test]
+    public function searchActionKeepsSearchArgumentsInPageLinks(): void
+    {
+        $this->setItemsPerPage(1);
+
+        // Job area "Warehouse" (uid 1) matches two eligible jobs of the fixture
+        $body = $this->fetchSearchActionPageBody(4, ['jobArea' => 1]);
+
+        self::assertSame(1, substr_count($body, 'data-jobboard-uid="'));
+        self::assertStringContainsString('Jobs 1 to 1 of 2', $body);
+        self::assertStringContainsString('tx_jobboard_jobboard%5Baction%5D=search', $body);
+        self::assertStringContainsString('tx_jobboard_jobboard%5BjobArea%5D=1', $body);
+        self::assertStringContainsString('tx_jobboard_jobboard%5BcurrentPage%5D=2', $body);
+    }
+
+    #[Test]
+    public function searchActionBuildsSearchOptionsFromAllJobsNotOnlyFromCurrentPage(): void
+    {
+        $this->setItemsPerPage(1);
+
+        $body = $this->fetchSearchFormPageBody();
+
+        self::assertSame(1, substr_count($body, 'data-jobboard-uid="'));
+        self::assertStringContainsString('Warehouse', $body);
+        self::assertStringContainsString('Assembly', $body);
+        self::assertStringContainsString('Office', $body);
+    }
 }
