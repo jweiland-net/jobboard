@@ -22,7 +22,8 @@ met:
     *   Salary mode "Salary grade": at least one selected salary grade is
         enabled, within its validity period (see
         :ref:`editor-salary-validity`) and has an amount: a fixed amount or
-        at least one enabled step with an amount.
+        at least one enabled step with an amount. A grade or step that
+        expires within the next 24 hours already counts as expired.
     *   Salary mode "Free salary entry": minimum or maximum salary is
         greater than 0.
 
@@ -52,8 +53,12 @@ salary grade has expired in the meantime.
 Changes are not visible yet
 ===========================
 
-The list is rendered on every request and shows changes at once, but the
-detail view of a job is cached. If changes appear there only after some
-time, ask your administrator to configure
+The list and the detail view of a job are cached. When you save a record
+in the storage folder, TYPO3 clears the cache of the job board pages. If
+changes appear only after some time, ask your administrator to configure
 :typoscript:`TCEMAIN.clearCacheCmd` for the storage folder, see
-:ref:`configuration-page-tsconfig-recipes`.
+:ref:`configuration-page-tsconfig-cache`.
+
+When the publish or expiration date of a salary grade or step is reached,
+the affected jobs are updated by a command that runs once a day, see
+:ref:`salary-update`.

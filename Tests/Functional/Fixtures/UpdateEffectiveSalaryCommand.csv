@@ -1,0 +1,14 @@
+"pages"
+,"uid","pid","title","slug","deleted","hidden","doktype","is_siteroot"
+,1,0,"Root","/",0,0,1,1
+,2,1,"Storage for jobs","/storage",0,0,254,0
+
+"tx_jobboard_domain_model_job"
+,"uid","pid","title","sys_language_uid","l10n_parent","hidden","deleted","salary_mode","salary_min","effective_salary_min","effective_salary_max","effective_salary_valid_until"
+,1,2,"No upcoming change",0,0,0,0,1,2500.00,1.00,1.00,0
+,2,2,"Change at the end of the look-ahead",0,0,0,0,1,2500.00,1.00,1.00,1767312000
+,3,2,"Change after the look-ahead",0,0,0,0,1,2500.00,1.00,1.00,1767312001
+,4,2,"Change in the past",0,0,0,0,1,2500.00,1.00,1.00,1767225590
+,5,2,"Translation of a due job",1,2,0,0,1,2500.00,1.00,1.00,1767312000
+,6,2,"Deleted due job",0,0,0,1,1,2500.00,1.00,1.00,1767225600
+,7,2,"Hidden due job",0,0,1,0,1,2500.00,1.00,1.00,1767225600

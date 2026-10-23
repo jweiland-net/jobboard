@@ -16,7 +16,9 @@ use TYPO3\CMS\Extbase\Mvc\Request;
 /**
  * Dispatched by the list and search action, right before the variables are
  * assigned to the view. Listeners can add or replace variables, e.g. to
- * paginate the jobs.
+ * paginate the jobs. The Fluid variable "jobs" is a QueryResultInterface of
+ * Job objects, which is not executed yet, so it can be paginated (limited)
+ * in the database.
  */
 final class PostProcessFluidVariablesEvent
 {

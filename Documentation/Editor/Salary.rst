@@ -80,8 +80,9 @@ Salary steps are created inside their salary grade.
     separator and a decimal comma, for example :code:`3.842,17`. It is
     normalized when you leave the field.
 
-A hidden or expired step is ignored. If all steps of a grade are hidden or
-expired, the grade has no amount any more.
+A hidden or expired step is ignored, like a step that expires within the
+next 24 hours. If all steps of a grade are hidden or expired, the grade has
+no amount any more.
 
 ..  _editor-salary-validity:
 
@@ -103,8 +104,26 @@ Validity of salary grades
     without another valid grade then have no salary information: they
     disappear from the list and their detail page returns "Page not found".
 
-    Maintain the salary grades of a new pay scale in time, before the old
-    ones expire.
+    A grade or step already counts as expired **24 hours before** its
+    expiration date. Maintain the salary grades of a new pay scale in time,
+    at the latest one day before the old ones expire.
+
+Changes that you save take effect at once. When a publish or expiration
+date is reached without any change, the affected jobs are updated by a
+command that runs once a day, usually at night, see :ref:`salary-update`.
+A grade with a publish date in the future therefore counts for the jobs
+from the first run of the command after this date.
+
+..  _editor-salary-translation:
+
+Salary in translated jobs
+=========================
+
+The salary of a job is the same in all languages. In a translated job, the
+fields :guilabel:`Salary mode`, :guilabel:`Salary grades`,
+:guilabel:`Minimum salary` and :guilabel:`Maximum salary` show the values
+of the default language and cannot be edited. Change them in the job of
+the default language, the translations take them over.
 
 ..  _editor-salary-table:
 

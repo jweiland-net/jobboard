@@ -43,6 +43,7 @@ return [
             --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.job_details;job_details,
             --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.job_description;job_description,
             --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.import;import,
+            --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.effective_salary;effective_salary,
             --div--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tabs.job_details,
             --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.address;address,
             --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.information;information,
@@ -66,6 +67,7 @@ return [
             --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.job_details;job_details,
             --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.job_description;job_description,
             --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.import;import,
+            --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.effective_salary;effective_salary,
             --div--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tabs.job_details,
             --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.address;address,
             --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.information;information,
@@ -89,6 +91,7 @@ return [
         'job_details' => ['showitem' => 'title, reference_number, --linebreak--, subtitle, --linebreak--, path_segment'],
         'job_description' => ['showitem' => 'description, --linebreak--, offer, --linebreak--, requirements, --linebreak--, further_information'],
         'import' => ['showitem' => 'is_import, vacancy_id'],
+        'effective_salary' => ['showitem' => 'effective_salary_min, effective_salary_max, effective_salary_valid_until'],
         'address' => ['showitem' => 'address'],
         'information' => ['showitem' => 'job_role, job_type, contract_type, --linebreak--, job_areas, --linebreak--, tender_type'],
         'salary_grade' => ['showitem' => 'salary_mode, --linebreak--, salary_grades'],
@@ -297,6 +300,10 @@ return [
         ],
         'salary_mode' => [
             'exclude' => true,
+            // Source of the effective salary, which is calculated for the
+            // default language only: not editable in translations
+            'l10n_mode' => 'exclude',
+            'l10n_display' => 'defaultAsReadonly',
             'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.salary_mode',
             'description' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.salary_mode.description',
             'config' => [
@@ -311,6 +318,10 @@ return [
         ],
         'salary_grades' => [
             'exclude' => true,
+            // Source of the effective salary, which is calculated for the
+            // default language only: not editable in translations
+            'l10n_mode' => 'exclude',
+            'l10n_display' => 'defaultAsReadonly',
             'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.salary_grades',
             'description' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.salary_grades.description',
             'config' => [
@@ -326,6 +337,10 @@ return [
         ],
         'salary_min' => [
             'exclude' => true,
+            // Source of the effective salary, which is calculated for the
+            // default language only: not editable in translations
+            'l10n_mode' => 'exclude',
+            'l10n_display' => 'defaultAsReadonly',
             'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.salary_min',
             'description' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.salary_min.description',
             'config' => [
@@ -340,6 +355,10 @@ return [
         ],
         'salary_max' => [
             'exclude' => true,
+            // Source of the effective salary, which is calculated for the
+            // default language only: not editable in translations
+            'l10n_mode' => 'exclude',
+            'l10n_display' => 'defaultAsReadonly',
             'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.salary_max',
             'description' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.salary_max.description',
             'config' => [
@@ -350,6 +369,45 @@ return [
                     'lower' => 0,
                 ],
                 'default' => 0.00,
+            ],
+        ],
+        // Effective salary of the job, calculated by EffectiveSalaryUpdater
+        // from salary_mode, salary_min/max and the currently visible salary
+        // grades and steps. Read-only in the backend as a control for editors,
+        // written through DataHandler only. "exclude" copies the values of the default
+        // language into all translations, so filtering works in every language.
+        'effective_salary_min' => [
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.effective_salary_min',
+            'description' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.effective_salary.description',
+            'l10n_mode' => 'exclude',
+            'config' => [
+                'type' => 'number',
+                'format' => 'decimal',
+                'readOnly' => true,
+                'default' => 0.00,
+            ],
+        ],
+        'effective_salary_max' => [
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.effective_salary_max',
+            'description' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.effective_salary.description',
+            'l10n_mode' => 'exclude',
+            'config' => [
+                'type' => 'number',
+                'format' => 'decimal',
+                'readOnly' => true,
+                'default' => 0.00,
+            ],
+        ],
+        // Next point in time, at which a starttime/endtime of a related salary
+        // grade or step changes the effective salary. 0 = no upcoming change.
+        'effective_salary_valid_until' => [
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.effective_salary_valid_until',
+            'description' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.effective_salary_valid_until.description',
+            'l10n_mode' => 'exclude',
+            'config' => [
+                'type' => 'datetime',
+                'readOnly' => true,
+                'default' => 0,
             ],
         ],
         'employer' => [
