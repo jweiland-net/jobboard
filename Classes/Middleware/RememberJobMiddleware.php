@@ -64,6 +64,8 @@ final readonly class RememberJobMiddleware implements MiddlewareInterface
             return (new JsonResponse(['error' => 'methodNotAllowed'], 405))->withHeader('Allow', 'POST');
         }
 
+        // @todo TYPO3 14: limit requests per IP with the native
+        //       RateLimiterFactoryInterface::createRequestBasedLimiter()
         $rememberedJobs = $this->rememberedJobsService->getRememberedJobs($request);
         $jobUid = $this->getJobUidFromRequest($request);
         $remember = $this->getRememberFromRequest($request);
