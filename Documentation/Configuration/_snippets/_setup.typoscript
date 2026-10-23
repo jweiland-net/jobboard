@@ -27,6 +27,11 @@ plugin.tx_jobboard {
     pidOfDetailPage = {$jobboard.pidOfDetailPage}
     pidOfApplicationForm = {$jobboard.pidOfApplicationForm}
     showJobAreaCount = {$jobboard.showJobAreaCount}
+
+    pageBrowser {
+      class = JWeiland\Jobboard\Pagination\GetPostPagination
+      itemsPerPage = {$jobboard.pageBrowser.itemsPerPage}
+    }
   }
 
   # Use the TypoScript value, if the FlexForm option is empty

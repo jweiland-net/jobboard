@@ -305,6 +305,30 @@
 				<source>Show Free Text Search</source>
 				<target>Freitextsuche anzeigen</target>
 			</trans-unit>
+			<trans-unit id="pageBrowser.label">
+				<source>Pagination</source>
+				<target>Seitennavigation</target>
+			</trans-unit>
+			<trans-unit id="pageBrowser.first">
+				<source>First</source>
+				<target>Erste</target>
+			</trans-unit>
+			<trans-unit id="pageBrowser.previous">
+				<source>Previous</source>
+				<target>Zurück</target>
+			</trans-unit>
+			<trans-unit id="pageBrowser.next">
+				<source>Next</source>
+				<target>Weiter</target>
+			</trans-unit>
+			<trans-unit id="pageBrowser.last">
+				<source>Last</source>
+				<target>Letzte</target>
+			</trans-unit>
+			<trans-unit id="pageBrowser.records">
+				<source>Jobs %1$d to %2$d of %3$d</source>
+				<target>Stellen %1$d bis %2$d von %3$d</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

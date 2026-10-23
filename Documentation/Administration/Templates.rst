@@ -63,6 +63,8 @@ All files are in :path:`EXT:jobboard/Resources/Private/`.
             suggestions, see :ref:`address-search-override`.
     *   -   :file:`Partials/Types/Table.html`
         -   Default list rendering as table
+    *   -   :file:`Partials/Pagination.html`
+        -   Page browser below the list, see :ref:`templates-pagination`
     *   -   :file:`Partials/Types/Card.html`
         -   Alternative list rendering as cards, see
             :ref:`templates-card-layout`
@@ -120,6 +122,39 @@ Renders all occupational fields of a job, each in a
 
     <f:render partial="Job/JobAreas" arguments="{job: job, separator: ' | '}"/>
 
+..  _templates-pagination:
+
+Page browser
+============
+
+List and search result show :confval:`jobboard-pagebrowser-itemsperpage`
+jobs per page. The partial :file:`Partials/Pagination.html` renders the
+links to the first, previous, next and last page and the range of the
+shown jobs. The links of a search result keep the search criteria.
+
+The page browser is added by the PSR-14 event listener
+:php:`JWeiland\Jobboard\EventListener\AddPaginatorEventListener`, see
+:ref:`developer-extensibility`. It provides these variables:
+
+:html:`{jobs}`
+    The jobs of the current page only. The map above the list also shows
+    the jobs of the current page only.
+
+:html:`{paginator}`
+    :php:`TYPO3\CMS\Core\Pagination\ArrayPaginator`, for example
+    :html:`{paginator.currentPageNumber}`.
+
+:html:`{pagination}`
+    :php:`JWeiland\Jobboard\Pagination\GetPostPagination`, for example
+    :html:`{pagination.lastPageNumber}` or
+    :html:`{pagination.nextPageArguments}`.
+
+:html:`{numberOfJobs}`
+    Number of all jobs of the list or search result.
+
+The options of the search form are still built from all jobs, not only
+from the jobs of the current page.
+
 ..  _templates-json-ld:
 
 Structured data (JSON-LD)
@@ -145,19 +180,12 @@ JavaScript and CSS
 The partial :file:`Partials/JobListAssets.html` adds these files with the
 asset collector of TYPO3:
 
-*   :file:`Css/jquery-ui.min.css`, :file:`Css/style.css`
-*   :file:`JavaScript/jquery-3.7.1.min.js` (jQuery)
-*   :file:`JavaScript/jquery-ui.min.js` (suggestions of the location field)
-*   :file:`JavaScript/datatables.min.js` (sortable table)
+*   :file:`Css/style.css`
 *   :file:`JavaScript/js.cookie-2.2.1.min.js` (cookie of remembered jobs)
 *   :file:`JavaScript/script.js` (job board logic)
 
-The job board ships its own jQuery. :file:`script.js` releases it with
-:js:`jQuery.noConflict(true)` after jQuery UI and DataTables have been
-attached to it. A jQuery that your site loads itself stays untouched.
-
-The texts of the table (DataTables) come from
-:file:`JavaScript/dataTables/i18n/de_DE.json`.
+:file:`script.js` is plain JavaScript. It remembers jobs and shows the
+suggestions of the location field as a native :html:`<datalist>`.
 
 To use other libraries or files, override the partial
 :file:`Partials/JobListAssets.html`.

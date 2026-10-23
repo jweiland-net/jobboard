@@ -6,6 +6,8 @@ categories:
     parent: jobboard
   jobboard.search:
     parent: jobboard
+  jobboard.pageBrowser:
+    parent: jobboard
 
 settings:
   jobboard.templateRootPath:
@@ -36,3 +38,7 @@ settings:
     category: jobboard.search
     type: bool
     default: false
+  jobboard.pageBrowser.itemsPerPage:
+    category: jobboard.pageBrowser
+    type: int
+    default: 15

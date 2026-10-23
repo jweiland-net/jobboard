@@ -106,3 +106,14 @@ them in the backend module :guilabel:`Site Management > Settings`
 
         Can be overridden per content element, see
         :confval:`plugin-showjobareacount`.
+
+    ..  confval:: jobboard.pageBrowser.itemsPerPage
+        :name: jobboard-pagebrowser-itemsperpage
+        :type: int
+        :default: :yaml:`15`
+
+        Number of jobs on one page of the list and of the search result.
+        Further jobs are reached with the page browser, see
+        :ref:`templates-pagination`.
+
+        Mapped to :typoscript:`plugin.tx_jobboard.settings.pageBrowser.itemsPerPage`.

@@ -51,6 +51,20 @@ of the plugin, together with the options of the content element
 *   :typoscript:`settings.pidOfDetailPage`
 *   :typoscript:`settings.pidOfApplicationForm`
 *   :typoscript:`settings.showJobAreaCount`
+*   :typoscript:`settings.pageBrowser.itemsPerPage`
+
+..  _configuration-typoscript-pagebrowser:
+
+Page browser
+============
+
+:typoscript:`settings.pageBrowser.class` is the class that builds the
+links of the page browser. It must implement
+:php:`TYPO3\CMS\Core\Pagination\PaginationInterface`, otherwise
+:php:`JWeiland\Jobboard\Pagination\GetPostPagination` is used. Its
+constructor gets the paginator and the arguments of the current request.
+:typoscript:`settings.pageBrowser.itemsPerPage` comes from the site
+setting :confval:`jobboard-pagebrowser-itemsperpage`.
 
 ..  _configuration-typoscript-ignoreflexform:
 

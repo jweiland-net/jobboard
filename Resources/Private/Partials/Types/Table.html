@@ -3,7 +3,7 @@
       data-namespace-typo3-fluid="true">
 
 <div class="table-responsive">
-    <table class="dataTable">
+    <table class="jobboard-table">
         <thead>
         <tr>
             <th>{f:translate(key: 'job.title')}</th>
@@ -12,7 +12,7 @@
             <th>{f:translate(key: 'job.address.city')}</th>
             <th>{f:translate(key: 'job.employer')}</th>
             <th>{f:translate(key: 'job.job_type.title')}</th>
-            <th class="rememberJob">{f:translate(key: 'remember')}</th>
+            <th>{f:translate(key: 'remember')}</th>
         </tr>
         </thead>
 
@@ -26,7 +26,7 @@
                 <f:render partial="Types/Text" arguments="{value: job.address.city}"/>
                 <f:render partial="Types/Text" arguments="{value: job.employer}"/>
                 <f:render partial="Types/Text" arguments="{value: job.jobType.title}"/>
-                <td data-sort="0"><input type="checkbox" name="remember_job" value="{job.uid}"></td>
+                <td><input type="checkbox" name="remember_job" value="{job.uid}"></td>
             </tr>
         </f:for>
         </tbody>

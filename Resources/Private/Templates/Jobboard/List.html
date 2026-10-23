@@ -12,6 +12,7 @@
         <f:then>
             <f:comment>Types/Card can be rendered here instead for a card-based layout.</f:comment>
             <f:render partial="Types/Table" arguments="{objects: jobs}"/>
+            <f:render partial="Pagination" arguments="{pagination: pagination, paginator: paginator, numberOfJobs: numberOfJobs, actionName: actionName}"/>
         </f:then>
         <f:else>
             <p>{f:translate(key: 'search.no_jobs_found')}</p>
