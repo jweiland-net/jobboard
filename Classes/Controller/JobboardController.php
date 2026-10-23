@@ -24,6 +24,7 @@ use JWeiland\Jobboard\Event\PostProcessFluidVariablesEvent;
 use JWeiland\Jobboard\Service\RememberedJobsServiceInterface;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Error\Http\PageNotFoundException;
+use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
 class JobboardController extends ActionController
@@ -40,7 +41,9 @@ class JobboardController extends ActionController
             (int)($this->settings['maxEntries'] ?? 0),
         );
 
-        $this->assignPostProcessedFluidVariables($this->getJobVariables($jobs) + $this->getSearchOptions($jobs));
+        $fluidVariables = $this->getJobVariables($jobs);
+        ArrayUtility::mergeRecursiveWithOverrule($fluidVariables, $this->getSearchOptions($jobs));
+        $this->assignPostProcessedFluidVariables($fluidVariables);
 
         return $this->htmlResponse();
     }
@@ -59,9 +62,10 @@ class JobboardController extends ActionController
             (int)($this->settings['maxEntries'] ?? 0),
         );
 
-        $this->assignPostProcessedFluidVariables(
-            $this->getJobVariables($jobs) + $search->getSelectedValues() + $this->getSearchOptions($jobs),
-        );
+        $fluidVariables = $this->getJobVariables($jobs);
+        ArrayUtility::mergeRecursiveWithOverrule($fluidVariables, $search->getSelectedValues());
+        ArrayUtility::mergeRecursiveWithOverrule($fluidVariables, $this->getSearchOptions($jobs));
+        $this->assignPostProcessedFluidVariables($fluidVariables);
 
         return $this->htmlResponse();
     }
