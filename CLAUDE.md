@@ -148,8 +148,10 @@ Key points:
   `pagination`, `numberOfJobs` and `actionName`. Search options are built from all jobs before the event.
   `GetPostPagination` keeps the (GET merged with POST) plugin arguments in the page links, so search
   criteria survive paging. Items per page: site setting `jobboard.pageBrowser.itemsPerPage`.
-- **Frontend JavaScript** (`Resources/Public/JavaScript/script.js`) is plain JavaScript: remembered
-  jobs (cookie via `js.cookie`) and the zip/city suggestions as native `<datalist>`.
+- **Frontend JavaScript** in `Resources/Public/JavaScript/` is plain JavaScript, one file per feature:
+  `remember-jobs.js` (remembered jobs, cookie via the global `Cookies` of `js.cookie`, so it must be
+  loaded after `js.cookie-2.2.1.min.js`) and `address-suggestions.js` (zip/city suggestions of
+  `AddressSearchMiddleware` as native `<datalist>`). Both are added in `Partials/JobListAssets.html`.
 - **`JobPoiCollectionViewHelper`** bridges `Job` -> `tt_address` -> `maps2` `PoiCollection` so a job list can
   be rendered as map markers. Without maps2 it returns an empty `ObjectStorage`.
 - **`Address` domain model** extends `FriendsOfTYPO3\TtAddress\Domain\Model\Address` purely to add the

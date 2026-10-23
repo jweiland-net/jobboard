@@ -329,9 +329,10 @@ final class JobboardControllerTest extends FunctionalTestCase
     #[Test]
     public function searchFormContainsUrlOfCurrentPageForAddressSearch(): void
     {
-        // script.js posts the zip/city suggestion request to this URL. It must
-        // be the URL of the current page (site and language resolved by the
-        // frontend middleware stack), never a relative "index.php".
+        // address-suggestions.js posts the zip/city suggestion request to this
+        // URL. It must be the URL of the current page (site and language
+        // resolved by the frontend middleware stack), never a relative
+        // "index.php".
         self::assertStringContainsString(
             'data-jobboard-address-search-url="/list-with-search"',
             $this->fetchSearchFormPageBody(),
