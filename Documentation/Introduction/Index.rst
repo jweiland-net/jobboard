@@ -33,9 +33,8 @@ Job list
     The list shows all jobs that are currently open (see
     :ref:`editor-visibility`). By default it is rendered as a table with the
     columns job title, application deadline, ZIP code, city, employer,
-    employment scope and "Remember?". Visitors can sort the table in the
-    browser. A card layout ships as an alternative partial, see
-    :ref:`templates-card-layout`.
+    employment scope and "Remember". A card layout ships as an alternative
+    partial, see :ref:`templates-card-layout`.
 
 Search form
     Visitors filter by occupational field, position, employment scope and
@@ -46,10 +45,11 @@ Search form
     matching jobs, for example "IT (3)".
 
 Remember jobs
-    In the table layout, visitors can tick "Remember?" for single jobs.
-    Remembered jobs are highlighted and sorted to the top. The selection is
-    stored in the browser cookie :code:`jobboard_remembered_jobs`. Mention this
-    cookie in the privacy information of your site.
+    In the table layout, visitors can tick "Remember" for single jobs.
+    Remembered jobs are highlighted with a tinted background and a colored
+    bar in front of the row. The selection is stored in the browser cookie
+    :code:`jobboard_remembered_jobs`. Mention this cookie in the privacy
+    information of your site.
 
 Map
     If the optional extension :composer:`jweiland/maps2` is installed, the

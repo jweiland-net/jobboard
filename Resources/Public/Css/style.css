@@ -1,4 +1,70 @@
-/* Jobs remembered by the visitor (see remember-jobs.js) */
-.tx-jobboard .highlight-row,
-.tx-jobboard .highlight-row > td {
-    background-color: #f3f4f4; }
+/*
+ * Remembered jobs (see remember-jobs.js and Partials/Types/Table.html).
+ *
+ * Colors are checked against WCAG 2.2 on white, on the highlight color and
+ * on both with the hover overlay of ".table-hover" (rgba(0, 0, 0, .075)):
+ * - The accent (#0a58ca, the link hover color of Bootstrap) reaches at
+ *   least 4.77:1, the gray border (#495057) at least 6.05:1. Bootstrap's
+ *   default checkbox border (#dee2e6) only reaches 1.30:1 on white.
+ * - Table links use the accent too, as the primary color (#0d6efd) drops
+ *   below 4.5:1 on any tinted row.
+ */
+.tx-jobboard {
+    --jobboard-accent: #0a58ca;
+    --jobboard-accent-rgb: 10, 88, 202;
+    --jobboard-highlight-bg: rgba(var(--bs-primary-rgb), 0.1); }
+
+.tx-jobboard .jobboard-table {
+    --bs-link-color-rgb: var(--jobboard-accent-rgb); }
+
+/*
+ * Set the cell background instead of the box-shadow layer, so the hover
+ * overlay of ".table-hover" is added on top and does not hide it.
+ */
+.tx-jobboard .jobboard-table > tbody > tr.highlight-row {
+    --bs-table-bg: var(--jobboard-highlight-bg); }
+
+/* Stripe in front of a remembered row, so the state does not rely on the
+ * (weak) background tint alone. */
+.tx-jobboard .jobboard-table > tbody > tr.highlight-row > :first-child {
+    box-shadow:
+        inset 0.25rem 0 0 var(--jobboard-accent),
+        inset 0 0 0 9999px var(--bs-table-bg-state, var(--bs-table-bg-type, var(--bs-table-accent-bg))); }
+
+/* Remembered card of Partials/Types/Card.html */
+.tx-jobboard .card.highlight-row {
+    --bs-card-bg: var(--jobboard-highlight-bg);
+    --bs-card-border-color: var(--jobboard-accent); }
+
+/* The whole label is the click target, at least 44px high. */
+.tx-jobboard .jobboard-remember {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    padding: 0 0.5rem;
+    cursor: pointer;
+    white-space: nowrap; }
+
+.tx-jobboard .jobboard-remember .form-check-input {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin: 0;
+    border: 2px solid var(--bs-gray-700);
+    cursor: pointer; }
+
+.tx-jobboard .jobboard-remember .form-check-input:checked {
+    background-color: var(--jobboard-accent);
+    border-color: var(--jobboard-accent); }
+
+/* Replaces the faint focus glow of Bootstrap (1.41:1 on white). */
+.tx-jobboard .jobboard-remember .form-check-input:focus {
+    border-color: var(--bs-gray-700);
+    box-shadow: none; }
+
+.tx-jobboard .jobboard-remember .form-check-input:checked:focus {
+    border-color: var(--jobboard-accent); }
+
+.tx-jobboard .jobboard-remember .form-check-input:focus-visible {
+    outline: 3px solid var(--jobboard-accent);
+    outline-offset: 2px; }
