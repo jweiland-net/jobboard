@@ -11,13 +11,12 @@ declare(strict_types=1);
 
 namespace JWeiland\Jobboard\Service;
 
+use JWeiland\Jobboard\Database\Query\TcaControlFields;
 use JWeiland\Jobboard\Domain\Model\EffectiveSalary;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
-use TYPO3\CMS\Core\Schema\Capability\LanguageAwareSchemaCapability;
-use TYPO3\CMS\Core\Schema\Capability\TcaSchemaCapability;
 use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 
 /**
@@ -96,17 +95,17 @@ readonly class EffectiveSalaryJobFinder
             return [];
         }
 
-        $parentField = $this->getTranslationParentField();
+        $controlFields = $this->getJobControlFields();
         $queryBuilder = $this->getQueryBuilder(self::TABLE_JOB);
         $result = $queryBuilder
-            ->select('uid', $parentField)
+            ->select('uid', ...array_filter([$controlFields->translationParentField]))
             ->from(self::TABLE_JOB)
             ->where($queryBuilder->expr()->in('uid', $this->createIntArrayParameter($queryBuilder, $jobUids)))
             ->executeQuery();
 
         $defaultLanguageJobUids = [];
         while ($row = $result->fetchAssociative()) {
-            $defaultLanguageJobUids[] = $this->getDefaultLanguageUid($row, $parentField);
+            $defaultLanguageJobUids[] = $controlFields->getDefaultLanguageUid($row);
         }
 
         return array_values(array_unique($defaultLanguageJobUids));
@@ -173,21 +172,22 @@ readonly class EffectiveSalaryJobFinder
             return [];
         }
 
-        $parentField = $this->getTranslationParentField();
+        $controlFields = $this->getJobControlFields();
+        $parentField = $controlFields->translationParentField;
         $queryBuilder = $this->getQueryBuilder(self::TABLE_JOB);
         $jobUidsParameter = $this->createIntArrayParameter($queryBuilder, $jobUids);
         $result = $queryBuilder
-            ->select('uid', $parentField, ...EffectiveSalary::FIELDS)
+            ->select('uid', ...array_filter([$parentField]), ...EffectiveSalary::FIELDS)
             ->from(self::TABLE_JOB)
             ->where($queryBuilder->expr()->or(
                 $queryBuilder->expr()->in('uid', $jobUidsParameter),
-                $queryBuilder->expr()->in($parentField, $jobUidsParameter),
+                $parentField === null ? null : $queryBuilder->expr()->in($parentField, $jobUidsParameter),
             ))
             ->executeQuery();
 
         $storedEffectiveSalaries = [];
         while ($row = $result->fetchAssociative()) {
-            $storedEffectiveSalaries[$this->getDefaultLanguageUid($row, $parentField)][] = EffectiveSalary::fromRow($row);
+            $storedEffectiveSalaries[$controlFields->getDefaultLanguageUid($row)][] = EffectiveSalary::fromRow($row);
         }
 
         return $storedEffectiveSalaries;
@@ -216,33 +216,26 @@ readonly class EffectiveSalaryJobFinder
         return $this->fetchUids($queryBuilder);
     }
 
+    /**
+     * No constraint (empty string, ignored by QueryBuilder::where()), if the
+     * job table is not language aware: all jobs count
+     */
     private function getDefaultLanguageConstraint(QueryBuilder $queryBuilder): string
     {
-        return (string)$queryBuilder->expr()->in(
-            $this->getJobLanguageCapability()->getLanguageField()->getName(),
-            $this->createIntArrayParameter($queryBuilder, [0, -1]),
-        );
+        $languageField = $this->getJobControlFields()->languageField;
+        if ($languageField === null) {
+            return '';
+        }
+
+        return (string)$queryBuilder->expr()->in($languageField, $this->createIntArrayParameter($queryBuilder, [0, -1]));
     }
 
     /**
-     * TCA ctrl "transOrigPointerField" of the job table (usually "l10n_parent")
+     * Optional language fields of the job table, see TcaControlFields
      */
-    private function getTranslationParentField(): string
+    private function getJobControlFields(): TcaControlFields
     {
-        return $this->getJobLanguageCapability()->getTranslationOriginPointerField()->getName();
-    }
-
-    private function getJobLanguageCapability(): LanguageAwareSchemaCapability
-    {
-        return $this->tcaSchemaFactory->get(self::TABLE_JOB)->getCapability(TcaSchemaCapability::Language);
-    }
-
-    /**
-     * @param array<string, mixed> $row
-     */
-    private function getDefaultLanguageUid(array $row, string $parentField): int
-    {
-        return (int)$row[$parentField] > 0 ? (int)$row[$parentField] : (int)$row['uid'];
+        return TcaControlFields::fromSchema($this->tcaSchemaFactory->get(self::TABLE_JOB));
     }
 
     private function getQueryBuilder(string $table): QueryBuilder

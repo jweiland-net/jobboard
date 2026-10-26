@@ -15,6 +15,7 @@ use JWeiland\Jobboard\Database\Query\JobLanguageConstraint;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Context\LanguageAspect;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Schema\Field\FieldCollection;
 use TYPO3\CMS\Core\Schema\Field\LanguageFieldType;
 use TYPO3\CMS\Core\Schema\Field\PassthroughFieldType;
@@ -91,5 +92,21 @@ final class JobLanguageConstraintTest extends UnitTestCase
     {
         self::assertSame('l10n_parent', self::createSubject()->getTranslationParentField());
         self::assertSame('l18n_parent', self::createSubject('l18n_parent')->getTranslationParentField());
+    }
+
+    /**
+     * Like Extbase without "languageField": no constraint at all
+     */
+    #[Test]
+    public function withoutLanguageCapabilityNoConstraintIsBuilt(): void
+    {
+        $schema = new TcaSchema('tx_jobboard_domain_model_job', new FieldCollection([]), []);
+        $subject = new JobLanguageConstraint(new LanguageAspect(1, 1, LanguageAspect::OVERLAYS_MIXED, [0]), $schema);
+        $queryBuilder = $this->createMock(QueryBuilder::class);
+        $queryBuilder->expects($this->never())->method('expr');
+
+        self::assertSame('', $subject->buildExpression($queryBuilder));
+        self::assertNull($subject->getTranslationParentField());
+        self::assertSame(13, $subject->getDefaultLanguageUid(['uid' => 13, 'l10n_parent' => 3]));
     }
 }

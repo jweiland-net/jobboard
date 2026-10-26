@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace JWeiland\Jobboard\Service;
 
 use JWeiland\Jobboard\Database\Query\Restriction\OpenJobRestriction;
+use JWeiland\Jobboard\Database\Query\TcaControlFields;
 use JWeiland\Jobboard\Domain\Model\JobLink;
 use JWeiland\Jobboard\Domain\Model\JobLocation;
 use JWeiland\Jobboard\Domain\Model\SalaryRequirement;
@@ -23,7 +24,6 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\FrontendRestrictionContainer;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
-use TYPO3\CMS\Core\Schema\Capability\TcaSchemaCapability;
 use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -280,17 +280,18 @@ final readonly class JobLocationService implements JobLocationServiceInterface
     }
 
     /**
-     * The language field is TCA ctrl "languageField" of the table
+     * The language field is TCA ctrl "languageField" of the table. No
+     * constraint (empty string, ignored by QueryBuilder::where()), if the
+     * table is not language aware.
      *
      * @param int[] $languageUids
      */
     private function buildLanguageConstraint(QueryBuilder $queryBuilder, string $table, array $languageUids): string
     {
-        $languageField = $this->tcaSchemaFactory
-            ->get($table)
-            ->getCapability(TcaSchemaCapability::Language)
-            ->getLanguageField()
-            ->getName();
+        $languageField = TcaControlFields::fromSchema($this->tcaSchemaFactory->get($table))->languageField;
+        if ($languageField === null) {
+            return '';
+        }
 
         return $queryBuilder->expr()->in(
             $languageField,

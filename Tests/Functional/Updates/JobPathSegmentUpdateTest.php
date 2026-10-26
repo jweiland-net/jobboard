@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace JWeiland\Jobboard\Tests\Functional\Updates;
 
+use JWeiland\Jobboard\Tests\Functional\Traits\RemoveTcaCapabilityTrait;
 use JWeiland\Jobboard\Updates\JobPathSegmentUpdate;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Database\Connection;
@@ -23,6 +24,10 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
  */
 final class JobPathSegmentUpdateTest extends FunctionalTestCase
 {
+    use RemoveTcaCapabilityTrait;
+
+    private const TABLE = 'tx_jobboard_domain_model_job';
+
     protected array $coreExtensionsToLoad = [
         'typo3/cms-install',
     ];
@@ -45,6 +50,14 @@ final class JobPathSegmentUpdateTest extends FunctionalTestCase
             $this->get(ConnectionPool::class),
             $this->get(TcaSchemaFactory::class),
         );
+    }
+
+    protected function tearDown(): void
+    {
+        $this->restoreTca();
+        unset($this->subject);
+
+        parent::tearDown();
     }
 
     #[Test]
@@ -101,6 +114,27 @@ final class JobPathSegmentUpdateTest extends FunctionalTestCase
         $this->subject->executeUpdate();
 
         self::assertSame('', $this->getPathSegmentOfJob(7));
+    }
+
+    #[Test]
+    public function updateIsNotNecessaryWithoutPathSegmentInTca(): void
+    {
+        $this->removeColumn(self::TABLE, 'path_segment');
+
+        self::assertFalse($this->subject->updateNecessary());
+        self::assertTrue($this->subject->executeUpdate());
+        self::assertSame('', $this->getPathSegmentOfJob(1));
+    }
+
+    #[Test]
+    public function executeUpdateGeneratesPathSegmentWithoutLanguageCapability(): void
+    {
+        $this->removeLanguageCapability(self::TABLE);
+
+        $this->subject->executeUpdate();
+
+        self::assertSame('sample-job', $this->getPathSegmentOfJob(1));
+        self::assertSame('sample-job-title-1', $this->getPathSegmentOfJob(6));
     }
 
     /**

@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace JWeiland\Jobboard\EventListener;
 
+use JWeiland\Jobboard\Database\Query\TcaControlFields;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -20,7 +21,6 @@ use TYPO3\CMS\Core\Database\Query\Restriction\FrontendRestrictionContainer;
 use TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
-use TYPO3\CMS\Core\Schema\Capability\TcaSchemaCapability;
 use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -159,43 +159,51 @@ final readonly class LimitJobListCacheLifetimeEventListener
     }
 
     /**
-     * Start and end time fields are TCA ctrl "enablecolumns" of the job table
+     * Start and end time fields are TCA ctrl "enablecolumns" of the job table.
+     * Without them, there is no MIN() part for them (never changes).
      *
      * @param int[] $storagePids
      * @return array<string, mixed>
      */
     private function fetchNextPointsInTime(array $storagePids, int $now, int $today): array
     {
-        $jobSchema = $this->tcaSchemaFactory->get(self::TABLE_JOB);
-        $startTimeField = $jobSchema->getCapability(TcaSchemaCapability::RestrictionStartTime)->getFieldName();
-        $endTimeField = $jobSchema->getCapability(TcaSchemaCapability::RestrictionEndTime)->getFieldName();
-        $queryBuilder = $this->createQueryBuilderForJobs($storagePids);
-        $queryBuilder->selectLiteral(
-            $this->buildMinimumExpression($queryBuilder, $startTimeField, '>', $now, 'next_starttime'),
-            $this->buildMinimumExpression($queryBuilder, $endTimeField, '>', $now, 'next_endtime'),
+        $controlFields = TcaControlFields::fromSchema($this->tcaSchemaFactory->get(self::TABLE_JOB));
+        $queryBuilder = $this->createQueryBuilderForJobs($storagePids, $controlFields->languageField);
+        $queryBuilder->selectLiteral(...array_filter([
+            $controlFields->startTimeField === null
+                ? null
+                : $this->buildMinimumExpression($queryBuilder, $controlFields->startTimeField, '>', $now, 'next_starttime'),
+            $controlFields->endTimeField === null
+                ? null
+                : $this->buildMinimumExpression($queryBuilder, $controlFields->endTimeField, '>', $now, 'next_endtime'),
             $this->buildMinimumExpression($queryBuilder, 'application_deadline', '>=', $today, 'next_deadline'),
             $this->buildMinimumExpression($queryBuilder, 'ending_date', '>=', $today, 'next_ending_date'),
-        );
+        ]));
 
         return $queryBuilder->executeQuery()->fetchAssociative() ?: [];
     }
 
     /**
+     * Jobs of the default language and "all languages". All jobs, if the
+     * job table is not language aware ($languageField null).
+     *
      * @param int[] $storagePids
      */
-    private function createQueryBuilderForJobs(array $storagePids): QueryBuilder
+    private function createQueryBuilderForJobs(array $storagePids, ?string $languageField): QueryBuilder
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::TABLE_JOB);
         $queryBuilder->getRestrictions()
             ->removeAll()
             ->add(new DeletedRestriction())
             ->add(new HiddenRestriction());
-        $queryBuilder
-            ->from(self::TABLE_JOB)
-            ->where($queryBuilder->expr()->in(
-                $this->getJobLanguageField(),
+        $queryBuilder->from(self::TABLE_JOB);
+
+        if ($languageField !== null) {
+            $queryBuilder->andWhere($queryBuilder->expr()->in(
+                $languageField,
                 $queryBuilder->createNamedParameter([0, -1], Connection::PARAM_INT_ARRAY),
             ));
+        }
 
         if ($storagePids !== []) {
             $queryBuilder->andWhere($queryBuilder->expr()->in(
@@ -205,18 +213,6 @@ final readonly class LimitJobListCacheLifetimeEventListener
         }
 
         return $queryBuilder;
-    }
-
-    /**
-     * TCA ctrl "languageField" of the job table (usually "sys_language_uid")
-     */
-    private function getJobLanguageField(): string
-    {
-        return $this->tcaSchemaFactory
-            ->get(self::TABLE_JOB)
-            ->getCapability(TcaSchemaCapability::Language)
-            ->getLanguageField()
-            ->getName();
     }
 
     /**

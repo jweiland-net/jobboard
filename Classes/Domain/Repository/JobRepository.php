@@ -11,13 +11,13 @@ declare(strict_types=1);
 
 namespace JWeiland\Jobboard\Domain\Repository;
 
+use JWeiland\Jobboard\Database\Query\TcaControlFields;
 use JWeiland\Jobboard\Domain\Model\JobArea;
 use JWeiland\Jobboard\Domain\Model\JobAreaRestriction;
 use JWeiland\Jobboard\Domain\Model\JobRole;
 use JWeiland\Jobboard\Domain\Model\JobType;
 use JWeiland\Jobboard\Domain\Model\Search;
 use JWeiland\Jobboard\Domain\Model\ZipCity;
-use TYPO3\CMS\Core\Schema\Capability\TcaSchemaCapability;
 use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\DomainObject\AbstractDomainObject;
@@ -144,9 +144,14 @@ class JobRepository extends Repository
             return $query->equals('uid', 0);
         }
 
+        $translationParentProperty = $this->getTranslationParentProperty();
+        if ($translationParentProperty === null) {
+            return $query->in('uid', $jobUids);
+        }
+
         return $query->logicalOr(
             $query->in('uid', $jobUids),
-            $query->in($this->getTranslationParentProperty(), $jobUids),
+            $query->in($translationParentProperty, $jobUids),
         );
     }
 
@@ -154,16 +159,13 @@ class JobRepository extends Repository
      * Property of the column TCA ctrl "transOrigPointerField" (usually
      * "l10n_parent"), which is not mapped in the model: Extbase resolves the
      * column name of an unmapped property by converting it to snake case.
+     * Null, if the table is not language aware.
      */
-    private function getTranslationParentProperty(): string
+    private function getTranslationParentProperty(): ?string
     {
-        $parentField = $this->tcaSchemaFactory
-            ->get(self::TABLE)
-            ->getCapability(TcaSchemaCapability::Language)
-            ->getTranslationOriginPointerField()
-            ->getName();
+        $parentField = TcaControlFields::fromSchema($this->tcaSchemaFactory->get(self::TABLE))->translationParentField;
 
-        return GeneralUtility::underscoredToLowerCamelCase($parentField);
+        return $parentField === null ? null : GeneralUtility::underscoredToLowerCamelCase($parentField);
     }
 
     private function buildAndConstraintForRelations(Search $search, QueryInterface $query): array

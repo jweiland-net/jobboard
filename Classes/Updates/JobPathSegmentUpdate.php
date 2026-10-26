@@ -11,12 +11,12 @@ declare(strict_types=1);
 
 namespace JWeiland\Jobboard\Updates;
 
+use JWeiland\Jobboard\Database\Query\TcaControlFields;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\DataHandling\Model\RecordStateFactory;
 use TYPO3\CMS\Core\DataHandling\SlugHelper;
-use TYPO3\CMS\Core\Schema\Capability\TcaSchemaCapability;
 use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Install\Attribute\UpgradeWizard;
@@ -61,8 +61,15 @@ final readonly class JobPathSegmentUpdate implements UpgradeWizardInterface
         ];
     }
 
+    /**
+     * Not necessary, if the slug field does not exist in TCA (anymore)
+     */
     public function updateNecessary(): bool
     {
+        if (!$this->hasPathSegmentField()) {
+            return false;
+        }
+
         $queryBuilder = $this->getQueryBuilderForJobsWithoutPathSegment();
 
         return (int)$queryBuilder->count('uid')->executeQuery()->fetchOne() > 0;
@@ -70,6 +77,10 @@ final readonly class JobPathSegmentUpdate implements UpgradeWizardInterface
 
     public function executeUpdate(): bool
     {
+        if (!$this->hasPathSegmentField()) {
+            return true;
+        }
+
         $slugHelper = $this->createSlugHelper();
         $connection = $this->connectionPool->getConnectionForTable(self::TABLE);
         // Fetch all rows first, so the updates below do not interfere with
@@ -108,6 +119,12 @@ final readonly class JobPathSegmentUpdate implements UpgradeWizardInterface
             );
     }
 
+    private function hasPathSegmentField(): bool
+    {
+        return $this->tcaSchemaFactory->has(self::TABLE)
+            && $this->tcaSchemaFactory->get(self::TABLE)->hasField(self::FIELD);
+    }
+
     private function createSlugHelper(): SlugHelper
     {
         return GeneralUtility::makeInstance(
@@ -121,18 +138,16 @@ final readonly class JobPathSegmentUpdate implements UpgradeWizardInterface
     /**
      * Language field and translation parent field (TCA ctrl "languageField"
      * and "transOrigPointerField"), needed by SlugHelper and RecordState to
-     * check the uniqueness of the slug per language.
+     * check the uniqueness of the slug per language. None, if the table is
+     * not language aware.
      *
      * @return string[]
      */
     private function getLanguageFields(): array
     {
-        $languageCapability = $this->tcaSchemaFactory->get(self::TABLE)->getCapability(TcaSchemaCapability::Language);
+        $controlFields = TcaControlFields::fromSchema($this->tcaSchemaFactory->get(self::TABLE));
 
-        return [
-            $languageCapability->getLanguageField()->getName(),
-            $languageCapability->getTranslationOriginPointerField()->getName(),
-        ];
+        return array_values(array_filter([$controlFields->languageField, $controlFields->translationParentField]));
     }
 
     /**

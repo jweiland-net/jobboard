@@ -242,7 +242,7 @@ final readonly class RememberJobMiddleware implements MiddlewareInterface
         );
 
         return $queryBuilder
-            ->select('uid', $parentField)
+            ->select('uid', ...array_filter([$parentField]))
             ->from(self::TABLE)
             ->where(
                 $this->buildUidConstraint($queryBuilder, $parentField, $jobUids),
@@ -257,17 +257,18 @@ final readonly class RememberJobMiddleware implements MiddlewareInterface
     /**
      * The default record (uid) or its translations (translation parent field,
      * TCA ctrl "transOrigPointerField"), like JobRepository::findByUids().
-     * The language constraint selects one row per job at most.
+     * The language constraint selects one row per job at most. Without
+     * language capability, only "uid" is matched.
      *
      * @param int[] $jobUids
      */
-    private function buildUidConstraint(QueryBuilder $queryBuilder, string $parentField, array $jobUids): CompositeExpression
+    private function buildUidConstraint(QueryBuilder $queryBuilder, ?string $parentField, array $jobUids): CompositeExpression
     {
         $jobUidsParameter = $queryBuilder->createNamedParameter($jobUids, Connection::PARAM_INT_ARRAY);
 
         return $queryBuilder->expr()->or(
             $queryBuilder->expr()->in('uid', $jobUidsParameter),
-            $queryBuilder->expr()->in($parentField, $jobUidsParameter),
+            $parentField === null ? null : $queryBuilder->expr()->in($parentField, $jobUidsParameter),
         );
     }
 }

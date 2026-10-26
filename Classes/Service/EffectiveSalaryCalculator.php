@@ -11,13 +11,13 @@ declare(strict_types=1);
 
 namespace JWeiland\Jobboard\Service;
 
+use JWeiland\Jobboard\Database\Query\TcaControlFields;
 use JWeiland\Jobboard\Domain\Model\EffectiveSalary;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction;
-use TYPO3\CMS\Core\Schema\Capability\TcaSchemaCapability;
 use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 
 /**
@@ -45,14 +45,6 @@ final readonly class EffectiveSalaryCalculator implements EffectiveSalaryCalcula
     private const TABLE_JOB_SALARY_GRADE_MM = 'tx_jobboard_job_salarygrade_mm';
 
     private const SALARY_MODE_FREE_ENTRY = 1;
-
-    /**
-     * Aliases of the start and end time fields (TCA ctrl "enablecolumns") in
-     * the fetched rows of salary grades and steps
-     */
-    private const ALIAS_START_TIME = 'start_time';
-
-    private const ALIAS_END_TIME = 'end_time';
 
     public function __construct(
         private ConnectionPool $connectionPool,
@@ -87,12 +79,22 @@ final readonly class EffectiveSalaryCalculator implements EffectiveSalaryCalcula
      */
     private function calculateForSalaryGrades(array $salaryGrades, array $salaryStepsByGrade, int $now): EffectiveSalary
     {
+        $gradeFields = $this->getControlFields(self::TABLE_SALARY_GRADE);
+        $stepFields = $this->getControlFields(self::TABLE_SALARY_STEP);
         $amounts = [];
         $pointsInTime = [];
         foreach ($salaryGrades as $salaryGradeUid => $salaryGrade) {
             $salarySteps = (bool)$salaryGrade['has_steps'] ? ($salaryStepsByGrade[$salaryGradeUid] ?? []) : [];
-            $pointsInTime = [...$pointsInTime, ...$this->getPointsInTime([$salaryGrade, ...$salarySteps], $now)];
-            $amounts = [...$amounts, ...$this->getVisibleAmounts($salaryGrade, $salarySteps, $now)];
+            $pointsInTime = [
+                ...$pointsInTime,
+                ...$this->getPointsInTime([$salaryGrade], $gradeFields, $now),
+                ...$this->getPointsInTime($salarySteps, $stepFields, $now),
+            ];
+            $visibleSteps = array_filter(
+                $salarySteps,
+                fn(array $salaryStep): bool => $this->isVisible($salaryStep, $stepFields, $now),
+            );
+            $amounts = [...$amounts, ...$this->getVisibleAmounts($salaryGrade, $visibleSteps, $gradeFields, $now)];
         }
 
         return EffectiveSalary::fromAmounts($amounts, $this->getNextPointInTime($pointsInTime));
@@ -103,12 +105,16 @@ final readonly class EffectiveSalaryCalculator implements EffectiveSalaryCalcula
      * visible steps. Nothing, if the grade itself is not visible.
      *
      * @param array<string, mixed> $salaryGrade
-     * @param array<int, array<string, mixed>> $salarySteps
+     * @param array<int, array<string, mixed>> $visibleSalarySteps
      * @return float[]
      */
-    private function getVisibleAmounts(array $salaryGrade, array $salarySteps, int $now): array
-    {
-        if (!$this->isVisible($salaryGrade, $now)) {
+    private function getVisibleAmounts(
+        array $salaryGrade,
+        array $visibleSalarySteps,
+        TcaControlFields $gradeFields,
+        int $now,
+    ): array {
+        if (!$this->isVisible($salaryGrade, $gradeFields, $now)) {
             return [];
         }
 
@@ -116,14 +122,10 @@ final readonly class EffectiveSalaryCalculator implements EffectiveSalaryCalcula
             return [(float)$salaryGrade['flat_amount']];
         }
 
-        $amounts = [];
-        foreach ($salarySteps as $salaryStep) {
-            if ($this->isVisible($salaryStep, $now)) {
-                $amounts[] = (float)$salaryStep['amount'];
-            }
-        }
-
-        return $amounts;
+        return array_values(array_map(
+            static fn(array $salaryStep): float => (float)$salaryStep['amount'],
+            $visibleSalarySteps,
+        ));
     }
 
     /**
@@ -131,20 +133,24 @@ final readonly class EffectiveSalaryCalculator implements EffectiveSalaryCalcula
      * future and an endtime after the look-ahead (an endtime within the
      * look-ahead has been applied already). Considers all (also currently
      * invalid) selected grades and all their steps: a step of a grade, that
-     * starts tomorrow, may start or expire before or after that.
+     * starts tomorrow, may start or expire before or after that. A table
+     * without start or end time field (TCA ctrl "enablecolumns") has no such
+     * points in time.
      *
-     * @param array<int, array<string, mixed>> $records
+     * @param array<int, array<string, mixed>> $records of one table
      * @return int[]
      */
-    private function getPointsInTime(array $records, int $now): array
+    private function getPointsInTime(array $records, TcaControlFields $fields, int $now): array
     {
         $pointsInTime = [];
         foreach ($records as $record) {
-            if ((int)$record[self::ALIAS_START_TIME] > $now) {
-                $pointsInTime[] = (int)$record[self::ALIAS_START_TIME];
+            $startTime = $fields->getStartTime($record);
+            if ($startTime > $now) {
+                $pointsInTime[] = $startTime;
             }
-            if ((int)$record[self::ALIAS_END_TIME] > $now + self::LOOK_AHEAD) {
-                $pointsInTime[] = (int)$record[self::ALIAS_END_TIME];
+            $endTime = $fields->getEndTime($record);
+            if ($endTime > $now + self::LOOK_AHEAD) {
+                $pointsInTime[] = $endTime;
             }
         }
 
@@ -154,15 +160,17 @@ final readonly class EffectiveSalaryCalculator implements EffectiveSalaryCalcula
     /**
      * Hidden and deleted records are not fetched at all. Same comparison as
      * StartTimeRestriction and EndTimeRestriction of the frontend, but an
-     * endtime within the look-ahead counts as expired already.
+     * endtime within the look-ahead counts as expired already. Without start
+     * time field, a record is always started, without end time field, it
+     * never ends.
      *
      * @param array<string, mixed> $record
      */
-    private function isVisible(array $record, int $now): bool
+    private function isVisible(array $record, TcaControlFields $fields, int $now): bool
     {
-        $endtime = (int)$record[self::ALIAS_END_TIME];
+        $endTime = $fields->getEndTime($record);
 
-        return (int)$record[self::ALIAS_START_TIME] <= $now && ($endtime === 0 || $endtime > $now + self::LOOK_AHEAD);
+        return $fields->getStartTime($record) <= $now && ($endTime === 0 || $endTime > $now + self::LOOK_AHEAD);
     }
 
     /**
@@ -233,7 +241,7 @@ final readonly class EffectiveSalaryCalculator implements EffectiveSalaryCalcula
 
         $queryBuilder = $this->getQueryBuilder(self::TABLE_SALARY_GRADE, true);
         $result = $queryBuilder
-            ->select('uid', 'has_steps', 'flat_amount', ...$this->getTimeRestrictionSelects(self::TABLE_SALARY_GRADE))
+            ->select('uid', 'has_steps', 'flat_amount', ...$this->getControlFields(self::TABLE_SALARY_GRADE)->getTimeFields())
             ->from(self::TABLE_SALARY_GRADE)
             ->where($queryBuilder->expr()->in('uid', $this->createIntArrayParameter($queryBuilder, $salaryGradeUids)))
             ->executeQuery();
@@ -243,6 +251,7 @@ final readonly class EffectiveSalaryCalculator implements EffectiveSalaryCalcula
 
     /**
      * Steps of the default language only, like the selected salary grades.
+     * All steps, if the table is not language aware.
      *
      * @param int[] $salaryGradeUids
      * @return array<int, array<int, array<string, mixed>>> Salary grade UID as key
@@ -253,16 +262,14 @@ final readonly class EffectiveSalaryCalculator implements EffectiveSalaryCalcula
             return [];
         }
 
+        $stepFields = $this->getControlFields(self::TABLE_SALARY_STEP);
         $queryBuilder = $this->getQueryBuilder(self::TABLE_SALARY_STEP, true);
         $result = $queryBuilder
-            ->select('uid', 'salary_grade', 'amount', ...$this->getTimeRestrictionSelects(self::TABLE_SALARY_STEP))
+            ->select('uid', 'salary_grade', 'amount', ...$stepFields->getTimeFields())
             ->from(self::TABLE_SALARY_STEP)
             ->where(
                 $queryBuilder->expr()->in('salary_grade', $this->createIntArrayParameter($queryBuilder, $salaryGradeUids)),
-                $queryBuilder->expr()->in(
-                    $this->getLanguageField(self::TABLE_SALARY_STEP),
-                    $this->createIntArrayParameter($queryBuilder, [0, -1]),
-                ),
+                $this->buildDefaultLanguageConstraint($queryBuilder, $stepFields),
             )
             ->executeQuery();
 
@@ -275,30 +282,25 @@ final readonly class EffectiveSalaryCalculator implements EffectiveSalaryCalcula
     }
 
     /**
-     * Start and end time fields of the table (TCA ctrl "enablecolumns"),
-     * selected with fixed aliases, so grades and steps share one row format
-     *
-     * @return string[]
+     * Optional start/end time and language fields of the table, see
+     * TcaControlFields
      */
-    private function getTimeRestrictionSelects(string $table): array
+    private function getControlFields(string $table): TcaControlFields
     {
-        $schema = $this->tcaSchemaFactory->get($table);
-        $startTimeField = $schema->getCapability(TcaSchemaCapability::RestrictionStartTime)->getFieldName();
-        $endTimeField = $schema->getCapability(TcaSchemaCapability::RestrictionEndTime)->getFieldName();
-
-        return [
-            $startTimeField . ' AS ' . self::ALIAS_START_TIME,
-            $endTimeField . ' AS ' . self::ALIAS_END_TIME,
-        ];
+        return TcaControlFields::fromSchema($this->tcaSchemaFactory->get($table));
     }
 
-    private function getLanguageField(string $table): string
+    /**
+     * No constraint (empty string, ignored by QueryBuilder::where()), if the
+     * table is not language aware
+     */
+    private function buildDefaultLanguageConstraint(QueryBuilder $queryBuilder, TcaControlFields $fields): string
     {
-        return $this->tcaSchemaFactory
-            ->get($table)
-            ->getCapability(TcaSchemaCapability::Language)
-            ->getLanguageField()
-            ->getName();
+        if ($fields->languageField === null) {
+            return '';
+        }
+
+        return $queryBuilder->expr()->in($fields->languageField, $this->createIntArrayParameter($queryBuilder, [0, -1]));
     }
 
     /**

@@ -15,6 +15,7 @@ use JWeiland\Jobboard\Database\Query\JobLanguageConstraint;
 use JWeiland\Jobboard\Database\Query\Restriction\OpenJobRestriction;
 use JWeiland\Jobboard\Domain\Model\Job;
 use JWeiland\Jobboard\Domain\Repository\JobRepository;
+use JWeiland\Jobboard\Tests\Functional\Traits\RemoveTcaCapabilityTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Context\Context;
@@ -45,6 +46,8 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
  */
 final class JobLanguageConstraintTest extends FunctionalTestCase
 {
+    use RemoveTcaCapabilityTrait;
+
     private const TABLE = 'tx_jobboard_domain_model_job';
 
     private const STORAGE_PAGE = 2;
@@ -65,6 +68,13 @@ final class JobLanguageConstraintTest extends FunctionalTestCase
         parent::setUp();
 
         $this->importCSVDataSet(__DIR__ . '/../../Fixtures/JobLanguageConstraint.csv');
+    }
+
+    protected function tearDown(): void
+    {
+        $this->restoreTca();
+
+        parent::tearDown();
     }
 
     /**
@@ -112,7 +122,7 @@ final class JobLanguageConstraintTest extends FunctionalTestCase
         $queryBuilder->setRestrictions(GeneralUtility::makeInstance(FrontendRestrictionContainer::class));
         $queryBuilder->getRestrictions()->add(OpenJobRestriction::forToday());
         $rows = $queryBuilder
-            ->select('uid', $subject->getTranslationParentField())
+            ->select('uid', ...array_filter([$subject->getTranslationParentField()]))
             ->from(self::TABLE)
             ->where(
                 $queryBuilder->expr()->eq(
@@ -302,5 +312,23 @@ final class JobLanguageConstraintTest extends FunctionalTestCase
 
             self::assertSame(array_values(array_unique($uids)), $uids, 'Fallback type ' . $fallbackType);
         }
+    }
+
+    /**
+     * Without language capability (like Extbase without "languageField"),
+     * there is no language constraint: every visible row is selected and
+     * identified by its own UID
+     */
+    #[Test]
+    public function buildExpressionWithoutLanguageCapabilitySelectsAllRows(): void
+    {
+        $this->removeLanguageCapability(self::TABLE);
+        $subject = new JobLanguageConstraint(
+            new LanguageAspect(1, 1, LanguageAspect::OVERLAYS_MIXED, [0]),
+            $this->getJobSchema(),
+        );
+
+        self::assertNull($subject->getTranslationParentField());
+        self::assertSame([1, 2, 4, 6, 8, 9, 11, 13, 15, 17, 28], $this->selectWithConstraint($subject));
     }
 }
