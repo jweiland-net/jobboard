@@ -175,6 +175,90 @@ them in the backend module :guilabel:`Site Management > Settings`
         :guilabel:`Salary`. Flush the frontend caches after changing it,
         cached pages still show the jobs of the previous value.
 
+    ..  confval:: jobboard.salary.numberFormat
+        :name: jobboard-salary-numberformat
+        :type: string
+        :default: :yaml:`'automatic'`
+
+        How salary amounts are displayed in the detail view (salary range
+        and salary steps). Change it in the backend module
+        :guilabel:`Site Management > Settings`, category
+        :guilabel:`Salary`:
+
+        :yaml:`automatic`
+            The separators of the language of the page: 1,234.56 in English
+            and 1.234,56 in German. The separators are the labels
+            :code:`salary.thousandsSeparator` and
+            :code:`salary.decimalSeparator`, see :ref:`templates-labels`. A
+            language without translation of these labels uses the English
+            format. This is the default.
+
+        :yaml:`english`
+            1,234.56 in every language.
+
+        :yaml:`german`
+            1.234,56 in every language.
+
+        :yaml:`custom`
+            The separators of :confval:`jobboard-salary-thousandsseparator`
+            and :confval:`jobboard-salary-decimalseparator`.
+
+        The number of decimal places is set by
+        :confval:`jobboard-salary-decimals` for every format. Only the
+        display changes: the stored salaries, the effective salary and the
+        structured data for search engines (see :ref:`templates-json-ld`)
+        keep the plain numbers. Own templates have to use the ViewHelper of
+        :ref:`templates-viewhelper-salary`.
+
+        ..  literalinclude:: _snippets/_settings-salary-number-format.yaml
+            :language: yaml
+            :caption: config/sites/<site-identifier>/settings.yaml
+
+        Flush the frontend caches after changing one of the number format
+        settings.
+
+    ..  confval:: jobboard.salary.decimals
+        :name: jobboard-salary-decimals
+        :type: int
+        :default: :yaml:`2`
+
+        Number of decimal places of salary amounts, from :yaml:`0` to
+        :yaml:`4`, for every number format. The amounts are rounded for the
+        display only. An invalid value is replaced by the default.
+
+    ..  confval:: jobboard.salary.thousandsSeparator
+        :name: jobboard-salary-thousandsseparator
+        :type: string
+        :default: :yaml:`','`
+
+        Character between groups of thousands of the number format
+        :yaml:`custom`, for example :yaml:`','`, :yaml:`'.'`, :yaml:`"'"`
+        or a space :yaml:`' '`. Leave it empty (:yaml:`''`) for no
+        grouping. Ignored by the other number formats.
+
+        See :confval:`jobboard-salary-decimalseparator` for the rules.
+
+    ..  confval:: jobboard.salary.decimalSeparator
+        :name: jobboard-salary-decimalseparator
+        :type: string
+        :default: :yaml:`'.'`
+
+        Character between the whole number and the decimal places of the
+        number format :yaml:`custom`, for example :yaml:`'.'` or
+        :yaml:`','`. Ignored by the other number formats.
+
+        Both separators of the custom format are validated, so an amount
+        can not be misread:
+
+        *   The decimal separator is exactly one character, but no space.
+        *   The thousands separator is empty or one character.
+        *   No separator is a digit, a plus or a minus sign.
+        *   Both separators are different, for example :yaml:`'.'` and
+            :yaml:`'.'` is not allowed.
+
+        If the custom format breaks one of these rules, the
+        :yaml:`automatic` format is used instead.
+
     ..  confval:: jobboard.pdf.logo
         :name: jobboard-pdf-logo
         :type: string

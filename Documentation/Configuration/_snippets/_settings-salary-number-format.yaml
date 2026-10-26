@@ -1,0 +1,7 @@
+jobboard:
+  salary:
+    # 1'234.50 in every language
+    numberFormat: custom
+    thousandsSeparator: "'"
+    decimalSeparator: '.'
+    decimals: 2
