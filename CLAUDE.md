@@ -89,7 +89,8 @@ adding ad-hoc fields elsewhere in the template.
   `l10n_mode = exclude`, so DataHandler copies them into the translations and the SQL filter works in every
   language. They are the single source for "has salary information" in the frontend
   (`JobRepository::buildAndConstraintForOpenJobs()`: min > 0 OR max > 0; `Job::getHasEffectiveSalaryInformation()`
-  for the detail guard). Rules (`EffectiveSalaryCalculator`, `final readonly`, behind
+  for the detail guard) - but only applied if the site requires it, see "Salary requirement" in section 4.
+  They are always computed, whatever the setting. Rules (`EffectiveSalaryCalculator`, `final readonly`, behind
   `EffectiveSalaryCalculatorInterface`, plain QueryBuilder, 4 queries per batch): salary_mode 1 = `salary_min` to
   `salary_max` (or `salary_min`, if `salary_max` is 0); salary_mode 0 = lowest/highest positive amount of all *valid* selected
   grades (flat amount or valid steps). Valid = not deleted, not hidden, `starttime <= now`, and `endtime = 0`
@@ -190,6 +191,26 @@ Key points:
     checked on the selected (translated) row, like the list. Don't switch `respectSysLanguage` off or map overlay
     types again: that selected the default rows and returned untranslated jobs in strict/free. Empty/invalid UIDs
     match nothing (`l10n_parent IN (0)` would match every default row).
+- **Salary requirement (site setting `jobboard.salary.required`, bool, default `true`)**: whether a job needs
+  salary information (effective salary min or max > 0) to be listed, searched, shown (detail 404 otherwise),
+  remembered, linked as related job and placed on the map (EU pay transparency directive 2023/970, not yet
+  transposed in every country). Site setting only, category `jobboard.salary` - never TypoScript/FlexForm, so
+  every entry point applies the same rule and one content element cannot override it.
+  - Single reader: `Domain/Model/SalaryRequirement` (`final readonly`, `fromRequest()` reads the `site` request
+    attribute; no site / `NullSite` / missing setting = required). `JobboardController::isSalaryRequired()` for
+    Extbase, the PSR-7 request in `RememberJobMiddleware` and `JobLocationService`.
+  - Only a plain bool goes further down: `JobRepository::findBySettings()` / `findBySearch()` / `findByUids()`
+    (last parameter `$salaryRequired = true`) -> `buildAndConstraintForOpenJobs()`, and
+    `OpenJobRestriction(int $today, bool $salaryRequired = true)` / `forToday(bool)`. Both add the salary
+    constraint only if required - keep them in sync. `JobSearchOptionsService` inherits it from the action query.
+  - `detailAction()` throws the 404 only if required. Related jobs: the controller assigns `relatedJobs`
+    (`getRelatedJobsToLink()`, without salary-less jobs if required); `Detail.html` renders `relatedJobs`, never
+    `job.relatedJobs`. Only the salary rule is applied there, expired related jobs are still linked.
+  - Not affected: `LimitJobListCacheLifetimeEventListener` (looks at all jobs of the storage anyway), the
+    effective salary hook/command/updater, the import. Templates guard salary output with
+    `{job.hasSalaryInformation}`, so a job without salary renders no salary section and no JSON-LD `baseSalary`.
+  - Functional tests that write `settings.yaml` must flush the `core` cache in `setUp()`: TYPO3 caches site
+    settings by the hash of `config.yaml` only, otherwise settings leak between tests.
 - **Search options** (`jobAreas` incl. optional count `showJobAreaCount`, `jobRoles`, `jobTypes`,
   `jobLocations`) come from `JobSearchOptionsService` (`final readonly`, behind
   `JobSearchOptionsServiceInterface`): it converts the action's Extbase query with Extbase's (internal)
@@ -307,7 +328,7 @@ Key points:
     visibility as the list - `StoragePidResolver` (site setting `jobboard.storagePid` + 3 levels, shared with
     `RememberJobMiddleware`), frontend restrictions and `OpenJobRestriction` (`Database/Query/Restriction/`, the
     QueryBuilder twin of `JobRepository::buildAndConstraintForOpenJobs()` - keep both in sync; title, effective
-    salary min/max > 0, deadline/ending date >= today). Language: from the
+    salary min/max > 0 if `jobboard.salary.required`, deadline/ending date >= today). Language: from the
     request's `SiteLanguage` (`LanguageAspectFactory`), job titles and address overlaid with
     `PageRepository::getLanguageOverlay()` (jobs without translation are skipped in strict mode; without overlays
     the jobs of the language are selected). The address is overlaid like Extbase relations

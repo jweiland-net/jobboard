@@ -69,10 +69,12 @@ Detail view
     to the page with your application form.
 
 Salary information
-    Each job needs salary information to be shown: either one or more tariff
-    salary grades (with or without steps) or a free minimum and maximum
-    amount. Jobs without salary information are never shown. The extension
-    is built for employers who must publish the salary of each job offer.
+    The salary of a job is either one or more tariff salary grades (with
+    or without steps) or a free minimum and maximum amount. The extension
+    is built for employers who must publish the salary of each job offer:
+    by default, jobs without salary information are not shown. The site
+    setting :confval:`jobboard-salary-required` switches this off, for
+    example as long as such an obligation does not apply to your site yet.
     A daily console command applies the validity periods of salary grades,
     see :ref:`salary-update`.
 

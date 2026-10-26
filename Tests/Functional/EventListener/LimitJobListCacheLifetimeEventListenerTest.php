@@ -191,6 +191,30 @@ final class LimitJobListCacheLifetimeEventListenerTest extends FunctionalTestCas
         );
     }
 
+    /**
+     * Independent of the site setting "jobboard.salary.required": jobs
+     * without salary information are considered as well, as they are listed,
+     * if the site does not require salary information.
+     */
+    #[Test]
+    public function cacheLifetimeConsidersJobsWithoutSalaryInformation(): void
+    {
+        $this->insertJob([
+            'application_deadline' => $this->getTimestamp('2026-01-16 00:00:00'),
+            'effective_salary_min' => 3000,
+        ]);
+        $this->insertJob([
+            'application_deadline' => $this->getTimestamp('2026-01-15 00:00:00'),
+            'effective_salary_min' => 0,
+            'effective_salary_max' => 0,
+        ]);
+
+        self::assertSame(
+            $this->getTimestamp('2026-01-16 00:00:00') - $this->getTimestamp(self::NOW),
+            $this->getCacheLifetime(1),
+        );
+    }
+
     #[Test]
     public function cacheLifetimeUsesEarliestChangeOfAllJobs(): void
     {

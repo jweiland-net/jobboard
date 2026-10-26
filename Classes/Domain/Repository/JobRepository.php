@@ -27,10 +27,12 @@ use TYPO3\CMS\Extbase\Persistence\Repository;
 /**
  * Allows to help search for jobs by various search criteria
  *
- * Every query for the frontend lists open jobs with salary information only,
- * see buildAndConstraintForOpenJobs(). The salary information is filtered in
- * SQL by the precomputed effective salary (see EffectiveSalaryUpdater), so
- * limits and pagination are applied by the database.
+ * Every query for the frontend lists open jobs only, see
+ * buildAndConstraintForOpenJobs(). By default, salary information is
+ * required as well ("$salaryRequired", site setting "jobboard.salary.required",
+ * see SalaryRequirement). It is filtered in SQL by the precomputed effective
+ * salary (see EffectiveSalaryUpdater), so limits and pagination are applied
+ * by the database.
  */
 class JobRepository extends Repository
 {
@@ -50,12 +52,15 @@ class JobRepository extends Repository
         'uid' => QueryInterface::ORDER_ASCENDING,
     ];
 
-    public function findBySettings(array $settings, int $limit = 0): QueryResultInterface
+    /**
+     * @param array<string, mixed> $settings
+     */
+    public function findBySettings(array $settings, int $limit = 0, bool $salaryRequired = true): QueryResultInterface
     {
         $query = $this->createQuery();
 
         $andConstraint = [
-            ...$this->buildAndConstraintForOpenJobs($query),
+            ...$this->buildAndConstraintForOpenJobs($query, $salaryRequired),
             ...$this->buildConstraintForJobAreas(JobAreaRestriction::fromSettings($settings), $query),
         ];
 
@@ -72,12 +77,16 @@ class JobRepository extends Repository
      *
      * @param array<string, mixed> $settings
      */
-    public function findBySearch(Search $search, int $limit = 0, array $settings = []): QueryResultInterface
-    {
+    public function findBySearch(
+        Search $search,
+        int $limit = 0,
+        array $settings = [],
+        bool $salaryRequired = true,
+    ): QueryResultInterface {
         $query = $this->createQuery();
 
         $andConstraint = [
-            ...$this->buildAndConstraintForOpenJobs($query),
+            ...$this->buildAndConstraintForOpenJobs($query, $salaryRequired),
             ...$this->buildConstraintForJobAreas(JobAreaRestriction::fromSettings($settings), $query),
             ...$this->buildAndConstraintForRelations($search, $query),
             ...$this->buildConstraintForAddress($search->getZipCity(), $query),
@@ -106,13 +115,13 @@ class JobRepository extends Repository
      *
      * @param int[] $jobUids UIDs of jobs in the default language
      */
-    public function findByUids(array $jobUids): QueryResultInterface
+    public function findByUids(array $jobUids, bool $salaryRequired = true): QueryResultInterface
     {
         $query = $this->createQuery();
 
         return $query->matching($query->logicalAnd(
             $this->buildConstraintForUidsOfDefaultLanguage($jobUids, $query),
-            ...$this->buildAndConstraintForOpenJobs($query),
+            ...$this->buildAndConstraintForOpenJobs($query, $salaryRequired),
         ))->execute();
     }
 
@@ -176,24 +185,21 @@ class JobRepository extends Repository
     }
 
     /**
-     * Base constraints for every job listed in the frontend: it needs a title
-     * and salary information, its application deadline must not have passed
-     * and, for fixed-term positions, its employment must not have ended
-     * already. Deadline and ending date are compared with the start of today,
-     * so a job is listed through the end of that day (see also
-     * LimitJobListCacheLifetimeEventListener). Keep in sync with the
-     * QueryBuilder version OpenJobRestriction (map info window).
+     * Base constraints for every job listed in the frontend: it needs a title,
+     * its application deadline must not have passed and, for fixed-term
+     * positions, its employment must not have ended already. Deadline and
+     * ending date are compared with the start of today, so a job is listed
+     * through the end of that day (see also
+     * LimitJobListCacheLifetimeEventListener). Salary information is required
+     * with "$salaryRequired" only. Keep in sync with the QueryBuilder version
+     * OpenJobRestriction (map info window, RememberJobMiddleware).
      */
-    private function buildAndConstraintForOpenJobs(QueryInterface $query): array
+    private function buildAndConstraintForOpenJobs(QueryInterface $query, bool $salaryRequired): array
     {
         $today = new \DateTime('today');
 
-        return [
+        $andConstraint = [
             $query->logicalNot($query->equals('title', '')),
-            $query->logicalOr(
-                $query->greaterThan('effectiveSalaryMin', 0),
-                $query->greaterThan('effectiveSalaryMax', 0),
-            ),
             $query->logicalOr(
                 $query->equals('applicationDeadline', 0),
                 $query->greaterThanOrEqual('applicationDeadline', $today),
@@ -203,6 +209,15 @@ class JobRepository extends Repository
                 $query->greaterThanOrEqual('endingDate', $today),
             ),
         ];
+
+        if ($salaryRequired) {
+            $andConstraint[] = $query->logicalOr(
+                $query->greaterThan('effectiveSalaryMin', 0),
+                $query->greaterThan('effectiveSalaryMax', 0),
+            );
+        }
+
+        return $andConstraint;
     }
 
     /**

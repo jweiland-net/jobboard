@@ -17,7 +17,9 @@ met:
 #.  The job has a title.
 #.  The :guilabel:`Application deadline` is empty, today or in the future.
 #.  The :guilabel:`End of employment` is empty, today or in the future.
-#.  The job has salary information:
+#.  The job has salary information. This condition only applies if the
+    site setting :confval:`jobboard-salary-required` is enabled, which is
+    the default:
 
     *   Salary mode "Salary grade": at least one selected salary grade is
         enabled, within its validity period (see
@@ -43,10 +45,11 @@ is shown.
 Detail view returns "Page not found"
 ====================================
 
-The detail view of a job without salary information returns the HTTP
-status 404 (page not found). This also happens for links in
-:guilabel:`Related jobs` that point to such jobs, and for jobs whose
-salary grade has expired in the meantime.
+If the site setting :confval:`jobboard-salary-required` is enabled (the
+default), the detail view of a job without salary information returns the
+HTTP status 404 (page not found). This also happens for jobs whose
+salary grade has expired in the meantime. :guilabel:`Related jobs`
+without salary information are not linked in the detail view.
 
 ..  _editor-visibility-cache:
 

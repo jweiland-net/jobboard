@@ -18,9 +18,11 @@ use TYPO3\CMS\Core\Database\Query\Restriction\QueryRestrictionInterface;
 
 /**
  * QueryBuilder version of JobRepository::buildAndConstraintForOpenJobs() for
- * code without Extbase: the job needs a title and salary information, its
- * application deadline must not have passed and, for fixed-term positions,
- * its employment must not have ended already. Keep both in sync.
+ * code without Extbase: the job needs a title, its application deadline must
+ * not have passed and, for fixed-term positions, its employment must not have
+ * ended already. Salary information (effective salary min or max > 0) is
+ * only required with "$salaryRequired", see SalaryRequirement (site setting
+ * "jobboard.salary.required"). Keep both in sync.
  *
  * "$today" is the timestamp of the start of today, so a job is listed
  * through the end of its deadline day, like "new \DateTime('today')" of
@@ -32,11 +34,12 @@ final readonly class OpenJobRestriction implements QueryRestrictionInterface
 
     public function __construct(
         private int $today,
+        private bool $salaryRequired = true,
     ) {}
 
-    public static function forToday(): self
+    public static function forToday(bool $salaryRequired = true): self
     {
-        return new self((new \DateTimeImmutable('today'))->getTimestamp());
+        return new self((new \DateTimeImmutable('today'))->getTimestamp(), $salaryRequired);
     }
 
     public function buildExpression(array $queriedTables, ExpressionBuilder $expressionBuilder): CompositeExpression
@@ -55,12 +58,8 @@ final readonly class OpenJobRestriction implements QueryRestrictionInterface
     {
         $field = static fn(string $fieldName): string => $tableAlias . '.' . $fieldName;
 
-        return $expressionBuilder->and(
+        $constraints = [
             $expressionBuilder->neq($field('title'), $expressionBuilder->literal('')),
-            $expressionBuilder->or(
-                $expressionBuilder->gt($field(EffectiveSalary::FIELD_MIN), 0),
-                $expressionBuilder->gt($field(EffectiveSalary::FIELD_MAX), 0),
-            ),
             $expressionBuilder->or(
                 $expressionBuilder->eq($field('application_deadline'), 0),
                 $expressionBuilder->gte($field('application_deadline'), $this->today),
@@ -69,6 +68,15 @@ final readonly class OpenJobRestriction implements QueryRestrictionInterface
                 $expressionBuilder->eq($field('ending_date'), 0),
                 $expressionBuilder->gte($field('ending_date'), $this->today),
             ),
-        );
+        ];
+
+        if ($this->salaryRequired) {
+            $constraints[] = $expressionBuilder->or(
+                $expressionBuilder->gt($field(EffectiveSalary::FIELD_MIN), 0),
+                $expressionBuilder->gt($field(EffectiveSalary::FIELD_MAX), 0),
+            );
+        }
+
+        return $expressionBuilder->and(...$constraints);
     }
 }

@@ -117,7 +117,9 @@ See :ref:`configuration-page-tsconfig-cache` for details.
 Schedule the daily salary update
 ================================
 
-The validity of salary grades and steps decides which jobs are listed.
+The validity of salary grades and steps decides which jobs are listed, if
+the site setting :confval:`jobboard-salary-required` is enabled (the
+default). The salary shown for a job depends on it in any case.
 Create a task :guilabel:`Execute console commands` in the backend module
 :guilabel:`System > Scheduler`, select :code:`jobboard:salary:update` and
 let it run once a day, preferably at night. See :ref:`salary-update`.

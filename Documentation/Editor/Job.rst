@@ -103,8 +103,9 @@ language and are read-only, see :ref:`editor-salary-translation`.
 
 ..  important::
 
-    Jobs without salary information are never shown in the frontend. See
-    :ref:`editor-visibility`.
+    By default, jobs without salary information are not shown in the
+    frontend. Your administrator can change this with the site setting
+    :confval:`jobboard-salary-required`. See :ref:`editor-visibility`.
 
 ..  _editor-job-employer:
 
@@ -181,7 +182,9 @@ Tab "Relations" (Relationen)
 ============================
 
 :guilabel:`Related jobs`
-    Up to 99 other jobs. The detail view links to them.
+    Up to 99 other jobs. The detail view links to them. Jobs without
+    salary information are left out, if the site setting
+    :confval:`jobboard-salary-required` is enabled (the default).
 
 ..  _editor-job-access:
 

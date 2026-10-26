@@ -221,6 +221,41 @@ final class RenderJobLocationInfoWindowContentEventListenerTest extends Function
     }
 
     #[Test]
+    public function infoWindowListsJobsWithoutSalaryInformationIfSalaryIsNotRequired(): void
+    {
+        $this->writeSite('fallback', ['salary' => ['required' => false]]);
+
+        $content = $this->renderInfoWindow(1);
+
+        // Hidden, expired, ended, untitled, outside and deleted jobs stay hidden
+        self::assertSame([2, 5, 1, 3], $this->getJobUids($this->findJobLocation(1)));
+        self::assertStringContainsString('4 jobs at this location', $content);
+        self::assertStringContainsString('>Job without salary information</a>', $content);
+    }
+
+    #[Test]
+    public function infoWindowListsNoJobsWithoutSalaryInformationIfSalaryIsRequiredExplicitly(): void
+    {
+        $this->writeSite('fallback', ['salary' => ['required' => true]]);
+
+        self::assertSame([2, 1, 3], $this->getJobUids($this->findJobLocation(1)));
+    }
+
+    #[Test]
+    public function locationWithJobsWithoutSalaryInformationOnlyIsShownIfSalaryIsNotRequired(): void
+    {
+        // Address 3 (POI 2): its only job is open now, but has no salary
+        $this->updateJob(13, ['application_deadline' => 0, 'effective_salary_min' => 0, 'effective_salary_max' => 0]);
+        self::assertNull($this->findJobLocation(2));
+        self::assertSame('', $this->renderInfoWindow(2));
+
+        $this->writeSite('fallback', ['salary' => ['required' => false]]);
+
+        self::assertSame([13], $this->getJobUids($this->findJobLocation(2)));
+        self::assertStringContainsString('>Expired job of another employer</a>', $this->renderInfoWindow(2));
+    }
+
+    #[Test]
     public function infoWindowRendersStreetZipAndCityAsAddress(): void
     {
         $content = $this->renderInfoWindow(1);

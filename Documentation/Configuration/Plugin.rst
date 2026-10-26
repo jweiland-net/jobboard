@@ -75,8 +75,9 @@ Sheet "General"
         FlexForm field :code:`settings.maxEntries`. Maximum number of jobs in
         the list and in the search result. The limit is part of the
         database query and applies after all other conditions, for example
-        jobs without salary information, so visitors always get up to this
-        number of jobs. :code:`0` shows all jobs.
+        jobs without salary information (see
+        :confval:`jobboard-salary-required`), so visitors always get up to
+        this number of jobs. :code:`0` shows all jobs.
 
         A number greater than :code:`0` also switches off the page browser:
         the limited list is shown on one page, independent of

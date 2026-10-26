@@ -82,8 +82,10 @@ folder, see :ref:`configuration-page-tsconfig-cache`.
 
 ..  note::
 
-    Imported jobs are only shown if they have salary information, like all
-    other jobs. See :ref:`editor-visibility`.
+    Like all other jobs, imported jobs are only shown if they have salary
+    information, as long as the site setting
+    :confval:`jobboard-salary-required` is enabled (the default). See
+    :ref:`editor-visibility`.
 
 ..  _import-logging:
 

@@ -27,8 +27,8 @@ use TYPO3\CMS\Extbase\Persistence\QueryInterface;
  * iterating all jobs.
  *
  * To guarantee exactly the same constraints as the listed jobs (storage
- * pages, enable fields, language, job areas of the plugin, salary, open jobs
- * and search criteria), the Extbase query of the list/search action is
+ * pages, enable fields, language, job areas of the plugin, salary (if
+ * required by the site), open jobs and search criteria), the Extbase query of the list/search action is
  * converted into a QueryBuilder by Extbase's own Typo3DbQueryParser
  * (internal API of Extbase, used the same way as Typo3DbBackend does).
  * Only its SELECT and GROUP BY are replaced. A limit ("maxEntries") is not

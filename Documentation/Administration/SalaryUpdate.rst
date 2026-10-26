@@ -7,15 +7,20 @@
 Update the effective salary of the jobs
 =======================================
 
-The job list filters the jobs without salary information in the database
-query. For this, every job stores its **effective salary**: the lowest and
+If the site setting :confval:`jobboard-salary-required` is enabled (the
+default), the job list filters the jobs without salary information in the
+database query. For this, every job stores its **effective salary**: the
+lowest and
 the highest amount that the frontend shows. The values are calculated from
 the salary mode, the minimum and maximum salary and the valid salary grades
 and steps of the job, with the same rules as the salary range of the
 detail view, see :ref:`editor-salary`.
 
-Jobs without an effective salary are never listed, and their detail view
-returns the HTTP status 404 (page not found).
+With this setting enabled, jobs without an effective salary are not
+listed, and their detail view returns the HTTP status 404 (page not
+found). With the setting disabled, these jobs are shown like all other
+open jobs. The effective salary is calculated in both cases, so keep the
+daily command running either way.
 
 ..  _salary-update-columns:
 

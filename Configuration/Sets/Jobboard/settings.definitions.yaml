@@ -8,6 +8,8 @@ categories:
     parent: jobboard
   jobboard.pageBrowser:
     parent: jobboard
+  jobboard.salary:
+    parent: jobboard
 
 settings:
   jobboard.templateRootPath:
@@ -46,3 +48,7 @@ settings:
     category: jobboard.pageBrowser
     type: int
     default: 15
+  jobboard.salary.required:
+    category: jobboard.salary
+    type: bool
+    default: true

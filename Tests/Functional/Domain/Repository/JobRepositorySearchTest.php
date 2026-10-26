@@ -537,6 +537,60 @@ class JobRepositorySearchTest extends FunctionalTestCase
         );
     }
 
+    /**
+     * @return array<string, array{array<string, float>}>
+     */
+    public static function anyEffectiveSalaryDataProvider(): array
+    {
+        return array_map(
+            static fn(array $dataSet): array => [$dataSet[0]],
+            self::effectiveSalaryDataProvider(),
+        );
+    }
+
+    /**
+     * Site setting "jobboard.salary.required" disabled: jobs without salary
+     * information are listed and searchable like any other open job.
+     *
+     * @param array<string, float> $effectiveSalary
+     */
+    #[Test]
+    #[DataProvider('anyEffectiveSalaryDataProvider')]
+    public function findBySettingsAndFindBySearchWithoutSalaryRequirementListJobRegardlessOfSalary(
+        array $effectiveSalary,
+    ): void {
+        $this->updateJob(1, $effectiveSalary);
+
+        self::assertContains(1, $this->getUids($this->subject->findBySettings([], 0, false)));
+        self::assertContains(
+            1,
+            $this->getUids($this->subject->findBySearch(new Search(null, null, null, '', ''), 0, [], false)),
+        );
+    }
+
+    #[Test]
+    public function findBySearchWithoutSalaryRequirementKeepsSearchCriteria(): void
+    {
+        $this->updateJob(1, ['effective_salary_min' => 0.0, 'effective_salary_max' => 0.0]);
+
+        // Zip 76133: 5 (ended employment) and 6 (no title) are not listed
+        $jobs = $this->subject->findBySearch(new Search(null, null, null, '76133', ''), 0, [], false);
+
+        self::assertSame([1, 7, 8, 9, 11], $this->getUids($jobs));
+    }
+
+    #[Test]
+    public function findBySettingsWithoutSalaryRequirementKeepsAllOtherRules(): void
+    {
+        $this->updateJob(1, ['effective_salary_min' => 0.0, 'effective_salary_max' => 0.0]);
+
+        // 5: ended employment, 6: no title, 12: deadline passed, 14: ended employment
+        self::assertSame(
+            [1, 2, 3, 4, 7, 8, 9, 10, 11, 13],
+            $this->getUids($this->subject->findBySettings([], 0, false)),
+        );
+    }
+
     #[Test]
     public function findBySettingsSortsByApplicationDeadlineAndUid(): void
     {
@@ -594,6 +648,17 @@ class JobRepositorySearchTest extends FunctionalTestCase
         $jobs = $this->subject->findByUids([13, 999, 12, 6, 5, 3, 2, 1]);
 
         self::assertSame([1, 2, 13], $this->getUids($jobs));
+    }
+
+    #[Test]
+    public function findByUidsWithoutSalaryRequirementReturnsJobsWithoutSalaryInformation(): void
+    {
+        $this->updateJob(3, ['effective_salary_min' => 0.0, 'effective_salary_max' => 0.0]);
+
+        // 5: ended employment, 6: no title, 12: deadline passed
+        $jobs = $this->subject->findByUids([13, 999, 12, 6, 5, 3, 2, 1], false);
+
+        self::assertSame([1, 2, 3, 13], $this->getUids($jobs));
     }
 
     #[Test]

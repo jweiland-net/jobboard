@@ -434,9 +434,10 @@ class Job extends AbstractEntity
     }
 
     /**
-     * Same rule as the frontend queries of JobRepository: a job without any
-     * effective salary is never displayed. Uses the precomputed columns, so
-     * no salary grade or step has to be loaded.
+     * Same rule as the frontend queries of JobRepository: if the site
+     * requires salary information (site setting "jobboard.salary.required"),
+     * a job without any effective salary is never displayed. Uses the
+     * precomputed columns, so no salary grade or step has to be loaded.
      */
     public function getHasEffectiveSalaryInformation(): bool
     {

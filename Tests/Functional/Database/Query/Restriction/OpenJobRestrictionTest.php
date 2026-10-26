@@ -89,7 +89,7 @@ final class OpenJobRestrictionTest extends FunctionalTestCase
     /**
      * @return int[]
      */
-    private function findUidsByRepository(): array
+    private function findUidsByRepository(bool $salaryRequired = true): array
     {
         $querySettings = $this->get(QuerySettingsInterface::class);
         $querySettings->setStoragePageIds([self::STORAGE_PAGE]);
@@ -98,7 +98,7 @@ final class OpenJobRestrictionTest extends FunctionalTestCase
 
         return array_map(
             static fn(Job $job): int => (int)$job->getUid(),
-            iterator_to_array($jobRepository->findBySettings([])),
+            iterator_to_array($jobRepository->findBySettings([], 0, $salaryRequired)),
         );
     }
 
@@ -164,6 +164,47 @@ final class OpenJobRestrictionTest extends FunctionalTestCase
         self::assertNotContains(106, $uids);
         self::assertContains(107, $uids);
         self::assertContains(108, $uids);
+    }
+
+    #[Test]
+    public function restrictionWithoutSalaryRequirementSelectsTheSameJobsAsJobRepository(): void
+    {
+        $repositoryUids = $this->findUidsByRepository(false);
+
+        self::assertContains(106, $repositoryUids);
+        self::assertSame($repositoryUids, $this->findUidsByRestriction(OpenJobRestriction::forToday(false)));
+    }
+
+    #[Test]
+    public function restrictionWithoutSalaryRequirementListsJobsWithoutEffectiveSalary(): void
+    {
+        $uids = $this->findUidsByRestriction(OpenJobRestriction::forToday(false));
+
+        self::assertContains(106, $uids);
+        self::assertContains(107, $uids);
+        self::assertContains(108, $uids);
+    }
+
+    #[Test]
+    public function restrictionWithoutSalaryRequirementKeepsAllOtherRules(): void
+    {
+        $uids = $this->findUidsByRestriction(OpenJobRestriction::forToday(false));
+
+        foreach ([101, 104, 109, 111, 112, 6] as $notListedUid) {
+            self::assertNotContains($notListedUid, $uids, 'Job ' . $notListedUid . ' must not be listed');
+        }
+        foreach ([100, 102, 103, 105, 113] as $listedUid) {
+            self::assertContains($listedUid, $uids, 'Job ' . $listedUid . ' must be listed');
+        }
+    }
+
+    #[Test]
+    public function restrictionRequiresSalaryByDefault(): void
+    {
+        self::assertSame($this->findUidsByRestriction(), $this->findUidsByRestriction(new OpenJobRestriction(
+            (new \DateTimeImmutable('today'))->getTimestamp(),
+        )));
+        self::assertNotContains(106, $this->findUidsByRestriction(OpenJobRestriction::forToday(true)));
     }
 
     #[Test]

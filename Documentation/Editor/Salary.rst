@@ -7,8 +7,9 @@
 Salary tables, salary grades and salary steps
 =============================================
 
-Every job must have salary information, otherwise it is not shown. A job
-either refers to one or more **salary grades** or contains a free
+By default, every job must have salary information, otherwise it is not
+shown. This depends on the site setting :confval:`jobboard-salary-required`.
+A job either refers to one or more **salary grades** or contains a free
 **minimum and maximum salary**, see :ref:`editor-job-salary`.
 
 ..  code-block:: text
@@ -101,8 +102,10 @@ Validity of salary grades
     The publish date and expiration date of a **salary grade** control the
     visibility of **every job that uses this grade**. When the period of a
     grade has expired (or not started yet), the grade is ignored. Jobs
-    without another valid grade then have no salary information: they
-    disappear from the list and their detail page returns "Page not found".
+    without another valid grade then have no salary information: if the
+    site setting :confval:`jobboard-salary-required` is enabled (the
+    default), they disappear from the list and their detail page returns
+    "Page not found".
 
     A grade or step already counts as expired **24 hours before** its
     expiration date. Maintain the salary grades of a new pay scale in time,

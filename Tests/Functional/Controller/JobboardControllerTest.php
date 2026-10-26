@@ -16,8 +16,11 @@ use JWeiland\Jobboard\Middleware\RememberJobMiddleware;
 use JWeiland\Jobboard\Service\EffectiveSalaryUpdaterInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Authentication\CommandLineUserAuthentication;
 use TYPO3\CMS\Core\Cache\Backend\Typo3DatabaseBackend;
+use TYPO3\CMS\Core\Cache\CacheManager;
+use TYPO3\CMS\Core\Configuration\Event\SiteConfigurationChangedEvent;
 use TYPO3\CMS\Core\Configuration\SiteWriter;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
@@ -99,6 +102,9 @@ final class JobboardControllerTest extends FunctionalTestCase
         ]);
         // Storage of the jobs, which can be remembered (RememberJobMiddleware)
         $siteWriter->writeSettings('main', ['jobboard' => ['storagePid' => '2']]);
+        // A previous test may have changed settings.yaml (writeSalaryRequired()),
+        // but the site settings are cached by the hash of config.yaml only
+        $this->get(CacheManager::class)->getCache('core')->flush();
 
         $this->setUpFrontendRootPage(
             1,
@@ -159,6 +165,22 @@ final class JobboardControllerTest extends FunctionalTestCase
             $dataHandler->start($dataMap, []);
             $dataHandler->process_datamap();
         });
+    }
+
+    /**
+     * Site setting "jobboard.salary.required". Site settings are cached by the
+     * hash of config.yaml: a changed settings.yaml is only read again after
+     * flushing the core cache. The page cache is flushed as well, like a
+     * change of the site settings in the backend would require.
+     */
+    private function writeSalaryRequired(bool $salaryRequired): void
+    {
+        $this->get(SiteWriter::class)->writeSettings('main', [
+            'jobboard' => ['storagePid' => '2', 'salary' => ['required' => $salaryRequired]],
+        ]);
+        $this->get(CacheManager::class)->getCache('core')->flush();
+        $this->get(CacheManager::class)->getCache('pages')->flush();
+        $this->get(EventDispatcherInterface::class)->dispatch(new SiteConfigurationChangedEvent('main'));
     }
 
     /**
@@ -328,6 +350,66 @@ final class JobboardControllerTest extends FunctionalTestCase
     public function searchActionExcludesJobWithoutValidSalaryInformation(int $jobUid, string $title): void
     {
         self::assertStringNotContainsString($title, $this->fetchSearchActionPageBody(4));
+    }
+
+    #[Test]
+    #[DataProvider('jobWithoutValidSalaryInformationDataProvider')]
+    public function listActionIncludesJobWithoutValidSalaryInformationIfSalaryIsNotRequired(int $jobUid, string $title): void
+    {
+        $this->writeSalaryRequired(false);
+
+        $body = $this->fetchListPageBody();
+
+        self::assertStringContainsString($title, $body);
+        self::assertStringContainsString('data-jobboard-uid="' . $jobUid . '"', $body);
+    }
+
+    #[Test]
+    #[DataProvider('jobWithoutValidSalaryInformationDataProvider')]
+    public function searchActionIncludesJobWithoutValidSalaryInformationIfSalaryIsNotRequired(int $jobUid, string $title): void
+    {
+        $this->writeSalaryRequired(false);
+
+        self::assertStringContainsString($title, $this->fetchSearchActionPageBody(4));
+    }
+
+    #[Test]
+    #[DataProvider('jobWithoutValidSalaryInformationDataProvider')]
+    public function listActionExcludesJobWithoutValidSalaryInformationIfSalaryIsRequiredExplicitly(
+        int $jobUid,
+        string $title,
+    ): void {
+        $this->writeSalaryRequired(true);
+
+        self::assertStringNotContainsString($title, $this->fetchListPageBody());
+    }
+
+    #[Test]
+    public function listActionWithoutSalaryRequirementKeepsAllOtherRules(): void
+    {
+        $this->updateRecordWithoutDataHandler('tx_jobboard_domain_model_job', 9, ['application_deadline' => 946684800]);
+        $this->updateRecordWithoutDataHandler('tx_jobboard_domain_model_job', 6, ['hidden' => 1]);
+        $this->updateRecordWithoutDataHandler('tx_jobboard_domain_model_job', 5, ['title' => '']);
+        $this->writeSalaryRequired(false);
+
+        $body = $this->fetchListPageBody();
+
+        self::assertStringNotContainsString('data-jobboard-uid="9"', $body);
+        self::assertStringNotContainsString('data-jobboard-uid="6"', $body);
+        self::assertStringNotContainsString('data-jobboard-uid="5"', $body);
+        self::assertStringContainsString('data-jobboard-uid="4"', $body);
+    }
+
+    #[Test]
+    public function appliesMaxEntriesLimitToJobsWithoutSalaryInformationIfSalaryIsNotRequired(): void
+    {
+        $this->writeSalaryRequired(false);
+
+        // Page 3 hosts a plugin with settings.maxEntries = 2: jobs 1 and 2
+        $body = $this->fetchSearchFormPageBody(3);
+
+        self::assertSame(2, substr_count($body, 'data-jobboard-uid="'));
+        $this->assertAppearsBefore('data-jobboard-uid="1"', 'data-jobboard-uid="2"', $body);
     }
 
     #[Test]
@@ -570,6 +652,95 @@ final class JobboardControllerTest extends FunctionalTestCase
 
         self::assertSame(200, $response->getStatusCode());
         self::assertStringNotContainsString('Job with expired grade', $pageBody);
+    }
+
+    #[Test]
+    public function detailActionRejectsJobWithoutResolvableSalaryInformationIfSalaryIsRequiredExplicitly(): void
+    {
+        $this->writeSalaryRequired(true);
+
+        $response = $this->executeFrontendSubRequest($this->buildDetailActionRequest(2));
+        $pageBody = explode('</head>', (string)$response->getBody(), 2)[1] ?? '';
+
+        self::assertStringNotContainsString('Job with expired grade', $pageBody);
+    }
+
+    /**
+     * Without salary information, no salary is rendered at all: neither the
+     * salary of the job details, nor the salary section, nor "baseSalary" of
+     * the structured data.
+     */
+    #[Test]
+    #[DataProvider('jobWithoutValidSalaryInformationDataProvider')]
+    public function detailActionRendersJobWithoutSalaryInformationIfSalaryIsNotRequired(int $jobUid, string $title): void
+    {
+        $this->writeSalaryRequired(false);
+
+        $response = $this->executeFrontendSubRequest($this->buildDetailActionRequest($jobUid));
+        $body = (string)$response->getBody();
+        $pageBody = explode('</head>', $body, 2)[1] ?? '';
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertStringContainsString('<h1', $pageBody);
+        self::assertStringContainsString($title, $pageBody);
+        self::assertStringNotContainsString('<dt>Salary</dt>', $pageBody);
+        self::assertStringNotContainsString('>Salary</h2>', $pageBody);
+        self::assertStringNotContainsString('€', $pageBody);
+        self::assertStringNotContainsString('baseSalary', $body);
+    }
+
+    #[Test]
+    public function detailActionRendersSalaryOfJobWithSalaryInformationIfSalaryIsNotRequired(): void
+    {
+        $this->writeSalaryRequired(false);
+
+        $body = (string)$this->executeFrontendSubRequest($this->buildDetailActionRequest(7))->getBody();
+
+        self::assertStringContainsString('<dt>Salary</dt>', $body);
+        self::assertStringContainsString('>Salary</h2>', $body);
+        self::assertStringContainsString('baseSalary', $body);
+    }
+
+    /**
+     * Job 7 has salary information, job 9 has none
+     */
+    private function fetchDetailPageBodyWithRelatedJobs(): string
+    {
+        $this->updateRecordWithoutDataHandler('tx_jobboard_domain_model_job', 1, ['related_jobs' => '7,9']);
+        $body = (string)$this->executeFrontendSubRequest($this->buildDetailActionRequest(1))->getBody();
+
+        return explode('</head>', $body, 2)[1] ?? '';
+    }
+
+    #[Test]
+    public function detailActionLinksRelatedJobsWithSalaryInformationOnlyIfSalaryIsRequired(): void
+    {
+        $pageBody = $this->fetchDetailPageBodyWithRelatedJobs();
+
+        self::assertStringContainsString('>Related jobs</h2>', $pageBody);
+        self::assertStringContainsString('>Job with free entry range</a>', $pageBody);
+        self::assertStringNotContainsString('Job with free entry but no amount at all', $pageBody);
+    }
+
+    #[Test]
+    public function detailActionLinksAllRelatedJobsIfSalaryIsNotRequired(): void
+    {
+        $this->writeSalaryRequired(false);
+
+        $pageBody = $this->fetchDetailPageBodyWithRelatedJobs();
+
+        self::assertStringContainsString('>Job with free entry range</a>', $pageBody);
+        self::assertStringContainsString('>Job with free entry but no amount at all</a>', $pageBody);
+    }
+
+    #[Test]
+    public function detailActionRendersNoRelatedJobsSectionIfNoRelatedJobIsLinked(): void
+    {
+        $this->updateRecordWithoutDataHandler('tx_jobboard_domain_model_job', 1, ['related_jobs' => '9']);
+
+        $body = (string)$this->executeFrontendSubRequest($this->buildDetailActionRequest(1))->getBody();
+
+        self::assertStringNotContainsString('>Related jobs</h2>', $body);
     }
 
     #[Test]
@@ -938,6 +1109,30 @@ final class JobboardControllerTest extends FunctionalTestCase
             10,
             ['effective_salary_min' => 0, 'effective_salary_max' => 0],
         );
+
+        $body = $this->fetchRememberedJobsPageBody($sessionCookie);
+
+        self::assertSame(1, substr_count($body, 'data-jobboard-uid="'));
+        self::assertStringContainsString('data-jobboard-uid="1"', $body);
+    }
+
+    #[Test]
+    public function rememberedJobsActionListsJobsWithoutSalaryInformationIfSalaryIsNotRequired(): void
+    {
+        $this->writeSalaryRequired(false);
+
+        $body = $this->fetchRememberedJobsPageBody($this->rememberJobs(9, 1));
+
+        self::assertSame(2, substr_count($body, 'data-jobboard-uid="'));
+        $this->assertAppearsBefore('data-jobboard-uid="1"', 'data-jobboard-uid="9"', $body);
+    }
+
+    #[Test]
+    public function rememberedJobsActionIgnoresJobsWithoutSalaryInformationIfSalaryIsRequiredAgain(): void
+    {
+        $this->writeSalaryRequired(false);
+        $sessionCookie = $this->rememberJobs(9, 1);
+        $this->writeSalaryRequired(true);
 
         $body = $this->fetchRememberedJobsPageBody($sessionCookie);
 
