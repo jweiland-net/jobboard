@@ -1,1 +1,3 @@
 name: jweiland/jobboard-pdf
+dependencies:
+  - bithost/pdfviewhelpers
