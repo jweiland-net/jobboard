@@ -14,6 +14,7 @@ namespace JWeiland\Jobboard\Service;
 use JWeiland\Jobboard\Database\Query\Restriction\OpenJobRestriction;
 use JWeiland\Jobboard\Domain\Model\JobLink;
 use JWeiland\Jobboard\Domain\Model\JobLocation;
+use JWeiland\Jobboard\Domain\Model\SalaryRequirement;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Context\LanguageAspect;
 use TYPO3\CMS\Core\Context\LanguageAspectFactory;
@@ -29,7 +30,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * The jobs are selected with the same rules as the job list of the plugin
  * (JobRepository): storage pages of the site setting "jobboard.storagePid"
  * incl. 3 levels of sub pages, enable fields, open jobs with salary
- * information (OpenJobRestriction). Job titles and the company of the
+ * information, if required by the site setting "jobboard.salary.required"
+ * (OpenJobRestriction, SalaryRequirement). Job titles and the company of the
  * address are translated into the language of the request. The jobs are
  * ordered by the translated title (locale of the site language, case
  * insensitive), then by UID.
@@ -111,7 +113,8 @@ final readonly class JobLocationService implements JobLocationServiceInterface
             return [];
         }
 
-        $jobRows = $this->buildOpenJobsQuery($addressUids, $storagePids, $languageAspect)
+        $salaryRequired = SalaryRequirement::fromRequest($request)->isRequired();
+        $jobRows = $this->buildOpenJobsQuery($addressUids, $storagePids, $languageAspect, $salaryRequired)
             ->executeQuery()
             ->fetchAllAssociative();
 
@@ -122,10 +125,14 @@ final readonly class JobLocationService implements JobLocationServiceInterface
      * @param int[] $addressUids
      * @param int[] $storagePids
      */
-    private function buildOpenJobsQuery(array $addressUids, array $storagePids, LanguageAspect $languageAspect): QueryBuilder
-    {
+    private function buildOpenJobsQuery(
+        array $addressUids,
+        array $storagePids,
+        LanguageAspect $languageAspect,
+        bool $salaryRequired,
+    ): QueryBuilder {
         $queryBuilder = $this->createQueryBuilder(self::TABLE_JOB);
-        $queryBuilder->getRestrictions()->add(OpenJobRestriction::forToday());
+        $queryBuilder->getRestrictions()->add(OpenJobRestriction::forToday($salaryRequired));
 
         return $queryBuilder
             ->select('*')

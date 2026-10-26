@@ -14,6 +14,7 @@ namespace JWeiland\Jobboard\Middleware;
 use JWeiland\Jobboard\Database\Query\JobLanguageConstraint;
 use JWeiland\Jobboard\Database\Query\Restriction\OpenJobRestriction;
 use JWeiland\Jobboard\Domain\Model\RememberedJobs;
+use JWeiland\Jobboard\Domain\Model\SalaryRequirement;
 use JWeiland\Jobboard\Service\RememberedJobsServiceInterface;
 use JWeiland\Jobboard\Service\StoragePidResolverInterface;
 use JWeiland\Jobboard\Traits\ConnectionPoolTrait;
@@ -199,8 +200,10 @@ final readonly class RememberJobMiddleware implements MiddlewareInterface
      * (JobLanguageConstraint) in the storage pages of the current site.
      * Hidden, deleted, scheduled and access-restricted jobs are excluded by
      * the frontend restrictions of the QueryBuilder, expired jobs and jobs
-     * without salary information by OpenJobRestriction - both checked on the
-     * selected row, i.e. on the translation, like Extbase does.
+     * without salary information (if required by the site setting
+     * "jobboard.salary.required", see SalaryRequirement) by
+     * OpenJobRestriction - both checked on the selected row, i.e. on the
+     * translation, like Extbase does.
      *
      * @param int[] $jobUids
      * @return int[]
@@ -213,7 +216,9 @@ final readonly class RememberJobMiddleware implements MiddlewareInterface
         }
 
         $queryBuilder = $this->getQueryBuilderForTable(self::TABLE);
-        $queryBuilder->getRestrictions()->add(OpenJobRestriction::forToday());
+        $queryBuilder->getRestrictions()->add(
+            OpenJobRestriction::forToday(SalaryRequirement::fromRequest($request)->isRequired()),
+        );
         $queryBuilder
             ->select('uid', 'l10n_parent')
             ->from(self::TABLE)

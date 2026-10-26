@@ -164,7 +164,9 @@ skipped, records are not created.
 Salary information of imported jobs
 ===================================
 
-Imported jobs are only shown with salary information, like all jobs. Map
+Like all jobs, imported jobs are only shown with salary information, as
+long as the site setting :confval:`jobboard-salary-required` is enabled
+(the default). Map
 :sql:`salary_mode` to an XML element with the value :code:`1` (free salary
 entry) and map :sql:`salary_min` and :sql:`salary_max`. Required fields of
 the backend form, like the reference number or the start date, are not

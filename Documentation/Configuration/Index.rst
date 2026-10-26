@@ -26,6 +26,8 @@ Quick start checklist
     the TYPO3 Scheduler, see :ref:`salary-update-command`.
 #.  Optional: site setting :confval:`jobboard-pidofapplicationform` points
     to the page with your application form.
+#.  Decide whether jobs without salary information are shown, see
+    :confval:`jobboard-salary-required`.
 
 ..  toctree::
     :maxdepth: 1

@@ -43,7 +43,9 @@ Run these steps after every update of the extension:
 
         vendor/bin/typo3 jobboard:salary:update --all
 
-    Jobs without a calculated effective salary are not listed.
+    If the site setting :confval:`jobboard-salary-required` is enabled
+    (the default), jobs without a calculated effective salary are not
+    listed.
 #.  Make sure the TYPO3 Scheduler runs :code:`jobboard:salary:update` once
     a day, see :ref:`salary-update-command`.
 #.  Make sure the page TSconfig of the storage folder contains
@@ -107,7 +109,8 @@ Migrate from EXT:jobfair2
     nothing to migrate for them.
 #.  Check the salary information of the migrated jobs (salary mode and
     salary grades or minimum and maximum salary). Jobs without salary
-    information are not shown.
+    information are not shown, unless the site setting
+    :confval:`jobboard-salary-required` is disabled.
 #.  Set up the daily salary update and :typoscript:`TCEMAIN.clearCacheCmd`,
     see :ref:`upgrade-update`.
 #.  Remove EXT:jobfair2 and its tables.

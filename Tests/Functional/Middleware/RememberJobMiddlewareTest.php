@@ -17,9 +17,12 @@ use JWeiland\Jobboard\Service\RememberedJobsServiceInterface;
 use JWeiland\Jobboard\Service\StoragePidResolver;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use TYPO3\CMS\Core\Cache\CacheManager;
+use TYPO3\CMS\Core\Configuration\Event\SiteConfigurationChangedEvent;
 use TYPO3\CMS\Core\Configuration\SiteWriter;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Http\Response;
@@ -71,6 +74,9 @@ final class RememberJobMiddlewareTest extends FunctionalTestCase
             ],
         ]);
         $siteWriter->writeSettings('main', ['jobboard' => ['storagePid' => '2']]);
+        // A previous test may have changed settings.yaml (writeSalaryRequired()),
+        // but the site settings are cached by the hash of config.yaml only
+        $this->get(CacheManager::class)->getCache('core')->flush();
     }
 
     /**
@@ -133,11 +139,28 @@ final class RememberJobMiddlewareTest extends FunctionalTestCase
     }
 
     /**
+     * Site settings are cached by the hash of config.yaml: a changed
+     * settings.yaml is only read again after flushing the caches.
+     */
+    private function writeSalaryRequired(bool $salaryRequired): void
+    {
+        $this->get(SiteWriter::class)->writeSettings('main', [
+            'jobboard' => ['storagePid' => '2', 'salary' => ['required' => $salaryRequired]],
+        ]);
+        $this->get(CacheManager::class)->getCache('core')->flush();
+        $this->get(EventDispatcherInterface::class)->dispatch(new SiteConfigurationChangedEvent('main'));
+    }
+
+    /**
      * @param array<string, mixed>|null $parsedBody
      */
-    private function buildRequest(?array $parsedBody, string $method = 'POST'): ServerRequest
+    private function buildRequest(?array $parsedBody, string $method = 'POST', ?bool $salaryRequired = null): ServerRequest
     {
-        $site = new Site('main', 1, ['settings' => ['jobboard' => ['storagePid' => '2']]]);
+        $settings = ['storagePid' => '2'];
+        if ($salaryRequired !== null) {
+            $settings['salary'] = ['required' => $salaryRequired];
+        }
+        $site = new Site('main', 1, ['settings' => ['jobboard' => $settings]]);
 
         return (new ServerRequest('https://example.com/', $method))
             ->withHeader(RememberJobMiddleware::HEADER_NAME, '1')
@@ -636,6 +659,88 @@ final class RememberJobMiddlewareTest extends FunctionalTestCase
         self::assertSame(['rememberedJobs' => [1]], $this->decode($readResponse));
         self::assertSame('', $readResponse->getHeaderLine('Set-Cookie'));
         self::assertSame(['rememberedJobs' => [1, 3]], $this->decode($this->sendFrontendRequest([], $sessionCookie)));
+    }
+
+    #[Test]
+    public function jobWithoutSalaryInformationCanBeRememberedIfSalaryIsNotRequired(): void
+    {
+        $this->insertJobsWhichAreNotListed();
+        [$subject, $rememberedJobsService] = $this->createSubject([2]);
+
+        $response = $subject->process(
+            $this->buildRequest(['job' => '20', 'remember' => '1'], 'POST', false),
+            $this->createFailingHandler(),
+        );
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertSame(['rememberedJobs' => [2, 20]], $this->decode($response));
+        self::assertSame([2, 20], $rememberedJobsService->rememberedJobs->getUids());
+    }
+
+    #[Test]
+    public function jobWithoutSalaryInformationCanNotBeRememberedIfSalaryIsRequiredExplicitly(): void
+    {
+        $this->insertJobsWhichAreNotListed();
+        [$subject] = $this->createSubject([2]);
+
+        $response = $subject->process(
+            $this->buildRequest(['job' => '20', 'remember' => '1'], 'POST', true),
+            $this->createFailingHandler(),
+        );
+
+        self::assertSame(404, $response->getStatusCode());
+    }
+
+    /**
+     * @return array<string, array{string}>
+     */
+    public static function jobWhichIsNotOpenDataProvider(): array
+    {
+        $dataSets = self::jobWhichIsNotListedDataProvider();
+        unset($dataSets['no salary information']);
+
+        return $dataSets;
+    }
+
+    #[Test]
+    #[DataProvider('jobWhichIsNotOpenDataProvider')]
+    public function jobWhichIsNotOpenCanNotBeRememberedIfSalaryIsNotRequired(string $jobUid): void
+    {
+        $this->insertJobsWhichAreNotListed();
+        [$subject, $rememberedJobsService] = $this->createSubject([2]);
+
+        $response = $subject->process(
+            $this->buildRequest(['job' => $jobUid, 'remember' => '1'], 'POST', false),
+            $this->createFailingHandler(),
+        );
+
+        self::assertSame(404, $response->getStatusCode());
+        self::assertSame(0, $rememberedJobsService->numberOfStoreCalls);
+    }
+
+    #[Test]
+    public function readOnlyRequestAnswersJobsWithoutSalaryInformationIfSalaryIsNotRequired(): void
+    {
+        $this->insertJobsWhichAreNotListed();
+        [$subject, $rememberedJobsService] = $this->createSubject([20, 1, 21, 22, 23, 24]);
+
+        $response = $subject->process($this->buildRequest([], 'POST', false), $this->createFailingHandler());
+
+        self::assertSame(['rememberedJobs' => [20, 1, 24]], $this->decode($response));
+        self::assertSame(0, $rememberedJobsService->numberOfStoreCalls);
+    }
+
+    #[Test]
+    public function frontendRequestReadsSalaryRequirementFromSiteSettings(): void
+    {
+        $this->insertJobsWhichAreNotListed();
+        self::assertSame(404, $this->sendFrontendRequest(['job' => '20', 'remember' => '1'])->getStatusCode());
+
+        $this->writeSalaryRequired(false);
+        $response = $this->sendFrontendRequest(['job' => '20', 'remember' => '1']);
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertSame(['rememberedJobs' => [20]], $this->decode($response));
     }
 
     /**

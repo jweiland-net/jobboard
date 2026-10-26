@@ -16,6 +16,7 @@ use JWeiland\Jobboard\Domain\Model\JobArea;
 use JWeiland\Jobboard\Domain\Model\JobAreaRestriction;
 use JWeiland\Jobboard\Domain\Model\JobRole;
 use JWeiland\Jobboard\Domain\Model\JobType;
+use JWeiland\Jobboard\Domain\Model\SalaryRequirement;
 use JWeiland\Jobboard\Domain\Model\Search;
 use JWeiland\Jobboard\Domain\Repository\JobRepository;
 use JWeiland\Jobboard\Event\PostProcessFluidVariablesEvent;
@@ -42,7 +43,7 @@ class JobboardController extends ActionController
 
     public function listAction(): ResponseInterface
     {
-        $jobs = $this->jobRepository->findBySettings($this->settings, $this->getMaxEntries());
+        $jobs = $this->jobRepository->findBySettings($this->settings, $this->getMaxEntries(), $this->isSalaryRequired());
 
         $fluidVariables = ['jobs' => $jobs];
         ArrayUtility::mergeRecursiveWithOverrule($fluidVariables, $this->getSearchOptions($jobs));
@@ -59,7 +60,12 @@ class JobboardController extends ActionController
         string $searchWord = '',
     ): ResponseInterface {
         $search = new Search($this->getAllowedJobArea($jobArea), $jobRole, $jobType, $address, $searchWord);
-        $jobs = $this->jobRepository->findBySearch($search, $this->getMaxEntries(), $this->settings);
+        $jobs = $this->jobRepository->findBySearch(
+            $search,
+            $this->getMaxEntries(),
+            $this->settings,
+            $this->isSalaryRequired(),
+        );
 
         $fluidVariables = ['jobs' => $jobs];
         ArrayUtility::mergeRecursiveWithOverrule($fluidVariables, $search->getSelectedValues());
@@ -79,7 +85,9 @@ class JobboardController extends ActionController
         $rememberedJobs = $this->rememberedJobsService->getRememberedJobs($this->request);
 
         $this->view->assignMultiple([
-            'jobs' => $rememberedJobs->isEmpty() ? [] : $this->jobRepository->findByUids($rememberedJobs->getUids()),
+            'jobs' => $rememberedJobs->isEmpty()
+                ? []
+                : $this->jobRepository->findByUids($rememberedJobs->getUids(), $this->isSalaryRequired()),
             'rememberedJobs' => $rememberedJobs->getUidsAsKeys(),
         ]);
 
@@ -152,14 +160,24 @@ class JobboardController extends ActionController
     }
 
     /**
+     * Site setting "jobboard.salary.required" of the site of the request,
+     * see SalaryRequirement. The same for every plugin of the site.
+     */
+    private function isSalaryRequired(): bool
+    {
+        return SalaryRequirement::fromRequest($this->request)->isRequired();
+    }
+
+    /**
      * Uses the precomputed effective salary of the job, the same rule as in
      * the job list (see JobRepository). No salary grade has to be loaded.
+     * Only checked, if the site requires salary information.
      *
      * @throws PageNotFoundException
      */
     public function detailAction(Job $job): ResponseInterface
     {
-        if (!$job->getHasEffectiveSalaryInformation()) {
+        if ($this->isSalaryRequired() && !$job->getHasEffectiveSalaryInformation()) {
             throw new PageNotFoundException(
                 'This job does not have any resolvable salary information and must not be displayed.',
                 1753868400,
@@ -167,8 +185,29 @@ class JobboardController extends ActionController
         }
 
         $this->view->assign('job', $job);
+        $this->view->assign('relatedJobs', $this->getRelatedJobsToLink($job));
         $this->view->assign('settings', $this->settings);
 
         return $this->htmlResponse();
+    }
+
+    /**
+     * Related jobs link to their detail view. If the site requires salary
+     * information, related jobs without it are skipped: their detail view
+     * would not be found (see detailAction()).
+     *
+     * @return Job[]
+     */
+    private function getRelatedJobsToLink(Job $job): array
+    {
+        $relatedJobs = array_values($job->getRelatedJobs()->toArray());
+        if (!$this->isSalaryRequired()) {
+            return $relatedJobs;
+        }
+
+        return array_values(array_filter(
+            $relatedJobs,
+            static fn(Job $relatedJob): bool => $relatedJob->getHasEffectiveSalaryInformation(),
+        ));
     }
 }

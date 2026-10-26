@@ -148,6 +148,24 @@ final class JobSearchOptionsServiceTest extends FunctionalTestCase
     }
 
     #[Test]
+    public function getSearchOptionsCountsJobsWithoutEffectiveSalaryIfSalaryIsNotRequired(): void
+    {
+        $this->get(ConnectionPool::class)
+            ->getConnectionForTable('tx_jobboard_domain_model_job')
+            ->update(
+                'tx_jobboard_domain_model_job',
+                ['effective_salary_min' => 0.0, 'effective_salary_max' => 0.0],
+                ['uid' => 13],
+            );
+
+        $query = $this->jobRepository->findBySettings([], 0, false)->getQuery();
+        $searchOptions = $this->getSearchOptions($query, [], true);
+
+        self::assertSame([1 => 'IT (8)', 2 => 'Handwerk (3)'], $searchOptions['jobAreas']);
+        self::assertArrayHasKey('Sample Town', $searchOptions['jobLocations']);
+    }
+
+    #[Test]
     public function getSearchOptionsOnlyContainsJobAreasOfPluginRestriction(): void
     {
         // Jobs 3, 8 and 13. Job 3 also has job area 1, which is not offered.

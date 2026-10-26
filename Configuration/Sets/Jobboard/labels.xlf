@@ -21,6 +21,9 @@
 			<trans-unit id="categories.jobboard.pageBrowser">
 				<source>Page browser</source>
 			</trans-unit>
+			<trans-unit id="categories.jobboard.salary">
+				<source>Salary</source>
+			</trans-unit>
 			<trans-unit id="settings.jobboard.templateRootPath">
 				<source>Templates</source>
 			</trans-unit>
@@ -74,6 +77,12 @@
 			</trans-unit>
 			<trans-unit id="settings.description.jobboard.pageBrowser.itemsPerPage">
 				<source>Number of jobs shown on one page of the list and of the search results. Further jobs are reached with the page browser.</source>
+			</trans-unit>
+			<trans-unit id="settings.jobboard.salary.required">
+				<source>Require salary information</source>
+			</trans-unit>
+			<trans-unit id="settings.description.jobboard.salary.required">
+				<source>Only jobs with salary information (salary grade or salary range) are listed, shown, searchable, rememberable and shown on the map, as demanded by the EU pay transparency directive. Disable it, as long as the directive is not yet in force in your country: then jobs without salary information are shown like any other open job. Applies to the whole site and can not be overridden per content element.</source>
 			</trans-unit>
 		</body>
 	</file>

@@ -138,6 +138,43 @@ them in the backend module :guilabel:`Site Management > Settings`
         Mapped to
         :typoscript:`plugin.tx_jobboard.settings.pageBrowser.itemsPerPage`.
 
+    ..  confval:: jobboard.salary.required
+        :name: jobboard-salary-required
+        :type: bool
+        :default: :yaml:`true`
+
+        With :yaml:`true`, only jobs with salary information are shown:
+        the job needs an effective salary (minimum or maximum greater than
+        :code:`0`, see :ref:`salary-update`). Jobs without salary
+        information are hidden in the list, the search result, the detail
+        view (HTTP status 404), the remembered jobs and the map. The detail
+        view does not link related jobs without salary information. This
+        is the default.
+
+        With :yaml:`false`, jobs without salary information are shown like
+        any other open job. All other conditions still apply, for example
+        title, application deadline, end of employment and the publish and
+        expiration date of the job, see :ref:`editor-visibility`. The
+        salary is shown for jobs that have one. The effective salary is
+        calculated in both cases, so switching the setting later does not
+        require a recalculation.
+
+        The EU pay transparency directive (EU) 2023/970 requires that
+        applicants receive information about the initial pay or its range.
+        Whether and from when this applies to your job offers depends on
+        the national transposition of the directive. This documentation is
+        no legal advice. Clarify with your legal department which value is
+        right for your site.
+
+        ..  literalinclude:: _snippets/_settings-salary-not-required.yaml
+            :language: yaml
+            :caption: config/sites/<site-identifier>/settings.yaml
+
+        The setting can also be changed in the backend module
+        :guilabel:`Site Management > Settings`, category
+        :guilabel:`Salary`. Flush the frontend caches after changing it,
+        cached pages still show the jobs of the previous value.
+
     ..  confval:: jobboard.pdf.logo
         :name: jobboard-pdf-logo
         :type: string
