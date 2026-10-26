@@ -6,7 +6,21 @@
       xsi:schemaLocation="http://typo3.org/ns/Bithost/Pdfviewhelpers/ViewHelpers https://pdfviewhelpers.bithost.ch/schema/2.2.xsd"
       data-namespace-typo3-fluid="true">
 
-<pdf:document outputDestination="inline" outputPath="{job.uid}-{job.title}.pdf" title="{job.title}">
+<f:comment>
+    Site setting jobboard.pdf.linkMode: "newTab" and "sameTab" show the PDF in
+    the browser, everything else (default "download") sends it as download.
+    The file name uses the URL segment of the job: TCPDF takes the basename of
+    the name, so a title like "Fachinformatiker/in" would cut it after "/".
+</f:comment>
+<f:variable name="outputDestination" value="download"/>
+<f:if condition="{settings.pdfLinkMode} == 'newTab' || {settings.pdfLinkMode} == 'sameTab'">
+    <f:variable name="outputDestination" value="inline"/>
+</f:if>
+<f:variable name="fileName" value="job-{job.uid}"/>
+<f:if condition="{job.pathSegment}">
+    <f:variable name="fileName" value="{job.uid}-{job.pathSegment}"/>
+</f:if>
+<pdf:document outputDestination="{outputDestination}" outputPath="{fileName}.pdf" title="{job.title}">
     <pdf:page margin="{top: 35}">
         <f:comment>
             pdf:image fails with a TypeError on an empty src, so the header is

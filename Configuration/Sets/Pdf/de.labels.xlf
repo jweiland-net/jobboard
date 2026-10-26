@@ -7,9 +7,13 @@
 				<source>Jobboard - PDF Generation</source>
 				<target>Jobboard - PDF-Erzeugung</target>
 			</trans-unit>
+			<trans-unit id="categories.jobboard">
+				<source>Jobboard</source>
+				<target>Jobboard</target>
+			</trans-unit>
 			<trans-unit id="categories.jobboard.pdf">
-				<source>PDF</source>
-				<target>PDF</target>
+				<source>PDF (Job Board Settings)</source>
+				<target>PDF (Jobboard-Einstellungen)</target>
 			</trans-unit>
 			<trans-unit id="settings.jobboard.pdf.logo">
 				<source>Logo in the PDF header</source>
@@ -18,6 +22,14 @@
 			<trans-unit id="settings.description.jobboard.pdf.logo">
 				<source>Image shown at the top right of every page of the job PDF, e.g. EXT:my_sitepackage/Resources/Public/Images/logo.png or fileadmin/logo.png. Leave empty for no logo.</source>
 				<target>Bild oben rechts auf jeder Seite des Stellen-PDFs, z. B. EXT:my_sitepackage/Resources/Public/Images/logo.png oder fileadmin/logo.png. Leer lassen für kein Logo.</target>
+			</trans-unit>
+			<trans-unit id="settings.jobboard.pdf.linkMode">
+				<source>PDF link</source>
+				<target>PDF-Link</target>
+			</trans-unit>
+			<trans-unit id="settings.description.jobboard.pdf.linkMode">
+				<source>How the PDF link of the detail view opens the PDF: download the file (default), show it in a new tab, or show it in the same tab. The label of the link follows the choice.</source>
+				<target>Wie der PDF-Link der Detailansicht das PDF öffnet: Datei herunterladen (Standard), in einem neuen Tab anzeigen oder im selben Tab anzeigen. Die Beschriftung des Links passt sich an.</target>
 			</trans-unit>
 		</body>
 	</file>

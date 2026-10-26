@@ -1,8 +1,20 @@
 categories:
-  jobboard.pdf: {}
+  # Also defined by jweiland/jobboard. Repeated here, so the parent of
+  # "jobboard.pdf" exists even if a site does not load the main set.
+  jobboard: {}
+  jobboard.pdf:
+    parent: jobboard
 
 settings:
   jobboard.pdf.logo:
     category: jobboard.pdf
     type: string
     default: ''
+  jobboard.pdf.linkMode:
+    category: jobboard.pdf
+    type: string
+    default: 'download'
+    enum:
+      download: 'Download the PDF file'
+      newTab: 'Show the PDF in a new tab'
+      sameTab: 'Show the PDF in the same tab'
