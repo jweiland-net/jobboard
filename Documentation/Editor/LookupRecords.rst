@@ -57,7 +57,7 @@ Benefit
     Optional plain text.
 
 :guilabel:`Image` (tab :guilabel:`Media`)
-    Optional image, at most one file.
+    Optional image, at most one file. Other file types can not be added.
 
 Select the benefits of a job in its tab :guilabel:`Job Details`, palette
 :guilabel:`Benefits`.
