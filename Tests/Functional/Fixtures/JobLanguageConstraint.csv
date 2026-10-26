@@ -14,9 +14,9 @@
 ,14,2,1,4,1,0,"Verborgene Übersetzung",3000.00,3000.00
 ,15,2,1,0,0,0,"Schwebende Übersetzung ohne Standardsprache",3000.00,3000.00
 ,6,2,-1,0,0,0,"Job in all languages",3000.00,3000.00
-,7,2,0,0,0,4102444800,"Scheduled job with visible translation",3000.00,3000.00
+,7,2,0,0,0,2145916800,"Scheduled job with visible translation",3000.00,3000.00
 ,17,2,1,7,0,0,"Sichtbare Übersetzung einer geplanten Stelle",3000.00,3000.00
 ,8,2,0,0,0,0,"Job translated into language 2 only",3000.00,3000.00
 ,28,2,2,8,0,0,"Job in language 2",3000.00,3000.00
 ,9,2,0,0,0,0,"Job with scheduled translation",3000.00,3000.00
-,19,2,1,9,0,4102444800,"Geplante Übersetzung",3000.00,3000.00
+,19,2,1,9,0,2145916800,"Geplante Übersetzung",3000.00,3000.00
