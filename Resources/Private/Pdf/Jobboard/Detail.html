@@ -8,9 +8,15 @@
 
 <pdf:document outputDestination="inline" outputPath="{job.uid}-{job.title}.pdf" title="{job.title}">
     <pdf:page margin="{top: 35}">
-        <pdf:header>
-            <pdf:image alignment="right" posY="18" src="{settings.pdfLogo}" width="40"/>
-        </pdf:header>
+        <f:comment>
+            pdf:image fails with a TypeError on an empty src, so the header is
+            only rendered with a logo (site setting jobboard.pdf.logo).
+        </f:comment>
+        <f:if condition="{settings.pdfLogo}">
+            <pdf:header>
+                <pdf:image alignment="right" posY="18" src="{settings.pdfLogo}" width="40"/>
+            </pdf:header>
+        </f:if>
 
         <pdf:text color="#666" paragraphSpacing="1">
             <f:translate key="job.title"/>

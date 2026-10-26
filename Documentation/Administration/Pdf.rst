@@ -22,6 +22,8 @@ Setup
     to your site, see :ref:`installation-site-set`.
 *   Optionally map the page type to a URL suffix, see
     :ref:`configuration-routing-pdf`.
+*   Optionally show a logo at the top right of every page, see
+    :confval:`jobboard-pdf-logo`. Without a logo the PDF has no header.
 
 Template
 ========

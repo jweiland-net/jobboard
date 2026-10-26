@@ -6,6 +6,15 @@
 			<trans-unit id="label">
 				<source>Jobboard - PDF Generation</source>
 			</trans-unit>
+			<trans-unit id="categories.jobboard.pdf">
+				<source>PDF</source>
+			</trans-unit>
+			<trans-unit id="settings.jobboard.pdf.logo">
+				<source>Logo in the PDF header</source>
+			</trans-unit>
+			<trans-unit id="settings.description.jobboard.pdf.logo">
+				<source>Image shown at the top right of every page of the job PDF, e.g. EXT:my_sitepackage/Resources/Public/Images/logo.png or fileadmin/logo.png. Leave empty for no logo.</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>
