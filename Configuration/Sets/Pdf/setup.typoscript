@@ -92,3 +92,7 @@ plugin.tx_pdfviewhelpers.settings {
 
 module.tx_pdfviewhelpers < plugin.tx_pdfviewhelpers
 [global]
+
+# How the link of the detail view opens the PDF (download, newTab or sameTab).
+# Used by the detail view and by the PDF page type, so it is set on all pages.
+plugin.tx_jobboard.settings.pdfLinkMode = {$jobboard.pdf.linkMode}

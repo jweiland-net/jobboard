@@ -8,8 +8,11 @@ PDF export
 ==========
 
 The detail view links to a PDF version of the job. The PDF is rendered
-with EXT:pdfviewhelpers (:composer:`bithost-gmbh/pdfviewhelpers`) and
-opens in the browser.
+with EXT:pdfviewhelpers (:composer:`bithost-gmbh/pdfviewhelpers`). By
+default it is sent as file download; to show it in the browser in a new
+or the same tab instead, see :confval:`jobboard-pdf-linkmode`. The file
+name is the UID and the URL segment of the job, for example
+:file:`1-fachinformatiker-in-anwendungsentwicklung-m-w-d.pdf`.
 
 Setup
 =====

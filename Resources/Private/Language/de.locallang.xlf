@@ -178,6 +178,14 @@
 				<source>Download PDF %s</source>
 				<target>PDF %s herunterladen</target>
 			</trans-unit>
+			<trans-unit id="job.showPdfNewTab">
+				<source>Show rendered PDF in new tab</source>
+				<target>PDF in neuem Tab anzeigen</target>
+			</trans-unit>
+			<trans-unit id="job.showPdf">
+				<source>Show PDF</source>
+				<target>PDF anzeigen</target>
+			</trans-unit>
 			<trans-unit id="job.downloadPdf.addition">
 				<source>file of the job offer</source>
 				<target>Datei zum Angebot</target>

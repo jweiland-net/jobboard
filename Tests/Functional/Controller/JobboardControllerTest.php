@@ -787,6 +787,49 @@ final class JobboardControllerTest extends FunctionalTestCase
     }
 
     #[Test]
+    public function detailActionRendersPdfDownloadLinkForLinkModeDownload(): void
+    {
+        $body = $this->fetchDetailBodyWithPdfLinkMode('download');
+
+        self::assertStringContainsString('Download PDF <span class="d-none d-sm-inline">file of the job offer</span>', $body);
+        self::assertDoesNotMatchRegularExpression('#<a [^>]*target="_blank"[^>]*>[^<]*PDF#', $body);
+    }
+
+    #[Test]
+    public function detailActionRendersPdfLinkInNewTabForLinkModeNewTab(): void
+    {
+        $body = $this->fetchDetailBodyWithPdfLinkMode('newTab');
+
+        self::assertMatchesRegularExpression('#<a [^>]*target="_blank"[^>]*>Show rendered PDF in new tab</a>#', $body);
+        self::assertMatchesRegularExpression('#<a [^>]*rel="noopener"[^>]*>Show rendered PDF in new tab</a>#', $body);
+        self::assertStringNotContainsString('Download PDF', $body);
+    }
+
+    #[Test]
+    public function detailActionRendersPdfLinkInSameTabForLinkModeSameTab(): void
+    {
+        $body = $this->fetchDetailBodyWithPdfLinkMode('sameTab');
+
+        self::assertMatchesRegularExpression('#<a [^>]*>Show PDF</a>#', $body);
+        self::assertDoesNotMatchRegularExpression('#<a [^>]*target="_blank"[^>]*>Show PDF</a>#', $body);
+        self::assertStringNotContainsString('Download PDF', $body);
+    }
+
+    /**
+     * Site setting jobboard.pdf.linkMode is mapped to this TypoScript setting
+     * by the set jweiland/jobboard-pdf, which is not loaded here.
+     */
+    private function fetchDetailBodyWithPdfLinkMode(string $pdfLinkMode): string
+    {
+        $this->get(ConnectionPool::class)
+            ->getConnectionForTable('tx_jobboard_domain_model_job')
+            ->update('tx_jobboard_domain_model_job', ['description' => 'Job description'], ['uid' => 1]);
+        $this->addTypoScriptToTemplateRecord(1, 'plugin.tx_jobboard.settings.pdfLinkMode = ' . $pdfLinkMode);
+
+        return (string)$this->executeFrontendSubRequest($this->buildDetailActionRequest(1))->getBody();
+    }
+
+    #[Test]
     public function detailActionSetsJobTitleAsPageTitle(): void
     {
         $response = $this->executeFrontendSubRequest($this->buildDetailActionRequest(1));

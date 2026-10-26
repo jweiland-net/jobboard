@@ -135,6 +135,12 @@
 			<trans-unit id="job.downloadPdf">
 				<source>Download PDF %s</source>
 			</trans-unit>
+			<trans-unit id="job.showPdfNewTab">
+				<source>Show rendered PDF in new tab</source>
+			</trans-unit>
+			<trans-unit id="job.showPdf">
+				<source>Show PDF</source>
+			</trans-unit>
 			<trans-unit id="job.downloadPdf.addition">
 				<source>file of the job offer</source>
 			</trans-unit>

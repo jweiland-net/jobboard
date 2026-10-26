@@ -188,3 +188,29 @@ them in the backend module :guilabel:`Site Management > Settings`
         :yaml:`jweiland/jobboard-pdf`.
 
         Mapped to :typoscript:`plugin.tx_jobboard.settings.pdfLogo`.
+
+    ..  confval:: jobboard.pdf.linkMode
+        :name: jobboard-pdf-linkmode
+        :type: string
+        :default: :yaml:`'download'`
+
+        How the PDF link of the detail view opens the PDF version of a job,
+        see :ref:`pdf-export`. Defined by the site set
+        :yaml:`jweiland/jobboard-pdf`.
+
+        :yaml:`download`
+            The PDF is sent as file download. Link label "Download PDF file
+            of the job offer".
+
+        :yaml:`newTab`
+            The PDF is shown in the browser in a new tab
+            (:html:`target="_blank"`). Link label "Show rendered PDF in new
+            tab".
+
+        :yaml:`sameTab`
+            The PDF is shown in the browser in the same tab. Link label
+            "Show PDF".
+
+        Mapped to :typoscript:`plugin.tx_jobboard.settings.pdfLinkMode` on
+        all pages, as the detail view and the PDF page type both use it.
+
