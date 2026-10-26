@@ -49,7 +49,7 @@ if (ExtensionManagementUtility::isLoaded('maps2')) {
             // The position does not depend on the language. EXT:maps2 writes
             // the relation of a new PoiCollection into the default language
             // only, DataHandler copies it into the translations on the next
-            // save. JobPoiCollectionViewHelper covers the time in between.
+            // save. MapPoiCollectionService covers the time in between.
             'l10n_mode' => 'exclude',
             'l10n_display' => 'defaultAsReadonly',
             'synchronizeColumns' => [

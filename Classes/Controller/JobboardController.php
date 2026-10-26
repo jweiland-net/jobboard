@@ -21,11 +21,11 @@ use JWeiland\Jobboard\Domain\Model\Search;
 use JWeiland\Jobboard\Domain\Repository\JobRepository;
 use JWeiland\Jobboard\Event\PostProcessFluidVariablesEvent;
 use JWeiland\Jobboard\Service\JobSearchOptionsServiceInterface;
+use JWeiland\Jobboard\Service\MapPoiCollectionServiceInterface;
 use JWeiland\Jobboard\Service\RememberedJobsServiceInterface;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Error\Http\PageNotFoundException;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 
@@ -40,13 +40,17 @@ class JobboardController extends ActionController
         protected JobRepository $jobRepository,
         protected RememberedJobsServiceInterface $rememberedJobsService,
         protected JobSearchOptionsServiceInterface $jobSearchOptionsService,
+        protected MapPoiCollectionServiceInterface $mapPoiCollectionService,
     ) {}
 
     public function listAction(): ResponseInterface
     {
         $jobs = $this->jobRepository->findBySettings($this->settings, $this->getMaxEntries(), $this->isSalaryRequired());
 
-        $fluidVariables = ['jobs' => $jobs, 'addressUids' => $this->getAddressUidsForMap($jobs)];
+        $fluidVariables = [
+            'jobs' => $jobs,
+            'poiCollections' => $this->mapPoiCollectionService->getPoiCollections($jobs->getQuery()),
+        ];
         ArrayUtility::mergeRecursiveWithOverrule($fluidVariables, $this->getSearchOptions($jobs));
         $this->assignPostProcessedFluidVariables($fluidVariables);
 
@@ -68,7 +72,10 @@ class JobboardController extends ActionController
             $this->isSalaryRequired(),
         );
 
-        $fluidVariables = ['jobs' => $jobs, 'addressUids' => $this->getAddressUidsForMap($jobs)];
+        $fluidVariables = [
+            'jobs' => $jobs,
+            'poiCollections' => $this->mapPoiCollectionService->getPoiCollections($jobs->getQuery()),
+        ];
         ArrayUtility::mergeRecursiveWithOverrule($fluidVariables, $search->getSelectedValues());
         ArrayUtility::mergeRecursiveWithOverrule($fluidVariables, $this->getSearchOptions($jobs));
         $this->assignPostProcessedFluidVariables($fluidVariables);
@@ -100,6 +107,8 @@ class JobboardController extends ActionController
      * before they are assigned, e.g. AddPaginatorEventListener paginates the
      * jobs (a QueryResultInterface) in the database. The search options are
      * built from all matching jobs, not only the jobs of the current page.
+     * The same applies to "poiCollections" of the map: all locations of the
+     * list or search result, built before the page browser replaces "jobs".
      *
      * @param array<string, mixed> $fluidVariables
      */
@@ -148,23 +157,6 @@ class JobboardController extends ActionController
             JobAreaRestriction::fromSettings($this->settings),
             $this->isJobAreaCountEnabled(),
         );
-    }
-
-    /**
-     * Addresses of all matching jobs for the map in Partials/SearchForm.html,
-     * independent of the page browser, which paginates "jobs" only. Built
-     * from the job query in the database, no job is loaded. The map needs
-     * EXT:maps2, without it no query is needed.
-     *
-     * @return int[]
-     */
-    private function getAddressUidsForMap(QueryResultInterface $jobs): array
-    {
-        if (!ExtensionManagementUtility::isLoaded('maps2')) {
-            return [];
-        }
-
-        return $this->jobSearchOptionsService->getAddressUids($jobs->getQuery());
     }
 
     /**
