@@ -14,6 +14,8 @@ namespace JWeiland\Jobboard\Service;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\FrontendRestrictionContainer;
+use TYPO3\CMS\Core\Schema\Capability\TcaSchemaCapability;
+use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
@@ -40,17 +42,20 @@ final readonly class MapPoiCollectionService implements MapPoiCollectionServiceI
 
     private const TABLE_ADDRESS = 'tt_address';
 
+    private const FIELD_POI_COLLECTION = 'tx_maps2_uid';
+
     public function __construct(
         private JobSearchOptionsServiceInterface $jobSearchOptionsService,
         private ConnectionPool $connectionPool,
         private PersistenceManagerInterface $persistenceManager,
+        private TcaSchemaFactory $tcaSchemaFactory,
     ) {}
 
     public function getPoiCollections(QueryInterface $jobQuery): ObjectStorage
     {
         $poiCollections = new ObjectStorage();
         // The column only exists with EXT:maps2, see TCA override of tt_address
-        if (!isset($GLOBALS['TCA'][self::TABLE_ADDRESS]['columns']['tx_maps2_uid'])) {
+        if (!$this->tcaSchemaFactory->get(self::TABLE_ADDRESS)->hasField(self::FIELD_POI_COLLECTION)) {
             return $poiCollections;
         }
 
@@ -73,18 +78,19 @@ final readonly class MapPoiCollectionService implements MapPoiCollectionServiceI
      */
     private function getPoiCollectionUids(array $addressUids): array
     {
+        $parentField = $this->getTranslationParentField();
         $poiCollectionUids = [];
         $defaultAddressUids = [];
-        foreach ($this->fetchAddresses($addressUids) as $address) {
-            if ((int)$address['tx_maps2_uid'] > 0) {
-                $poiCollectionUids[] = (int)$address['tx_maps2_uid'];
-            } elseif ((int)$address['l10n_parent'] > 0) {
-                $defaultAddressUids[] = (int)$address['l10n_parent'];
+        foreach ($this->fetchAddresses($addressUids, $parentField) as $address) {
+            if ((int)$address[self::FIELD_POI_COLLECTION] > 0) {
+                $poiCollectionUids[] = (int)$address[self::FIELD_POI_COLLECTION];
+            } elseif ((int)$address[$parentField] > 0) {
+                $defaultAddressUids[] = (int)$address[$parentField];
             }
         }
 
-        foreach ($this->fetchAddresses($defaultAddressUids) as $defaultAddress) {
-            $poiCollectionUids[] = (int)$defaultAddress['tx_maps2_uid'];
+        foreach ($this->fetchAddresses($defaultAddressUids, $parentField) as $defaultAddress) {
+            $poiCollectionUids[] = (int)$defaultAddress[self::FIELD_POI_COLLECTION];
         }
 
         $poiCollectionUids = array_unique(array_filter($poiCollectionUids, static fn(int $uid): bool => $uid > 0));
@@ -94,12 +100,24 @@ final readonly class MapPoiCollectionService implements MapPoiCollectionServiceI
     }
 
     /**
+     * TCA ctrl "transOrigPointerField" of tt_address (usually "l10n_parent")
+     */
+    private function getTranslationParentField(): string
+    {
+        return $this->tcaSchemaFactory
+            ->get(self::TABLE_ADDRESS)
+            ->getCapability(TcaSchemaCapability::Language)
+            ->getTranslationOriginPointerField()
+            ->getName();
+    }
+
+    /**
      * Visible addresses only (frontend restrictions), as Extbase relations.
      *
      * @param int[] $addressUids
      * @return array<int, array<string, mixed>>
      */
-    private function fetchAddresses(array $addressUids): array
+    private function fetchAddresses(array $addressUids, string $parentField): array
     {
         $addressUids = array_values(array_filter($addressUids, static fn(int $uid): bool => $uid > 0));
         if ($addressUids === []) {
@@ -110,7 +128,7 @@ final readonly class MapPoiCollectionService implements MapPoiCollectionServiceI
         $queryBuilder->setRestrictions(GeneralUtility::makeInstance(FrontendRestrictionContainer::class));
 
         return $queryBuilder
-            ->select('l10n_parent', 'tx_maps2_uid')
+            ->select($parentField, self::FIELD_POI_COLLECTION)
             ->from(self::TABLE_ADDRESS)
             ->where($queryBuilder->expr()->in(
                 'uid',

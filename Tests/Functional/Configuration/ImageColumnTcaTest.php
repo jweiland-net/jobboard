@@ -13,7 +13,8 @@ namespace JWeiland\Jobboard\Tests\Functional\Configuration;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Schema\Field\FileFieldType;
+use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 /**
@@ -43,14 +44,11 @@ final class ImageColumnTcaTest extends FunctionalTestCase
     #[DataProvider('imageColumnDataProvider')]
     public function imageColumnAllowsImageFilesOnly(string $table, string $column): void
     {
-        $config = $GLOBALS['TCA'][$table]['columns'][$column]['config'];
+        $field = $this->get(TcaSchemaFactory::class)->get($table)->getField($column);
+        self::assertInstanceOf(FileFieldType::class, $field);
         // "common-image-types" is resolved to $GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext']
-        $allowed = array_diff(
-            GeneralUtility::trimExplode(',', $config['allowed'], true),
-            GeneralUtility::trimExplode(',', $config['disallowed'] ?? '', true),
-        );
+        $allowed = array_diff($field->getAllowedFileExtensions(), $field->getDisallowedFileExtensions());
 
-        self::assertSame('file', $config['type']);
         self::assertContains('png', $allowed);
         self::assertContains('jpg', $allowed);
         self::assertContains('svg', $allowed);

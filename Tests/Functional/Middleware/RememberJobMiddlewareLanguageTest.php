@@ -25,6 +25,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\LanguageAspectFactory;
 use TYPO3\CMS\Core\Http\ServerRequest;
+use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Extbase\Persistence\Generic\QuerySettingsInterface;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
@@ -105,7 +106,13 @@ final class RememberJobMiddlewareLanguageTest extends FunctionalTestCase
             }
         };
 
-        return [new RememberJobMiddleware($rememberedJobsService, new StoragePidResolver()), $rememberedJobsService];
+        $subject = new RememberJobMiddleware(
+            $rememberedJobsService,
+            new StoragePidResolver(),
+            $this->get(TcaSchemaFactory::class),
+        );
+
+        return [$subject, $rememberedJobsService];
     }
 
     private function createSite(string $fallbackType): Site

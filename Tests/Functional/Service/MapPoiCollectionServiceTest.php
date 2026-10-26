@@ -17,6 +17,7 @@ use JWeiland\Jobboard\Service\MapPoiCollectionServiceInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
@@ -56,6 +57,7 @@ final class MapPoiCollectionServiceTest extends FunctionalTestCase
             $jobSearchOptionsService,
             $this->get(ConnectionPool::class),
             $this->get(PersistenceManagerInterface::class),
+            $this->get(TcaSchemaFactory::class),
         );
 
         $poiCollectionUids = [];

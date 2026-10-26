@@ -397,6 +397,13 @@ Key points:
   of (or in addition to) `Services.yaml` entries. `Services.yaml` still explicitly marks the API model
   classes and excludes `Domain/Model/*`, `Database/Query/*` (restrictions and `JobLanguageConstraint`, created with `new`) and the maps2
   listener (registered by `Configuration/Services.php`). Flush caches after constructor changes (stale DI cache).
+- TCA access via `TcaSchemaFactory` (constructor DI, read lazily in methods): ctrl columns (language field,
+  translation parent, enable columns) come from schema capabilities (`TcaSchemaCapability::Language`,
+  `RestrictionStartTime`/`RestrictionEndTime`), never as literals; field config via `getField()->getConfiguration()`,
+  optional maps2 column via `hasField('tx_maps2_uid')`. Classes created with `new` get the schema from their creator
+  (`JobLanguageConstraint(LanguageAspect, TcaSchema)`, `getDefaultLanguageUid()` is an instance method). `JobRepository`
+  derives its unmapped `l10nParent` property from `transOrigPointerField`. Exceptions: `Configuration/TCA/Overrides/*`
+  (TCA is being built, no schema yet) and `l10n_state` / MM `sorting` (fixed column names in DataHandler, not ctrl).
 - Small reusable traits instead of a shared abstract base class: `ConnectionPoolTrait` (QueryBuilder with
   frontend restrictions applied), `DataHandlerTrait` (DataHandler instance), `ApiModelTrait` (interface
   boilerplate for API model classes).

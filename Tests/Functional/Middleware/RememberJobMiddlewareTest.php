@@ -27,6 +27,7 @@ use TYPO3\CMS\Core\Configuration\SiteWriter;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Http\ServerRequest;
+use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
@@ -135,7 +136,13 @@ final class RememberJobMiddlewareTest extends FunctionalTestCase
             }
         };
 
-        return [new RememberJobMiddleware($rememberedJobsService, new StoragePidResolver()), $rememberedJobsService];
+        $subject = new RememberJobMiddleware(
+            $rememberedJobsService,
+            new StoragePidResolver(),
+            $this->get(TcaSchemaFactory::class),
+        );
+
+        return [$subject, $rememberedJobsService];
     }
 
     /**

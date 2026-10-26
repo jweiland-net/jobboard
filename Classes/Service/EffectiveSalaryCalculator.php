@@ -17,6 +17,8 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction;
+use TYPO3\CMS\Core\Schema\Capability\TcaSchemaCapability;
+use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 
 /**
  * Calculates the effective salary with plain QueryBuilder queries (no
@@ -44,8 +46,17 @@ final readonly class EffectiveSalaryCalculator implements EffectiveSalaryCalcula
 
     private const SALARY_MODE_FREE_ENTRY = 1;
 
+    /**
+     * Aliases of the start and end time fields (TCA ctrl "enablecolumns") in
+     * the fetched rows of salary grades and steps
+     */
+    private const ALIAS_START_TIME = 'start_time';
+
+    private const ALIAS_END_TIME = 'end_time';
+
     public function __construct(
         private ConnectionPool $connectionPool,
+        private TcaSchemaFactory $tcaSchemaFactory,
     ) {}
 
     public function calculateForJobs(array $jobUids, int $now): array
@@ -129,11 +140,11 @@ final readonly class EffectiveSalaryCalculator implements EffectiveSalaryCalcula
     {
         $pointsInTime = [];
         foreach ($records as $record) {
-            if ((int)$record['starttime'] > $now) {
-                $pointsInTime[] = (int)$record['starttime'];
+            if ((int)$record[self::ALIAS_START_TIME] > $now) {
+                $pointsInTime[] = (int)$record[self::ALIAS_START_TIME];
             }
-            if ((int)$record['endtime'] > $now + self::LOOK_AHEAD) {
-                $pointsInTime[] = (int)$record['endtime'];
+            if ((int)$record[self::ALIAS_END_TIME] > $now + self::LOOK_AHEAD) {
+                $pointsInTime[] = (int)$record[self::ALIAS_END_TIME];
             }
         }
 
@@ -149,9 +160,9 @@ final readonly class EffectiveSalaryCalculator implements EffectiveSalaryCalcula
      */
     private function isVisible(array $record, int $now): bool
     {
-        $endtime = (int)$record['endtime'];
+        $endtime = (int)$record[self::ALIAS_END_TIME];
 
-        return (int)$record['starttime'] <= $now && ($endtime === 0 || $endtime > $now + self::LOOK_AHEAD);
+        return (int)$record[self::ALIAS_START_TIME] <= $now && ($endtime === 0 || $endtime > $now + self::LOOK_AHEAD);
     }
 
     /**
@@ -222,7 +233,7 @@ final readonly class EffectiveSalaryCalculator implements EffectiveSalaryCalcula
 
         $queryBuilder = $this->getQueryBuilder(self::TABLE_SALARY_GRADE, true);
         $result = $queryBuilder
-            ->select('uid', 'has_steps', 'flat_amount', 'starttime', 'endtime')
+            ->select('uid', 'has_steps', 'flat_amount', ...$this->getTimeRestrictionSelects(self::TABLE_SALARY_GRADE))
             ->from(self::TABLE_SALARY_GRADE)
             ->where($queryBuilder->expr()->in('uid', $this->createIntArrayParameter($queryBuilder, $salaryGradeUids)))
             ->executeQuery();
@@ -244,11 +255,14 @@ final readonly class EffectiveSalaryCalculator implements EffectiveSalaryCalcula
 
         $queryBuilder = $this->getQueryBuilder(self::TABLE_SALARY_STEP, true);
         $result = $queryBuilder
-            ->select('uid', 'salary_grade', 'amount', 'starttime', 'endtime')
+            ->select('uid', 'salary_grade', 'amount', ...$this->getTimeRestrictionSelects(self::TABLE_SALARY_STEP))
             ->from(self::TABLE_SALARY_STEP)
             ->where(
                 $queryBuilder->expr()->in('salary_grade', $this->createIntArrayParameter($queryBuilder, $salaryGradeUids)),
-                $queryBuilder->expr()->in('sys_language_uid', $this->createIntArrayParameter($queryBuilder, [0, -1])),
+                $queryBuilder->expr()->in(
+                    $this->getLanguageField(self::TABLE_SALARY_STEP),
+                    $this->createIntArrayParameter($queryBuilder, [0, -1]),
+                ),
             )
             ->executeQuery();
 
@@ -258,6 +272,33 @@ final readonly class EffectiveSalaryCalculator implements EffectiveSalaryCalcula
         }
 
         return $salaryStepsByGrade;
+    }
+
+    /**
+     * Start and end time fields of the table (TCA ctrl "enablecolumns"),
+     * selected with fixed aliases, so grades and steps share one row format
+     *
+     * @return string[]
+     */
+    private function getTimeRestrictionSelects(string $table): array
+    {
+        $schema = $this->tcaSchemaFactory->get($table);
+        $startTimeField = $schema->getCapability(TcaSchemaCapability::RestrictionStartTime)->getFieldName();
+        $endTimeField = $schema->getCapability(TcaSchemaCapability::RestrictionEndTime)->getFieldName();
+
+        return [
+            $startTimeField . ' AS ' . self::ALIAS_START_TIME,
+            $endTimeField . ' AS ' . self::ALIAS_END_TIME,
+        ];
+    }
+
+    private function getLanguageField(string $table): string
+    {
+        return $this->tcaSchemaFactory
+            ->get($table)
+            ->getCapability(TcaSchemaCapability::Language)
+            ->getLanguageField()
+            ->getName();
     }
 
     /**

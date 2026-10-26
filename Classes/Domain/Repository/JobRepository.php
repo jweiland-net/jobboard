@@ -17,6 +17,8 @@ use JWeiland\Jobboard\Domain\Model\JobRole;
 use JWeiland\Jobboard\Domain\Model\JobType;
 use JWeiland\Jobboard\Domain\Model\Search;
 use JWeiland\Jobboard\Domain\Model\ZipCity;
+use TYPO3\CMS\Core\Schema\Capability\TcaSchemaCapability;
+use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\DomainObject\AbstractDomainObject;
 use TYPO3\CMS\Extbase\Persistence\Generic\Qom\ConstraintInterface;
@@ -36,11 +38,7 @@ use TYPO3\CMS\Extbase\Persistence\Repository;
  */
 class JobRepository extends Repository
 {
-    /**
-     * Column "l10n_parent" (TCA transOrigPointerField), not mapped in the
-     * model: Extbase uses the column name of the property name.
-     */
-    private const TRANSLATION_PARENT_PROPERTY = 'l10nParent';
+    private const TABLE = 'tx_jobboard_domain_model_job';
 
     /**
      * Jobs with the closest application deadline first. Jobs without an
@@ -51,6 +49,12 @@ class JobRepository extends Repository
         'applicationDeadline' => QueryInterface::ORDER_ASCENDING,
         'uid' => QueryInterface::ORDER_ASCENDING,
     ];
+
+    public function __construct(
+        private readonly TcaSchemaFactory $tcaSchemaFactory,
+    ) {
+        parent::__construct();
+    }
 
     /**
      * @param array<string, mixed> $settings
@@ -142,8 +146,24 @@ class JobRepository extends Repository
 
         return $query->logicalOr(
             $query->in('uid', $jobUids),
-            $query->in(self::TRANSLATION_PARENT_PROPERTY, $jobUids),
+            $query->in($this->getTranslationParentProperty(), $jobUids),
         );
+    }
+
+    /**
+     * Property of the column TCA ctrl "transOrigPointerField" (usually
+     * "l10n_parent"), which is not mapped in the model: Extbase resolves the
+     * column name of an unmapped property by converting it to snake case.
+     */
+    private function getTranslationParentProperty(): string
+    {
+        $parentField = $this->tcaSchemaFactory
+            ->get(self::TABLE)
+            ->getCapability(TcaSchemaCapability::Language)
+            ->getTranslationOriginPointerField()
+            ->getName();
+
+        return GeneralUtility::underscoredToLowerCamelCase($parentField);
     }
 
     private function buildAndConstraintForRelations(Search $search, QueryInterface $query): array
