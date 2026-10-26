@@ -149,8 +149,9 @@ The page browser is added by the PSR-14 event listener
 :ref:`developer-extensibility`. It provides these variables:
 
 :html:`{jobs}`
-    The jobs of the current page only. The map above the list also shows
-    the jobs of the current page only.
+    The jobs of the current page only. The map above the list shows the
+    locations of all jobs of the list or search result, see
+    :ref:`templates-viewhelper`.
 
 :html:`{paginator}`
     :php:`TYPO3\CMS\Extbase\Pagination\QueryResultPaginator`, for
@@ -290,11 +291,22 @@ Some useful label keys:
 ViewHelper for the map
 ======================
 
+List and search result assign the variable :html:`{addressUids}`: the
+UIDs of the addresses of all jobs of the list or search result, each
+address once. The page browser does not reduce it, only the search form
+and the settings of the content element do. Without EXT:maps2, it is
+empty.
+
 :file:`Partials/SearchForm.html` uses the ViewHelper
-:php:`JWeiland\Jobboard\ViewHelpers\JobPoiCollectionViewHelper` to build the
-map markers of the listed jobs. It returns one marker per job location
-(address), even if several jobs share the same address. Jobs without an
-address or with an address without a map location are skipped.
+:php:`JWeiland\Jobboard\ViewHelpers\AddressPoiCollectionViewHelper` to build
+the map markers of these addresses. It returns one marker per job location,
+even if several addresses share the same map location. Hidden addresses and
+addresses without a map location are skipped. No job is loaded for the map.
+
+The ViewHelper
+:php:`JWeiland\Jobboard\ViewHelpers\JobPoiCollectionViewHelper` builds the
+markers of given job objects instead, for example of :html:`{jobs}`, the
+jobs of the current page.
 
 The ViewHelper returns the map locations of EXT:maps2 unchanged. The title
 of a marker is the title of the map location, which EXT:maps2 takes from
@@ -307,9 +319,9 @@ when a visitor clicks the marker, see :ref:`templates-info-window`.
     <html xmlns:jobboard="http://typo3.org/ns/JWeiland/Jobboard/ViewHelpers"
           data-namespace-typo3-fluid="true">
 
-    <f:variable name="poiCollections" value="{jobboard:jobPoiCollection(jobs: jobs)}"/>
+    <f:variable name="poiCollections" value="{jobboard:addressPoiCollection(addressUids: addressUids)}"/>
 
-Without EXT:maps2, the ViewHelper returns an empty list and no map is
+Without EXT:maps2, both ViewHelpers return an empty list and no map is
 rendered.
 
 ..  _templates-info-window:

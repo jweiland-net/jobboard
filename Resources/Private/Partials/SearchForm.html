@@ -15,8 +15,10 @@
         PoiCollection, no map and no message are rendered. With EXT:maps2,
         but without any address having a geo position, a message tells
         what is missing instead of silently hiding the map.
+        The map shows the locations of all jobs of the list or search result
+        ("addressUids"), not only of the jobs of the current page ("jobs").
     </f:comment>
-    <f:variable name="poiCollections" value="{jobboard:jobPoiCollection(jobs: jobs)}"/>
+    <f:variable name="poiCollections" value="{jobboard:addressPoiCollection(addressUids: addressUids)}"/>
     <f:if condition="{poiCollections}">
         <f:then>
             <div class="col-12 col-lg-8">

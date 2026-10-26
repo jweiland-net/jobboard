@@ -89,6 +89,14 @@ final readonly class JobSearchOptionsService implements JobSearchOptionsServiceI
     }
 
     /**
+     * @return int[]
+     */
+    public function getAddressUids(QueryInterface $query): array
+    {
+        return $this->getRelatedUids($query, 'address');
+    }
+
+    /**
      * A job can have several job areas, so the numbers may add up to more
      * than the total number of jobs.
      *

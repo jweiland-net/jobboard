@@ -25,6 +25,7 @@ use JWeiland\Jobboard\Service\RememberedJobsServiceInterface;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Error\Http\PageNotFoundException;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 
@@ -45,7 +46,7 @@ class JobboardController extends ActionController
     {
         $jobs = $this->jobRepository->findBySettings($this->settings, $this->getMaxEntries(), $this->isSalaryRequired());
 
-        $fluidVariables = ['jobs' => $jobs];
+        $fluidVariables = ['jobs' => $jobs, 'addressUids' => $this->getAddressUidsForMap($jobs)];
         ArrayUtility::mergeRecursiveWithOverrule($fluidVariables, $this->getSearchOptions($jobs));
         $this->assignPostProcessedFluidVariables($fluidVariables);
 
@@ -67,7 +68,7 @@ class JobboardController extends ActionController
             $this->isSalaryRequired(),
         );
 
-        $fluidVariables = ['jobs' => $jobs];
+        $fluidVariables = ['jobs' => $jobs, 'addressUids' => $this->getAddressUidsForMap($jobs)];
         ArrayUtility::mergeRecursiveWithOverrule($fluidVariables, $search->getSelectedValues());
         ArrayUtility::mergeRecursiveWithOverrule($fluidVariables, $this->getSearchOptions($jobs));
         $this->assignPostProcessedFluidVariables($fluidVariables);
@@ -147,6 +148,23 @@ class JobboardController extends ActionController
             JobAreaRestriction::fromSettings($this->settings),
             $this->isJobAreaCountEnabled(),
         );
+    }
+
+    /**
+     * Addresses of all matching jobs for the map in Partials/SearchForm.html,
+     * independent of the page browser, which paginates "jobs" only. Built
+     * from the job query in the database, no job is loaded. The map needs
+     * EXT:maps2, without it no query is needed.
+     *
+     * @return int[]
+     */
+    private function getAddressUidsForMap(QueryResultInterface $jobs): array
+    {
+        if (!ExtensionManagementUtility::isLoaded('maps2')) {
+            return [];
+        }
+
+        return $this->jobSearchOptionsService->getAddressUids($jobs->getQuery());
     }
 
     /**
