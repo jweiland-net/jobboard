@@ -11,10 +11,10 @@ declare(strict_types=1);
 
 namespace JWeiland\Jobboard\Service;
 
+use JWeiland\Jobboard\Database\Query\TcaControlFields;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\FrontendRestrictionContainer;
-use TYPO3\CMS\Core\Schema\Capability\TcaSchemaCapability;
 use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface;
@@ -84,7 +84,7 @@ final readonly class MapPoiCollectionService implements MapPoiCollectionServiceI
         foreach ($this->fetchAddresses($addressUids, $parentField) as $address) {
             if ((int)$address[self::FIELD_POI_COLLECTION] > 0) {
                 $poiCollectionUids[] = (int)$address[self::FIELD_POI_COLLECTION];
-            } elseif ((int)$address[$parentField] > 0) {
+            } elseif ($parentField !== null && (int)($address[$parentField] ?? 0) > 0) {
                 $defaultAddressUids[] = (int)$address[$parentField];
             }
         }
@@ -100,15 +100,13 @@ final readonly class MapPoiCollectionService implements MapPoiCollectionServiceI
     }
 
     /**
-     * TCA ctrl "transOrigPointerField" of tt_address (usually "l10n_parent")
+     * TCA ctrl "transOrigPointerField" of tt_address (usually "l10n_parent").
+     * Null, if tt_address is not language aware: no fallback to the default
+     * address then.
      */
-    private function getTranslationParentField(): string
+    private function getTranslationParentField(): ?string
     {
-        return $this->tcaSchemaFactory
-            ->get(self::TABLE_ADDRESS)
-            ->getCapability(TcaSchemaCapability::Language)
-            ->getTranslationOriginPointerField()
-            ->getName();
+        return TcaControlFields::fromSchema($this->tcaSchemaFactory->get(self::TABLE_ADDRESS))->translationParentField;
     }
 
     /**
@@ -117,7 +115,7 @@ final readonly class MapPoiCollectionService implements MapPoiCollectionServiceI
      * @param int[] $addressUids
      * @return array<int, array<string, mixed>>
      */
-    private function fetchAddresses(array $addressUids, string $parentField): array
+    private function fetchAddresses(array $addressUids, ?string $parentField): array
     {
         $addressUids = array_values(array_filter($addressUids, static fn(int $uid): bool => $uid > 0));
         if ($addressUids === []) {
@@ -128,7 +126,7 @@ final readonly class MapPoiCollectionService implements MapPoiCollectionServiceI
         $queryBuilder->setRestrictions(GeneralUtility::makeInstance(FrontendRestrictionContainer::class));
 
         return $queryBuilder
-            ->select($parentField, self::FIELD_POI_COLLECTION)
+            ->select(self::FIELD_POI_COLLECTION, ...array_filter([$parentField]))
             ->from(self::TABLE_ADDRESS)
             ->where($queryBuilder->expr()->in(
                 'uid',

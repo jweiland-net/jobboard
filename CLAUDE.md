@@ -400,10 +400,18 @@ Key points:
 - TCA access via `TcaSchemaFactory` (constructor DI, read lazily in methods): ctrl columns (language field,
   translation parent, enable columns) come from schema capabilities (`TcaSchemaCapability::Language`,
   `RestrictionStartTime`/`RestrictionEndTime`), never as literals; field config via `getField()->getConfiguration()`,
-  optional maps2 column via `hasField('tx_maps2_uid')`. Classes created with `new` get the schema from their creator
-  (`JobLanguageConstraint(LanguageAspect, TcaSchema)`, `getDefaultLanguageUid()` is an instance method). `JobRepository`
-  derives its unmapped `l10nParent` property from `transOrigPointerField`. Exceptions: `Configuration/TCA/Overrides/*`
-  (TCA is being built, no schema yet) and `l10n_state` / MM `sorting` (fixed column names in DataHandler, not ctrl).
+  optional maps2 column via `hasField('tx_maps2_uid')`. Capabilities are optional: never `getCapability()` without
+  `hasCapability()` - `Database/Query/TcaControlFields::fromSchema()` (pure value object) resolves them to `?string`
+  field names. A missing capability means *no condition*: no WHERE/MIN()/PHP check for it, no exception (no start
+  time = always started, no end time = never ends, no language capability = no language constraint, all rows count,
+  only `uid` identifies a record, like Extbase without `languageField`). Select only existing fields, use real field
+  names (no aliases). `JobPathSegmentUpdate` is "not necessary" without `path_segment` in TCA. Classes created with
+  `new` get the schema from their creator (`JobLanguageConstraint(LanguageAspect, TcaSchema)`,
+  `getDefaultLanguageUid()` is an instance method, `getTranslationParentField()` is nullable). `JobRepository` derives
+  its unmapped `l10nParent` property from `transOrigPointerField` (only `uid IN` without it). Functional tests remove
+  capabilities via `Tests/Functional/Traits/RemoveTcaCapabilityTrait` (`TcaSchemaFactory::rebuild()`, `restoreTca()` in
+  `tearDown()`). Exceptions: `Configuration/TCA/Overrides/*` (TCA is being built, no schema yet) and `l10n_state` /
+  MM `sorting` (fixed column names in DataHandler, not ctrl).
 - Small reusable traits instead of a shared abstract base class: `ConnectionPoolTrait` (QueryBuilder with
   frontend restrictions applied), `DataHandlerTrait` (DataHandler instance), `ApiModelTrait` (interface
   boilerplate for API model classes).

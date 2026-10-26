@@ -14,6 +14,7 @@ namespace JWeiland\Jobboard\Tests\Functional\Service;
 use JWeiland\Jobboard\Service\JobSearchOptionsServiceInterface;
 use JWeiland\Jobboard\Service\MapPoiCollectionService;
 use JWeiland\Jobboard\Service\MapPoiCollectionServiceInterface;
+use JWeiland\Jobboard\Tests\Functional\Traits\RemoveTcaCapabilityTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -31,6 +32,8 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
  */
 final class MapPoiCollectionServiceTest extends FunctionalTestCase
 {
+    use RemoveTcaCapabilityTrait;
+
     protected array $testExtensionsToLoad = [
         'bithost-gmbh/pdfviewhelpers',
         'friendsoftypo3/tt-address',
@@ -43,6 +46,13 @@ final class MapPoiCollectionServiceTest extends FunctionalTestCase
         parent::setUp();
 
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/AddressPoiCollection.csv');
+    }
+
+    protected function tearDown(): void
+    {
+        $this->restoreTca();
+
+        parent::tearDown();
     }
 
     /**
@@ -105,5 +115,18 @@ final class MapPoiCollectionServiceTest extends FunctionalTestCase
         array $expectedPoiCollectionUids,
     ): void {
         self::assertSame($expectedPoiCollectionUids, $this->getPoiCollectionUids($addressUids));
+    }
+
+    /**
+     * Without language capability of tt_address, there is no default address
+     * to fall back to: only the own relation counts
+     */
+    #[Test]
+    public function getPoiCollectionsWithoutLanguageCapabilityUsesOwnLocationOnly(): void
+    {
+        $this->removeLanguageCapability('tt_address');
+
+        self::assertSame([], $this->getPoiCollectionUids([6]));
+        self::assertSame([1, 2], $this->getPoiCollectionUids([1, 3, 6]));
     }
 }

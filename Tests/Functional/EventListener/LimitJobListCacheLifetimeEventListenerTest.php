@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace JWeiland\Jobboard\Tests\Functional\EventListener;
 
 use JWeiland\Jobboard\EventListener\LimitJobListCacheLifetimeEventListener;
+use JWeiland\Jobboard\Tests\Functional\Traits\RemoveTcaCapabilityTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Configuration\SiteWriter;
@@ -31,6 +32,8 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
  */
 final class LimitJobListCacheLifetimeEventListenerTest extends FunctionalTestCase
 {
+    use RemoveTcaCapabilityTrait;
+
     private const NOW = '2026-01-15 10:00:00';
 
     private const INITIAL_LIFETIME = 259200;
@@ -72,6 +75,13 @@ final class LimitJobListCacheLifetimeEventListenerTest extends FunctionalTestCas
             ],
         ]);
         $siteWriter->writeSettings('main', ['jobboard' => ['storagePid' => '2']]);
+    }
+
+    protected function tearDown(): void
+    {
+        $this->restoreTca();
+
+        parent::tearDown();
     }
 
     private function getTimestamp(string $dateTime): int
@@ -300,5 +310,49 @@ final class LimitJobListCacheLifetimeEventListenerTest extends FunctionalTestCas
 
         // Page 5: storage page 7 without sub folders
         self::assertSame(3 * 3600, $this->getCacheLifetime(5));
+    }
+
+    /**
+     * Without TCA ctrl "enablecolumns" starttime/endtime, these columns are
+     * no condition: they never change the list
+     */
+    #[Test]
+    public function startAndEndTimeAreIgnoredWithoutTimeRestrictions(): void
+    {
+        $this->removeTimeRestrictions(self::TABLE_JOB);
+        $this->insertJob([
+            'starttime' => $this->getTimestamp('2026-01-15 11:00:00'),
+            'endtime' => $this->getTimestamp('2026-01-15 12:00:00'),
+        ]);
+
+        self::assertSame(self::INITIAL_LIFETIME, $this->getCacheLifetime(1));
+    }
+
+    #[Test]
+    public function applicationDeadlineIsConsideredWithoutTimeRestrictions(): void
+    {
+        $this->removeTimeRestrictions(self::TABLE_JOB);
+        $this->insertJob([
+            'application_deadline' => $this->getTimestamp('2026-01-15 00:00:00'),
+            'starttime' => $this->getTimestamp('2026-01-15 11:00:00'),
+        ]);
+
+        self::assertSame(14 * 3600, $this->getCacheLifetime(1));
+    }
+
+    /**
+     * Without language capability, all jobs count
+     */
+    #[Test]
+    public function translatedJobIsConsideredWithoutLanguageCapability(): void
+    {
+        $this->removeLanguageCapability(self::TABLE_JOB);
+        $this->insertJob([
+            'sys_language_uid' => 1,
+            'l10n_parent' => 1,
+            'application_deadline' => $this->getTimestamp('2026-01-15 00:00:00'),
+        ]);
+
+        self::assertSame(14 * 3600, $this->getCacheLifetime(1));
     }
 }

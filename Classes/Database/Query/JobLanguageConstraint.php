@@ -18,7 +18,6 @@ use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\Query\Expression\CompositeExpression;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\FrontendRestrictionContainer;
-use TYPO3\CMS\Core\Schema\Capability\TcaSchemaCapability;
 use TYPO3\CMS\Core\Schema\TcaSchema;
 use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -41,24 +40,34 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  *
  * The table name, the language field and the translation parent field
  * (TCA ctrl "languageField" / "transOrigPointerField") are taken from the
- * TCA schema of the job table, which the creator passes in.
+ * TCA schema of the job table, which the creator passes in. Without the
+ * language capability, there is no language constraint at all (like
+ * Extbase without "languageField"): all rows are selected.
  */
 final readonly class JobLanguageConstraint
 {
     private string $table;
 
+    private TcaControlFields $controlFields;
+
+    /**
+     * Empty, if the table is not language aware (never used then)
+     */
     private string $languageField;
 
+    /**
+     * Empty, if the table is not language aware (never used then)
+     */
     private string $parentField;
 
     public function __construct(
         private LanguageAspect $languageAspect,
         TcaSchema $jobSchema,
     ) {
-        $languageCapability = $jobSchema->getCapability(TcaSchemaCapability::Language);
         $this->table = $jobSchema->getName();
-        $this->languageField = $languageCapability->getLanguageField()->getName();
-        $this->parentField = $languageCapability->getTranslationOriginPointerField()->getName();
+        $this->controlFields = TcaControlFields::fromSchema($jobSchema);
+        $this->languageField = $this->controlFields->languageField ?? '';
+        $this->parentField = $this->controlFields->translationParentField ?? '';
     }
 
     /**
@@ -79,10 +88,11 @@ final readonly class JobLanguageConstraint
     /**
      * Column of the default record of a translation (TCA ctrl
      * "transOrigPointerField"), needed in the rows of getDefaultLanguageUid().
+     * Null, if the table is not language aware.
      */
-    public function getTranslationParentField(): string
+    public function getTranslationParentField(): ?string
     {
-        return $this->parentField;
+        return $this->controlFields->translationParentField;
     }
 
     /**
@@ -94,21 +104,29 @@ final readonly class JobLanguageConstraint
      */
     public function getDefaultLanguageUid(array $row): int
     {
-        $parentUid = (int)($row[$this->parentField] ?? 0);
-
-        return $parentUid > 0 ? $parentUid : (int)($row['uid'] ?? 0);
+        return $this->controlFields->getDefaultLanguageUid($row);
     }
 
     /**
-     * For a query of the job table without table alias
+     * For a query of the job table without table alias. An empty string
+     * (ignored by QueryBuilder::where()), if the table is not language aware.
      */
     public function buildExpression(QueryBuilder $queryBuilder): string
     {
+        if (!$this->controlFields->isLanguageAware()) {
+            return '';
+        }
+
         $languageId = $this->languageAspect->getContentId();
         if ($languageId === 0 || !$this->languageAspect->doOverlays()) {
             return $this->buildLanguageIn($queryBuilder, [$languageId, -1]);
         }
 
+        return $this->buildOverlayExpression($queryBuilder, $languageId);
+    }
+
+    private function buildOverlayExpression(QueryBuilder $queryBuilder, int $languageId): string
+    {
         $expr = $queryBuilder->expr();
         $orConstraints = [
             $this->buildLanguageIn($queryBuilder, [-1]),
