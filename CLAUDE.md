@@ -212,6 +212,16 @@ Key points:
     `{job.hasSalaryInformation}`, so a job without salary renders no salary section and no JSON-LD `baseSalary`.
   - Functional tests that write `settings.yaml` must flush the `core` cache in `setUp()`: TYPO3 caches site
     settings by the hash of `config.yaml` only, otherwise settings leak between tests.
+- **Salary number format (site settings `jobboard.salary.numberFormat` = `automatic`|`english`|`german`|`custom`,
+  `jobboard.salary.decimals` 0-4, `jobboard.salary.thousandsSeparator` / `decimalSeparator` for `custom`)**:
+  display only - stored salaries, `EffectiveSalary` and JSON-LD (`f:format.json`, plain numbers) stay untouched.
+  `Domain/Model/SalaryNumberFormat` (`final readonly`, `fromSettings()` + `format()`) validates and resolves the
+  format; `automatic` takes the separators of the page language from the labels `salary.thousandsSeparator` /
+  `salary.decimalSeparator` of `locallang.xlf` (the News/`dateFormat` approach: format values are translations).
+  Invalid custom separators fall back to `automatic`, invalid language separators to English - never an exception
+  in the frontend. Templates format every salary amount with `jobboard:format.salary` (`ViewHelpers/Format/
+  SalaryViewHelper`, request from the rendering context, same locale as `f:translate`), never `f:format.currency`.
+  The backend record titles (`UserFunc/SalaryStepTitleFormatter`) keep the backend user's locale.
 - **Search options** (`jobAreas` incl. optional count `showJobAreaCount`, `jobRoles`, `jobTypes`,
   `jobLocations`) come from `JobSearchOptionsService` (`final readonly`, behind
   `JobSearchOptionsServiceInterface`): it converts the action's Extbase query with Extbase's (internal)

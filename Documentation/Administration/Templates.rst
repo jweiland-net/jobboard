@@ -260,6 +260,13 @@ Some useful label keys:
     Date format of the list, the cards, the detail view and the PDF
     version, for example :code:`Y-m-d` (English) or :code:`d.m.Y` (German).
 
+:code:`salary.thousandsSeparator`, :code:`salary.decimalSeparator`
+    Separators of salary amounts in the language, for example :code:`,`
+    and :code:`.` (English, 1,234.56) or :code:`.` and :code:`,` (German,
+    1.234,56). Used with the number format :yaml:`automatic`, see
+    :confval:`jobboard-salary-numberformat`. Add these labels to the
+    translation of further languages.
+
 :code:`job.applyOnline`
     Text of the "Apply online" link.
 
@@ -285,6 +292,33 @@ Some useful label keys:
     Messages of :file:`remember-jobs.js` if a job cannot be remembered or
     forgotten (:code:`rememberedJobs.error.unknownJob`,
     :code:`rememberedJobs.error.failed`).
+
+..  _templates-viewhelper-salary:
+
+ViewHelper for salary amounts
+=============================
+
+The detail view formats every salary amount (salary range and salary
+steps) with the ViewHelper
+:php:`JWeiland\Jobboard\ViewHelpers\Format\SalaryViewHelper`. It uses the
+number format of the site settings, see
+:confval:`jobboard-salary-numberformat`, and appends the currency sign
+with a space.
+
+..  code-block:: html
+    :caption: Format a salary amount in an own template
+
+    <html xmlns:jobboard="http://typo3.org/ns/JWeiland/Jobboard/ViewHelpers"
+          data-namespace-typo3-fluid="true">
+
+    <jobboard:format.salary currencySign="€">{job.salaryRangeMin}</jobboard:format.salary>
+    {job.salaryRangeMax -> jobboard:format.salary(currencySign: '€')}
+
+If you have overridden :file:`Templates/Jobboard/Detail.html`, replace
+:html:`<f:format.currency>` of the salary amounts with this ViewHelper.
+Otherwise, your template keeps the German format and ignores the site
+settings. The structured data (:ref:`templates-json-ld`) keeps the plain
+numbers.
 
 ..  _templates-map-markers:
 
