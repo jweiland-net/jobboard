@@ -1,4 +1,3 @@
 name: jweiland/jobboard
-
 dependencies:
   - jweiland/jobboard-pdf
