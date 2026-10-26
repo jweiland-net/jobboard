@@ -179,10 +179,19 @@ final class JobLanguageConstraintTest extends FunctionalTestCase
         self::assertSame($expectedUids, $this->selectWithConstraint($subject));
     }
 
+    /**
+     * The expected UIDs of the data provider are checked by
+     * buildExpressionSelectsExpectedJobs already.
+     *
+     * @param int[] $expectedUids
+     */
     #[Test]
     #[DataProvider('siteLanguageDataProvider')]
-    public function buildExpressionSelectsSameJobsAsExtbase(int $languageId, string $fallbackType): void
-    {
+    public function buildExpressionSelectsSameJobsAsExtbase(
+        int $languageId,
+        string $fallbackType,
+        array $expectedUids,
+    ): void {
         $languageAspect = LanguageAspectFactory::createFromSiteLanguage(
             $this->getSiteLanguage($languageId, $fallbackType),
         );
