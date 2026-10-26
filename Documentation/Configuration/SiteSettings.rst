@@ -137,3 +137,17 @@ them in the backend module :guilabel:`Site Management > Settings`
 
         Mapped to
         :typoscript:`plugin.tx_jobboard.settings.pageBrowser.itemsPerPage`.
+
+    ..  confval:: jobboard.pdf.logo
+        :name: jobboard-pdf-logo
+        :type: string
+        :default: :yaml:`''`
+
+        Image shown at the top right of every page of the PDF version of a
+        job, for example
+        :file:`EXT:my_sitepackage/Resources/Public/Images/logo.png` or
+        :file:`fileadmin/logo.png`. Leave it empty for a PDF without header,
+        see :ref:`pdf-export`. Defined by the site set
+        :yaml:`jweiland/jobboard-pdf`.
+
+        Mapped to :typoscript:`plugin.tx_jobboard.settings.pdfLogo`.

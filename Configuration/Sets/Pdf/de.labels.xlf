@@ -7,6 +7,18 @@
 				<source>Jobboard - PDF Generation</source>
 				<target>Jobboard - PDF-Erzeugung</target>
 			</trans-unit>
+			<trans-unit id="categories.jobboard.pdf">
+				<source>PDF</source>
+				<target>PDF</target>
+			</trans-unit>
+			<trans-unit id="settings.jobboard.pdf.logo">
+				<source>Logo in the PDF header</source>
+				<target>Logo im PDF-Kopf</target>
+			</trans-unit>
+			<trans-unit id="settings.description.jobboard.pdf.logo">
+				<source>Image shown at the top right of every page of the job PDF, e.g. EXT:my_sitepackage/Resources/Public/Images/logo.png or fileadmin/logo.png. Leave empty for no logo.</source>
+				<target>Bild oben rechts auf jeder Seite des Stellen-PDFs, z. B. EXT:my_sitepackage/Resources/Public/Images/logo.png oder fileadmin/logo.png. Leer lassen für kein Logo.</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

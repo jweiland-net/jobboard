@@ -1,0 +1,8 @@
+categories:
+  jobboard.pdf: {}
+
+settings:
+  jobboard.pdf.logo:
+    category: jobboard.pdf
+    type: string
+    default: ''

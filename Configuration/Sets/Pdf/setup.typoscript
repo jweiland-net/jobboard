@@ -20,6 +20,10 @@ plugin.tx_jobboard {
       100 = EXT:jobboard/Resources/Private/Pdf/
     }
   }
+
+  settings {
+    pdfLogo = {$jobboard.pdf.logo}
+  }
 }
 
 plugin.tx_pdfviewhelpers.settings {
