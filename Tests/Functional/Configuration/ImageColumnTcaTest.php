@@ -19,7 +19,7 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 /**
  * Test case.
  */
-final class JobTcaTest extends FunctionalTestCase
+final class ImageColumnTcaTest extends FunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
         'bithost-gmbh/pdfviewhelpers',
@@ -28,21 +28,22 @@ final class JobTcaTest extends FunctionalTestCase
     ];
 
     /**
-     * @return array<string, array{string}>
+     * @return array<string, array{string, string}>
      */
-    public static function logoColumnDataProvider(): array
+    public static function imageColumnDataProvider(): array
     {
         return [
-            'employer logo' => ['employer_logo'],
-            'header logo' => ['header_logo'],
+            'employer logo of job' => ['tx_jobboard_domain_model_job', 'employer_logo'],
+            'header logo of job' => ['tx_jobboard_domain_model_job', 'header_logo'],
+            'image of benefit' => ['tx_jobboard_domain_model_benefit', 'image'],
         ];
     }
 
     #[Test]
-    #[DataProvider('logoColumnDataProvider')]
-    public function logoColumnAllowsImageFilesOnly(string $column): void
+    #[DataProvider('imageColumnDataProvider')]
+    public function imageColumnAllowsImageFilesOnly(string $table, string $column): void
     {
-        $config = $GLOBALS['TCA']['tx_jobboard_domain_model_job']['columns'][$column]['config'];
+        $config = $GLOBALS['TCA'][$table]['columns'][$column]['config'];
         // "common-image-types" is resolved to $GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext']
         $allowed = array_diff(
             GeneralUtility::trimExplode(',', $config['allowed'], true),

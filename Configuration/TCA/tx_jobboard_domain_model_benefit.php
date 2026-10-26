@@ -94,7 +94,13 @@ return [
             'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_benefit.image',
             'config' => [
                 'type' => 'file',
+                'allowed' => 'common-image-types',
+                // An image only, "common-image-types" also contains documents
+                'disallowed' => 'pdf,ai',
                 'maxitems' => 1,
+                'appearance' => [
+                    'createNewRelationLinkTitle' => 'LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:images.addFileReference',
+                ],
             ],
         ],
     ],
