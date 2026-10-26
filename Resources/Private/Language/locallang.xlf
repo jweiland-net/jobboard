@@ -247,6 +247,12 @@
 			<trans-unit id="dateFormat">
 				<source>Y-m-d</source>
 			</trans-unit>
+			<trans-unit id="salary.thousandsSeparator" xml:space="preserve">
+				<source>,</source>
+			</trans-unit>
+			<trans-unit id="salary.decimalSeparator" xml:space="preserve">
+				<source>.</source>
+			</trans-unit>
 
 			<trans-unit id="applicationTo">
 				<source>Application to</source>
