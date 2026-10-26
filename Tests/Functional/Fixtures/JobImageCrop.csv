@@ -1,0 +1,25 @@
+"sys_file_storage"
+,"uid","pid","name","driver","configuration","is_browsable","is_public","is_writable","is_online","is_default"
+,1,0,"fileadmin","Local","<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes"" ?><T3FlexForms><data><sheet index=""sDEF""><language index=""lDEF""><field index=""basePath""><value index=""vDEF"">fileadmin/</value></field><field index=""pathType""><value index=""vDEF"">relative</value></field><field index=""caseSensitive""><value index=""vDEF"">1</value></field></language></sheet></data></T3FlexForms>",1,1,1,1,1
+
+"sys_file"
+,"uid","pid","storage","type","identifier","identifier_hash","folder_hash","extension","mime_type","name","size"
+,1,0,1,2,"/jobboard/image.png","0000000000000000000000000000000000000001","0000000000000000000000000000000000000002","png","image/png","image.png",1
+
+"sys_file_metadata"
+,"uid","pid","file","width","height"
+,1,0,1,400,200
+
+"sys_file_reference"
+,"uid","pid","uid_local","uid_foreign","tablenames","fieldname","sorting_foreign","crop"
+,1,2,1,1,"tx_jobboard_domain_model_job","employer_logo",1,"{""default"":{""cropArea"":{""x"":0,""y"":0,""width"":0.5,""height"":1},""selectedRatio"":""NaN"",""focusArea"":null}}"
+,2,2,1,1,"tx_jobboard_domain_model_job","header_logo",1,"{""default"":{""cropArea"":{""x"":0,""y"":0.5,""width"":1,""height"":0.5},""selectedRatio"":""NaN"",""focusArea"":null}}"
+,3,2,1,1,"tx_jobboard_domain_model_benefit","image",1,"{""default"":{""cropArea"":{""x"":0.25,""y"":0,""width"":0.25,""height"":0.5},""selectedRatio"":""NaN"",""focusArea"":null}}"
+
+"tx_jobboard_domain_model_benefit"
+,"uid","pid","title","image"
+,1,2,"Benefit with cropped image",1
+
+"tx_jobboard_job_benefit_mm"
+,"uid_local","uid_foreign","sorting","sorting_foreign"
+,1,1,1,0
