@@ -189,8 +189,7 @@ Keyword
 The list and the search result are sorted by application deadline, jobs
 without an application deadline first. Jobs with the same application
 deadline are sorted by their UID, so every job appears on exactly one page
-of the page browser. Remembered jobs keep their place in this order. The
-table layout can be sorted by the visitor afterwards.
+of the page browser. Remembered jobs keep their place in this order.
 
 The options of the select boxes in the search form (occupational fields
 with the number of jobs, positions, employment scopes and job locations)

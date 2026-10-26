@@ -2,12 +2,12 @@
       xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
       data-namespace-typo3-fluid="true">
 
-<div class="mb-3">
-    <label for="{name}" class="form-label">{f:translate(key: '{label}')}</label>
+<div class="jb:grid jb:gap-1.5">
+    <label for="{name}" class="jb:text-sm jb:font-medium jb:text-slate-700">{f:translate(key: '{label}')}</label>
     <f:form.textfield
         name="{name}"
         id="{name}"
-        class="form-control"
+        class="jb:block jb:min-h-11 jb:w-full jb:rounded-xl jb:border jb:border-slate-300 jb:bg-white jb:px-3 jb:text-sm jb:text-slate-900 jb:shadow-xs jb:transition jb:placeholder:text-slate-400 jb:hover:border-slate-400 jb:focus:border-brand-600 jb:focus:ring-3 jb:focus:ring-brand-100 jb:focus:outline-none"
         value="{value}"/>
 </div>
 </html>

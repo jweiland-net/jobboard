@@ -7,147 +7,220 @@
 <f:section name="main">
     <f:render partial="Job/JsonLd" arguments="{job: job}"/>
 
-    <div class="row g-4">
-        <div class="col-12 col-lg-9 order-lg-last">
-            <header class="mb-3">
-                <h1 class="text-break">{job.title}</h1>
+    <f:comment>Classes shared by all sections below</f:comment>
+    <f:variable name="ui" value="{
+        section: 'jb:mt-10 jb:scroll-mt-6',
+        h2: 'jb:mb-4 jb:border-b jb:border-slate-200 jb:pb-3 jb:text-xl jb:font-semibold jb:tracking-tight jb:text-slate-900',
+        h3: 'jb:mt-6 jb:mb-2 jb:text-base jb:font-semibold jb:text-slate-900',
+        dl: 'jb:grid jb:gap-x-6 jb:gap-y-3 jb:@lg:grid-cols-[12rem_minmax(0,1fr)]',
+        dt: 'jb:text-sm jb:font-medium jb:text-slate-500',
+        dd: 'jb:break-words jb:text-slate-900',
+        primaryButton: 'jb:inline-flex jb:min-h-11 jb:items-center jb:justify-center jb:gap-2 jb:rounded-xl jb:bg-brand-600 jb:px-5 jb:text-sm jb:font-semibold jb:text-white jb:no-underline jb:shadow-xs jb:transition jb:hover:bg-brand-700 jb:hover:text-white',
+        secondaryButton: 'jb:inline-flex jb:min-h-11 jb:items-center jb:justify-center jb:gap-2 jb:rounded-xl jb:border jb:border-slate-300 jb:bg-white jb:px-5 jb:text-sm jb:font-medium jb:text-slate-700 jb:no-underline jb:transition jb:hover:border-brand-500 jb:hover:text-brand-700',
+        fileLink: 'jb:flex jb:items-center jb:gap-3 jb:rounded-xl jb:border jb:border-slate-200 jb:bg-white jb:px-4 jb:py-3 jb:text-sm jb:font-medium jb:no-underline jb:transition jb:hover:border-brand-500 jb:hover:bg-brand-50'
+    }"/>
+    <f:variable name="dateFormat" value="{f:translate(key: 'dateFormat')}"/>
+    <f:variable name="canApply" value="{f:if(condition: '{settings.pidOfApplicationForm} > 0 && {job.email}', then: 1, else: 0)}"/>
+
+    <div class="jb:grid jb:gap-8 jb:@4xl:grid-cols-[minmax(0,1fr)_20rem] jb:@5xl:gap-12">
+        <div class="jb:min-w-0">
+            <header class="jb:border-b jb:border-slate-200 jb:pb-6">
+                <f:if condition="{job.jobAreas}">
+                    <div class="jb:mb-3 jb:flex jb:flex-wrap jb:gap-1.5">
+                        <f:render partial="Job/JobAreas" arguments="{job: job, separator: ''}"/>
+                    </div>
+                </f:if>
+                <h1 class="jb:text-3xl jb:leading-tight jb:font-bold jb:tracking-tight jb:text-balance jb:break-words jb:text-slate-900 jb:@2xl:text-4xl">{job.title}</h1>
                 <f:if condition="{job.subtitle}">
-                    <p class="lead text-break">{job.subtitle}</p>
+                    <p class="jb:mt-2 jb:text-lg jb:text-pretty jb:text-slate-600">{job.subtitle}</p>
                 </f:if>
+
+                <ul class="jb:m-0 jb:mt-4 jb:flex jb:list-none jb:flex-wrap jb:gap-x-6 jb:gap-y-2 jb:p-0 jb:text-sm jb:text-slate-600" role="list">
+                    <f:if condition="{job.address.city}">
+                        <li class="jb:flex jb:items-center jb:gap-1.5">
+                            <f:render partial="Icon" section="MapPin" arguments="{class: 'jb:size-4 jb:text-slate-400'}"/>
+                            <span><span class="jb:sr-only">{f:translate(key: 'job.address.city')}: </span>{job.address.zip} {job.address.city}</span>
+                        </li>
+                    </f:if>
+                    <f:if condition="{job.jobType.title}">
+                        <li class="jb:flex jb:items-center jb:gap-1.5">
+                            <f:render partial="Icon" section="Briefcase" arguments="{class: 'jb:size-4 jb:text-slate-400'}"/>
+                            <span><span class="jb:sr-only">{f:translate(key: 'job.job_type.title')}: </span>{job.jobType.title}</span>
+                        </li>
+                    </f:if>
+                    <f:if condition="{job.employer}">
+                        <li class="jb:flex jb:items-center jb:gap-1.5">
+                            <f:render partial="Icon" section="Building" arguments="{class: 'jb:size-4 jb:text-slate-400'}"/>
+                            <span><span class="jb:sr-only">{f:translate(key: 'job.employer')}: </span>{job.employer}</span>
+                        </li>
+                    </f:if>
+                </ul>
+
+                <div class="jb:mt-6 jb:flex jb:flex-wrap jb:gap-3">
+                    <f:if condition="{canApply}">
+                        <f:link.page pageUid="{settings.pidOfApplicationForm}" class="{ui.primaryButton}" additionalParams="{jobuid: job.uid}">{f:translate(key: 'job.applyOnline')}</f:link.page>
+                    </f:if>
+                    <f:if condition="{job.description}">
+                        <f:comment>
+                            Site setting jobboard.pdf.linkMode: "download" (default),
+                            "newTab" or "sameTab". The PDF template uses the same setting.
+                        </f:comment>
+                        <f:switch expression="{settings.pdfLinkMode}">
+                            <f:case value="newTab">
+                                <f:link.action action="detail" arguments="{job: job}" pageType="1575903427" class="{ui.secondaryButton}" target="_blank" additionalAttributes="{rel: 'noopener'}">
+                                    <f:render partial="Icon" section="Document" arguments="{class: 'jb:size-4'}"/>
+                                    <span>{f:translate(key: 'job.showPdfNewTab')}</span>
+                                </f:link.action>
+                            </f:case>
+                            <f:case value="sameTab">
+                                <f:link.action action="detail" arguments="{job: job}" pageType="1575903427" class="{ui.secondaryButton}">
+                                    <f:render partial="Icon" section="Document" arguments="{class: 'jb:size-4'}"/>
+                                    <span>{f:translate(key: 'job.showPdf')}</span>
+                                </f:link.action>
+                            </f:case>
+                            <f:defaultCase>
+                                <f:link.action action="detail" arguments="{job: job}" pageType="1575903427" class="{ui.secondaryButton}">
+                                    <f:render partial="Icon" section="Download" arguments="{class: 'jb:size-4'}"/>
+                                    <span>
+                                        <f:variable name="pdfAddition"><span class="jb:hidden jb:@lg:inline">{f:translate(key: 'job.downloadPdf.addition')}</span></f:variable>
+                                        <f:format.raw>{f:translate(key: 'job.downloadPdf', arguments: {0: pdfAddition})}</f:format.raw>
+                                    </span>
+                                </f:link.action>
+                            </f:defaultCase>
+                        </f:switch>
+                    </f:if>
+                </div>
             </header>
-            <f:format.html>{job.description}</f:format.html>
-            <div class="jobs-links d-flex flex-wrap gap-2 mt-3">
-                <f:if condition="{job.description}">
-                    <f:comment>
-                        Site setting jobboard.pdf.linkMode: "download" (default),
-                        "newTab" or "sameTab". The PDF template uses the same setting.
-                    </f:comment>
-                    <f:switch expression="{settings.pdfLinkMode}">
-                        <f:case value="newTab">
-                            <f:link.action action="detail" arguments="{job: job}" pageType="1575903427" class="btn btn-outline-secondary" target="_blank" additionalAttributes="{rel: 'noopener'}">{f:translate(key: 'job.showPdfNewTab')}</f:link.action>
-                        </f:case>
-                        <f:case value="sameTab">
-                            <f:link.action action="detail" arguments="{job: job}" pageType="1575903427" class="btn btn-outline-secondary">{f:translate(key: 'job.showPdf')}</f:link.action>
-                        </f:case>
-                        <f:defaultCase>
-                            <f:link.action action="detail" arguments="{job: job}" pageType="1575903427" class="btn btn-outline-secondary">
-                                <f:variable name="pdfAddition"><span class="d-none d-sm-inline">{f:translate(key: 'job.downloadPdf.addition')}</span></f:variable>
-                                <f:format.raw>{f:translate(key: 'job.downloadPdf', arguments: {0: pdfAddition})}</f:format.raw>
-                            </f:link.action>
-                        </f:defaultCase>
-                    </f:switch>
-                </f:if>
-                <f:if condition="{settings.pidOfApplicationForm} > 0 && {job.email}">
-                    <f:link.page pageUid="{settings.pidOfApplicationForm}" class="btn btn-primary" additionalParams="{jobuid: job.uid}">{f:translate(key: 'job.applyOnline')}</f:link.page>
-                </f:if>
+
+            <div class="jobboard-prose jb:mt-6 jb:text-base">
+                <f:format.html>{job.description}</f:format.html>
             </div>
 
-            <f:render section="renderDetails" arguments="{job: job}"/>
-            <f:render section="renderDescription" arguments="{job: job}"/>
-            <f:render section="renderImport" arguments="{job: job}"/>
-            <f:render section="renderAddress" arguments="{job: job}"/>
-            <f:render section="renderInformation" arguments="{job: job}"/>
-            <f:render section="renderSalary" arguments="{job: job}"/>
-            <f:render section="renderBenefits" arguments="{job: job}"/>
-            <f:render section="renderEmployer" arguments="{job: job}"/>
-            <f:render section="renderContactPerson" arguments="{job: job}"/>
-            <f:render section="renderApplicationInformation" arguments="{job: job}"/>
-            <f:render section="renderMedia" arguments="{job: job}"/>
-            <f:render section="renderRelatedJobs" arguments="{job: job, relatedJobs: relatedJobs}"/>
+            <f:render section="renderDescription" arguments="{job: job, ui: ui}"/>
+            <f:render section="renderSalary" arguments="{job: job, ui: ui}"/>
+            <f:render section="renderBenefits" arguments="{job: job, ui: ui}"/>
+            <f:render section="renderInformation" arguments="{job: job, ui: ui}"/>
+            <f:render section="renderApplicationInformation" arguments="{job: job, ui: ui, dateFormat: dateFormat}"/>
+            <f:render section="renderContactPerson" arguments="{job: job, ui: ui}"/>
+            <f:render section="renderAddress" arguments="{job: job, ui: ui}"/>
+            <f:render section="renderEmployer" arguments="{job: job, ui: ui}"/>
+            <f:render section="renderDetails" arguments="{job: job, ui: ui}"/>
+            <f:render section="renderImport" arguments="{job: job, ui: ui}"/>
+            <f:render section="renderMedia" arguments="{job: job, ui: ui, dateFormat: dateFormat}"/>
+            <f:render section="renderRelatedJobs" arguments="{job: job, relatedJobs: relatedJobs, ui: ui}"/>
         </div>
 
-        <aside class="col-12 col-lg-3">
-            <div class="card bg-body-tertiary">
-                <div class="card-body">
-                    <dl class="mb-0">
-                        <f:if condition="{job.applicationDeadline}">
-                            <dt>{f:translate(key: 'job.applicationDeadline')}</dt>
-                            <dd><f:format.date format="{f:translate(key: 'dateFormat')}">{job.applicationDeadline}</f:format.date></dd>
-                        </f:if>
-                        <f:if condition="{job.jobAreas}">
-                            <dt>{f:translate(key: 'job.job_areas.title')}</dt>
-                            <dd class="d-flex flex-wrap gap-1"><f:render partial="Job/JobAreas" arguments="{job: job, separator: ''}"/></dd>
-                        </f:if>
-                        <f:if condition="{job.jobType.title}">
-                            <dt>{f:translate(key: 'job.job_type.title')}</dt>
-                            <dd>{job.jobType.title}</dd>
-                        </f:if>
-                        <f:if condition="{job.hasSalaryInformation}">
-                            <dt>{f:translate(key: 'job.salary')}</dt>
-                            <dd>
-                                <f:if condition="{job.hasSalaryRange}">
-                                    <f:then>
-                                        <f:format.currency currencySign="€">{job.salaryRangeMin}</f:format.currency> - <f:format.currency currencySign="€">{job.salaryRangeMax}</f:format.currency>
-                                    </f:then>
-                                    <f:else>
-                                        <f:format.currency currencySign="€">{job.salaryRangeMin}</f:format.currency>
-                                    </f:else>
-                                </f:if>
+        <aside class="jb:min-w-0">
+            <div class="jb:rounded-2xl jb:border jb:border-slate-200 jb:bg-slate-50 jb:p-5 jb:@4xl:sticky jb:@4xl:top-6">
+                <dl class="jb:grid jb:gap-4">
+                    <f:if condition="{job.applicationDeadline}">
+                        <div class="jb:flex jb:gap-3">
+                            <f:render partial="Icon" section="Calendar" arguments="{class: 'jb:mt-0.5 jb:size-5 jb:text-brand-600'}"/>
+                            <div>
+                                <dt class="jb:text-xs jb:font-medium jb:tracking-wide jb:text-slate-500 jb:uppercase">{f:translate(key: 'job.applicationDeadline')}</dt>
+                                <dd class="jb:mt-0.5 jb:font-semibold jb:text-slate-900"><time datetime="{f:format.date(date: job.applicationDeadline, format: 'Y-m-d')}">{f:format.date(date: job.applicationDeadline, format: dateFormat)}</time></dd>
+                            </div>
+                        </div>
+                    </f:if>
+                    <f:if condition="{job.hasSalaryInformation}">
+                        <div class="jb:flex jb:gap-3">
+                            <f:render partial="Icon" section="Banknotes" arguments="{class: 'jb:mt-0.5 jb:size-5 jb:text-brand-600'}"/>
+                            <div>
+                                <dt class="jb:text-xs jb:font-medium jb:tracking-wide jb:text-slate-500 jb:uppercase">{f:translate(key: 'job.salary')}</dt>
+                                <dd class="jb:mt-0.5 jb:font-semibold jb:text-slate-900"><f:render section="renderSalaryRange" arguments="{job: job}"/></dd>
+                            </div>
+                        </div>
+                    </f:if>
+                    <f:if condition="{job.jobType.title}">
+                        <div class="jb:flex jb:gap-3">
+                            <f:render partial="Icon" section="Briefcase" arguments="{class: 'jb:mt-0.5 jb:size-5 jb:text-brand-600'}"/>
+                            <div>
+                                <dt class="jb:text-xs jb:font-medium jb:tracking-wide jb:text-slate-500 jb:uppercase">{f:translate(key: 'job.job_type.title')}</dt>
+                                <dd class="jb:mt-0.5 jb:text-slate-900">{job.jobType.title}</dd>
+                            </div>
+                        </div>
+                    </f:if>
+                    <div class="jb:flex jb:gap-3">
+                        <f:render partial="Icon" section="MapPin" arguments="{class: 'jb:mt-0.5 jb:size-5 jb:text-brand-600'}"/>
+                        <div class="jb:min-w-0">
+                            <dt class="jb:text-xs jb:font-medium jb:tracking-wide jb:text-slate-500 jb:uppercase">{f:translate(key: 'job.company')}</dt>
+                            <dd class="jb:mt-0.5 jb:text-slate-900">
+                                <f:if condition="{job.address.company}"><span class="jb:block jb:font-medium">{job.address.company}</span></f:if>
+                                <f:if condition="{job.address.address}"><span class="jb:block">{job.address.address}</span></f:if>
+                                <f:if condition="{job.address.city}"><span class="jb:block">{job.address.zip} {job.address.city}</span></f:if>
+                                <f:if condition="{job.address.email}"><f:link.email email="{job.address.email}" class="jb:block jb:break-all"/></f:if>
                             </dd>
-                        </f:if>
-
-                        <dt>{f:translate(key: 'job.company')}</dt>
-                        <f:if condition="{job.address.company}">
-                            <dd class="mb-0">{job.address.company}</dd>
-                        </f:if>
-                        <dd>
-                            <f:if condition="{job.address.address}">{job.address.address}<br/></f:if>
-                            <f:if condition="{job.address.city}">{job.address.zip} {job.address.city}</f:if>
-                            <f:if condition="{job.address.email}">
-                                <br/>
-                                <f:link.email email="{job.address.email}" class="text-break"/>
-                            </f:if>
-                        </dd>
-
-                        <dt>{f:translate(key: 'job.employer')}</dt>
-                        <f:if condition="{job.employer}">
-                            <dd class="mb-0">{job.employer}</dd>
-                        </f:if>
-                        <dd class="mb-0">
-                            <f:if condition="{job.employerAddress}">
-                                <f:if condition="{job.employerAddress.address}">{job.employerAddress.address}<br/></f:if>
-                                <f:if condition="{job.employerAddress.city}">{job.employerAddress.zip} {job.employerAddress.city}</f:if>
-                            </f:if>
-
-                            <f:if condition="{job.email}">
-                                <br/>
-                                <f:link.email email="{job.email}" class="text-break"/>
-                            </f:if>
-                        </dd>
-                    </dl>
-                </div>
+                        </div>
+                    </div>
+                    <div class="jb:flex jb:gap-3">
+                        <f:render partial="Icon" section="Building" arguments="{class: 'jb:mt-0.5 jb:size-5 jb:text-brand-600'}"/>
+                        <div class="jb:min-w-0">
+                            <dt class="jb:text-xs jb:font-medium jb:tracking-wide jb:text-slate-500 jb:uppercase">{f:translate(key: 'job.employer')}</dt>
+                            <dd class="jb:mt-0.5 jb:text-slate-900">
+                                <f:if condition="{job.employer}"><span class="jb:block jb:font-medium">{job.employer}</span></f:if>
+                                <f:if condition="{job.employerAddress}">
+                                    <f:if condition="{job.employerAddress.address}"><span class="jb:block">{job.employerAddress.address}</span></f:if>
+                                    <f:if condition="{job.employerAddress.city}"><span class="jb:block">{job.employerAddress.zip} {job.employerAddress.city}</span></f:if>
+                                </f:if>
+                                <f:if condition="{job.email}"><f:link.email email="{job.email}" class="jb:block jb:break-all"/></f:if>
+                            </dd>
+                        </div>
+                    </div>
+                </dl>
+                <f:if condition="{canApply}">
+                    <f:link.page pageUid="{settings.pidOfApplicationForm}" class="{ui.primaryButton} jb:mt-5 jb:w-full" additionalParams="{jobuid: job.uid}">{f:translate(key: 'job.applyOnline')}</f:link.page>
+                </f:if>
             </div>
         </aside>
     </div>
 </f:section>
 
+<f:section name="renderSalaryRange">
+    <f:if condition="{job.hasSalaryRange}">
+        <f:then>
+            <f:format.currency currencySign="€">{job.salaryRangeMin}</f:format.currency> – <f:format.currency currencySign="€">{job.salaryRangeMax}</f:format.currency>
+        </f:then>
+        <f:else>
+            <f:format.currency currencySign="€">{job.salaryRangeMin}</f:format.currency>
+        </f:else>
+    </f:if>
+</f:section>
+
 <!-- TCA palette "job_details": reference_number (title/subtitle are already shown above as heading) -->
 <f:section name="renderDetails">
-    <section class="mt-5">
-        <h2 class="h4 mb-3">{f:translate(key: 'job.groups.details')}</h2>
-        <dl class="row mb-0">
-            <dt class="col-sm-4">{f:translate(key: 'job.referenceNumber')}</dt>
-            <dd class="col-sm-8">{job.referenceNumber}</dd>
-        </dl>
-    </section>
+    <f:if condition="{job.referenceNumber}">
+        <section class="{ui.section}">
+            <h2 class="{ui.h2}">{f:translate(key: 'job.groups.details')}</h2>
+            <dl class="{ui.dl}">
+                <dt class="{ui.dt}">{f:translate(key: 'job.referenceNumber')}</dt>
+                <dd class="{ui.dd} jb:font-mono jb:text-sm">{job.referenceNumber}</dd>
+            </dl>
+        </section>
+    </f:if>
 </f:section>
 
 <!-- TCA palette "job_description": offer, requirements, further_information -->
 <f:section name="renderDescription">
     <f:if condition="{job.offer} || {job.requirements} || {job.furtherInformation}">
-        <section class="mt-5">
-            <h2 class="h4 mb-3">{f:translate(key: 'job.groups.description')}</h2>
-            <f:if condition="{job.offer}">
-                <h3 class="h5">{f:translate(key: 'job.offer')}</h3>
-                <f:format.html>{job.offer}</f:format.html>
-            </f:if>
-            <f:if condition="{job.requirements}">
-                <h3 class="h5">{f:translate(key: 'job.requirements')}</h3>
-                <f:format.html>{job.requirements}</f:format.html>
-            </f:if>
+        <section class="{ui.section}">
+            <h2 class="{ui.h2}">{f:translate(key: 'job.groups.description')}</h2>
+            <div class="jb:grid jb:gap-4 jb:@2xl:grid-cols-2">
+                <f:if condition="{job.offer}">
+                    <div class="jb:rounded-2xl jb:border jb:border-slate-200 jb:bg-white jb:p-5">
+                        <h3 class="jb:mb-3 jb:text-base jb:font-semibold jb:text-slate-900">{f:translate(key: 'job.offer')}</h3>
+                        <div class="jobboard-prose jb:text-sm"><f:format.html>{job.offer}</f:format.html></div>
+                    </div>
+                </f:if>
+                <f:if condition="{job.requirements}">
+                    <div class="jb:rounded-2xl jb:border jb:border-slate-200 jb:bg-white jb:p-5">
+                        <h3 class="jb:mb-3 jb:text-base jb:font-semibold jb:text-slate-900">{f:translate(key: 'job.requirements')}</h3>
+                        <div class="jobboard-prose jb:text-sm"><f:format.html>{job.requirements}</f:format.html></div>
+                    </div>
+                </f:if>
+            </div>
             <f:if condition="{job.furtherInformation}">
-                <h3 class="h5">{f:translate(key: 'job.furtherInformation')}</h3>
-                <f:format.html>{job.furtherInformation}</f:format.html>
+                <h3 class="{ui.h3}">{f:translate(key: 'job.furtherInformation')}</h3>
+                <div class="jobboard-prose"><f:format.html>{job.furtherInformation}</f:format.html></div>
             </f:if>
         </section>
     </f:if>
@@ -156,14 +229,14 @@
 <!-- TCA palette "import": is_import, vacancy_id -->
 <f:section name="renderImport">
     <f:if condition="{job.isImport}">
-        <section class="mt-5">
-            <h2 class="h4 mb-3">{f:translate(key: 'job.groups.import')}</h2>
-            <dl class="row mb-0">
-                <dt class="col-sm-4">{f:translate(key: 'job.isImport')}</dt>
-                <dd class="col-sm-8">{f:translate(key: 'job.boolean.yes')}</dd>
+        <section class="{ui.section}">
+            <h2 class="{ui.h2}">{f:translate(key: 'job.groups.import')}</h2>
+            <dl class="{ui.dl}">
+                <dt class="{ui.dt}">{f:translate(key: 'job.isImport')}</dt>
+                <dd class="{ui.dd}">{f:translate(key: 'job.boolean.yes')}</dd>
                 <f:if condition="{job.vacancyId}">
-                    <dt class="col-sm-4">{f:translate(key: 'job.vacancyId')}</dt>
-                    <dd class="col-sm-8">{job.vacancyId}</dd>
+                    <dt class="{ui.dt}">{f:translate(key: 'job.vacancyId')}</dt>
+                    <dd class="{ui.dd}">{job.vacancyId}</dd>
                 </f:if>
             </dl>
         </section>
@@ -172,48 +245,50 @@
 
 <!-- TCA palette "address" -->
 <f:section name="renderAddress">
-    <section class="mt-5">
-        <h2 class="h4 mb-3">{f:translate(key: 'job.company')}</h2>
-        <dl class="row mb-0">
-            <f:if condition="{job.address.company}">
-                <dt class="col-sm-4">{f:translate(key: 'job.company')}</dt>
-                <dd class="col-sm-8">{job.address.company}</dd>
-            </f:if>
-            <f:if condition="{job.address.address}">
-                <dt class="col-sm-4">{f:translate(key: 'job.address.city')}</dt>
-                <dd class="col-sm-8">
-                    {job.address.address}<br/>
-                    <f:if condition="{job.address.city}">{job.address.zip} {job.address.city}</f:if>
-                </dd>
-            </f:if>
-        </dl>
-    </section>
+    <f:if condition="{job.address.company} || {job.address.address}">
+        <section class="{ui.section}">
+            <h2 class="{ui.h2}">{f:translate(key: 'job.company')}</h2>
+            <dl class="{ui.dl}">
+                <f:if condition="{job.address.company}">
+                    <dt class="{ui.dt}">{f:translate(key: 'job.company')}</dt>
+                    <dd class="{ui.dd}">{job.address.company}</dd>
+                </f:if>
+                <f:if condition="{job.address.address}">
+                    <dt class="{ui.dt}">{f:translate(key: 'job.address.city')}</dt>
+                    <dd class="{ui.dd}">
+                        {job.address.address}<br/>
+                        <f:if condition="{job.address.city}">{job.address.zip} {job.address.city}</f:if>
+                    </dd>
+                </f:if>
+            </dl>
+        </section>
+    </f:if>
 </f:section>
 
 <!-- TCA palette "information": job_role, job_type, contract_type, job_areas, tender_type -->
 <f:section name="renderInformation">
-    <section class="mt-5">
-        <h2 class="h4 mb-3">{f:translate(key: 'job.groups.information')}</h2>
-        <dl class="row mb-0">
+    <section class="{ui.section}">
+        <h2 class="{ui.h2}">{f:translate(key: 'job.groups.information')}</h2>
+        <dl class="{ui.dl}">
             <f:if condition="{job.jobRole.title}">
-                <dt class="col-sm-4">{f:translate(key: 'job.jobRole.title')}</dt>
-                <dd class="col-sm-8">{job.jobRole.title}</dd>
+                <dt class="{ui.dt}">{f:translate(key: 'job.jobRole.title')}</dt>
+                <dd class="{ui.dd}">{job.jobRole.title}</dd>
             </f:if>
             <f:if condition="{job.jobType.title}">
-                <dt class="col-sm-4">{f:translate(key: 'job.job_type.title')}</dt>
-                <dd class="col-sm-8">{job.jobType.title}</dd>
+                <dt class="{ui.dt}">{f:translate(key: 'job.job_type.title')}</dt>
+                <dd class="{ui.dd}">{job.jobType.title}</dd>
             </f:if>
             <f:if condition="{job.contractType.title}">
-                <dt class="col-sm-4">{f:translate(key: 'job.contractType.title')}</dt>
-                <dd class="col-sm-8">{job.contractType.title}</dd>
+                <dt class="{ui.dt}">{f:translate(key: 'job.contractType.title')}</dt>
+                <dd class="{ui.dd}">{job.contractType.title}</dd>
             </f:if>
             <f:if condition="{job.jobAreas}">
-                <dt class="col-sm-4">{f:translate(key: 'job.job_areas.title')}</dt>
-                <dd class="col-sm-8 d-flex flex-wrap gap-1"><f:render partial="Job/JobAreas" arguments="{job: job, separator: ''}"/></dd>
+                <dt class="{ui.dt}">{f:translate(key: 'job.job_areas.title')}</dt>
+                <dd class="{ui.dd} jb:flex jb:flex-wrap jb:gap-1.5"><f:render partial="Job/JobAreas" arguments="{job: job, separator: ''}"/></dd>
             </f:if>
             <f:if condition="{job.tenderType.title}">
-                <dt class="col-sm-4">{f:translate(key: 'job.tenderType.title')}</dt>
-                <dd class="col-sm-8">{job.tenderType.title}</dd>
+                <dt class="{ui.dt}">{f:translate(key: 'job.tenderType.title')}</dt>
+                <dd class="{ui.dd}">{job.tenderType.title}</dd>
             </f:if>
         </dl>
     </section>
@@ -222,38 +297,29 @@
 <!-- TCA palette "salary_grade" / "salary_min_max" -->
 <f:section name="renderSalary">
     <f:if condition="{job.hasSalaryInformation}">
-        <section class="mt-5">
-            <h2 class="h4 mb-3">{f:translate(key: 'job.salary')}</h2>
-            <dl class="row mb-0">
-                <dt class="col-sm-4">{f:translate(key: 'job.salary')}</dt>
-                <dd class="col-sm-8">
-                    <f:if condition="{job.hasSalaryRange}">
-                        <f:then>
-                            <f:format.currency currencySign="€">{job.salaryRangeMin}</f:format.currency> - <f:format.currency currencySign="€">{job.salaryRangeMax}</f:format.currency>
-                        </f:then>
-                        <f:else>
-                            <f:format.currency currencySign="€">{job.salaryRangeMin}</f:format.currency>
-                        </f:else>
-                    </f:if>
-                </dd>
-                <f:for each="{job.salaryGrades}" as="salaryGrade">
-                    <dt class="col-sm-4">{f:translate(key: 'job.salaryGrade.title')}</dt>
-                    <dd class="col-sm-8">
-                        {salaryGrade.title}
-                        <f:if condition="{salaryGrade.salaryTable.title}"> ({salaryGrade.salaryTable.title})</f:if>
-                    </dd>
-                    <f:if condition="{salaryGrade.hasSteps}">
-                        <dt class="col-sm-4">{f:translate(key: 'job.salarySteps')}</dt>
-                        <dd class="col-sm-8">
-                            <ul class="list-unstyled mb-0">
-                                <f:for each="{salaryGrade.salarySteps}" as="salaryStep">
-                                    <li>{salaryStep.stepLabel}: <f:format.currency currencySign="€">{salaryStep.amount}</f:format.currency></li>
-                                </f:for>
-                            </ul>
-                        </dd>
-                    </f:if>
-                </f:for>
-            </dl>
+        <section class="{ui.section}">
+            <h2 class="{ui.h2}">{f:translate(key: 'job.salary')}</h2>
+            <p class="jb:flex jb:items-center jb:gap-3 jb:rounded-2xl jb:bg-brand-50 jb:px-5 jb:py-4 jb:text-lg jb:font-semibold jb:text-brand-900 jb:ring-1 jb:ring-brand-200 jb:ring-inset">
+                <f:render partial="Icon" section="Banknotes" arguments="{class: 'jb:size-6 jb:text-brand-600'}"/>
+                <span><span class="jb:sr-only">{f:translate(key: 'job.salary')}: </span><f:render section="renderSalaryRange" arguments="{job: job}"/></span>
+            </p>
+            <f:for each="{job.salaryGrades}" as="salaryGrade">
+                <h3 class="{ui.h3}">
+                    <span class="jb:text-slate-500">{f:translate(key: 'job.salaryGrade.title')}:</span>
+                    {salaryGrade.title}<f:if condition="{salaryGrade.salaryTable.title}"> <span class="jb:font-normal jb:text-slate-500">({salaryGrade.salaryTable.title})</span></f:if>
+                </h3>
+                <f:if condition="{salaryGrade.hasSteps}">
+                    <p class="jb:sr-only">{f:translate(key: 'job.salarySteps')}</p>
+                    <ul class="jb:m-0 jb:grid jb:list-none jb:grid-cols-2 jb:gap-2 jb:p-0 jb:@lg:grid-cols-3 jb:@4xl:grid-cols-6" role="list">
+                        <f:for each="{salaryGrade.salarySteps}" as="salaryStep">
+                            <li class="jb:m-0 jb:rounded-xl jb:border jb:border-slate-200 jb:bg-white jb:px-3 jb:py-2">
+                                <span class="jb:block jb:text-xs jb:text-slate-500">{salaryStep.stepLabel}</span>
+                                <span class="jb:block jb:text-sm jb:font-semibold jb:text-slate-900 jb:tabular-nums"><f:format.currency currencySign="€">{salaryStep.amount}</f:format.currency></span>
+                            </li>
+                        </f:for>
+                    </ul>
+                </f:if>
+            </f:for>
         </section>
     </f:if>
 </f:section>
@@ -261,27 +327,26 @@
 <!-- TCA palette "benefit" -->
 <f:section name="renderBenefits">
     <f:if condition="{job.benefits}">
-        <section class="mt-5">
-            <h2 class="h4 mb-3">{f:translate(key: 'job.benefits.title')}</h2>
+        <section class="{ui.section}">
+            <h2 class="{ui.h2}">{f:translate(key: 'job.benefits.title')}</h2>
             <f:comment>
-                The editor chosen benefit color can not be expressed by a CSS
-                class, so it is passed to the card border via CSS variable.
+                The editor chosen benefit color can not be expressed by a class,
+                so it colors the bar on top of the card via inline style.
             </f:comment>
-            <ul class="row row-cols-1 row-cols-sm-2 row-cols-xl-3 g-3 list-unstyled">
+            <ul class="jb:m-0 jb:grid jb:list-none jb:gap-4 jb:p-0 jb:@lg:grid-cols-2 jb:@4xl:grid-cols-3" role="list">
                 <f:for each="{job.benefits}" as="benefit">
-                    <li class="col">
-                        <div class="card h-100 border-3" style="--bs-card-border-color: {f:if(condition: benefit.color, then: benefit.color, else: 'var(--bs-border-color-translucent)')};">
-                            <div class="card-body">
-                                <strong class="card-title d-block">{benefit.title}</strong>
-                                <f:if condition="{benefit.description}">
-                                    <p class="card-text mt-2">{benefit.description}</p>
-                                </f:if>
-                                <f:if condition="{benefit.image}">
-                                    <f:for each="{benefit.image}" as="benefitImage">
-                                        <f:image image="{benefitImage}" alt="{benefit.title}" class="img-fluid mt-2"/>
-                                    </f:for>
-                                </f:if>
-                            </div>
+                    <li class="jb:m-0 jb:flex jb:flex-col jb:overflow-hidden jb:rounded-2xl jb:border jb:border-slate-200 jb:bg-white">
+                        <span class="jb:block jb:h-1.5" style="background-color: {f:if(condition: benefit.color, then: benefit.color, else: 'var(--jb-color-brand-200)')};" aria-hidden="true"></span>
+                        <div class="jb:p-4">
+                            <strong class="jb:block jb:font-semibold jb:text-slate-900">{benefit.title}</strong>
+                            <f:if condition="{benefit.description}">
+                                <p class="jb:mt-1.5 jb:text-sm jb:text-slate-600">{benefit.description}</p>
+                            </f:if>
+                            <f:if condition="{benefit.image}">
+                                <f:for each="{benefit.image}" as="benefitImage">
+                                    <f:image image="{benefitImage}" alt="{benefit.title}" class="jb:mt-3 jb:rounded-lg"/>
+                                </f:for>
+                            </f:if>
                         </div>
                     </li>
                 </f:for>
@@ -292,77 +357,90 @@
 
 <!-- TCA div "employer": employer, employer_logo, employer_address -->
 <f:section name="renderEmployer">
-    <section class="mt-5">
-        <h2 class="h4 mb-3">{f:translate(key: 'job.employer')}</h2>
-        <dl class="row mb-0">
-            <dt class="col-sm-4">{f:translate(key: 'job.employer')}</dt>
-            <dd class="col-sm-8">{job.employer}</dd>
-            <f:if condition="{job.employerAddress}">
-                <dt class="col-sm-4">{f:translate(key: 'job.address.city')}</dt>
-                <dd class="col-sm-8">
-                    <f:if condition="{job.employerAddress.address}">{job.employerAddress.address}<br/></f:if>
-                    <f:if condition="{job.employerAddress.city}">{job.employerAddress.zip} {job.employerAddress.city}</f:if>
-                </dd>
+    <section class="{ui.section}">
+        <h2 class="{ui.h2}">{f:translate(key: 'job.employer')}</h2>
+        <div class="jb:flex jb:flex-col jb:gap-6 jb:@lg:flex-row jb:@lg:items-start">
+            <dl class="{ui.dl} jb:flex-1">
+                <dt class="{ui.dt}">{f:translate(key: 'job.employer')}</dt>
+                <dd class="{ui.dd}">{job.employer}</dd>
+                <f:if condition="{job.employerAddress}">
+                    <dt class="{ui.dt}">{f:translate(key: 'job.address.city')}</dt>
+                    <dd class="{ui.dd}">
+                        <f:if condition="{job.employerAddress.address}">{job.employerAddress.address}<br/></f:if>
+                        <f:if condition="{job.employerAddress.city}">{job.employerAddress.zip} {job.employerAddress.city}</f:if>
+                    </dd>
+                </f:if>
+            </dl>
+            <f:if condition="{job.employerLogo}">
+                <div class="job-logos jb:flex jb:flex-wrap jb:items-center jb:gap-4">
+                    <f:for each="{job.employerLogo}" as="employerLogo">
+                        <f:image image="{employerLogo}" alt="{job.employer}" maxWidth="240" class="jb:max-h-20 jb:w-auto jb:rounded-lg jb:bg-white jb:p-2 jb:ring-1 jb:ring-slate-200"/>
+                    </f:for>
+                </div>
             </f:if>
-        </dl>
-        <f:if condition="{job.employerLogo}">
-            <div class="job-logos d-flex flex-wrap align-items-center gap-3 mt-3">
-                <f:for each="{job.employerLogo}" as="employerLogo">
-                    <f:image image="{employerLogo}" alt="{job.employer}" class="img-fluid"/>
-                </f:for>
-            </div>
-        </f:if>
+        </div>
     </section>
 </f:section>
 
 <!-- TCA palette "contact_person" -->
 <f:section name="renderContactPerson">
     <f:if condition="{job.firstName} || {job.lastName} || {job.email} || {job.telephone} || {job.function}">
-        <section class="mt-5">
-            <h2 class="h4 mb-3">{f:translate(key: 'job.groups.contactPerson')}</h2>
-            <dl class="row mb-0">
+        <section class="{ui.section}">
+            <h2 class="{ui.h2}">{f:translate(key: 'job.groups.contactPerson')}</h2>
+            <div class="jb:flex jb:flex-col jb:gap-4 jb:rounded-2xl jb:border jb:border-slate-200 jb:bg-white jb:p-5 jb:@lg:flex-row jb:@lg:items-center">
                 <f:if condition="{job.firstName} || {job.lastName}">
-                    <dt class="col-sm-4">{f:translate(key: 'job.firstName')} / {f:translate(key: 'job.lastName')}</dt>
-                    <dd class="col-sm-8">{job.firstName} {job.lastName}</dd>
+                    <span class="jb:flex jb:size-14 jb:shrink-0 jb:items-center jb:justify-center jb:rounded-full jb:bg-brand-100 jb:text-lg jb:font-semibold jb:text-brand-800" aria-hidden="true">{job.firstName -> f:format.case(mode: 'upper') -> f:format.crop(maxCharacters: 1, append: '', respectWordBoundaries: false)}{job.lastName -> f:format.case(mode: 'upper') -> f:format.crop(maxCharacters: 1, append: '', respectWordBoundaries: false)}</span>
                 </f:if>
-                <f:if condition="{job.function}">
-                    <dt class="col-sm-4">{f:translate(key: 'job.function')}</dt>
-                    <dd class="col-sm-8">{job.function}</dd>
-                </f:if>
-                <f:if condition="{job.email}">
-                    <dt class="col-sm-4">{f:translate(key: 'job.email')}</dt>
-                    <dd class="col-sm-8"><f:link.email email="{job.email}"/></dd>
-                </f:if>
-                <f:if condition="{job.telephone}">
-                    <dt class="col-sm-4">{f:translate(key: 'job.telephone')}</dt>
-                    <dd class="col-sm-8">{job.telephone}</dd>
-                </f:if>
-            </dl>
+                <dl class="jb:grid jb:gap-1">
+                    <f:if condition="{job.firstName} || {job.lastName}">
+                        <dt class="jb:sr-only">{f:translate(key: 'job.firstName')} / {f:translate(key: 'job.lastName')}</dt>
+                        <dd class="jb:font-semibold jb:text-slate-900">{job.firstName} {job.lastName}</dd>
+                    </f:if>
+                    <f:if condition="{job.function}">
+                        <dt class="jb:sr-only">{f:translate(key: 'job.function')}</dt>
+                        <dd class="jb:text-sm jb:text-slate-600">{job.function}</dd>
+                    </f:if>
+                    <f:if condition="{job.email}">
+                        <dt class="jb:sr-only">{f:translate(key: 'job.email')}</dt>
+                        <dd class="jb:mt-1 jb:flex jb:items-center jb:gap-2 jb:text-sm">
+                            <f:render partial="Icon" section="Envelope" arguments="{class: 'jb:size-4 jb:text-slate-400'}"/>
+                            <f:link.email email="{job.email}" class="jb:break-all"/>
+                        </dd>
+                    </f:if>
+                    <f:if condition="{job.telephone}">
+                        <dt class="jb:sr-only">{f:translate(key: 'job.telephone')}</dt>
+                        <dd class="jb:flex jb:items-center jb:gap-2 jb:text-sm jb:text-slate-700">
+                            <f:render partial="Icon" section="Phone" arguments="{class: 'jb:size-4 jb:text-slate-400'}"/>
+                            {job.telephone}
+                        </dd>
+                    </f:if>
+                </dl>
+            </div>
         </section>
     </f:if>
 </f:section>
 
 <!-- TCA palette "startEndDate" plus application_deadline, application_guidelines -->
 <f:section name="renderApplicationInformation">
-    <section class="mt-5">
-        <h2 class="h4 mb-3">{f:translate(key: 'job.groups.applicationInformation')}</h2>
-        <dl class="row mb-0">
+    <section class="{ui.section}">
+        <h2 class="{ui.h2}">{f:translate(key: 'job.groups.applicationInformation')}</h2>
+        <dl class="{ui.dl}">
             <f:if condition="{job.startDate}">
-                <dt class="col-sm-4">{f:translate(key: 'job.startEndDate.startDate')}</dt>
-                <dd class="col-sm-8"><f:format.date format="{f:translate(key: 'dateFormat')}">{job.startDate}</f:format.date></dd>
+                <dt class="{ui.dt}">{f:translate(key: 'job.startEndDate.startDate')}</dt>
+                <dd class="{ui.dd}"><f:format.date format="{dateFormat}">{job.startDate}</f:format.date></dd>
             </f:if>
             <f:if condition="{job.endingDate}">
-                <dt class="col-sm-4">{f:translate(key: 'job.startEndDate.endDate')}</dt>
-                <dd class="col-sm-8"><f:format.date format="{f:translate(key: 'dateFormat')}">{job.endingDate}</f:format.date></dd>
+                <dt class="{ui.dt}">{f:translate(key: 'job.startEndDate.endDate')}</dt>
+                <dd class="{ui.dd}"><f:format.date format="{dateFormat}">{job.endingDate}</f:format.date></dd>
             </f:if>
             <f:if condition="{job.applicationDeadline}">
-                <dt class="col-sm-4">{f:translate(key: 'job.applicationDeadline')}</dt>
-                <dd class="col-sm-8"><f:format.date format="{f:translate(key: 'dateFormat')}">{job.applicationDeadline}</f:format.date></dd>
+                <dt class="{ui.dt}">{f:translate(key: 'job.applicationDeadline')}</dt>
+                <dd class="{ui.dd} jb:font-semibold"><f:format.date format="{dateFormat}">{job.applicationDeadline}</f:format.date></dd>
             </f:if>
         </dl>
         <f:if condition="{job.applicationGuidelines}">
-            <h3 class="h5 mt-3">{f:translate(key: 'job.applicationGuidelines')}</h3>
-            <f:format.html>{job.applicationGuidelines}</f:format.html>
+            <h3 class="{ui.h3}">{f:translate(key: 'job.applicationGuidelines')}</h3>
+            <div class="jobboard-prose"><f:format.html>{job.applicationGuidelines}</f:format.html></div>
         </f:if>
     </section>
 </f:section>
@@ -370,36 +448,36 @@
 <!-- TCA div "media": header_logo, tender_file, pdf_files, pdf_tstamp -->
 <f:section name="renderMedia">
     <f:if condition="{job.headerLogo} || {job.tenderFile} || {job.pdfFiles}">
-        <section class="mt-5">
-            <h2 class="h4 mb-3">{f:translate(key: 'job.groups.media')}</h2>
+        <section class="{ui.section}">
+            <h2 class="{ui.h2}">{f:translate(key: 'job.groups.media')}</h2>
             <f:if condition="{job.headerLogo}">
-                <h3 class="h5">{f:translate(key: 'job.headerLogo')}</h3>
-                <div class="job-logos d-flex flex-wrap align-items-center gap-3 mb-3">
+                <h3 class="{ui.h3}">{f:translate(key: 'job.headerLogo')}</h3>
+                <div class="job-logos jb:flex jb:flex-wrap jb:items-center jb:gap-4">
                     <f:for each="{job.headerLogo}" as="headerLogo">
-                        <f:image image="{headerLogo}" alt="{job.title}" class="img-fluid"/>
+                        <f:image image="{headerLogo}" alt="{job.title}" class="jb:rounded-xl"/>
                     </f:for>
                 </div>
             </f:if>
-            <f:if condition="{job.tenderFile}">
-                <h3 class="h5">{f:translate(key: 'job.tenderFile')}</h3>
-                <ul class="list-group mb-3">
-                    <f:for each="{job.tenderFile}" as="tenderFile">
-                        <li class="list-group-item"><a class="text-break" href="{tenderFile.originalResource.publicUrl}">{tenderFile.originalResource.name}</a></li>
-                    </f:for>
-                </ul>
-            </f:if>
-            <f:if condition="{job.pdfFiles}">
-                <h3 class="h5">{f:translate(key: 'job.pdfFiles')}</h3>
-                <ul class="list-group mb-3">
-                    <f:for each="{job.pdfFiles}" as="pdfFile">
-                        <li class="list-group-item"><a class="text-break" href="{pdfFile.originalResource.publicUrl}">{pdfFile.originalResource.name}</a></li>
-                    </f:for>
-                </ul>
-            </f:if>
+            <f:for each="{tenderFile: job.tenderFile, pdfFiles: job.pdfFiles}" as="files" key="filesKey">
+                <f:if condition="{files}">
+                    <h3 class="{ui.h3}">{f:translate(key: 'job.{filesKey}')}</h3>
+                    <ul class="jb:m-0 jb:grid jb:list-none jb:gap-2 jb:p-0" role="list">
+                        <f:for each="{files}" as="file">
+                            <li class="jb:m-0">
+                                <a class="{ui.fileLink}" href="{file.originalResource.publicUrl}">
+                                    <f:render partial="Icon" section="Document" arguments="{class: 'jb:size-5 jb:text-brand-600'}"/>
+                                    <span class="jb:min-w-0 jb:flex-1 jb:break-all">{file.originalResource.name}</span>
+                                    <f:render partial="Icon" section="Download" arguments="{class: 'jb:size-4 jb:text-slate-400'}"/>
+                                </a>
+                            </li>
+                        </f:for>
+                    </ul>
+                </f:if>
+            </f:for>
             <f:if condition="{job.pdfTstamp}">
-                <dl class="row mb-0">
-                    <dt class="col-sm-4">{f:translate(key: 'job.pdfTstamp')}</dt>
-                    <dd class="col-sm-8"><f:format.date format="{f:translate(key: 'dateFormat')}">@{job.pdfTstamp}</f:format.date></dd>
+                <dl class="{ui.dl} jb:mt-4">
+                    <dt class="{ui.dt}">{f:translate(key: 'job.pdfTstamp')}</dt>
+                    <dd class="{ui.dd}"><f:format.date format="{dateFormat}">@{job.pdfTstamp}</f:format.date></dd>
                 </dl>
             </f:if>
         </section>
@@ -410,11 +488,16 @@
      are hidden by the site setting "jobboard.salary.required" -->
 <f:section name="renderRelatedJobs">
     <f:if condition="{relatedJobs}">
-        <section class="mt-5">
-            <h2 class="h4 mb-3">{f:translate(key: 'job.relatedJobs')}</h2>
-            <ul class="list-group">
+        <section class="{ui.section}">
+            <h2 class="{ui.h2}">{f:translate(key: 'job.relatedJobs')}</h2>
+            <ul class="jb:m-0 jb:grid jb:list-none jb:gap-2 jb:p-0" role="list">
                 <f:for each="{relatedJobs}" as="relatedJob">
-                    <li class="list-group-item"><f:link.action action="detail" arguments="{job: relatedJob}">{relatedJob.title}</f:link.action></li>
+                    <li class="jb:m-0">
+                        <f:link.action action="detail" arguments="{job: relatedJob}" class="{ui.fileLink}">
+                            <span class="jb:min-w-0 jb:flex-1">{relatedJob.title}</span>
+                            <f:render partial="Icon" section="ChevronRight" arguments="{class: 'jb:size-4 jb:text-slate-400'}"/>
+                        </f:link.action>
+                    </li>
                 </f:for>
             </ul>
         </section>

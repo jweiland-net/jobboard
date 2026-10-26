@@ -2,16 +2,19 @@
       xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
       data-namespace-typo3-fluid="true">
 
-<div class="search-jobboard card">
-    <fieldset class="card-body">
-        <legend class="h5 mb-3">{f:translate(key: 'search.label')}</legend>
+<div class="search-jobboard jb:rounded-2xl jb:border jb:border-slate-200 jb:bg-white jb:p-5 jb:shadow-xs">
+    <fieldset>
+        <legend class="jb:mb-4 jb:flex jb:items-center jb:gap-2 jb:text-lg jb:font-semibold jb:text-slate-900">
+            <f:render partial="Icon" section="Search" arguments="{class: 'jb:size-5 jb:text-brand-600'}"/>
+            {f:translate(key: 'search.label')}
+        </legend>
         <f:comment>
             data-jobboard-address-search-url: endpoint for the zip/city
             suggestions of address-suggestions.js (answered by
             AddressSearchMiddleware). Rendered as URL of the current page,
             so it always resolves to this site and language.
         </f:comment>
-        <f:form action="search" data="{jobboard-address-search-url: '{f:uri.page()}'}">
+        <f:form action="search" data="{jobboard-address-search-url: '{f:uri.page()}'}" class="jb:grid jb:gap-4">
             <f:render partial="Types/Select" arguments="{label: 'search.job_area', options: jobAreas, name: 'jobArea', value: selected_job_area}"/>
             <f:render partial="Types/Select" arguments="{label: 'search.job_role', options: jobRoles, name: 'jobRole', value: selected_job_role}"/>
             <f:render partial="Types/Select" arguments="{label: 'search.job_type', options: jobTypes, name: 'jobType', value: selected_job_type}"/>
@@ -26,9 +29,7 @@
             <f:if condition="{settings.showFreeTextSearch}">
                 <f:render partial="Types/Textfield" arguments="{label: 'search.search_word', name: 'searchWord', value: selected_search_word}"/>
             </f:if>
-            <div class="d-grid">
-                <f:form.submit class="btn btn-primary" value="{f:translate(key: 'search.submit')}"/>
-            </div>
+            <f:form.submit class="jb:mt-1 jb:inline-flex jb:min-h-11 jb:w-full jb:cursor-pointer jb:items-center jb:justify-center jb:rounded-xl jb:border-0 jb:bg-brand-600 jb:px-5 jb:text-sm jb:font-semibold jb:text-white jb:shadow-xs jb:transition jb:hover:bg-brand-700 jb:active:bg-brand-800" value="{f:translate(key: 'search.submit')}"/>
         </f:form>
     </fieldset>
 </div>

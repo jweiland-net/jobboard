@@ -7,33 +7,35 @@
     Rendered by RenderJobLocationInfoWindowContentEventListener in a middleware:
     there is no Extbase request. Use "extensionName" for f:translate and the
     prepared URIs of the job links instead of f:link.action.
+    It is placed into the popup of the map library outside of ".tx-jobboard",
+    the stylesheet styles ".jobboard-info-window" for that.
 
     Variables: jobLocation (JWeiland\Jobboard\Domain\Model\JobLocation)
 </f:comment>
 <f:spaceless>
-<div class="jobboard-info-window small">
+<div class="jobboard-info-window">
     <f:if condition="{jobLocation.name}">
-        <h3 class="h6 mb-1">{jobLocation.name}</h3>
+        <h3 class="jb:text-base jb:leading-snug jb:font-semibold">{jobLocation.name}</h3>
     </f:if>
     <f:if condition="{jobLocation.street} || {jobLocation.zip} || {jobLocation.city}">
-        <address class="mb-2 text-body-secondary">
+        <address class="jb:mt-0.5 jb:text-slate-600 jb:not-italic">
             <f:if condition="{jobLocation.street}">{jobLocation.street}<br></f:if>
             {jobLocation.zip} {jobLocation.city}
         </address>
     </f:if>
     <f:variable name="numberOfJobsKey" value="{f:if(condition: '{jobLocation.numberOfJobs} == 1', then: 'map.infoWindow.numberOfJobs.singular', else: 'map.infoWindow.numberOfJobs.plural')}"/>
-    <p class="mb-1 fw-semibold">{f:translate(key: numberOfJobsKey, extensionName: 'jobboard', arguments: {0: jobLocation.numberOfJobs})}</p>
-    <ul class="list-unstyled mb-0">
+    <p class="jb:mt-3 jb:mb-1.5 jb:text-xs jb:font-semibold jb:tracking-wide jb:text-brand-700 jb:uppercase">{f:translate(key: numberOfJobsKey, extensionName: 'jobboard', arguments: {0: jobLocation.numberOfJobs})}</p>
+    <ul class="jb:m-0 jb:grid jb:list-none jb:gap-1 jb:p-0">
         <f:for each="{jobLocation.jobLinks}" as="jobLink">
-            <li class="mb-1">
+            <li class="jb:m-0">
                 <f:if condition="{jobLink.uri}">
                     <f:then>
                         <f:if condition="{jobLink.isExternal}">
                             <f:then>
-                                <a href="{jobLink.uri}" target="_blank" rel="noopener">{jobLink.title}</a>
+                                <a href="{jobLink.uri}" target="_blank" rel="noopener" class="jb:font-medium">{jobLink.title}</a>
                             </f:then>
                             <f:else>
-                                <a href="{jobLink.uri}">{jobLink.title}</a>
+                                <a href="{jobLink.uri}" class="jb:font-medium">{jobLink.title}</a>
                             </f:else>
                         </f:if>
                     </f:then>

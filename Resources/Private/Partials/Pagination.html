@@ -8,40 +8,38 @@
     search form, so the filter is still applied on the next page.
 </f:comment>
 <f:if condition="{pagination.lastPageNumber} > 1">
-    <nav class="jobboard-pagination mt-4" aria-label="{f:translate(key: 'pageBrowser.label')}">
-        <p class="small text-body-secondary mb-2">{f:translate(key: 'pageBrowser.records', arguments: {0: pagination.startRecordNumber, 1: pagination.endRecordNumber, 2: numberOfJobs})}</p>
-        <ul class="pagination flex-wrap">
+    <nav class="jobboard-pagination jb:mt-6 jb:flex jb:flex-col jb:gap-3 jb:@lg:flex-row jb:@lg:items-center jb:@lg:justify-between" aria-label="{f:translate(key: 'pageBrowser.label')}">
+        <p class="jb:text-sm jb:text-slate-600">{f:translate(key: 'pageBrowser.records', arguments: {0: pagination.startRecordNumber, 1: pagination.endRecordNumber, 2: numberOfJobs})}</p>
+        <ul class="jb:m-0 jb:flex jb:list-none jb:flex-wrap jb:items-center jb:gap-1.5 jb:p-0" role="list">
             <f:if condition="{paginator.currentPageNumber} > 1">
-                <li class="page-item first">
-                    <f:render section="RenderPageLink"
-                              arguments="{linkArguments: pagination.firstPageArguments, transKey: 'pageBrowser.first', actionName: actionName}"/>
-                </li>
+                <li><f:render section="RenderPageLink" arguments="{linkArguments: pagination.firstPageArguments, transKey: 'pageBrowser.first', icon: 'ChevronDoubleLeft', actionName: actionName}"/></li>
             </f:if>
             <f:if condition="{pagination.previousPageNumber}">
-                <li class="page-item previous">
-                    <f:render section="RenderPageLink"
-                              arguments="{linkArguments: pagination.previousPageArguments, transKey: 'pageBrowser.previous', actionName: actionName}"/>
-                </li>
+                <li><f:render section="RenderPageLink" arguments="{linkArguments: pagination.previousPageArguments, transKey: 'pageBrowser.previous', icon: 'ChevronLeft', showLabel: 1, actionName: actionName}"/></li>
             </f:if>
-            <li class="page-item active current" aria-current="page"><span class="page-link">{paginator.currentPageNumber} / {pagination.lastPageNumber}</span></li>
+            <li aria-current="page">
+                <span class="jb:inline-flex jb:min-h-11 jb:min-w-11 jb:items-center jb:justify-center jb:rounded-xl jb:bg-brand-600 jb:px-4 jb:text-sm jb:font-semibold jb:text-white">{paginator.currentPageNumber} / {pagination.lastPageNumber}</span>
+            </li>
             <f:if condition="{pagination.nextPageNumber}">
-                <li class="page-item next">
-                    <f:render section="RenderPageLink"
-                              arguments="{linkArguments: pagination.nextPageArguments, transKey: 'pageBrowser.next', actionName: actionName}"/>
-                </li>
+                <li><f:render section="RenderPageLink" arguments="{linkArguments: pagination.nextPageArguments, transKey: 'pageBrowser.next', icon: 'ChevronRight', iconLast: 1, showLabel: 1, actionName: actionName}"/></li>
             </f:if>
             <f:if condition="{paginator.currentPageNumber} < {pagination.lastPageNumber}">
-                <li class="page-item last">
-                    <f:render section="RenderPageLink"
-                              arguments="{linkArguments: pagination.lastPageArguments, transKey: 'pageBrowser.last', actionName: actionName}"/>
-                </li>
+                <li><f:render section="RenderPageLink" arguments="{linkArguments: pagination.lastPageArguments, transKey: 'pageBrowser.last', icon: 'ChevronDoubleRight', actionName: actionName}"/></li>
             </f:if>
         </ul>
     </nav>
 </f:if>
 
+<f:comment>
+    "First" and "Last" only show their icon, the label stays available for
+    screen readers. "Previous" and "Next" show the label from a plugin width of 32rem.
+</f:comment>
 <f:section name="RenderPageLink">
     <f:variable name="actionName">{f:if(condition: actionName, then: actionName, else: 'list')}</f:variable>
-    <f:link.action action="{actionName}" arguments="{linkArguments}" class="page-link">{f:translate(key: transKey)}</f:link.action>
+    <f:link.action action="{actionName}" arguments="{linkArguments}" class="jb:inline-flex jb:min-h-11 jb:min-w-11 jb:items-center jb:justify-center jb:gap-1.5 jb:rounded-xl jb:border jb:border-slate-300 jb:bg-white jb:px-3 jb:text-sm jb:font-medium jb:text-slate-700 jb:no-underline jb:transition jb:hover:border-brand-500 jb:hover:text-brand-700">
+        <f:if condition="{iconLast}"><f:else><f:render partial="Icon" section="{icon}" arguments="{class: 'jb:size-4'}"/></f:else></f:if>
+        <span class="{f:if(condition: showLabel, then: 'jb:sr-only jb:@lg:not-sr-only', else: 'jb:sr-only')}">{f:translate(key: transKey)}</span>
+        <f:if condition="{iconLast}"><f:render partial="Icon" section="{icon}" arguments="{class: 'jb:size-4'}"/></f:if>
+    </f:link.action>
 </f:section>
 </html>

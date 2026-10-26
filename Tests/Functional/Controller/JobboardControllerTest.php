@@ -48,6 +48,13 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
  */
 final class JobboardControllerTest extends FunctionalTestCase
 {
+    /**
+     * The class "highlight-row" as own class token of an element. Variants of
+     * the Tailwind templates like "jb:[&.highlight-row]:bg-brand-50" only
+     * style it and must not match.
+     */
+    private const HIGHLIGHT_CLASS_PATTERN = '#class="(?:[^"]*\s)?highlight-row(?:\s[^"]*)?"#';
+
     protected array $coreExtensionsToLoad = [
         'typo3/cms-core',
         'typo3/cms-frontend',
@@ -560,8 +567,8 @@ final class JobboardControllerTest extends FunctionalTestCase
         $body = $this->fetchSearchFormPageBody(7);
 
         self::assertStringContainsString('>Assembly (1)</option>', $body);
-        self::assertStringNotContainsString('>Office', $body);
-        self::assertStringNotContainsString('>Warehouse', $body);
+        self::assertDoesNotMatchRegularExpression('#<option[^>]*>Office#', $body);
+        self::assertDoesNotMatchRegularExpression('#<option[^>]*>Warehouse#', $body);
     }
 
     #[Test]
@@ -581,7 +588,7 @@ final class JobboardControllerTest extends FunctionalTestCase
         self::assertStringNotContainsString('Job with visible stepped grade', $body);
         self::assertStringNotContainsString('Job with a single free entry amount', $body);
         self::assertStringContainsString('>Assembly (1)</option>', $body);
-        self::assertStringNotContainsString('>Office', $body);
+        self::assertDoesNotMatchRegularExpression('#<option[^>]*>Office#', $body);
     }
 
     #[Test]
@@ -594,7 +601,7 @@ final class JobboardControllerTest extends FunctionalTestCase
         self::assertStringContainsString('Job with free entry range', $body);
         self::assertStringNotContainsString('Job with visible stepped grade', $body);
         self::assertStringNotContainsString('Job with a single free entry amount', $body);
-        self::assertStringNotContainsString('>Warehouse', $body);
+        self::assertDoesNotMatchRegularExpression('#<option[^>]*>Warehouse#', $body);
     }
 
     #[Test]
@@ -683,7 +690,7 @@ final class JobboardControllerTest extends FunctionalTestCase
         self::assertSame(200, $response->getStatusCode());
         self::assertStringContainsString('<h1', $pageBody);
         self::assertStringContainsString($title, $pageBody);
-        self::assertStringNotContainsString('<dt>Salary</dt>', $pageBody);
+        self::assertDoesNotMatchRegularExpression('#<dt[^>]*>Salary</dt>#', $pageBody);
         self::assertStringNotContainsString('>Salary</h2>', $pageBody);
         self::assertStringNotContainsString('€', $pageBody);
         self::assertStringNotContainsString('baseSalary', $body);
@@ -696,7 +703,7 @@ final class JobboardControllerTest extends FunctionalTestCase
 
         $body = (string)$this->executeFrontendSubRequest($this->buildDetailActionRequest(7))->getBody();
 
-        self::assertStringContainsString('<dt>Salary</dt>', $body);
+        self::assertMatchesRegularExpression('#<dt[^>]*>Salary</dt>#', $body);
         self::assertStringContainsString('>Salary</h2>', $body);
         self::assertStringContainsString('baseSalary', $body);
     }
@@ -717,8 +724,8 @@ final class JobboardControllerTest extends FunctionalTestCase
     {
         $pageBody = $this->fetchDetailPageBodyWithRelatedJobs();
 
-        self::assertStringContainsString('>Related jobs</h2>', $pageBody);
-        self::assertStringContainsString('>Job with free entry range</a>', $pageBody);
+        self::assertMatchesRegularExpression('#<h2[^>]*>Related jobs</h2>#', $pageBody);
+        self::assertMatchesRegularExpression(self::linkPattern('', 'Job with free entry range'), $pageBody);
         self::assertStringNotContainsString('Job with free entry but no amount at all', $pageBody);
     }
 
@@ -729,8 +736,8 @@ final class JobboardControllerTest extends FunctionalTestCase
 
         $pageBody = $this->fetchDetailPageBodyWithRelatedJobs();
 
-        self::assertStringContainsString('>Job with free entry range</a>', $pageBody);
-        self::assertStringContainsString('>Job with free entry but no amount at all</a>', $pageBody);
+        self::assertMatchesRegularExpression(self::linkPattern('', 'Job with free entry range'), $pageBody);
+        self::assertMatchesRegularExpression(self::linkPattern('', 'Job with free entry but no amount at all'), $pageBody);
     }
 
     #[Test]
@@ -781,7 +788,7 @@ final class JobboardControllerTest extends FunctionalTestCase
         $response = $this->executeFrontendSubRequest($this->buildDetailActionRequest(1));
 
         self::assertStringContainsString(
-            'Download PDF <span class="d-none d-sm-inline">file of the job offer</span>',
+            'Download PDF <span class="jb:hidden jb:@lg:inline">file of the job offer</span>',
             (string)$response->getBody(),
         );
     }
@@ -791,8 +798,8 @@ final class JobboardControllerTest extends FunctionalTestCase
     {
         $body = $this->fetchDetailBodyWithPdfLinkMode('download');
 
-        self::assertStringContainsString('Download PDF <span class="d-none d-sm-inline">file of the job offer</span>', $body);
-        self::assertDoesNotMatchRegularExpression('#<a [^>]*target="_blank"[^>]*>[^<]*PDF#', $body);
+        self::assertMatchesRegularExpression('#Download PDF <span[^>]*>file of the job offer</span>#', $body);
+        self::assertDoesNotMatchRegularExpression(self::linkPattern('target="_blank"', 'PDF'), $body);
     }
 
     #[Test]
@@ -800,8 +807,8 @@ final class JobboardControllerTest extends FunctionalTestCase
     {
         $body = $this->fetchDetailBodyWithPdfLinkMode('newTab');
 
-        self::assertMatchesRegularExpression('#<a [^>]*target="_blank"[^>]*>Show rendered PDF in new tab</a>#', $body);
-        self::assertMatchesRegularExpression('#<a [^>]*rel="noopener"[^>]*>Show rendered PDF in new tab</a>#', $body);
+        self::assertMatchesRegularExpression(self::linkPattern('target="_blank"', 'Show rendered PDF in new tab'), $body);
+        self::assertMatchesRegularExpression(self::linkPattern('rel="noopener"', 'Show rendered PDF in new tab'), $body);
         self::assertStringNotContainsString('Download PDF', $body);
     }
 
@@ -810,9 +817,18 @@ final class JobboardControllerTest extends FunctionalTestCase
     {
         $body = $this->fetchDetailBodyWithPdfLinkMode('sameTab');
 
-        self::assertMatchesRegularExpression('#<a [^>]*>Show PDF</a>#', $body);
-        self::assertDoesNotMatchRegularExpression('#<a [^>]*target="_blank"[^>]*>Show PDF</a>#', $body);
+        self::assertMatchesRegularExpression(self::linkPattern('', 'Show PDF'), $body);
+        self::assertDoesNotMatchRegularExpression(self::linkPattern('target="_blank"', 'Show PDF'), $body);
         self::assertStringNotContainsString('Download PDF', $body);
+    }
+
+    /**
+     * A link with the given attribute and the label anywhere in its content,
+     * e.g. after an icon. Works for the default and the Bootstrap templates.
+     */
+    private static function linkPattern(string $attribute, string $label): string
+    {
+        return '#<a [^>]*' . preg_quote($attribute, '#') . '[^>]*>(?:(?!</a>).)*?' . preg_quote($label, '#') . '#s';
     }
 
     /**
@@ -1077,7 +1093,7 @@ final class JobboardControllerTest extends FunctionalTestCase
         $bodyOfOtherVisitor = $this->fetchListPageBody();
 
         self::assertSame($bodyOfOtherVisitor, $bodyOfVisitorWithRememberedJobs);
-        self::assertStringNotContainsString('highlight-row', $bodyOfVisitorWithRememberedJobs);
+        self::assertDoesNotMatchRegularExpression(self::HIGHLIGHT_CLASS_PATTERN, $bodyOfVisitorWithRememberedJobs);
         self::assertStringNotContainsString(' checked>', $bodyOfVisitorWithRememberedJobs);
         self::assertStringContainsString('name="remember_job" value="8">', $bodyOfVisitorWithRememberedJobs);
     }
@@ -1108,7 +1124,7 @@ final class JobboardControllerTest extends FunctionalTestCase
         $body = $this->fetchSearchActionPageBody(4, ['jobArea' => 1], $this->rememberJobs(8));
 
         $this->assertAppearsBefore('data-jobboard-uid="1"', 'data-jobboard-uid="8"', $body);
-        self::assertStringNotContainsString('highlight-row', $body);
+        self::assertDoesNotMatchRegularExpression(self::HIGHLIGHT_CLASS_PATTERN, $body);
         self::assertStringNotContainsString(' checked>', $body);
     }
 

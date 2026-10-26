@@ -45,9 +45,8 @@ Search form
     matching jobs, for example "IT (3)".
 
 Remember jobs
-    In the table layout, visitors can tick "Remember" for single jobs.
-    Remembered jobs are highlighted with a tinted background and a colored
-    bar in front of the row. A link "Remembered jobs" with the number of
+    Visitors can tick "Remember" for single jobs in the list. Remembered
+    jobs are highlighted with a tinted background and a colored border. A link "Remembered jobs" with the number of
     remembered jobs leads to a view of all remembered jobs, where visitors
     can also remove them. The selection is stored in the TYPO3 session of
     the visitor, see :ref:`remember-jobs`.
@@ -102,8 +101,9 @@ Screenshots
 ===========
 
 All frontend screenshots show the output of a custom site package theme
-that renders the shipped card layout. The default table layout looks
-different, but offers the same data.
+that renders the shipped card layout. The default templates (Tailwind) and
+the Bootstrap templates look different, but offer the same data, see
+:ref:`templates-styles`.
 
 ..  figure:: /Images/Introduction/job-area-count.png
     :alt: Select box of occupational fields with the number of jobs

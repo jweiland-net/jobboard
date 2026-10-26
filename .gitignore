@@ -51,3 +51,6 @@ composer.lock
 /Build/rector/.Build
 /Build/rector/composer.json.orig
 /Build/rector/composer.json.testing
+
+# Ignore node modules of the Tailwind build
+/Build/tailwind/node_modules

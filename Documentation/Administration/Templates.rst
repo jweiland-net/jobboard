@@ -45,11 +45,15 @@ All files are in :path:`EXT:jobboard/Resources/Private/`.
     *   -   File
         -   Purpose
     *   -   :file:`Layouts/Default.html`
-        -   Wrapper :html:`<div class="tx-jobboard">`
+        -   Wrapper :html:`<div class="tx-jobboard">` and the stylesheet
+            :file:`Css/jobboard.css`, see :ref:`templates-styles`
     *   -   :file:`Templates/Jobboard/List.html`
-        -   List: assets, search form, map and list of jobs
+        -   List: renders :file:`Partials/JobList.html`
     *   -   :file:`Templates/Jobboard/Search.html`
-        -   Search result, same structure as the list
+        -   Search result: renders :file:`Partials/JobList.html`
+    *   -   :file:`Partials/JobList.html`
+        -   Body of list and search result: assets, search form, map, link
+            to the remembered jobs, list of jobs and page browser
     *   -   :file:`Templates/Jobboard/RememberedJobs.html`
         -   View of the remembered jobs of the visitor, see
             :ref:`templates-remembered-jobs`
@@ -57,10 +61,12 @@ All files are in :path:`EXT:jobboard/Resources/Private/`.
         -   Detail view. One :html:`<f:section>` per group of fields, for
             example :code:`renderSalary` or :code:`renderBenefits`.
     *   -   :file:`Partials/JobListAssets.html`
-        -   CSS and JavaScript of list, search and the view of the
-            remembered jobs, see :ref:`templates-assets`
+        -   JavaScript of list, search and the view of the remembered jobs,
+            see :ref:`templates-assets`
     *   -   :file:`Partials/RememberedJobs/Link.html`
         -   Link to the view of the remembered jobs with the count badge
+    *   -   :file:`Partials/RememberedJobs/Toggle.html`
+        -   "Remember" checkbox of a job
     *   -   :file:`Partials/RememberedJobs/Feedback.html`
         -   Status for screen readers and toast with error messages of
             :file:`remember-jobs.js`
@@ -72,45 +78,59 @@ All files are in :path:`EXT:jobboard/Resources/Private/`.
     *   -   :file:`Partials/Job/Search.html`
         -   The search form itself. Provides the URL for the location
             suggestions, see :ref:`address-search-override`.
+    *   -   :file:`Partials/Types/List.html`
+        -   Default list rendering: one card per job in a single column
     *   -   :file:`Partials/Types/Table.html`
-        -   Default list rendering as table
+        -   Alternative list rendering as table
+    *   -   :file:`Partials/Types/Card.html`
+        -   Alternative list rendering as card grid, see
+            :ref:`templates-card-layout`
     *   -   :file:`Partials/Pagination.html`
         -   Page browser below the list, see :ref:`templates-pagination`
-    *   -   :file:`Partials/Types/Card.html`
-        -   Alternative list rendering as cards, see
-            :ref:`templates-card-layout`
     *   -   :file:`Partials/Job/TitleLink.html`
-        -   Table cell with the link to the job
+        -   Link to the job (external link or detail view)
     *   -   :file:`Partials/Job/JobAreas.html`
         -   Occupational fields of a job, see :ref:`templates-job-areas`
     *   -   :file:`Partials/Job/JsonLd.html`
         -   Structured data of the detail view, see
             :ref:`templates-json-ld`
+    *   -   :file:`Partials/Icon.html`
+        -   Decorative SVG icons, one section per icon
     *   -   :file:`Templates/PluginPreview/Jobboard.html`
         -   Preview in the backend page module
     *   -   :file:`Pdf/Jobboard/Detail.html`
         -   PDF version of a job, see :ref:`pdf-export`
+
+The Bootstrap templates of the site set :yaml:`jweiland/jobboard-bootstrap`
+are in :path:`EXT:jobboard/Resources/Private/Bootstrap/` with the same
+structure, see :ref:`templates-styles`.
 
 If a job has an external link (filled by an import only), the list links
 to this URL in a new window instead of the detail view.
 
 ..  _templates-card-layout:
 
-Card layout
-===========
+Table and card layout
+=====================
 
-The partial :file:`Partials/Types/Card.html` renders each job as a card
-with occupational fields, position, application deadline, title, a
-shortened description, a "Read more" button and, if
-:confval:`jobboard-pidofapplicationform` is set, an "Apply online" button.
-It has no "Remember" checkbox. :file:`remember-jobs.js` highlights the
-cards of jobs remembered in the table layout.
+The default partial :file:`Partials/Types/List.html` renders one card per
+job in a single column. Two alternatives are shipped:
 
-To use it, override :file:`Templates/Jobboard/List.html` and
-:file:`Templates/Jobboard/Search.html` and replace the table partial:
+:file:`Partials/Types/Table.html`
+    A table with title, application deadline, zip code, city, employer,
+    employment type and the "Remember" checkbox.
+
+:file:`Partials/Types/Card.html`
+    A grid of cards with occupational fields, position, application
+    deadline, title, a shortened description, a "Read more" button, an
+    "Apply online" button (if :confval:`jobboard-pidofapplicationform` is
+    set) and the "Remember" checkbox.
+
+To use one of them, override :file:`Partials/JobList.html` and replace the
+list partial:
 
 ..  code-block:: html
-    :caption: EXT:my_sitepackage/Resources/Private/Extensions/Jobboard/Templates/Jobboard/List.html
+    :caption: EXT:my_sitepackage/Resources/Private/Extensions/Jobboard/Partials/JobList.html
 
     <f:render partial="Types/Card" arguments="{objects: jobs}"/>
 
@@ -195,7 +215,7 @@ cached and has no page browser. It provides these variables:
 
 :html:`{rememberedJobs}`
     The UIDs of the remembered jobs as keys. Passed to
-    :file:`Partials/Types/Table.html` to render the checkboxes checked.
+    :file:`Partials/Types/List.html` to render the checkboxes checked.
 
 Never pass :html:`{rememberedJobs}` in :file:`Templates/Jobboard/List.html`
 or :file:`Templates/Jobboard/Search.html`: their output must be the same
@@ -218,15 +238,97 @@ the rules in the comment of this partial to keep the output valid JSON:
 render every dynamic value with the tag syntax
 :html:`<f:format.json value="{...}"/>`.
 
+..  _templates-styles:
+
+Tailwind and Bootstrap templates
+================================
+
+The extension ships two sets of frontend templates.
+
+Default templates (Tailwind)
+    :path:`EXT:jobboard/Resources/Private/Templates/`, :path:`Partials/`
+    and :path:`Layouts/`. They are styled with utility classes of
+    `Tailwind CSS <https://tailwindcss.com/>`__ and need no CSS framework
+    in the site package. The layout includes the compiled stylesheet
+    :file:`Css/jobboard.css` (about 25 kB). Every utility is prefixed with
+    :code:`jb:` (for example :html:`class="jb:flex"`) and the stylesheet
+    has no global reset, so it does not change the rest of the site. The
+    layout adapts to the width of the content column (container queries),
+    not to the width of the browser window.
+
+Bootstrap templates
+    :path:`EXT:jobboard/Resources/Private/Bootstrap/`. They use the classes
+    of Bootstrap 5 and expect the site package to load Bootstrap 5. Add the
+    site set :yaml:`jweiland/jobboard-bootstrap` to use them. The set
+    points :confval:`jobboard-templaterootpath`,
+    :confval:`jobboard-partialrootpath` and
+    :confval:`jobboard-layoutrootpath` to this folder. Its layout and
+    partials include :file:`Css/bootstrap.css` instead of
+    :file:`Css/jobboard.css`, so the Tailwind stylesheet is not added to
+    the page. Files missing in the folder, for example
+    :file:`Partials/Job/JsonLd.html`, are taken from the default templates.
+
+..  code-block:: yaml
+    :caption: config/sites/<site-identifier>/config.yaml
+
+    dependencies:
+      - jweiland/jobboard
+      - jweiland/jobboard-bootstrap
+
+If you override the template paths in your site settings, copy the files
+from the folder of the template set you use.
+
+..  _templates-styles-colors:
+
+Colors of the Tailwind templates
+--------------------------------
+
+The colors are CSS custom properties. Override the brand color in the
+stylesheet of your site package:
+
+..  code-block:: css
+    :caption: EXT:my_sitepackage/Resources/Public/Css/main.css
+
+    :root {
+        --jb-color-brand-50: #fdf2f4;
+        --jb-color-brand-100: #fbe4e8;
+        --jb-color-brand-200: #f5c2cc;
+        --jb-color-brand-500: #d03050;
+        --jb-color-brand-600: #b00020;
+        --jb-color-brand-700: #8c0019;
+        --jb-color-brand-800: #730015;
+        --jb-color-brand-900: #5c0011;
+    }
+
+..  _templates-styles-build:
+
+Build the Tailwind stylesheet
+-----------------------------
+
+Tailwind only adds the utilities used in the templates to
+:file:`Css/jobboard.css`. If you add new utility classes in own templates,
+either style them in your site package or build your own stylesheet. The
+source is :file:`Build/tailwind/jobboard.css` of the extension repository
+(Node.js 20 or later):
+
+..  code-block:: bash
+
+    cd Build/tailwind
+    npm ci
+    npm run build
+
+:code:`npm run watch` rebuilds the stylesheet on every change.
+
 ..  _templates-assets:
 
 JavaScript and CSS
 ==================
 
-The partial :file:`Partials/JobListAssets.html` adds these files with the
-asset collector of TYPO3:
+:file:`Layouts/Default.html` adds :file:`Css/jobboard.css` with the asset
+collector of TYPO3 (Bootstrap templates: :file:`Partials/JobListAssets.html`
+adds :file:`Css/bootstrap.css`). The partial
+:file:`Partials/JobListAssets.html` adds these JavaScript files:
 
-*   :file:`Css/style.css`
 *   :file:`JavaScript/remember-jobs.js` (remembered jobs)
 *   :file:`JavaScript/address-suggestions.js` (suggestions of the location
     field)
@@ -236,7 +338,9 @@ reads the remembered jobs of the visitor after the page is loaded,
 highlights them in the cached list and fills the count badge of the link
 to the remembered jobs. It sends a ticked or unticked "Remember" checkbox
 to the server and updates the highlight, see :ref:`remember-jobs`. Neither
-file needs a library.
+file needs a library. The script only toggles the classes
+:code:`highlight-row`, :code:`jobboard-removed`, :code:`invisible` and
+:code:`show`, both template sets style these classes.
 :file:`address-suggestions.js` shows the suggestions of the location field
 as a native :html:`<datalist>`, see :ref:`address-search`.
 

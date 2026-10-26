@@ -211,7 +211,7 @@ final class RenderJobLocationInfoWindowContentEventListenerTest extends Function
     {
         $content = $this->renderInfoWindow(1);
 
-        self::assertStringContainsString('<h3 class="h6 mb-1">Example Employer Ltd.</h3>', $content);
+        self::assertMatchesRegularExpression('#<h3[^>]*>Example Employer Ltd.</h3>#', $content);
         self::assertStringContainsString('12345 Example City', $content);
         self::assertStringContainsString('3 jobs at this location', $content);
         self::assertSame(3, substr_count($content, '<li'));
@@ -262,7 +262,7 @@ final class RenderJobLocationInfoWindowContentEventListenerTest extends Function
 
         self::assertSame('Example Street 1', $this->findJobLocation(1)?->getStreet());
         self::assertMatchesRegularExpression(
-            '#<address class="mb-2 text-body-secondary">\s*Example Street 1<br>\s*12345 Example City\s*</address>#',
+            '#<address[^>]*>\s*Example Street 1<br>\s*12345 Example City\s*</address>#',
             $content,
         );
     }
@@ -274,7 +274,7 @@ final class RenderJobLocationInfoWindowContentEventListenerTest extends Function
 
         self::assertSame('', $this->findJobLocation(4)?->getStreet());
         self::assertMatchesRegularExpression(
-            '#<address class="mb-2 text-body-secondary">\s*45678 Person City\s*</address>#',
+            '#<address[^>]*>\s*45678 Person City\s*</address>#',
             $content,
         );
         self::assertStringNotContainsString('<br>', $content);
@@ -453,7 +453,7 @@ final class RenderJobLocationInfoWindowContentEventListenerTest extends Function
     {
         $content = $this->renderInfoWindow(4);
 
-        self::assertStringContainsString('<h3 class="h6 mb-1">Jane Doe</h3>', $content);
+        self::assertMatchesRegularExpression('#<h3[^>]*>Jane Doe</h3>#', $content);
         self::assertStringContainsString('1 job at this location', $content);
         self::assertStringNotContainsString('jobs at this location', $content);
     }
@@ -533,7 +533,7 @@ final class RenderJobLocationInfoWindowContentEventListenerTest extends Function
     {
         $content = $this->renderInfoWindow(1, $this->buildRequest(1, 8));
 
-        self::assertStringContainsString('<h3 class="h6 mb-1">Beispiel Arbeitgeber GmbH</h3>', $content);
+        self::assertMatchesRegularExpression('#<h3[^>]*>Beispiel Arbeitgeber GmbH</h3>#', $content);
         self::assertStringContainsString('Beispielstraße 1<br>', $content);
         self::assertStringContainsString('12345 Beispielstadt', $content);
         self::assertStringContainsString('3 Stellen an diesem Standort', $content);
@@ -605,8 +605,8 @@ final class RenderJobLocationInfoWindowContentEventListenerTest extends Function
         $request = $this->buildRequest($languageId, $languageId === 0 ? 5 : 8);
 
         self::assertSame($expectedCompany, $this->findJobLocation(1, $request)?->getName());
-        self::assertStringContainsString(
-            '<h3 class="h6 mb-1">' . $expectedCompany . '</h3>',
+        self::assertMatchesRegularExpression(
+            '#<h3[^>]*>' . preg_quote($expectedCompany, '#') . '</h3>#',
             $this->renderInfoWindow(1, $request),
         );
     }
@@ -735,8 +735,8 @@ final class RenderJobLocationInfoWindowContentEventListenerTest extends Function
 
         self::assertTrue($jobLink->getIsExternal());
         self::assertSame('https://jobs.example.org/apply?id=1&lang=en', $jobLink->getUri());
-        self::assertStringContainsString(
-            '<a href="https://jobs.example.org/apply?id=1&amp;lang=en" target="_blank" rel="noopener">Second job</a>',
+        self::assertMatchesRegularExpression(
+            '#<a href="https://jobs\.example\.org/apply\?id=1&amp;lang=en" target="_blank" rel="noopener"[^>]*>Second job</a>#',
             $content,
         );
         // Other jobs still link to the detail action

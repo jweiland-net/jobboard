@@ -1,0 +1,15 @@
+<html lang="en"
+      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+<td>
+    <f:if condition="{job.link}">
+        <f:then>
+            <f:link.external uri="{job.link}" target="_blank">{job.title}</f:link.external>
+        </f:then>
+        <f:else>
+            <f:link.action action="detail" arguments="{job: job}">{job.title}</f:link.action>
+        </f:else>
+    </f:if>
+</td>
+</html>
