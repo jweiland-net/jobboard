@@ -299,14 +299,18 @@ final class JobboardControllerTest extends FunctionalTestCase
 
     #[Test]
     #[DataProvider('jobWithoutValidSalaryInformationDataProvider')]
-    public function updaterStoresNoEffectiveSalaryForJobWithoutValidSalaryInformation(int $jobUid): void
+    public function updaterStoresNoEffectiveSalaryForJobWithoutValidSalaryInformation(int $jobUid, string $title): void
     {
         $row = $this->get(ConnectionPool::class)
             ->getConnectionForTable('tx_jobboard_domain_model_job')
             ->select(['effective_salary_min', 'effective_salary_max'], 'tx_jobboard_domain_model_job', ['uid' => $jobUid])
             ->fetchAssociative();
 
-        self::assertSame([0.0, 0.0], [(float)$row['effective_salary_min'], (float)$row['effective_salary_max']]);
+        self::assertSame(
+            [0.0, 0.0],
+            [(float)$row['effective_salary_min'], (float)$row['effective_salary_max']],
+            $title,
+        );
     }
 
     #[Test]
