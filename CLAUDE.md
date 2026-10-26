@@ -36,8 +36,8 @@ combines three building blocks:
   the annotation the column map is `Relation::NONE` and the PoiCollection is never loaded.
   Code using maps2 classes in signatures must not be autowired without maps2: such classes are excluded in
   `Services.yaml` and registered conditionally in `Configuration/Services.php` (see "Map" in section 4).
-  Functional tests run without maps2, except the ViewHelper/partial map tests
-  (`JobPoiCollectionViewHelperTest`, `AddressPoiCollectionViewHelperTest`, `SearchFormMapTest`).
+  Functional tests run without maps2, except the map tests (`MapPoiCollectionServiceTest`, `SearchFormMapTest`,
+  `RenderJobLocationInfoWindowContentEventListenerTest`).
 - **Site Sets:** this extension ships two TYPO3 Site Sets (`jweiland/jobboard` main set,
   `jweiland/jobboard-pdf` for the PDF variant) instead of classic static TypoScript templates.
 - **State:** `ext_emconf.php` declares `'state' => 'alpha'`, version `0.0.1`. Treat the extension as not yet
@@ -309,23 +309,22 @@ Key points:
   - `address-suggestions.js`: zip/city suggestions of `AddressSearchMiddleware` as native `<datalist>`.
 - **Map (optional EXT:maps2)**: one marker per job location (`tt_address`), not per job.
   - The map in `Partials/SearchForm.html` shows the locations of *all* jobs of the list/search result, never only
-    the current page: `list`/`search` assign `addressUids` (`JobboardController::getAddressUidsForMap()` ->
-    `JobSearchOptionsService::getAddressUids()`: same converted Extbase query as the search options, `GROUP BY
-    address`, respects search criteria, plugin settings and `maxEntries`; `[]` without maps2, no query). The
-    page browser only replaces `jobs`. `AddressPoiCollectionViewHelper` (`final`, `addressUids` -> PoiCollections)
-    reads `tx_maps2_uid` of the visible addresses with one QueryBuilder query (frontend restrictions; a
-    translation without relation falls back to its default address), then loads only these PoiCollections via
-    `PersistenceManager::getObjectByIdentifier()` (hidden ones are skipped), ascending by UID. No job is loaded
-    for the map - never pass `jobs`/query results to the map again. The "no geo position" alert still checks
-    `{jobs}`.
-  - `JobPoiCollectionViewHelper` (`final`) bridges `Job` -> `Address` -> maps2 `PoiCollection` and returns each
-    PoiCollection once (deduplicated by UID, unsaved objects by identity). It never changes the PoiCollections:
-    maps2 synchronizes their title from the address on every save (`Configuration/TCA/Overrides/tt_address.php`,
-    `synchronizeColumns`: company, otherwise first + last name, otherwise city). `tt_address.tx_maps2_uid` is
-    `l10n_mode = exclude` (+ `defaultAsReadonly`); maps2 writes the relation of a *new* PoiCollection into the
-    default address only (raw SQL), so for a localized address without relation the ViewHelper falls back to
-    the PoiCollection of the default address (`PersistenceManager::getObjectByIdentifier()`). Without maps2 it
-    returns an empty `ObjectStorage`. `Partials/SearchForm.html` keeps the "no geo position" alert.
+    the current page: `list`/`search` assign `poiCollections` from `MapPoiCollectionService` (`final readonly`,
+    behind interface, called by the controller *before* the page browser replaces `jobs`). It gets the address
+    UIDs from `JobSearchOptionsService::getAddressUids()` (same converted Extbase query as the search options,
+    `GROUP BY address`: search criteria, plugin settings and `maxEntries` apply), reads `tx_maps2_uid` of the
+    visible addresses with one QueryBuilder query (frontend restrictions) and loads only these PoiCollections via
+    `PersistenceManager::getObjectByIdentifier()` (hidden ones skipped), ascending by UID. Without maps2 (no
+    `tt_address.tx_maps2_uid` in TCA) it returns an empty `ObjectStorage` without any query. No job is loaded for
+    the map. The "no geo position" alert checks `{jobs}`.
+  - **No data access in ViewHelpers or templates**: no DB queries, repositories or PersistenceManager in
+    ViewHelpers (the former `JobPoiCollectionViewHelper` was removed for that reason). Prepare data in the
+    controller/services and pass it to the view.
+  - PoiCollections are never changed: maps2 synchronizes their title from the address on every save
+    (`Configuration/TCA/Overrides/tt_address.php`, `synchronizeColumns`: company, otherwise first + last name,
+    otherwise city). `tt_address.tx_maps2_uid` is `l10n_mode = exclude` (+ `defaultAsReadonly`); maps2 writes the
+    relation of a *new* PoiCollection into the default address only (raw SQL), so for a localized address without
+    relation `MapPoiCollectionService` falls back to the PoiCollection of the default address (`l10n_parent`).
   - Info window: maps2 POSTs `{"poiCollection": uid}` (header `ext-maps2: infoWindowContent`) to the current page;
     its middleware dispatches `RenderInfoWindowContentEvent` for *every* POI of the site.
     `RenderJobLocationInfoWindowContentEventListener` (`final readonly`) only sets content if

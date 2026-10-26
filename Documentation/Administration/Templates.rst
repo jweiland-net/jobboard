@@ -151,7 +151,7 @@ The page browser is added by the PSR-14 event listener
 :html:`{jobs}`
     The jobs of the current page only. The map above the list shows the
     locations of all jobs of the list or search result, see
-    :ref:`templates-viewhelper`.
+    :ref:`templates-map-markers`.
 
 :html:`{paginator}`
     :php:`TYPO3\CMS\Extbase\Pagination\QueryResultPaginator`, for
@@ -286,43 +286,28 @@ Some useful label keys:
     forgotten (:code:`rememberedJobs.error.unknownJob`,
     :code:`rememberedJobs.error.failed`).
 
-..  _templates-viewhelper:
+..  _templates-map-markers:
 
-ViewHelper for the map
-======================
+Markers of the map
+==================
 
-List and search result assign the variable :html:`{addressUids}`: the
-UIDs of the addresses of all jobs of the list or search result, each
-address once. The page browser does not reduce it, only the search form
-and the settings of the content element do. Without EXT:maps2, it is
-empty.
-
-:file:`Partials/SearchForm.html` uses the ViewHelper
-:php:`JWeiland\Jobboard\ViewHelpers\AddressPoiCollectionViewHelper` to build
-the map markers of these addresses. It returns one marker per job location,
-even if several addresses share the same map location. Hidden addresses and
-addresses without a map location are skipped. No job is loaded for the map.
-
-The ViewHelper
-:php:`JWeiland\Jobboard\ViewHelpers\JobPoiCollectionViewHelper` builds the
-markers of given job objects instead, for example of :html:`{jobs}`, the
-jobs of the current page.
-
-The ViewHelper returns the map locations of EXT:maps2 unchanged. The title
-of a marker is the title of the map location, which EXT:maps2 takes from
-the address, see :ref:`editor-addresses-map`. The info window is loaded
-when a visitor clicks the marker, see :ref:`templates-info-window`.
-
-..  code-block:: html
-    :caption: Use the ViewHelper in an own template
-
-    <html xmlns:jobboard="http://typo3.org/ns/JWeiland/Jobboard/ViewHelpers"
-          data-namespace-typo3-fluid="true">
-
-    <f:variable name="poiCollections" value="{jobboard:addressPoiCollection(addressUids: addressUids)}"/>
-
-Without EXT:maps2, both ViewHelpers return an empty list and no map is
+List and search result assign the variable :html:`{poiCollections}`: the
+map locations (EXT:maps2) of all jobs of the list or search result, one
+marker per location, even if several jobs or addresses share the same
+location. The page browser does not reduce it, only the search form and the
+settings of the content element do. Hidden addresses and addresses without
+a map location are skipped. Without EXT:maps2, it is empty and no map is
 rendered.
+
+The markers are built before the template is rendered, by the service
+:php:`JWeiland\Jobboard\Service\MapPoiCollectionServiceInterface`. No job is
+loaded for the map. :file:`Partials/SearchForm.html` passes
+:html:`{poiCollections}` to the map partial of EXT:maps2.
+
+The map locations of EXT:maps2 are passed unchanged. The title of a marker
+is the title of the map location, which EXT:maps2 takes from the address,
+see :ref:`editor-addresses-map`. The info window is loaded when a visitor
+clicks the marker, see :ref:`templates-info-window`.
 
 ..  _templates-info-window:
 

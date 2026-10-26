@@ -9,7 +9,7 @@ declare(strict_types=1);
  * LICENSE file that was distributed with this source code.
  */
 
-namespace JWeiland\Jobboard\ViewHelpers;
+namespace JWeiland\Jobboard\Service;
 
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -18,21 +18,20 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
-use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
+use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 
 /**
- * Collects the PoiCollections of EXT:maps2 of the given addresses
- * (tt_address UIDs, see JobSearchOptionsServiceInterface::getAddressUids())
- * to show them as markers on a map: one marker per job location. No job is
- * loaded: one query reads the PoiCollection UIDs of the visible addresses,
- * then only these PoiCollections are loaded. EXT:maps2 is optional: without
- * it, an empty ObjectStorage is returned.
+ * Called by the Extbase controller. No job is loaded: the addresses of all
+ * matching jobs come from the job query (GROUP BY, see
+ * JobSearchOptionsServiceInterface::getAddressUids()), one query reads the
+ * PoiCollection UIDs of the visible addresses, then only these
+ * PoiCollections are loaded.
  *
- * Like JobPoiCollectionViewHelper, a localized address without relation
- * uses the PoiCollection of its default address: EXT:maps2 writes the
- * relation of a new PoiCollection into the default address only.
+ * A localized address without relation uses the PoiCollection of its default
+ * address: EXT:maps2 writes the relation of a new PoiCollection into the
+ * default address only.
  */
-final class AddressPoiCollectionViewHelper extends AbstractViewHelper
+final readonly class MapPoiCollectionService implements MapPoiCollectionServiceInterface
 {
     /**
      * As string: the class only exists with EXT:maps2
@@ -41,41 +40,29 @@ final class AddressPoiCollectionViewHelper extends AbstractViewHelper
 
     private const TABLE_ADDRESS = 'tt_address';
 
-    public function initializeArguments(): void
-    {
-        parent::initializeArguments();
+    public function __construct(
+        private JobSearchOptionsServiceInterface $jobSearchOptionsService,
+        private ConnectionPool $connectionPool,
+        private PersistenceManagerInterface $persistenceManager,
+    ) {}
 
-        $this->registerArgument(
-            'addressUids',
-            'array',
-            'UIDs of addresses (tt_address)',
-            false,
-            [],
-        );
-    }
-
-    public function render(): ObjectStorage
+    public function getPoiCollections(QueryInterface $jobQuery): ObjectStorage
     {
         $poiCollections = new ObjectStorage();
-        $persistenceManager = GeneralUtility::makeInstance(PersistenceManagerInterface::class);
-        foreach ($this->getPoiCollectionUids($this->getAddressUids()) as $poiCollectionUid) {
-            $poiCollection = $persistenceManager->getObjectByIdentifier($poiCollectionUid, self::POI_COLLECTION_CLASS);
+        // The column only exists with EXT:maps2, see TCA override of tt_address
+        if (!isset($GLOBALS['TCA'][self::TABLE_ADDRESS]['columns']['tx_maps2_uid'])) {
+            return $poiCollections;
+        }
+
+        $addressUids = $this->jobSearchOptionsService->getAddressUids($jobQuery);
+        foreach ($this->getPoiCollectionUids($addressUids) as $poiCollectionUid) {
+            $poiCollection = $this->persistenceManager->getObjectByIdentifier($poiCollectionUid, self::POI_COLLECTION_CLASS);
             if ($poiCollection instanceof DomainObjectInterface) {
                 $poiCollections->attach($poiCollection);
             }
         }
 
         return $poiCollections;
-    }
-
-    /**
-     * @return int[]
-     */
-    private function getAddressUids(): array
-    {
-        $addressUids = array_map(intval(...), (array)($this->arguments['addressUids'] ?? []));
-
-        return array_values(array_unique(array_filter($addressUids, static fn(int $uid): bool => $uid > 0)));
     }
 
     /**
@@ -86,10 +73,6 @@ final class AddressPoiCollectionViewHelper extends AbstractViewHelper
      */
     private function getPoiCollectionUids(array $addressUids): array
     {
-        if ($addressUids === [] || !isset($GLOBALS['TCA'][self::TABLE_ADDRESS]['columns']['tx_maps2_uid'])) {
-            return [];
-        }
-
         $poiCollectionUids = [];
         $defaultAddressUids = [];
         foreach ($this->fetchAddresses($addressUids) as $address) {
@@ -118,11 +101,12 @@ final class AddressPoiCollectionViewHelper extends AbstractViewHelper
      */
     private function fetchAddresses(array $addressUids): array
     {
+        $addressUids = array_values(array_filter($addressUids, static fn(int $uid): bool => $uid > 0));
         if ($addressUids === []) {
             return [];
         }
 
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(self::TABLE_ADDRESS);
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::TABLE_ADDRESS);
         $queryBuilder->setRestrictions(GeneralUtility::makeInstance(FrontendRestrictionContainer::class));
 
         return $queryBuilder
