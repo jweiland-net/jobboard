@@ -24,21 +24,21 @@
                     </f:comment>
                     <f:switch expression="{settings.pdfLinkMode}">
                         <f:case value="newTab">
-                            <f:link.action action="detail" arguments="{job: job}" pageType="1575903427" class="btn btn-outline-secondary" target="_blank" additionalAttributes="{rel: 'noopener'}"><f:translate key="job.showPdfNewTab"/></f:link.action>
+                            <f:link.action action="detail" arguments="{job: job}" pageType="1575903427" class="btn btn-outline-secondary" target="_blank" additionalAttributes="{rel: 'noopener'}">{f:translate(key: 'job.showPdfNewTab')}</f:link.action>
                         </f:case>
                         <f:case value="sameTab">
-                            <f:link.action action="detail" arguments="{job: job}" pageType="1575903427" class="btn btn-outline-secondary"><f:translate key="job.showPdf"/></f:link.action>
+                            <f:link.action action="detail" arguments="{job: job}" pageType="1575903427" class="btn btn-outline-secondary">{f:translate(key: 'job.showPdf')}</f:link.action>
                         </f:case>
                         <f:defaultCase>
                             <f:link.action action="detail" arguments="{job: job}" pageType="1575903427" class="btn btn-outline-secondary">
-                                <f:variable name="pdfAddition"><span class="d-none d-sm-inline"><f:translate key="job.downloadPdf.addition"/></span></f:variable>
-                                <f:format.raw><f:translate key="job.downloadPdf" arguments="{0: pdfAddition}"/></f:format.raw>
+                                <f:variable name="pdfAddition"><span class="d-none d-sm-inline">{f:translate(key: 'job.downloadPdf.addition')}</span></f:variable>
+                                <f:format.raw>{f:translate(key: 'job.downloadPdf', arguments: {0: pdfAddition})}</f:format.raw>
                             </f:link.action>
                         </f:defaultCase>
                     </f:switch>
                 </f:if>
                 <f:if condition="{settings.pidOfApplicationForm} > 0 && {job.email}">
-                    <f:link.page pageUid="{settings.pidOfApplicationForm}" class="btn btn-primary" additionalParams="{jobuid: job.uid}"><f:translate key="job.applyOnline"/></f:link.page>
+                    <f:link.page pageUid="{settings.pidOfApplicationForm}" class="btn btn-primary" additionalParams="{jobuid: job.uid}">{f:translate(key: 'job.applyOnline')}</f:link.page>
                 </f:if>
             </div>
 
@@ -61,19 +61,19 @@
                 <div class="card-body">
                     <dl class="mb-0">
                         <f:if condition="{job.applicationDeadline}">
-                            <dt><f:translate key="job.applicationDeadline"/></dt>
-                            <dd><f:format.date format="{f:translate(key:'dateFormat')}">{job.applicationDeadline}</f:format.date></dd>
+                            <dt>{f:translate(key: 'job.applicationDeadline')}</dt>
+                            <dd><f:format.date format="{f:translate(key: 'dateFormat')}">{job.applicationDeadline}</f:format.date></dd>
                         </f:if>
                         <f:if condition="{job.jobAreas}">
-                            <dt><f:translate key="job.job_areas.title"/></dt>
+                            <dt>{f:translate(key: 'job.job_areas.title')}</dt>
                             <dd class="d-flex flex-wrap gap-1"><f:render partial="Job/JobAreas" arguments="{job: job, separator: ''}"/></dd>
                         </f:if>
                         <f:if condition="{job.jobType.title}">
-                            <dt><f:translate key="job.job_type.title"/></dt>
+                            <dt>{f:translate(key: 'job.job_type.title')}</dt>
                             <dd>{job.jobType.title}</dd>
                         </f:if>
                         <f:if condition="{job.hasSalaryInformation}">
-                            <dt><f:translate key="job.salary"/></dt>
+                            <dt>{f:translate(key: 'job.salary')}</dt>
                             <dd>
                                 <f:if condition="{job.hasSalaryRange}">
                                     <f:then>
@@ -86,7 +86,7 @@
                             </dd>
                         </f:if>
 
-                        <dt><f:translate key="job.company"/></dt>
+                        <dt>{f:translate(key: 'job.company')}</dt>
                         <f:if condition="{job.address.company}">
                             <dd class="mb-0">{job.address.company}</dd>
                         </f:if>
@@ -124,9 +124,9 @@
 <!-- TCA palette "job_details": reference_number (title/subtitle are already shown above as heading) -->
 <f:section name="renderDetails">
     <section class="mt-5">
-        <h2 class="h4 mb-3"><f:translate key="job.groups.details"/></h2>
+        <h2 class="h4 mb-3">{f:translate(key: 'job.groups.details')}</h2>
         <dl class="row mb-0">
-            <dt class="col-sm-4"><f:translate key="job.referenceNumber"/></dt>
+            <dt class="col-sm-4">{f:translate(key: 'job.referenceNumber')}</dt>
             <dd class="col-sm-8">{job.referenceNumber}</dd>
         </dl>
     </section>
@@ -136,17 +136,17 @@
 <f:section name="renderDescription">
     <f:if condition="{job.offer} || {job.requirements} || {job.furtherInformation}">
         <section class="mt-5">
-            <h2 class="h4 mb-3"><f:translate key="job.groups.description"/></h2>
+            <h2 class="h4 mb-3">{f:translate(key: 'job.groups.description')}</h2>
             <f:if condition="{job.offer}">
-                <h3 class="h5"><f:translate key="job.offer"/></h3>
+                <h3 class="h5">{f:translate(key: 'job.offer')}</h3>
                 <f:format.html>{job.offer}</f:format.html>
             </f:if>
             <f:if condition="{job.requirements}">
-                <h3 class="h5"><f:translate key="job.requirements"/></h3>
+                <h3 class="h5">{f:translate(key: 'job.requirements')}</h3>
                 <f:format.html>{job.requirements}</f:format.html>
             </f:if>
             <f:if condition="{job.furtherInformation}">
-                <h3 class="h5"><f:translate key="job.furtherInformation"/></h3>
+                <h3 class="h5">{f:translate(key: 'job.furtherInformation')}</h3>
                 <f:format.html>{job.furtherInformation}</f:format.html>
             </f:if>
         </section>
@@ -157,12 +157,12 @@
 <f:section name="renderImport">
     <f:if condition="{job.isImport}">
         <section class="mt-5">
-            <h2 class="h4 mb-3"><f:translate key="job.groups.import"/></h2>
+            <h2 class="h4 mb-3">{f:translate(key: 'job.groups.import')}</h2>
             <dl class="row mb-0">
-                <dt class="col-sm-4"><f:translate key="job.isImport"/></dt>
-                <dd class="col-sm-8"><f:translate key="job.boolean.yes"/></dd>
+                <dt class="col-sm-4">{f:translate(key: 'job.isImport')}</dt>
+                <dd class="col-sm-8">{f:translate(key: 'job.boolean.yes')}</dd>
                 <f:if condition="{job.vacancyId}">
-                    <dt class="col-sm-4"><f:translate key="job.vacancyId"/></dt>
+                    <dt class="col-sm-4">{f:translate(key: 'job.vacancyId')}</dt>
                     <dd class="col-sm-8">{job.vacancyId}</dd>
                 </f:if>
             </dl>
@@ -173,14 +173,14 @@
 <!-- TCA palette "address" -->
 <f:section name="renderAddress">
     <section class="mt-5">
-        <h2 class="h4 mb-3"><f:translate key="job.company"/></h2>
+        <h2 class="h4 mb-3">{f:translate(key: 'job.company')}</h2>
         <dl class="row mb-0">
             <f:if condition="{job.address.company}">
-                <dt class="col-sm-4"><f:translate key="job.company"/></dt>
+                <dt class="col-sm-4">{f:translate(key: 'job.company')}</dt>
                 <dd class="col-sm-8">{job.address.company}</dd>
             </f:if>
             <f:if condition="{job.address.address}">
-                <dt class="col-sm-4"><f:translate key="job.address.city"/></dt>
+                <dt class="col-sm-4">{f:translate(key: 'job.address.city')}</dt>
                 <dd class="col-sm-8">
                     {job.address.address}<br/>
                     <f:if condition="{job.address.city}">{job.address.zip} {job.address.city}</f:if>
@@ -193,26 +193,26 @@
 <!-- TCA palette "information": job_role, job_type, contract_type, job_areas, tender_type -->
 <f:section name="renderInformation">
     <section class="mt-5">
-        <h2 class="h4 mb-3"><f:translate key="job.groups.information"/></h2>
+        <h2 class="h4 mb-3">{f:translate(key: 'job.groups.information')}</h2>
         <dl class="row mb-0">
             <f:if condition="{job.jobRole.title}">
-                <dt class="col-sm-4"><f:translate key="job.jobRole.title"/></dt>
+                <dt class="col-sm-4">{f:translate(key: 'job.jobRole.title')}</dt>
                 <dd class="col-sm-8">{job.jobRole.title}</dd>
             </f:if>
             <f:if condition="{job.jobType.title}">
-                <dt class="col-sm-4"><f:translate key="job.job_type.title"/></dt>
+                <dt class="col-sm-4">{f:translate(key: 'job.job_type.title')}</dt>
                 <dd class="col-sm-8">{job.jobType.title}</dd>
             </f:if>
             <f:if condition="{job.contractType.title}">
-                <dt class="col-sm-4"><f:translate key="job.contractType.title"/></dt>
+                <dt class="col-sm-4">{f:translate(key: 'job.contractType.title')}</dt>
                 <dd class="col-sm-8">{job.contractType.title}</dd>
             </f:if>
             <f:if condition="{job.jobAreas}">
-                <dt class="col-sm-4"><f:translate key="job.job_areas.title"/></dt>
+                <dt class="col-sm-4">{f:translate(key: 'job.job_areas.title')}</dt>
                 <dd class="col-sm-8 d-flex flex-wrap gap-1"><f:render partial="Job/JobAreas" arguments="{job: job, separator: ''}"/></dd>
             </f:if>
             <f:if condition="{job.tenderType.title}">
-                <dt class="col-sm-4"><f:translate key="job.tenderType.title"/></dt>
+                <dt class="col-sm-4">{f:translate(key: 'job.tenderType.title')}</dt>
                 <dd class="col-sm-8">{job.tenderType.title}</dd>
             </f:if>
         </dl>
@@ -223,9 +223,9 @@
 <f:section name="renderSalary">
     <f:if condition="{job.hasSalaryInformation}">
         <section class="mt-5">
-            <h2 class="h4 mb-3"><f:translate key="job.salary"/></h2>
+            <h2 class="h4 mb-3">{f:translate(key: 'job.salary')}</h2>
             <dl class="row mb-0">
-                <dt class="col-sm-4"><f:translate key="job.salary"/></dt>
+                <dt class="col-sm-4">{f:translate(key: 'job.salary')}</dt>
                 <dd class="col-sm-8">
                     <f:if condition="{job.hasSalaryRange}">
                         <f:then>
@@ -237,13 +237,13 @@
                     </f:if>
                 </dd>
                 <f:for each="{job.salaryGrades}" as="salaryGrade">
-                    <dt class="col-sm-4"><f:translate key="job.salaryGrade.title"/></dt>
+                    <dt class="col-sm-4">{f:translate(key: 'job.salaryGrade.title')}</dt>
                     <dd class="col-sm-8">
                         {salaryGrade.title}
                         <f:if condition="{salaryGrade.salaryTable.title}"> ({salaryGrade.salaryTable.title})</f:if>
                     </dd>
                     <f:if condition="{salaryGrade.hasSteps}">
-                        <dt class="col-sm-4"><f:translate key="job.salarySteps"/></dt>
+                        <dt class="col-sm-4">{f:translate(key: 'job.salarySteps')}</dt>
                         <dd class="col-sm-8">
                             <ul class="list-unstyled mb-0">
                                 <f:for each="{salaryGrade.salarySteps}" as="salaryStep">
@@ -262,7 +262,7 @@
 <f:section name="renderBenefits">
     <f:if condition="{job.benefits}">
         <section class="mt-5">
-            <h2 class="h4 mb-3"><f:translate key="job.benefits.title"/></h2>
+            <h2 class="h4 mb-3">{f:translate(key: 'job.benefits.title')}</h2>
             <f:comment>
                 The editor chosen benefit color can not be expressed by a CSS
                 class, so it is passed to the card border via CSS variable.
@@ -293,12 +293,12 @@
 <!-- TCA div "employer": employer, employer_logo, employer_address -->
 <f:section name="renderEmployer">
     <section class="mt-5">
-        <h2 class="h4 mb-3"><f:translate key="job.employer"/></h2>
+        <h2 class="h4 mb-3">{f:translate(key: 'job.employer')}</h2>
         <dl class="row mb-0">
-            <dt class="col-sm-4"><f:translate key="job.employer"/></dt>
+            <dt class="col-sm-4">{f:translate(key: 'job.employer')}</dt>
             <dd class="col-sm-8">{job.employer}</dd>
             <f:if condition="{job.employerAddress}">
-                <dt class="col-sm-4"><f:translate key="job.address.city"/></dt>
+                <dt class="col-sm-4">{f:translate(key: 'job.address.city')}</dt>
                 <dd class="col-sm-8">
                     <f:if condition="{job.employerAddress.address}">{job.employerAddress.address}<br/></f:if>
                     <f:if condition="{job.employerAddress.city}">{job.employerAddress.zip} {job.employerAddress.city}</f:if>
@@ -319,22 +319,22 @@
 <f:section name="renderContactPerson">
     <f:if condition="{job.firstName} || {job.lastName} || {job.email} || {job.telephone} || {job.function}">
         <section class="mt-5">
-            <h2 class="h4 mb-3"><f:translate key="job.groups.contactPerson"/></h2>
+            <h2 class="h4 mb-3">{f:translate(key: 'job.groups.contactPerson')}</h2>
             <dl class="row mb-0">
                 <f:if condition="{job.firstName} || {job.lastName}">
-                    <dt class="col-sm-4"><f:translate key="job.firstName"/> / <f:translate key="job.lastName"/></dt>
+                    <dt class="col-sm-4">{f:translate(key: 'job.firstName')} / {f:translate(key: 'job.lastName')}</dt>
                     <dd class="col-sm-8">{job.firstName} {job.lastName}</dd>
                 </f:if>
                 <f:if condition="{job.function}">
-                    <dt class="col-sm-4"><f:translate key="job.function"/></dt>
+                    <dt class="col-sm-4">{f:translate(key: 'job.function')}</dt>
                     <dd class="col-sm-8">{job.function}</dd>
                 </f:if>
                 <f:if condition="{job.email}">
-                    <dt class="col-sm-4"><f:translate key="job.email"/></dt>
+                    <dt class="col-sm-4">{f:translate(key: 'job.email')}</dt>
                     <dd class="col-sm-8"><f:link.email email="{job.email}"/></dd>
                 </f:if>
                 <f:if condition="{job.telephone}">
-                    <dt class="col-sm-4"><f:translate key="job.telephone"/></dt>
+                    <dt class="col-sm-4">{f:translate(key: 'job.telephone')}</dt>
                     <dd class="col-sm-8">{job.telephone}</dd>
                 </f:if>
             </dl>
@@ -345,23 +345,23 @@
 <!-- TCA palette "startEndDate" plus application_deadline, application_guidelines -->
 <f:section name="renderApplicationInformation">
     <section class="mt-5">
-        <h2 class="h4 mb-3"><f:translate key="job.groups.applicationInformation"/></h2>
+        <h2 class="h4 mb-3">{f:translate(key: 'job.groups.applicationInformation')}</h2>
         <dl class="row mb-0">
             <f:if condition="{job.startDate}">
-                <dt class="col-sm-4"><f:translate key="job.startEndDate.startDate"/></dt>
+                <dt class="col-sm-4">{f:translate(key: 'job.startEndDate.startDate')}</dt>
                 <dd class="col-sm-8"><f:format.date format="{f:translate(key: 'dateFormat')}">{job.startDate}</f:format.date></dd>
             </f:if>
             <f:if condition="{job.endingDate}">
-                <dt class="col-sm-4"><f:translate key="job.startEndDate.endDate"/></dt>
+                <dt class="col-sm-4">{f:translate(key: 'job.startEndDate.endDate')}</dt>
                 <dd class="col-sm-8"><f:format.date format="{f:translate(key: 'dateFormat')}">{job.endingDate}</f:format.date></dd>
             </f:if>
             <f:if condition="{job.applicationDeadline}">
-                <dt class="col-sm-4"><f:translate key="job.applicationDeadline"/></dt>
+                <dt class="col-sm-4">{f:translate(key: 'job.applicationDeadline')}</dt>
                 <dd class="col-sm-8"><f:format.date format="{f:translate(key: 'dateFormat')}">{job.applicationDeadline}</f:format.date></dd>
             </f:if>
         </dl>
         <f:if condition="{job.applicationGuidelines}">
-            <h3 class="h5 mt-3"><f:translate key="job.applicationGuidelines"/></h3>
+            <h3 class="h5 mt-3">{f:translate(key: 'job.applicationGuidelines')}</h3>
             <f:format.html>{job.applicationGuidelines}</f:format.html>
         </f:if>
     </section>
@@ -371,9 +371,9 @@
 <f:section name="renderMedia">
     <f:if condition="{job.headerLogo} || {job.tenderFile} || {job.pdfFiles}">
         <section class="mt-5">
-            <h2 class="h4 mb-3"><f:translate key="job.groups.media"/></h2>
+            <h2 class="h4 mb-3">{f:translate(key: 'job.groups.media')}</h2>
             <f:if condition="{job.headerLogo}">
-                <h3 class="h5"><f:translate key="job.headerLogo"/></h3>
+                <h3 class="h5">{f:translate(key: 'job.headerLogo')}</h3>
                 <div class="job-logos d-flex flex-wrap align-items-center gap-3 mb-3">
                     <f:for each="{job.headerLogo}" as="headerLogo">
                         <f:image image="{headerLogo}" alt="{job.title}" class="img-fluid"/>
@@ -381,7 +381,7 @@
                 </div>
             </f:if>
             <f:if condition="{job.tenderFile}">
-                <h3 class="h5"><f:translate key="job.tenderFile"/></h3>
+                <h3 class="h5">{f:translate(key: 'job.tenderFile')}</h3>
                 <ul class="list-group mb-3">
                     <f:for each="{job.tenderFile}" as="tenderFile">
                         <li class="list-group-item"><a class="text-break" href="{tenderFile.originalResource.publicUrl}">{tenderFile.originalResource.name}</a></li>
@@ -389,7 +389,7 @@
                 </ul>
             </f:if>
             <f:if condition="{job.pdfFiles}">
-                <h3 class="h5"><f:translate key="job.pdfFiles"/></h3>
+                <h3 class="h5">{f:translate(key: 'job.pdfFiles')}</h3>
                 <ul class="list-group mb-3">
                     <f:for each="{job.pdfFiles}" as="pdfFile">
                         <li class="list-group-item"><a class="text-break" href="{pdfFile.originalResource.publicUrl}">{pdfFile.originalResource.name}</a></li>
@@ -398,7 +398,7 @@
             </f:if>
             <f:if condition="{job.pdfTstamp}">
                 <dl class="row mb-0">
-                    <dt class="col-sm-4"><f:translate key="job.pdfTstamp"/></dt>
+                    <dt class="col-sm-4">{f:translate(key: 'job.pdfTstamp')}</dt>
                     <dd class="col-sm-8"><f:format.date format="{f:translate(key: 'dateFormat')}">@{job.pdfTstamp}</f:format.date></dd>
                 </dl>
             </f:if>
@@ -411,7 +411,7 @@
 <f:section name="renderRelatedJobs">
     <f:if condition="{relatedJobs}">
         <section class="mt-5">
-            <h2 class="h4 mb-3"><f:translate key="job.relatedJobs"/></h2>
+            <h2 class="h4 mb-3">{f:translate(key: 'job.relatedJobs')}</h2>
             <ul class="list-group">
                 <f:for each="{relatedJobs}" as="relatedJob">
                     <li class="list-group-item"><f:link.action action="detail" arguments="{job: relatedJob}">{relatedJob.title}</f:link.action></li>

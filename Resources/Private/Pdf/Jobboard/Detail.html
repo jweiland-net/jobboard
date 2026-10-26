@@ -33,14 +33,14 @@
         </f:if>
 
         <pdf:text color="#666" paragraphSpacing="1">
-            <f:translate key="job.title"/>
+            {f:translate(key: 'job.title')}
         </pdf:text>
         <pdf:headline type="title">{job.title}</pdf:headline>
 
         <f:if condition="{job.applicationDeadline}">
             <pdf:html>
-                <strong><f:translate key="job.applicationDeadline"/>:</strong>
-                <f:format.date format="{f:translate(key:'dateFormat')}">{job.applicationDeadline}</f:format.date>
+                <strong>{f:translate(key: 'job.applicationDeadline')}:</strong>
+                <f:format.date format="{f:translate(key: 'dateFormat')}">{job.applicationDeadline}</f:format.date>
             </pdf:html>
         </f:if>
 
@@ -57,15 +57,15 @@
         <pdf:lineBreak height="5"/>
 
         <pdf:html>
-            <strong><f:translate key="job.job_areas.title"/>:</strong> <f:render partial="Job/JobAreas" arguments="{job: job}"/>
+            <strong>{f:translate(key: 'job.job_areas.title')}:</strong> <f:render partial="Job/JobAreas" arguments="{job: job}"/>
             <br/>
-            <strong><f:translate key="job.job_type.title"/>:</strong> {job.jobType.title}
+            <strong>{f:translate(key: 'job.job_type.title')}:</strong> {job.jobType.title}
         </pdf:html>
 
         <pdf:lineBreak height="5"/>
 
         <pdf:html>
-            <strong><f:translate key="job.company"/>:</strong>
+            <strong>{f:translate(key: 'job.company')}:</strong>
         </pdf:html>
 
         <pdf:text paragraphSpacing="0">
@@ -78,11 +78,11 @@
         </pdf:text>
 
         <pdf:html>
-            <strong><f:translate key="applicationTo"/>:</strong>
+            <strong>{f:translate(key: 'applicationTo')}:</strong>
         </pdf:html>
 
         <pdf:html>
-            <strong><f:translate key="job.employer"/></strong>
+            <strong>{f:translate(key: 'job.employer')}</strong>
         </pdf:html>
 
         <pdf:text paragraphSpacing="0">
