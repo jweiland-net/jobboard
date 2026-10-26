@@ -16,6 +16,7 @@ use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\DateTimeAspect;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 /**
@@ -109,9 +110,10 @@ final class EffectiveSalaryUpdaterTest extends FunctionalTestCase
     {
         // The fields are "readOnly" in FormEngine only, DataHandler writes them
         // (tstamp is set by DataHandler, not by raw SQL)
-        self::assertTrue($GLOBALS['TCA'][self::TABLE_JOB]['columns']['effective_salary_min']['config']['readOnly']);
-        self::assertTrue($GLOBALS['TCA'][self::TABLE_JOB]['columns']['effective_salary_max']['config']['readOnly']);
-        self::assertTrue($GLOBALS['TCA'][self::TABLE_JOB]['columns']['effective_salary_valid_until']['config']['readOnly']);
+        $jobSchema = $this->get(TcaSchemaFactory::class)->get(self::TABLE_JOB);
+        self::assertTrue($jobSchema->getField('effective_salary_min')->getConfiguration()['readOnly']);
+        self::assertTrue($jobSchema->getField('effective_salary_max')->getConfiguration()['readOnly']);
+        self::assertTrue($jobSchema->getField('effective_salary_valid_until')->getConfiguration()['readOnly']);
         $this->setUpBackendUser(1);
 
         $this->subject->updateJobs([9]);

@@ -18,6 +18,7 @@ use JWeiland\Maps2\Event\RenderInfoWindowContentEvent;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Http\ServerRequest;
+use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
@@ -41,7 +42,7 @@ final class RenderJobLocationInfoWindowContentEventListenerWithoutMaps2Test exte
     public function maps2IsNotLoaded(): void
     {
         self::assertFalse(ExtensionManagementUtility::isLoaded('maps2'));
-        self::assertArrayNotHasKey('tx_maps2_uid', $GLOBALS['TCA']['tt_address']['columns']);
+        self::assertFalse($this->get(TcaSchemaFactory::class)->get('tt_address')->hasField('tx_maps2_uid'));
     }
 
     #[Test]

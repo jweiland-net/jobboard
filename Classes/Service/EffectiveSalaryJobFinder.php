@@ -16,6 +16,9 @@ use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
+use TYPO3\CMS\Core\Schema\Capability\LanguageAwareSchemaCapability;
+use TYPO3\CMS\Core\Schema\Capability\TcaSchemaCapability;
+use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 
 /**
  * Finds the jobs, whose effective salary has to be recalculated. Plain
@@ -35,6 +38,7 @@ readonly class EffectiveSalaryJobFinder
 
     public function __construct(
         private ConnectionPool $connectionPool,
+        private TcaSchemaFactory $tcaSchemaFactory,
     ) {}
 
     /**
@@ -92,16 +96,17 @@ readonly class EffectiveSalaryJobFinder
             return [];
         }
 
+        $parentField = $this->getTranslationParentField();
         $queryBuilder = $this->getQueryBuilder(self::TABLE_JOB);
         $result = $queryBuilder
-            ->select('uid', 'l10n_parent')
+            ->select('uid', $parentField)
             ->from(self::TABLE_JOB)
             ->where($queryBuilder->expr()->in('uid', $this->createIntArrayParameter($queryBuilder, $jobUids)))
             ->executeQuery();
 
         $defaultLanguageJobUids = [];
         while ($row = $result->fetchAssociative()) {
-            $defaultLanguageJobUids[] = (int)$row['l10n_parent'] > 0 ? (int)$row['l10n_parent'] : (int)$row['uid'];
+            $defaultLanguageJobUids[] = $this->getDefaultLanguageUid($row, $parentField);
         }
 
         return array_values(array_unique($defaultLanguageJobUids));
@@ -168,21 +173,21 @@ readonly class EffectiveSalaryJobFinder
             return [];
         }
 
+        $parentField = $this->getTranslationParentField();
         $queryBuilder = $this->getQueryBuilder(self::TABLE_JOB);
         $jobUidsParameter = $this->createIntArrayParameter($queryBuilder, $jobUids);
         $result = $queryBuilder
-            ->select('uid', 'l10n_parent', ...EffectiveSalary::FIELDS)
+            ->select('uid', $parentField, ...EffectiveSalary::FIELDS)
             ->from(self::TABLE_JOB)
             ->where($queryBuilder->expr()->or(
                 $queryBuilder->expr()->in('uid', $jobUidsParameter),
-                $queryBuilder->expr()->in('l10n_parent', $jobUidsParameter),
+                $queryBuilder->expr()->in($parentField, $jobUidsParameter),
             ))
             ->executeQuery();
 
         $storedEffectiveSalaries = [];
         while ($row = $result->fetchAssociative()) {
-            $jobUid = (int)$row['l10n_parent'] > 0 ? (int)$row['l10n_parent'] : (int)$row['uid'];
-            $storedEffectiveSalaries[$jobUid][] = EffectiveSalary::fromRow($row);
+            $storedEffectiveSalaries[$this->getDefaultLanguageUid($row, $parentField)][] = EffectiveSalary::fromRow($row);
         }
 
         return $storedEffectiveSalaries;
@@ -214,9 +219,30 @@ readonly class EffectiveSalaryJobFinder
     private function getDefaultLanguageConstraint(QueryBuilder $queryBuilder): string
     {
         return (string)$queryBuilder->expr()->in(
-            'sys_language_uid',
+            $this->getJobLanguageCapability()->getLanguageField()->getName(),
             $this->createIntArrayParameter($queryBuilder, [0, -1]),
         );
+    }
+
+    /**
+     * TCA ctrl "transOrigPointerField" of the job table (usually "l10n_parent")
+     */
+    private function getTranslationParentField(): string
+    {
+        return $this->getJobLanguageCapability()->getTranslationOriginPointerField()->getName();
+    }
+
+    private function getJobLanguageCapability(): LanguageAwareSchemaCapability
+    {
+        return $this->tcaSchemaFactory->get(self::TABLE_JOB)->getCapability(TcaSchemaCapability::Language);
+    }
+
+    /**
+     * @param array<string, mixed> $row
+     */
+    private function getDefaultLanguageUid(array $row, string $parentField): int
+    {
+        return (int)$row[$parentField] > 0 ? (int)$row[$parentField] : (int)$row['uid'];
     }
 
     private function getQueryBuilder(string $table): QueryBuilder

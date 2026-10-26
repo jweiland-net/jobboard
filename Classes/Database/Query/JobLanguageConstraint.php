@@ -18,6 +18,8 @@ use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\Query\Expression\CompositeExpression;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\FrontendRestrictionContainer;
+use TYPO3\CMS\Core\Schema\Capability\TcaSchemaCapability;
+use TYPO3\CMS\Core\Schema\TcaSchema;
 use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -36,23 +38,33 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  *
  * The selected rows are identified by getDefaultLanguageUid(), the UID
  * Extbase assigns to the overlaid object.
+ *
+ * The table name, the language field and the translation parent field
+ * (TCA ctrl "languageField" / "transOrigPointerField") are taken from the
+ * TCA schema of the job table, which the creator passes in.
  */
 final readonly class JobLanguageConstraint
 {
-    private const TABLE = 'tx_jobboard_domain_model_job';
+    private string $table;
 
-    private const LANGUAGE_FIELD = 'sys_language_uid';
+    private string $languageField;
 
-    private const PARENT_FIELD = 'l10n_parent';
+    private string $parentField;
 
     public function __construct(
         private LanguageAspect $languageAspect,
-    ) {}
+        TcaSchema $jobSchema,
+    ) {
+        $languageCapability = $jobSchema->getCapability(TcaSchemaCapability::Language);
+        $this->table = $jobSchema->getName();
+        $this->languageField = $languageCapability->getLanguageField()->getName();
+        $this->parentField = $languageCapability->getTranslationOriginPointerField()->getName();
+    }
 
     /**
      * Without site language (no site found), the default language is used.
      */
-    public static function fromRequest(ServerRequestInterface $request): self
+    public static function fromRequest(ServerRequestInterface $request, TcaSchema $jobSchema): self
     {
         $siteLanguage = $request->getAttribute('language');
 
@@ -60,7 +72,17 @@ final readonly class JobLanguageConstraint
             $siteLanguage instanceof SiteLanguage
                 ? LanguageAspectFactory::createFromSiteLanguage($siteLanguage)
                 : new LanguageAspect(),
+            $jobSchema,
         );
+    }
+
+    /**
+     * Column of the default record of a translation (TCA ctrl
+     * "transOrigPointerField"), needed in the rows of getDefaultLanguageUid().
+     */
+    public function getTranslationParentField(): string
+    {
+        return $this->parentField;
     }
 
     /**
@@ -68,11 +90,11 @@ final readonly class JobLanguageConstraint
      * records, records of language "all" and translations without default
      * record). Same as the UID of the Extbase object.
      *
-     * @param array<string, mixed> $row with the columns "uid" and "l10n_parent"
+     * @param array<string, mixed> $row with the columns "uid" and the translation parent field
      */
-    public static function getDefaultLanguageUid(array $row): int
+    public function getDefaultLanguageUid(array $row): int
     {
-        $parentUid = (int)($row[self::PARENT_FIELD] ?? 0);
+        $parentUid = (int)($row[$this->parentField] ?? 0);
 
         return $parentUid > 0 ? $parentUid : (int)($row['uid'] ?? 0);
     }
@@ -92,7 +114,7 @@ final readonly class JobLanguageConstraint
             $this->buildLanguageIn($queryBuilder, [-1]),
             $expr->and(
                 $this->buildLanguageIn($queryBuilder, [$languageId]),
-                $expr->in(self::PARENT_FIELD, $this->buildVisibleDefaultUidsSubSelect($queryBuilder)),
+                $expr->in($this->parentField, $this->buildVisibleDefaultUidsSubSelect($queryBuilder)),
             ),
         ];
 
@@ -109,7 +131,7 @@ final readonly class JobLanguageConstraint
     {
         return $queryBuilder->expr()->and(
             $this->buildLanguageIn($queryBuilder, [$languageId]),
-            $queryBuilder->expr()->eq(self::PARENT_FIELD, 0),
+            $queryBuilder->expr()->eq($this->parentField, 0),
         );
     }
 
@@ -131,8 +153,8 @@ final readonly class JobLanguageConstraint
         $subQueryBuilder
             ->select($alias . '.uid')
             ->where(
-                $subQueryBuilder->expr()->eq($alias . '.' . self::PARENT_FIELD, 0),
-                $subQueryBuilder->expr()->eq($alias . '.' . self::LANGUAGE_FIELD, 0),
+                $subQueryBuilder->expr()->eq($alias . '.' . $this->parentField, 0),
+                $subQueryBuilder->expr()->eq($alias . '.' . $this->languageField, 0),
             );
 
         return $subQueryBuilder->getSQL();
@@ -146,11 +168,11 @@ final readonly class JobLanguageConstraint
         $alias = 'job_to';
         $subQueryBuilder = $this->createSubQueryBuilder($queryBuilder, $alias);
         $subQueryBuilder
-            ->select($alias . '.' . self::PARENT_FIELD)
+            ->select($alias . '.' . $this->parentField)
             ->where(
-                $subQueryBuilder->expr()->gt($alias . '.' . self::PARENT_FIELD, 0),
+                $subQueryBuilder->expr()->gt($alias . '.' . $this->parentField, 0),
                 $subQueryBuilder->expr()->eq(
-                    $alias . '.' . self::LANGUAGE_FIELD,
+                    $alias . '.' . $this->languageField,
                     $queryBuilder->createNamedParameter($languageId, Connection::PARAM_INT),
                 ),
             );
@@ -166,7 +188,7 @@ final readonly class JobLanguageConstraint
     {
         $subQueryBuilder = $queryBuilder->getConnection()->createQueryBuilder();
         $subQueryBuilder->setRestrictions(GeneralUtility::makeInstance(FrontendRestrictionContainer::class));
-        $subQueryBuilder->from(self::TABLE, $alias);
+        $subQueryBuilder->from($this->table, $alias);
 
         return $subQueryBuilder;
     }
@@ -177,7 +199,7 @@ final readonly class JobLanguageConstraint
     private function buildLanguageIn(QueryBuilder $queryBuilder, array $languageIds): string
     {
         return $queryBuilder->expr()->in(
-            self::LANGUAGE_FIELD,
+            $this->languageField,
             $queryBuilder->createNamedParameter($languageIds, Connection::PARAM_INT_ARRAY),
         );
     }

@@ -27,6 +27,7 @@ use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\Query\Expression\CompositeExpression;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Http\JsonResponse;
+use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 
 /**
  * Remembers a job for the current visitor or forgets it again. Answers POST
@@ -56,6 +57,7 @@ final readonly class RememberJobMiddleware implements MiddlewareInterface
     public function __construct(
         private RememberedJobsServiceInterface $rememberedJobsService,
         private StoragePidResolverInterface $storagePidResolver,
+        private TcaSchemaFactory $tcaSchemaFactory,
     ) {}
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -215,41 +217,57 @@ final readonly class RememberJobMiddleware implements MiddlewareInterface
             return [];
         }
 
+        $languageConstraint = JobLanguageConstraint::fromRequest($request, $this->tcaSchemaFactory->get(self::TABLE));
+        $rows = $this->buildVisibleJobsQuery($request, $languageConstraint, $jobUids, $storagePids)
+            ->executeQuery()
+            ->fetchAllAssociative();
+
+        return array_values(array_unique(array_map($languageConstraint->getDefaultLanguageUid(...), $rows)));
+    }
+
+    /**
+     * @param int[] $jobUids
+     * @param int[] $storagePids
+     */
+    private function buildVisibleJobsQuery(
+        ServerRequestInterface $request,
+        JobLanguageConstraint $languageConstraint,
+        array $jobUids,
+        array $storagePids,
+    ): QueryBuilder {
+        $parentField = $languageConstraint->getTranslationParentField();
         $queryBuilder = $this->getQueryBuilderForTable(self::TABLE);
         $queryBuilder->getRestrictions()->add(
             OpenJobRestriction::forToday(SalaryRequirement::fromRequest($request)->isRequired()),
         );
-        $queryBuilder
-            ->select('uid', 'l10n_parent')
+
+        return $queryBuilder
+            ->select('uid', $parentField)
             ->from(self::TABLE)
             ->where(
-                $this->buildUidConstraint($queryBuilder, $jobUids),
+                $this->buildUidConstraint($queryBuilder, $parentField, $jobUids),
                 $queryBuilder->expr()->in(
                     'pid',
                     $queryBuilder->createNamedParameter($storagePids, Connection::PARAM_INT_ARRAY),
                 ),
-                JobLanguageConstraint::fromRequest($request)->buildExpression($queryBuilder),
+                $languageConstraint->buildExpression($queryBuilder),
             );
-
-        $rows = $queryBuilder->executeQuery()->fetchAllAssociative();
-
-        return array_values(array_unique(array_map(JobLanguageConstraint::getDefaultLanguageUid(...), $rows)));
     }
 
     /**
-     * The default record (uid) or its translations (l10n_parent), like
-     * JobRepository::findByUids(). The language constraint selects one row
-     * per job at most.
+     * The default record (uid) or its translations (translation parent field,
+     * TCA ctrl "transOrigPointerField"), like JobRepository::findByUids().
+     * The language constraint selects one row per job at most.
      *
      * @param int[] $jobUids
      */
-    private function buildUidConstraint(QueryBuilder $queryBuilder, array $jobUids): CompositeExpression
+    private function buildUidConstraint(QueryBuilder $queryBuilder, string $parentField, array $jobUids): CompositeExpression
     {
         $jobUidsParameter = $queryBuilder->createNamedParameter($jobUids, Connection::PARAM_INT_ARRAY);
 
         return $queryBuilder->expr()->or(
             $queryBuilder->expr()->in('uid', $jobUidsParameter),
-            $queryBuilder->expr()->in('l10n_parent', $jobUidsParameter),
+            $queryBuilder->expr()->in($parentField, $jobUidsParameter),
         );
     }
 }

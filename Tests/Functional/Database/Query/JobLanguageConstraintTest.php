@@ -24,6 +24,8 @@ use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\FrontendRestrictionContainer;
 use TYPO3\CMS\Core\Http\ServerRequest;
+use TYPO3\CMS\Core\Schema\TcaSchema;
+use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -96,6 +98,11 @@ final class JobLanguageConstraintTest extends FunctionalTestCase
         return $this->createSite($fallbackType)->getLanguageById($languageId);
     }
 
+    private function getJobSchema(): TcaSchema
+    {
+        return $this->get(TcaSchemaFactory::class)->get(self::TABLE);
+    }
+
     /**
      * @return int[] sorted default-language UIDs of the selected rows
      */
@@ -105,7 +112,7 @@ final class JobLanguageConstraintTest extends FunctionalTestCase
         $queryBuilder->setRestrictions(GeneralUtility::makeInstance(FrontendRestrictionContainer::class));
         $queryBuilder->getRestrictions()->add(OpenJobRestriction::forToday());
         $rows = $queryBuilder
-            ->select('uid', 'l10n_parent')
+            ->select('uid', $subject->getTranslationParentField())
             ->from(self::TABLE)
             ->where(
                 $queryBuilder->expr()->eq(
@@ -117,7 +124,7 @@ final class JobLanguageConstraintTest extends FunctionalTestCase
             ->executeQuery()
             ->fetchAllAssociative();
 
-        $uids = array_map(JobLanguageConstraint::getDefaultLanguageUid(...), $rows);
+        $uids = array_map($subject->getDefaultLanguageUid(...), $rows);
         sort($uids);
 
         return $uids;
@@ -174,6 +181,7 @@ final class JobLanguageConstraintTest extends FunctionalTestCase
     {
         $subject = new JobLanguageConstraint(
             LanguageAspectFactory::createFromSiteLanguage($this->getSiteLanguage($languageId, $fallbackType)),
+            $this->getJobSchema(),
         );
 
         self::assertSame($expectedUids, $this->selectWithConstraint($subject));
@@ -198,7 +206,7 @@ final class JobLanguageConstraintTest extends FunctionalTestCase
 
         self::assertSame(
             $this->selectWithExtbase($languageAspect),
-            $this->selectWithConstraint(new JobLanguageConstraint($languageAspect)),
+            $this->selectWithConstraint(new JobLanguageConstraint($languageAspect, $this->getJobSchema())),
         );
     }
 
@@ -225,14 +233,17 @@ final class JobLanguageConstraintTest extends FunctionalTestCase
 
         self::assertSame(
             $this->selectWithExtbase($languageAspect),
-            $this->selectWithConstraint(new JobLanguageConstraint($languageAspect)),
+            $this->selectWithConstraint(new JobLanguageConstraint($languageAspect, $this->getJobSchema())),
         );
     }
 
     #[Test]
     public function buildExpressionWithOverlaysOnSelectsTranslationsWithVisibleDefaultRecordOnly(): void
     {
-        $subject = new JobLanguageConstraint(new LanguageAspect(1, 1, LanguageAspect::OVERLAYS_ON, [0]));
+        $subject = new JobLanguageConstraint(
+            new LanguageAspect(1, 1, LanguageAspect::OVERLAYS_ON, [0]),
+            $this->getJobSchema(),
+        );
 
         self::assertSame([1, 6], $this->selectWithConstraint($subject));
     }
@@ -240,7 +251,10 @@ final class JobLanguageConstraintTest extends FunctionalTestCase
     #[Test]
     public function buildExpressionInLanguage2SelectsItsTranslationAndUntranslatedDefaults(): void
     {
-        $subject = new JobLanguageConstraint(new LanguageAspect(2, 2, LanguageAspect::OVERLAYS_MIXED, [0]));
+        $subject = new JobLanguageConstraint(
+            new LanguageAspect(2, 2, LanguageAspect::OVERLAYS_MIXED, [0]),
+            $this->getJobSchema(),
+        );
 
         // Job 13 is no translation of language 2: job 3 stays hidden
         self::assertSame([1, 2, 4, 6, 8, 9], $this->selectWithConstraint($subject));
@@ -252,7 +266,9 @@ final class JobLanguageConstraintTest extends FunctionalTestCase
         $request = (new ServerRequest('https://example.com/de/', 'POST'))
             ->withAttribute('language', $this->getSiteLanguage(1, 'strict'));
 
-        self::assertSame([1, 6, 15], $this->selectWithConstraint(JobLanguageConstraint::fromRequest($request)));
+        $subject = JobLanguageConstraint::fromRequest($request, $this->getJobSchema());
+
+        self::assertSame([1, 6, 15], $this->selectWithConstraint($subject));
     }
 
     #[Test]
@@ -260,7 +276,9 @@ final class JobLanguageConstraintTest extends FunctionalTestCase
     {
         $request = new ServerRequest('https://example.com/de/', 'POST');
 
-        self::assertSame([1, 2, 4, 6, 8, 9], $this->selectWithConstraint(JobLanguageConstraint::fromRequest($request)));
+        $subject = JobLanguageConstraint::fromRequest($request, $this->getJobSchema());
+
+        self::assertSame([1, 2, 4, 6, 8, 9], $this->selectWithConstraint($subject));
     }
 
     #[Test]
@@ -268,7 +286,9 @@ final class JobLanguageConstraintTest extends FunctionalTestCase
     {
         $request = (new ServerRequest('https://example.com/de/', 'POST'))->withAttribute('language', 1);
 
-        self::assertSame([1, 2, 4, 6, 8, 9], $this->selectWithConstraint(JobLanguageConstraint::fromRequest($request)));
+        $subject = JobLanguageConstraint::fromRequest($request, $this->getJobSchema());
+
+        self::assertSame([1, 2, 4, 6, 8, 9], $this->selectWithConstraint($subject));
     }
 
     #[Test]
@@ -277,6 +297,7 @@ final class JobLanguageConstraintTest extends FunctionalTestCase
         foreach (['fallback', 'strict', 'free'] as $fallbackType) {
             $uids = $this->selectWithConstraint(new JobLanguageConstraint(
                 LanguageAspectFactory::createFromSiteLanguage($this->getSiteLanguage(1, $fallbackType)),
+                $this->getJobSchema(),
             ));
 
             self::assertSame(array_values(array_unique($uids)), $uids, 'Fallback type ' . $fallbackType);

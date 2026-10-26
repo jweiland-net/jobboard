@@ -14,6 +14,11 @@ namespace JWeiland\Jobboard\Tests\Unit\Database\Query;
 use JWeiland\Jobboard\Database\Query\JobLanguageConstraint;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
+use TYPO3\CMS\Core\Context\LanguageAspect;
+use TYPO3\CMS\Core\Schema\Field\FieldCollection;
+use TYPO3\CMS\Core\Schema\Field\LanguageFieldType;
+use TYPO3\CMS\Core\Schema\Field\PassthroughFieldType;
+use TYPO3\CMS\Core\Schema\TcaSchema;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
@@ -21,6 +26,30 @@ use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
  */
 final class JobLanguageConstraintTest extends UnitTestCase
 {
+    /**
+     * Minimal TCA schema of a language aware table: the field names come
+     * from TCA ctrl "languageField" and "transOrigPointerField".
+     */
+    private static function createSchema(string $parentField = 'l10n_parent'): TcaSchema
+    {
+        return new TcaSchema(
+            'tx_jobboard_domain_model_job',
+            new FieldCollection([
+                'sys_language_uid' => new LanguageFieldType('sys_language_uid', []),
+                $parentField => new PassthroughFieldType($parentField, []),
+            ]),
+            [
+                'languageField' => 'sys_language_uid',
+                'transOrigPointerField' => $parentField,
+            ],
+        );
+    }
+
+    private static function createSubject(string $parentField = 'l10n_parent'): JobLanguageConstraint
+    {
+        return new JobLanguageConstraint(new LanguageAspect(), self::createSchema($parentField));
+    }
+
     /**
      * @return array<string, array{array<string, mixed>, int}>
      */
@@ -45,6 +74,22 @@ final class JobLanguageConstraintTest extends UnitTestCase
     #[DataProvider('rowDataProvider')]
     public function getDefaultLanguageUidReturnsUidOfDefaultRecord(array $row, int $expectedUid): void
     {
-        self::assertSame($expectedUid, JobLanguageConstraint::getDefaultLanguageUid($row));
+        self::assertSame($expectedUid, self::createSubject()->getDefaultLanguageUid($row));
+    }
+
+    #[Test]
+    public function getDefaultLanguageUidUsesTranslationParentFieldOfSchema(): void
+    {
+        $subject = self::createSubject('l18n_parent');
+
+        self::assertSame(3, $subject->getDefaultLanguageUid(['uid' => 13, 'l18n_parent' => 3]));
+        self::assertSame(13, $subject->getDefaultLanguageUid(['uid' => 13, 'l10n_parent' => 3]));
+    }
+
+    #[Test]
+    public function getTranslationParentFieldReturnsTranslationParentFieldOfSchema(): void
+    {
+        self::assertSame('l10n_parent', self::createSubject()->getTranslationParentField());
+        self::assertSame('l18n_parent', self::createSubject('l18n_parent')->getTranslationParentField());
     }
 }

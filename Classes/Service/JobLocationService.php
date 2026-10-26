@@ -23,6 +23,8 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\FrontendRestrictionContainer;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
+use TYPO3\CMS\Core\Schema\Capability\TcaSchemaCapability;
+use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -50,6 +52,7 @@ final readonly class JobLocationService implements JobLocationServiceInterface
         private ConnectionPool $connectionPool,
         private StoragePidResolverInterface $storagePidResolver,
         private JobUriBuilderInterface $jobUriBuilder,
+        private TcaSchemaFactory $tcaSchemaFactory,
     ) {}
 
     public function findByPoiCollection(int $poiCollectionUid, ServerRequestInterface $request): ?JobLocation
@@ -95,7 +98,7 @@ final readonly class JobLocationService implements JobLocationServiceInterface
                     'tx_maps2_uid',
                     $queryBuilder->createNamedParameter($poiCollectionUid, Connection::PARAM_INT),
                 ),
-                $this->buildLanguageConstraint($queryBuilder, [0, -1]),
+                $this->buildLanguageConstraint($queryBuilder, self::TABLE_ADDRESS, [0, -1]),
             )
             ->orderBy('uid', 'ASC')
             ->executeQuery()
@@ -146,7 +149,7 @@ final readonly class JobLocationService implements JobLocationServiceInterface
                     'pid',
                     $queryBuilder->createNamedParameter($storagePids, Connection::PARAM_INT_ARRAY),
                 ),
-                $this->buildLanguageConstraint($queryBuilder, $this->getLanguageUidsOfJobs($languageAspect)),
+                $this->buildLanguageConstraint($queryBuilder, self::TABLE_JOB, $this->getLanguageUidsOfJobs($languageAspect)),
             )
             ->orderBy('uid', 'ASC');
     }
@@ -277,12 +280,20 @@ final readonly class JobLocationService implements JobLocationServiceInterface
     }
 
     /**
+     * The language field is TCA ctrl "languageField" of the table
+     *
      * @param int[] $languageUids
      */
-    private function buildLanguageConstraint(QueryBuilder $queryBuilder, array $languageUids): string
+    private function buildLanguageConstraint(QueryBuilder $queryBuilder, string $table, array $languageUids): string
     {
+        $languageField = $this->tcaSchemaFactory
+            ->get($table)
+            ->getCapability(TcaSchemaCapability::Language)
+            ->getLanguageField()
+            ->getName();
+
         return $queryBuilder->expr()->in(
-            'sys_language_uid',
+            $languageField,
             $queryBuilder->createNamedParameter($languageUids, Connection::PARAM_INT_ARRAY),
         );
     }

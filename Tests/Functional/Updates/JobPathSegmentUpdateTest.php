@@ -15,7 +15,7 @@ use JWeiland\Jobboard\Updates\JobPathSegmentUpdate;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 /**
@@ -41,9 +41,9 @@ final class JobPathSegmentUpdateTest extends FunctionalTestCase
 
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/JobPathSegmentUpdate.csv');
 
-        $this->subject = GeneralUtility::makeInstance(
-            JobPathSegmentUpdate::class,
+        $this->subject = new JobPathSegmentUpdate(
             $this->get(ConnectionPool::class),
+            $this->get(TcaSchemaFactory::class),
         );
     }
 

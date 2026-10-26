@@ -20,6 +20,8 @@ use TYPO3\CMS\Core\Database\Query\Restriction\FrontendRestrictionContainer;
 use TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
+use TYPO3\CMS\Core\Schema\Capability\TcaSchemaCapability;
+use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Event\ModifyCacheLifetimeForPageEvent;
@@ -57,6 +59,7 @@ final readonly class LimitJobListCacheLifetimeEventListener
         private ConnectionPool $connectionPool,
         private PageRepository $pageRepository,
         private SiteFinder $siteFinder,
+        private TcaSchemaFactory $tcaSchemaFactory,
     ) {}
 
     public function __invoke(ModifyCacheLifetimeForPageEvent $event): void
@@ -142,15 +145,7 @@ final readonly class LimitJobListCacheLifetimeEventListener
      */
     private function getNextChange(array $storagePids, int $now): int
     {
-        $today = $this->getMidnight($now, 'today');
-        $queryBuilder = $this->createQueryBuilderForJobs($storagePids);
-        $queryBuilder->selectLiteral(
-            $this->buildMinimumExpression($queryBuilder, 'starttime', '>', $now, 'next_starttime'),
-            $this->buildMinimumExpression($queryBuilder, 'endtime', '>', $now, 'next_endtime'),
-            $this->buildMinimumExpression($queryBuilder, 'application_deadline', '>=', $today, 'next_deadline'),
-            $this->buildMinimumExpression($queryBuilder, 'ending_date', '>=', $today, 'next_ending_date'),
-        );
-        $row = $queryBuilder->executeQuery()->fetchAssociative() ?: [];
+        $row = $this->fetchNextPointsInTime($storagePids, $now, $this->getMidnight($now, 'today'));
 
         $nextChanges = array_filter([
             (int)($row['next_starttime'] ?? 0),
@@ -161,6 +156,28 @@ final readonly class LimitJobListCacheLifetimeEventListener
         ]);
 
         return $nextChanges === [] ? 0 : min($nextChanges);
+    }
+
+    /**
+     * Start and end time fields are TCA ctrl "enablecolumns" of the job table
+     *
+     * @param int[] $storagePids
+     * @return array<string, mixed>
+     */
+    private function fetchNextPointsInTime(array $storagePids, int $now, int $today): array
+    {
+        $jobSchema = $this->tcaSchemaFactory->get(self::TABLE_JOB);
+        $startTimeField = $jobSchema->getCapability(TcaSchemaCapability::RestrictionStartTime)->getFieldName();
+        $endTimeField = $jobSchema->getCapability(TcaSchemaCapability::RestrictionEndTime)->getFieldName();
+        $queryBuilder = $this->createQueryBuilderForJobs($storagePids);
+        $queryBuilder->selectLiteral(
+            $this->buildMinimumExpression($queryBuilder, $startTimeField, '>', $now, 'next_starttime'),
+            $this->buildMinimumExpression($queryBuilder, $endTimeField, '>', $now, 'next_endtime'),
+            $this->buildMinimumExpression($queryBuilder, 'application_deadline', '>=', $today, 'next_deadline'),
+            $this->buildMinimumExpression($queryBuilder, 'ending_date', '>=', $today, 'next_ending_date'),
+        );
+
+        return $queryBuilder->executeQuery()->fetchAssociative() ?: [];
     }
 
     /**
@@ -176,7 +193,7 @@ final readonly class LimitJobListCacheLifetimeEventListener
         $queryBuilder
             ->from(self::TABLE_JOB)
             ->where($queryBuilder->expr()->in(
-                'sys_language_uid',
+                $this->getJobLanguageField(),
                 $queryBuilder->createNamedParameter([0, -1], Connection::PARAM_INT_ARRAY),
             ));
 
@@ -188,6 +205,18 @@ final readonly class LimitJobListCacheLifetimeEventListener
         }
 
         return $queryBuilder;
+    }
+
+    /**
+     * TCA ctrl "languageField" of the job table (usually "sys_language_uid")
+     */
+    private function getJobLanguageField(): string
+    {
+        return $this->tcaSchemaFactory
+            ->get(self::TABLE_JOB)
+            ->getCapability(TcaSchemaCapability::Language)
+            ->getLanguageField()
+            ->getName();
     }
 
     /**

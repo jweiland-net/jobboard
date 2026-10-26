@@ -16,6 +16,8 @@ use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\DataHandling\Model\RecordStateFactory;
 use TYPO3\CMS\Core\DataHandling\SlugHelper;
+use TYPO3\CMS\Core\Schema\Capability\TcaSchemaCapability;
+use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Install\Attribute\UpgradeWizard;
 use TYPO3\CMS\Install\Updates\DatabaseUpdatedPrerequisite;
@@ -38,6 +40,7 @@ final readonly class JobPathSegmentUpdate implements UpgradeWizardInterface
 
     public function __construct(
         private ConnectionPool $connectionPool,
+        private TcaSchemaFactory $tcaSchemaFactory,
     ) {}
 
     public function getTitle(): string
@@ -72,7 +75,7 @@ final readonly class JobPathSegmentUpdate implements UpgradeWizardInterface
         // Fetch all rows first, so the updates below do not interfere with
         // an open result set of the same table
         $jobs = $this->getQueryBuilderForJobsWithoutPathSegment()
-            ->select('uid', 'pid', 'title', 'sys_language_uid', 'l10n_parent')
+            ->select('uid', 'pid', 'title', ...$this->getLanguageFields())
             ->orderBy('uid')
             ->executeQuery()
             ->fetchAllAssociative();
@@ -111,8 +114,25 @@ final readonly class JobPathSegmentUpdate implements UpgradeWizardInterface
             SlugHelper::class,
             self::TABLE,
             self::FIELD,
-            $GLOBALS['TCA'][self::TABLE]['columns'][self::FIELD]['config'] ?? [],
+            $this->tcaSchemaFactory->get(self::TABLE)->getField(self::FIELD)->getConfiguration(),
         );
+    }
+
+    /**
+     * Language field and translation parent field (TCA ctrl "languageField"
+     * and "transOrigPointerField"), needed by SlugHelper and RecordState to
+     * check the uniqueness of the slug per language.
+     *
+     * @return string[]
+     */
+    private function getLanguageFields(): array
+    {
+        $languageCapability = $this->tcaSchemaFactory->get(self::TABLE)->getCapability(TcaSchemaCapability::Language);
+
+        return [
+            $languageCapability->getLanguageField()->getName(),
+            $languageCapability->getTranslationOriginPointerField()->getName(),
+        ];
     }
 
     /**
