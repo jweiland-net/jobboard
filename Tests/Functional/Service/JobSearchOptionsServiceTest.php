@@ -261,4 +261,49 @@ final class JobSearchOptionsServiceTest extends FunctionalTestCase
             $this->getSearchOptions($this->jobRepository->findBySettings([])->getQuery(), [], true)['jobAreas'],
         );
     }
+
+    /**
+     * @return int[]
+     */
+    private function getAddressUids(QueryInterface $query): array
+    {
+        $addressUids = $this->subject->getAddressUids($query);
+        sort($addressUids);
+
+        return $addressUids;
+    }
+
+    #[Test]
+    public function getAddressUidsReturnsEachAddressOfAllListedJobsOnce(): void
+    {
+        // Several jobs share address 1, see getSearchOptionsUsesSearchCriteria()
+        self::assertSame(
+            [1, 2, 3, 4, 5, 6],
+            $this->getAddressUids($this->jobRepository->findBySettings([])->getQuery()),
+        );
+    }
+
+    #[Test]
+    public function getAddressUidsUsesSearchCriteria(): void
+    {
+        // Jobs 1, 7, 8, 9 and 11 have the zip 76133, all of them address 1
+        $query = $this->jobRepository->findBySearch(new Search(null, null, null, '76133', ''))->getQuery();
+
+        self::assertSame([1], $this->getAddressUids($query));
+    }
+
+    #[Test]
+    public function getAddressUidsWithLimitOnlyContainsAddressesOfLimitedJobs(): void
+    {
+        // "maxEntries" 2: jobs 1 and 2
+        self::assertSame([1, 2], $this->getAddressUids($this->jobRepository->findBySettings([], 2)->getQuery()));
+    }
+
+    #[Test]
+    public function getAddressUidsWithoutMatchingJobsReturnsEmptyArray(): void
+    {
+        $query = $this->jobRepository->findBySearch(new Search(null, null, null, '', 'nothing matches'))->getQuery();
+
+        self::assertSame([], $this->getAddressUids($query));
+    }
 }

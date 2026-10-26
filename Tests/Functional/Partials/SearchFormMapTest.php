@@ -11,9 +11,7 @@ declare(strict_types=1);
 
 namespace JWeiland\Jobboard\Tests\Functional\Partials;
 
-use JWeiland\Jobboard\Domain\Model\Address;
 use JWeiland\Jobboard\Domain\Model\Job;
-use JWeiland\Maps2\Domain\Model\PoiCollection;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
 use TYPO3\CMS\Core\Http\ServerRequest;
@@ -43,10 +41,23 @@ final class SearchFormMapTest extends FunctionalTestCase
         'jweiland/jobboard',
     ];
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Addresses 1 and 2 share PoiCollection 1, address 3 has PoiCollection
+        // 2 and address 5 has none, see AddressPoiCollectionViewHelperTest
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/AddressPoiCollection.csv');
+    }
+
     /**
+     * "jobs" are the jobs of the current page, "addressUids" the addresses of
+     * all jobs of the list or search result (see JobboardController).
+     *
      * @param Job[] $jobs
+     * @param int[] $addressUids
      */
-    private function renderSearchForm(array $jobs): string
+    private function renderSearchForm(array $jobs, array $addressUids): string
     {
         $extbaseRequestParameters = new ExtbaseRequestParameters();
         $extbaseRequestParameters->setControllerExtensionName('Jobboard');
@@ -71,23 +82,18 @@ final class SearchFormMapTest extends FunctionalTestCase
             __DIR__ . '/../Fixtures/Partials/',
         ]);
         $context->getTemplatePaths()->setTemplateSource(
-            '<f:render partial="SearchForm" arguments="{jobs: jobs, settings: {showSearch: 0}}"/>',
+            '<f:render partial="SearchForm" arguments="{jobs: jobs, addressUids: addressUids, settings: {showSearch: 0}}"/>',
         );
         $context->getVariableProvider()->add('jobs', $jobs);
+        $context->getVariableProvider()->add('addressUids', $addressUids);
 
         return (string)(new TemplateView($context))->render();
     }
 
-    private function buildJob(?PoiCollection $poiCollection): Job
+    private function buildJob(): Job
     {
-        $address = new Address();
-        if ($poiCollection instanceof PoiCollection) {
-            $address->setTxMaps2Uid($poiCollection);
-        }
-
         $job = new Job();
         $job->setTitle('Job');
-        $job->setAddress($address);
 
         return $job;
     }
@@ -95,7 +101,7 @@ final class SearchFormMapTest extends FunctionalTestCase
     #[Test]
     public function searchFormRendersAlertIfNoAddressOfListedJobsHasPoiCollection(): void
     {
-        $body = $this->renderSearchForm([$this->buildJob(null), $this->buildJob(null), new Job()]);
+        $body = $this->renderSearchForm([$this->buildJob(), $this->buildJob()], [5]);
 
         self::assertStringContainsString('<div class="alert alert-warning mb-0" role="status">', $body);
         self::assertStringContainsString(self::ALERT, $body);
@@ -106,16 +112,33 @@ final class SearchFormMapTest extends FunctionalTestCase
     #[Test]
     public function searchFormRendersMapIfOneAddressHasPoiCollection(): void
     {
-        $body = $this->renderSearchForm([$this->buildJob(null), $this->buildJob(new PoiCollection())]);
+        $body = $this->renderSearchForm([$this->buildJob(), $this->buildJob()], [5, 1]);
 
         self::assertStringContainsString('data-test-map="1"', $body);
         self::assertStringNotContainsString(self::ALERT, $body);
     }
 
     #[Test]
+    public function searchFormRendersOneMarkerPerLocation(): void
+    {
+        $body = $this->renderSearchForm([$this->buildJob()], [1, 2, 3]);
+
+        self::assertStringContainsString('data-test-map="2"', $body);
+    }
+
+    #[Test]
+    public function searchFormRendersLocationsOfAllJobsIndependentOfJobsOfCurrentPage(): void
+    {
+        // One job on the current page, but the result has jobs at 2 locations
+        $body = $this->renderSearchForm([$this->buildJob()], [1, 3]);
+
+        self::assertStringContainsString('data-test-map="2"', $body);
+    }
+
+    #[Test]
     public function searchFormRendersNeitherMapNorAlertWithoutJobs(): void
     {
-        $body = $this->renderSearchForm([]);
+        $body = $this->renderSearchForm([], []);
 
         self::assertStringNotContainsString(self::ALERT, $body);
         self::assertStringNotContainsString('data-test-map', $body);

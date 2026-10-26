@@ -35,4 +35,13 @@ interface JobSearchOptionsServiceInterface
         JobAreaRestriction $jobAreaRestriction,
         bool $showJobAreaCount,
     ): array;
+
+    /**
+     * UIDs of the addresses (tt_address) of all jobs matching the job query,
+     * each UID once. Used for the map, which shows all locations of a list or
+     * search result, independent of the page browser.
+     *
+     * @return int[]
+     */
+    public function getAddressUids(QueryInterface $query): array;
 }
