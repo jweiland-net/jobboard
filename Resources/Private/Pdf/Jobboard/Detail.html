@@ -32,8 +32,12 @@
 
         <pdf:lineBreak height="5"/>
 
+        <f:comment>
+            The description is rich text (RTE). Without f:format.html Fluid
+            escapes it and the PDF shows the HTML tags as text.
+        </f:comment>
         <pdf:html>
-            {job.description}
+            <f:format.html>{job.description}</f:format.html>
         </pdf:html>
 
         <pdf:lineBreak height="5"/>
