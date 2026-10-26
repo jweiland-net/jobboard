@@ -123,7 +123,7 @@ Tab "Employer" (Arbeitgeber)
     Required, maximum 60 characters.
 
 :guilabel:`Employer logo`
-    Optional image files.
+    Optional image files. Other file types can not be added.
 
 :guilabel:`Address of the employer`
     Optional address record.
@@ -168,7 +168,7 @@ Tab "Media" (Medien)
 ====================
 
 :guilabel:`Header image`
-    Optional image files.
+    Optional image files. Other file types can not be added.
 
 :guilabel:`Tender documents`, :guilabel:`Job advertisement`
     Optional PDF files. They are linked in the detail view.

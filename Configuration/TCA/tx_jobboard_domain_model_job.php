@@ -426,6 +426,12 @@ return [
             'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.employer_logo',
             'config' => [
                 'type' => 'file',
+                'allowed' => 'common-image-types',
+                // A logo is an image, "common-image-types" also contains documents
+                'disallowed' => 'pdf,ai',
+                'appearance' => [
+                    'createNewRelationLinkTitle' => 'LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:images.addFileReference',
+                ],
             ],
         ],
         'employer_address' => [
@@ -538,6 +544,12 @@ return [
             'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.header_logo',
             'config' => [
                 'type' => 'file',
+                'allowed' => 'common-image-types',
+                // A logo is an image, "common-image-types" also contains documents
+                'disallowed' => 'pdf,ai',
+                'appearance' => [
+                    'createNewRelationLinkTitle' => 'LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:images.addFileReference',
+                ],
             ],
         ],
         'tender_file' => [
