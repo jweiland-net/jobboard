@@ -4,16 +4,18 @@
 
 <f:comment>
     Link to the remembered jobs of the visitor, rendered by List (cached) and
-    Search with the same markup for every visitor. The count badge is filled by remember-jobs.js from the
-    answer of RememberJobMiddleware and stays invisible (but keeps its space,
-    so nothing moves) until then and while no job is remembered.
+    Search with the same markup for every visitor. The count badge is filled
+    by remember-jobs.js from the answer of RememberJobMiddleware and stays
+    invisible (class "invisible", it keeps its space, so nothing moves) until
+    then and while no job is remembered.
     data-jobboard-remember-url: endpoint of remember-jobs.js, also used when
-    no job table is rendered (e.g. no search results).
+    no job list is rendered (e.g. no search results).
 </f:comment>
-<div class="jobboard-remembered-link d-flex justify-content-end mb-3" data-jobboard-remember-url="{f:uri.page()}">
-    <f:link.action action="rememberedJobs" class="btn btn-outline-primary d-inline-flex align-items-center gap-2">
+<div class="jobboard-remembered-link jb:mb-4 jb:flex jb:justify-end" data-jobboard-remember-url="{f:uri.page()}">
+    <f:link.action action="rememberedJobs" class="jb:inline-flex jb:min-h-11 jb:items-center jb:gap-2 jb:rounded-full jb:border jb:border-slate-300 jb:bg-white jb:px-4 jb:text-sm jb:font-medium jb:text-slate-700 jb:no-underline jb:shadow-xs jb:transition jb:hover:border-brand-500 jb:hover:text-brand-700">
+        <f:render partial="Icon" section="Bookmark" arguments="{class: 'jb:size-4'}"/>
         <span>{f:translate(key: 'rememberedJobs.link')}</span>
-        <span class="jobboard-remembered-count badge rounded-pill bg-primary-subtle text-primary-emphasis invisible" data-jobboard-remembered-count>&nbsp;</span>
+        <span class="jobboard-remembered-count jb:inline-flex jb:min-w-6 jb:items-center jb:justify-center jb:rounded-full jb:bg-brand-600 jb:px-1.5 jb:text-xs jb:leading-5 jb:font-semibold jb:text-white jb:[&.invisible]:invisible invisible" data-jobboard-remembered-count>&nbsp;</span>
     </f:link.action>
 </div>
 </html>

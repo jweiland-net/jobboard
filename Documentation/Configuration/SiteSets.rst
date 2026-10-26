@@ -7,7 +7,7 @@
 Site sets
 =========
 
-The extension ships two site sets in :path:`EXT:jobboard/Configuration/Sets/`.
+The extension ships three site sets in :path:`EXT:jobboard/Configuration/Sets/`.
 
 ..  list-table::
     :header-rows: 1
@@ -24,6 +24,11 @@ The extension ships two site sets in :path:`EXT:jobboard/Configuration/Sets/`.
         -   Jobboard - PDF Generation
         -   Page type for the PDF version of a job. Loaded automatically as
             dependency of the main set.
+    *   -   :yaml:`jweiland/jobboard-bootstrap`
+        -   Jobboard - Bootstrap 5 templates
+        -   Optional. Frontend templates with Bootstrap 5 classes instead of
+            the default Tailwind templates, see :ref:`templates-styles`.
+            Add it to your site in addition to the main set.
 
 ..  _configuration-site-sets-dependencies:
 
@@ -31,6 +36,7 @@ Dependencies
 ============
 
 :yaml:`jweiland/jobboard` depends on :yaml:`jweiland/jobboard-pdf`.
+:yaml:`jweiland/jobboard-bootstrap` depends on :yaml:`jweiland/jobboard`.
 
 The job board does not load any set of EXT:maps2. If EXT:maps2 is
 installed, add one of its provider sets to your site, for example

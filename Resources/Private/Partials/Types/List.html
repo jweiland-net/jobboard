@@ -1,0 +1,61 @@
+<html lang="en"
+      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+<f:comment>
+    Default rendering of the job list: one card per job, readable on any
+    width. The whole card links to the job (stretched link), the remember
+    toggle sits above that link.
+    objects: jobs to render.
+    rememberedJobs (optional): UIDs of the jobs remembered by the visitor as
+    keys, renders their checkboxes checked. Pass it from uncached actions only
+    (rememberedJobs). On List and Search remember-jobs.js checks the boxes and
+    adds "highlight-row" after asking RememberJobMiddleware.
+    data-jobboard-remember-url: endpoint of remember-jobs.js.
+</f:comment>
+<f:variable name="dateFormat" value="{f:translate(key: 'dateFormat')}"/>
+<ul class="jb:m-0 jb:grid jb:list-none jb:gap-3 jb:p-0" role="list" data-jobboard-remember-url="{f:uri.page()}">
+    <f:for each="{objects}" as="job">
+        <f:variable name="isRemembered" value="{f:if(condition: '{rememberedJobs.{job.uid}}', then: 1, else: 0)}"/>
+        <li class="jb:group jb:relative jb:m-0 jb:rounded-2xl jb:border jb:border-slate-200 jb:bg-white jb:p-4 jb:shadow-xs jb:transition jb:hover:border-brand-300 jb:hover:shadow-md jb:@lg:p-5 jb:[&.highlight-row]:border-brand-500 jb:[&.highlight-row]:bg-brand-50 jb:[&.highlight-row]:ring-1 jb:[&.highlight-row]:ring-brand-500"
+            data-jobboard-uid="{job.uid}">
+            <article class="jb:flex jb:flex-col jb:gap-4 jb:@lg:flex-row jb:@lg:items-start jb:@lg:justify-between">
+                <div class="jb:min-w-0 jb:flex-1 jb:group-[.jobboard-removed]:opacity-60">
+                    <f:if condition="{job.jobAreas}">
+                        <div class="jb:mb-2 jb:flex jb:flex-wrap jb:gap-1.5">
+                            <f:render partial="Job/JobAreas" arguments="{job: job, separator: ''}"/>
+                        </div>
+                    </f:if>
+                    <h3 class="jb:text-lg jb:leading-snug jb:font-semibold jb:text-pretty jb:break-words jb:group-[.jobboard-removed]:line-through">
+                        <f:render partial="Job/TitleLink" arguments="{job: job, class: 'jb:text-slate-900 jb:no-underline jb:hover:text-brand-700 jb:focus-visible:outline-none jb:after:absolute jb:after:inset-0 jb:after:rounded-2xl jb:focus-visible:after:outline-2 jb:focus-visible:after:outline-offset-2 jb:focus-visible:after:outline-brand-600'}"/>
+                    </h3>
+                    <f:if condition="{job.employer}">
+                        <p class="jb:mt-1 jb:text-sm jb:text-slate-600">{job.employer}</p>
+                    </f:if>
+                    <ul class="jb:m-0 jb:mt-3 jb:flex jb:list-none jb:flex-wrap jb:gap-x-5 jb:gap-y-1.5 jb:p-0 jb:text-sm jb:text-slate-600" role="list">
+                        <f:if condition="{job.address.city}">
+                            <li class="jb:flex jb:items-center jb:gap-1.5">
+                                <f:render partial="Icon" section="MapPin" arguments="{class: 'jb:size-4 jb:text-slate-400'}"/>
+                                <span><span class="jb:sr-only">{f:translate(key: 'job.address.city')}: </span>{job.address.zip} {job.address.city}</span>
+                            </li>
+                        </f:if>
+                        <f:if condition="{job.jobType.title}">
+                            <li class="jb:flex jb:items-center jb:gap-1.5">
+                                <f:render partial="Icon" section="Briefcase" arguments="{class: 'jb:size-4 jb:text-slate-400'}"/>
+                                <span><span class="jb:sr-only">{f:translate(key: 'job.job_type.title')}: </span>{job.jobType.title}</span>
+                            </li>
+                        </f:if>
+                        <f:if condition="{job.applicationDeadline}">
+                            <li class="jb:flex jb:items-center jb:gap-1.5">
+                                <f:render partial="Icon" section="Calendar" arguments="{class: 'jb:size-4 jb:text-slate-400'}"/>
+                                <span>{f:translate(key: 'job.applicationDeadline')}: <time datetime="{f:format.date(date: job.applicationDeadline, format: 'Y-m-d')}" class="jb:font-medium jb:text-slate-800">{f:format.date(date: job.applicationDeadline, format: dateFormat)}</time></span>
+                            </li>
+                        </f:if>
+                    </ul>
+                </div>
+                <f:render partial="RememberedJobs/Toggle" arguments="{job: job, isRemembered: isRemembered}"/>
+            </article>
+        </li>
+    </f:for>
+</ul>
+</html>

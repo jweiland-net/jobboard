@@ -97,7 +97,7 @@ final class SearchFormMapTest extends FunctionalTestCase
     {
         $body = $this->renderSearchForm([$this->buildJob(null), $this->buildJob(null), new Job()]);
 
-        self::assertStringContainsString('<div class="alert alert-warning mb-0" role="status">', $body);
+        self::assertMatchesRegularExpression('#<div[^>]* role="status">#', $body);
         self::assertStringContainsString(self::ALERT, $body);
         self::assertStringContainsString('None of the addresses of the listed jobs has a geo position.', $body);
         self::assertStringNotContainsString('data-test-map', $body);

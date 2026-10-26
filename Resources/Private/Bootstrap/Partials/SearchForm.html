@@ -1,0 +1,38 @@
+<html lang="en"
+      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:jobboard="http://typo3.org/ns/JWeiland/Jobboard/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+<div class="row g-4 mb-4">
+    <div class="col-12 col-lg-4">
+        <f:if condition="{settings.showSearch}">
+            <f:render partial="Job/Search" arguments="{_all}"/>
+        </f:if>
+    </div>
+
+    <f:comment>
+        The map needs the optional EXT:maps2. Without it, no job has a
+        PoiCollection, no map and no message are rendered. With EXT:maps2,
+        but without any address having a geo position, a message tells
+        what is missing instead of silently hiding the map.
+    </f:comment>
+    <f:variable name="poiCollections" value="{jobboard:jobPoiCollection(jobs: jobs)}"/>
+    <f:if condition="{poiCollections}">
+        <f:then>
+            <div class="col-12 col-lg-8">
+                <f:render partial="Maps2/PoiCollection"
+                          section="showMap"
+                          arguments="{poiCollections: poiCollections, override: '{settings: {mapWidth: \'100%\', mapHeight: \'400\', streetViewControl: 0}, extConf: {strokeColor: \'blue\'}}'}"/>
+            </div>
+        </f:then>
+        <f:else if="{jobs} && {jobboard:extensionLoaded(extensionKey: 'maps2')}">
+            <div class="col-12 col-lg-8">
+                <div class="alert alert-warning mb-0" role="status">
+                    <p class="fw-semibold mb-1">{f:translate(key: 'map.noGeoPosition.header')}</p>
+                    <p class="mb-0">{f:translate(key: 'map.noGeoPosition')}</p>
+                </div>
+            </div>
+        </f:else>
+    </f:if>
+</div>
+</html>

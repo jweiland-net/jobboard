@@ -1,0 +1,16 @@
+<html lang="en"
+      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+<f:comment>
+    Remember checkbox of a job (remember-jobs.js listens to name="remember_job").
+    The visible label is the click target (at least 44px high) and stays above
+    the stretched title link. The hidden job title makes the accessible name
+    unique per job.
+</f:comment>
+<label class="jb:relative jb:z-10 jb:inline-flex jb:w-auto jb:min-h-11 jb:shrink-0 jb:cursor-pointer jb:items-center jb:gap-2 jb:self-start jb:rounded-full jb:border jb:border-slate-300 jb:bg-white jb:px-4 jb:text-sm jb:font-medium jb:text-slate-700 jb:transition jb:select-none jb:hover:border-brand-500 jb:hover:text-brand-700 jb:has-checked:border-brand-600 jb:has-checked:bg-brand-600 jb:has-checked:text-white jb:has-focus-visible:outline-2 jb:has-focus-visible:outline-offset-2 jb:has-focus-visible:outline-brand-600">
+    <input type="checkbox" class="jb:sr-only" name="remember_job" value="{job.uid}"{f:if(condition: isRemembered, then: ' checked')}>
+    <f:render partial="Icon" section="Bookmark" arguments="{class: 'jb:size-4'}"/>
+    <span>{f:translate(key: 'remember')}<span class="jb:sr-only">: {job.title}</span></span>
+</label>
+</html>

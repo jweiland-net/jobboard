@@ -8,8 +8,8 @@
     Uncached action: "jobs" (limited, ordered by application deadline) and
     "rememberedJobs" (UIDs as keys) belong to the current visitor, so the
     checkboxes can be rendered checked here. data-jobboard-remembered-view
-    tells remember-jobs.js to grey out unchecked rows (until the next page
-    load) instead of highlighting checked rows.
+    tells remember-jobs.js to grey out unchecked jobs (until the next page
+    load) instead of highlighting checked jobs.
 </f:comment>
 <f:section name="main">
     <f:render partial="JobListAssets"/>
@@ -17,20 +17,35 @@
     <f:flashMessages/>
 
     <section class="jobboard-remembered-jobs" data-jobboard-remembered-view>
-        <h2 class="mb-3">{f:translate(key: 'rememberedJobs.header')}</h2>
+        <header class="jb:mb-6">
+            <h2 class="jb:flex jb:items-center jb:gap-2 jb:text-2xl jb:font-bold jb:tracking-tight jb:text-slate-900">
+                <f:render partial="Icon" section="Bookmark" arguments="{class: 'jb:size-6 jb:text-brand-600'}"/>
+                {f:translate(key: 'rememberedJobs.header')}
+            </h2>
+            <f:if condition="{jobs}">
+                <p class="jb:mt-2 jb:text-slate-600">{f:translate(key: 'rememberedJobs.description')}</p>
+            </f:if>
+        </header>
 
         <f:if condition="{jobs}">
             <f:then>
-                <p class="text-body-secondary">{f:translate(key: 'rememberedJobs.description')}</p>
-                <f:render partial="Types/Table" arguments="{objects: jobs, rememberedJobs: rememberedJobs}"/>
+                <f:render partial="Types/List" arguments="{objects: jobs, rememberedJobs: rememberedJobs}"/>
             </f:then>
             <f:else>
-                <p class="alert alert-info" role="status">{f:translate(key: 'rememberedJobs.empty')}</p>
+                <div class="jb:flex jb:flex-col jb:items-center jb:gap-3 jb:rounded-2xl jb:border jb:border-dashed jb:border-slate-300 jb:bg-slate-50 jb:px-6 jb:py-10 jb:text-center jb:text-slate-600" role="status">
+                    <span class="jb:flex jb:size-12 jb:items-center jb:justify-center jb:rounded-full jb:bg-white jb:text-slate-400 jb:ring-1 jb:ring-slate-200">
+                        <f:render partial="Icon" section="Bookmark" arguments="{class: 'jb:size-6'}"/>
+                    </span>
+                    <p>{f:translate(key: 'rememberedJobs.empty')}</p>
+                </div>
             </f:else>
         </f:if>
 
-        <p class="mt-4 mb-0">
-            <f:link.action action="list" class="btn btn-outline-primary">{f:translate(key: 'rememberedJobs.backToList')}</f:link.action>
+        <p class="jb:mt-6">
+            <f:link.action action="list" class="jb:inline-flex jb:min-h-11 jb:items-center jb:gap-2 jb:rounded-xl jb:border jb:border-slate-300 jb:bg-white jb:px-4 jb:text-sm jb:font-medium jb:text-slate-700 jb:no-underline jb:transition jb:hover:border-brand-500 jb:hover:text-brand-700">
+                <f:render partial="Icon" section="ArrowLeft" arguments="{class: 'jb:size-4'}"/>
+                {f:translate(key: 'rememberedJobs.backToList')}
+            </f:link.action>
         </p>
     </section>
 </f:section>

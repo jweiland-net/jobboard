@@ -2,7 +2,14 @@
       xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
       data-namespace-typo3-fluid="true">
 
-<div class="tx-jobboard">
+<f:comment>
+    Stylesheet of the default (Tailwind) templates, built from
+    Build/tailwind/jobboard.css. The Bootstrap templates (site set
+    jweiland/jobboard-bootstrap) use their own layout without it.
+</f:comment>
+<f:asset.css identifier="jobboard-tailwind" href="EXT:jobboard/Resources/Public/Css/jobboard.css"/>
+
+<div class="tx-jobboard jb:@container">
     <f:render section="main"/>
 </div>
 </html>

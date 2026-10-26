@@ -1,0 +1,8 @@
+# Frontend templates with Bootstrap 5 classes instead of the default
+# Tailwind templates. The site package has to provide Bootstrap 5 itself.
+# The default templates stay the fallback for files missing here, e.g.
+# Partials/Job/JsonLd.html. Templates/Partials/Layouts of this folder do
+# not include the stylesheet of the Tailwind templates.
+jobboard.templateRootPath: 'EXT:jobboard/Resources/Private/Bootstrap/Templates/'
+jobboard.partialRootPath: 'EXT:jobboard/Resources/Private/Bootstrap/Partials/'
+jobboard.layoutRootPath: 'EXT:jobboard/Resources/Private/Bootstrap/Layouts/'

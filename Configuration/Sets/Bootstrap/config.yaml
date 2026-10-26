@@ -1,0 +1,4 @@
+name: jweiland/jobboard-bootstrap
+
+dependencies:
+  - jweiland/jobboard

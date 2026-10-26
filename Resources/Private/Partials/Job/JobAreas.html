@@ -13,6 +13,6 @@
 <f:argument name="separator" type="string" optional="{true}" default=", "/>
 
 <f:spaceless>
-    <f:for each="{job.jobAreas}" as="jobArea" iteration="iterator"><span class="job-area badge text-bg-secondary">{jobArea.title}</span><f:if condition="{iterator.isLast}"><f:else>{separator}</f:else></f:if></f:for>
+    <f:for each="{job.jobAreas}" as="jobArea" iteration="iterator"><span class="job-area jb:inline-flex jb:items-center jb:rounded-full jb:bg-brand-50 jb:px-2.5 jb:py-0.5 jb:text-xs jb:font-medium jb:text-brand-800 jb:ring-1 jb:ring-brand-200 jb:ring-inset">{jobArea.title}</span><f:if condition="{iterator.isLast}"><f:else>{separator}</f:else></f:if></f:for>
 </f:spaceless>
 </html>

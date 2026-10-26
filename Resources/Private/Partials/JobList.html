@@ -1,0 +1,32 @@
+<html lang="en"
+      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+<f:comment>
+    Body of the actions List and Search. Both are cached: never pass
+    "rememberedJobs" here, the remembered jobs are highlighted by
+    remember-jobs.js. Render "Types/Table" or "Types/Card" instead of
+    "Types/List" for a table or a card grid.
+</f:comment>
+<f:render partial="JobListAssets"/>
+<f:render partial="SearchForm" arguments="{_all}"/>
+<f:render partial="RememberedJobs/Feedback"/>
+
+<div class="jb:mt-8">
+    <f:render partial="RememberedJobs/Link"/>
+
+    <f:if condition="{jobs}">
+        <f:then>
+            <f:render partial="Types/List" arguments="{objects: jobs}"/>
+            <f:render partial="Pagination" arguments="{pagination: pagination, paginator: paginator, numberOfJobs: numberOfJobs, actionName: actionName}"/>
+        </f:then>
+        <f:else>
+            <div class="jb:flex jb:flex-col jb:items-center jb:gap-3 jb:rounded-2xl jb:border jb:border-dashed jb:border-slate-300 jb:bg-slate-50 jb:px-6 jb:py-10 jb:text-center jb:text-slate-600" role="status">
+                <span class="jb:flex jb:size-12 jb:items-center jb:justify-center jb:rounded-full jb:bg-white jb:text-slate-400 jb:ring-1 jb:ring-slate-200">
+                    <f:render partial="Icon" section="Search" arguments="{class: 'jb:size-6'}"/>
+                </span>
+                <p class="jb:text-base">{f:translate(key: 'search.no_jobs_found')}</p>
+            </div>
+        </f:else>
+    </f:if>
+</div>

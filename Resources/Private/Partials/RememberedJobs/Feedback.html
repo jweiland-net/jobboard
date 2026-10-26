@@ -7,22 +7,25 @@
     - The visually hidden status announces the new number of remembered jobs
       to screen readers after the visitor (un)checked a job. "%d" is replaced
       by the script.
-    - The toast shows why a job could not be (un)remembered. It only uses the
-      CSS of Bootstrap ("show" class), the script opens and closes it.
+    - The toast shows why a job could not be (un)remembered. The script adds
+      and removes the class "show".
 </f:comment>
-<div class="visually-hidden" role="status" aria-live="polite" data-jobboard-remember-status data-jobboard-status-text="{f:translate(key: 'rememberedJobs.status')}"></div>
+<div class="jb:sr-only" role="status" aria-live="polite" data-jobboard-remember-status data-jobboard-status-text="{f:translate(key: 'rememberedJobs.status')}"></div>
 
-<div class="jobboard-remember-toast toast-container position-fixed bottom-0 end-0 p-3">
-    <div class="toast text-bg-warning border-0"
+<div class="jobboard-remember-toast jb:pointer-events-none jb:fixed jb:inset-x-4 jb:bottom-4 jb:z-[1090] jb:flex jb:justify-end jb:sm:left-auto">
+    <div class="jb:pointer-events-auto jb:hidden jb:w-full jb:max-w-sm jb:rounded-2xl jb:border jb:border-amber-200 jb:bg-amber-50 jb:p-4 jb:text-amber-900 jb:shadow-lg jb:[&.show]:block"
          role="alert"
          aria-atomic="true"
          data-jobboard-remember-toast
          data-jobboard-message-limit-reached="{f:translate(key: 'rememberedJobs.error.limitReached')}"
          data-jobboard-message-unknown-job="{f:translate(key: 'rememberedJobs.error.unknownJob')}"
          data-jobboard-message-failed="{f:translate(key: 'rememberedJobs.error.failed')}">
-        <div class="d-flex align-items-start gap-2 p-3">
-            <p class="mb-0 flex-grow-1" data-jobboard-remember-toast-message></p>
-            <button type="button" class="btn-close flex-shrink-0" aria-label="{f:translate(key: 'rememberedJobs.close')}" data-jobboard-remember-toast-close></button>
+        <div class="jb:flex jb:items-start jb:gap-3">
+            <f:render partial="Icon" section="Warning" arguments="{class: 'jb:size-5 jb:text-amber-500'}"/>
+            <p class="jb:flex-1 jb:text-sm" data-jobboard-remember-toast-message></p>
+            <button type="button" class="jb:-m-1 jb:inline-flex jb:size-8 jb:cursor-pointer jb:items-center jb:justify-center jb:rounded-full jb:border-0 jb:bg-transparent jb:text-amber-700 jb:hover:bg-amber-100" aria-label="{f:translate(key: 'rememberedJobs.close')}" data-jobboard-remember-toast-close>
+                <f:render partial="Icon" section="Close" arguments="{class: 'jb:size-4'}"/>
+            </button>
         </div>
     </div>
 </div>

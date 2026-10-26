@@ -3,50 +3,42 @@
       data-namespace-typo3-fluid="true">
 
 <f:comment>
+    Alternative rendering to Types/List: renders the jobs as a table. Render it
+    in Partials/JobList.html and Templates/Jobboard/RememberedJobs.html
+    instead of Types/List via template override.
     objects: jobs to render.
     rememberedJobs (optional): UIDs of the jobs remembered by the visitor as
-    keys, renders their checkboxes checked. Pass it from uncached actions only
-    (rememberedJobs). List is cached, so List and Search render the same
-    markup for every visitor: there remember-jobs.js checks the boxes and adds
-    "highlight-row" after asking RememberJobMiddleware.
-    data-jobboard-remember-url: endpoint of remember-jobs.js (answered by
-    RememberJobMiddleware). Rendered as URL of the current page, so it always
-    resolves to this site and language.
+    keys, renders their checkboxes checked. Pass it from uncached actions only.
+    data-jobboard-remember-url: endpoint of remember-jobs.js.
 </f:comment>
-<div class="table-responsive">
-    <table class="jobboard-table table table-hover align-middle" data-jobboard-remember-url="{f:uri.page()}">
-        <thead>
+<div class="jb:overflow-x-auto jb:rounded-2xl jb:border jb:border-slate-200 jb:bg-white jb:shadow-xs">
+    <table class="jobboard-table jb:w-full jb:border-collapse jb:text-left jb:text-sm" data-jobboard-remember-url="{f:uri.page()}">
+        <thead class="jb:bg-slate-50 jb:text-xs jb:tracking-wide jb:text-slate-600 jb:uppercase">
         <tr>
-            <th scope="col">{f:translate(key: 'job.title')}</th>
-            <th scope="col">{f:translate(key: 'job.applicationDeadline')}</th>
-            <th scope="col">{f:translate(key: 'job.address.zip')}</th>
-            <th scope="col">{f:translate(key: 'job.address.city')}</th>
-            <th scope="col">{f:translate(key: 'job.employer')}</th>
-            <th scope="col">{f:translate(key: 'job.job_type.title')}</th>
-            <th scope="col" class="text-center">{f:translate(key: 'remember')}</th>
+            <th scope="col" class="jb:px-4 jb:py-3 jb:font-semibold">{f:translate(key: 'job.title')}</th>
+            <th scope="col" class="jb:px-4 jb:py-3 jb:font-semibold">{f:translate(key: 'job.applicationDeadline')}</th>
+            <th scope="col" class="jb:px-4 jb:py-3 jb:font-semibold">{f:translate(key: 'job.address.zip')}</th>
+            <th scope="col" class="jb:px-4 jb:py-3 jb:font-semibold">{f:translate(key: 'job.address.city')}</th>
+            <th scope="col" class="jb:px-4 jb:py-3 jb:font-semibold">{f:translate(key: 'job.employer')}</th>
+            <th scope="col" class="jb:px-4 jb:py-3 jb:font-semibold">{f:translate(key: 'job.job_type.title')}</th>
+            <th scope="col" class="jb:px-4 jb:py-3 jb:text-center jb:font-semibold">{f:translate(key: 'remember')}</th>
         </tr>
         </thead>
-
         <tbody>
         <f:variable name="dateFormat" value="{f:translate(key: 'dateFormat')}"/>
         <f:for each="{objects}" as="job">
             <f:variable name="isRemembered" value="{f:if(condition: '{rememberedJobs.{job.uid}}', then: 1, else: 0)}"/>
-            <tr data-jobboard-uid="{job.uid}">
-                <f:render partial="Job/TitleLink" arguments="{job: job}"/>
+            <tr class="jb:group jb:border-t jb:border-slate-200 jb:transition jb:hover:bg-slate-50 jb:[&.highlight-row]:bg-brand-50 jb:[&.highlight-row]:shadow-[inset_4px_0_0_var(--jb-color-brand-600)] jb:[&.jobboard-removed]:text-slate-400" data-jobboard-uid="{job.uid}">
+                <td class="jb:px-4 jb:py-3 jb:font-medium jb:group-[.jobboard-removed]:line-through">
+                    <f:render partial="Job/TitleLink" arguments="{job: job}"/>
+                </td>
                 <f:render partial="Types/Date" arguments="{value: job.applicationDeadline, format: dateFormat}"/>
                 <f:render partial="Types/Text" arguments="{value: job.address.zip}"/>
                 <f:render partial="Types/Text" arguments="{value: job.address.city}"/>
                 <f:render partial="Types/Text" arguments="{value: job.employer}"/>
                 <f:render partial="Types/Text" arguments="{value: job.jobType.title}"/>
-                <td class="text-center">
-                    <f:comment>
-                        Visible label as large click target. The hidden job title
-                        makes the accessible name unique per row.
-                    </f:comment>
-                    <label class="jobboard-remember">
-                        <input type="checkbox" class="form-check-input" name="remember_job" value="{job.uid}"{f:if(condition: isRemembered, then: ' checked')}>
-                        <span>{f:translate(key: 'remember')}<span class="visually-hidden">: {job.title}</span></span>
-                    </label>
+                <td class="jb:px-4 jb:py-2 jb:text-center">
+                    <f:render partial="RememberedJobs/Toggle" arguments="{job: job, isRemembered: isRemembered}"/>
                 </td>
             </tr>
         </f:for>

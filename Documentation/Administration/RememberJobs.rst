@@ -7,8 +7,8 @@
 Remembered jobs
 ===============
 
-In the table layout, visitors can tick "Remember" for single jobs. The
-list and the search result keep their order. Remembered jobs are
+Visitors can tick "Remember" for single jobs. The list and the search
+result keep their order. Remembered jobs are
 highlighted and their checkbox is checked.
 
 Above the list, a link "Remembered jobs" with a badge shows the number of
@@ -191,15 +191,16 @@ Own templates
 :file:`remember-jobs.js` relies on these parts of the shipped templates:
 
 :html:`data-jobboard-uid="{job.uid}"`
-    On every row (:file:`Partials/Types/Table.html`) or card
-    (:file:`Partials/Types/Card.html`). The script highlights the elements
+    On every job of :file:`Partials/Types/List.html`, every row of
+    :file:`Partials/Types/Table.html` or every card of
+    :file:`Partials/Types/Card.html`. The script highlights the elements
     of remembered jobs and checks the checkboxes inside.
 
 :html:`<input type="checkbox" name="remember_job" value="{job.uid}">`
-    The "Remember" checkbox in :file:`Partials/Types/Table.html`.
+    The "Remember" checkbox in :file:`Partials/RememberedJobs/Toggle.html`.
 
 :html:`data-jobboard-remember-url="{f:uri.page()}"`
-    URL for the requests, on the table and on the link to the remembered
+    URL for the requests, on the list and on the link to the remembered
     jobs.
 
 :html:`data-jobboard-remembered-count`
@@ -214,24 +215,24 @@ Own templates
     The status element for screen readers and the toast with the error
     messages.
 
-:file:`Templates/Jobboard/List.html` and
-:file:`Templates/Jobboard/Search.html` render the table partial without
+:file:`Partials/JobList.html` (rendered by List and Search) renders the
+list partial without
 the variable :html:`{rememberedJobs}`, because their output is the same for
 all visitors. Never pass it there. Only
 :file:`Templates/Jobboard/RememberedJobs.html` passes it, to render the
 checkboxes checked:
 
 ..  code-block:: html
-    :caption: EXT:my_sitepackage/Resources/Private/Extensions/Jobboard/Templates/Jobboard/List.html
+    :caption: EXT:my_sitepackage/Resources/Private/Extensions/Jobboard/Partials/JobList.html
 
     <f:render partial="RememberedJobs/Link"/>
     <f:render partial="RememberedJobs/Feedback"/>
-    <f:render partial="Types/Table" arguments="{objects: jobs}"/>
+    <f:render partial="Types/List" arguments="{objects: jobs}"/>
 
 ..  code-block:: html
     :caption: EXT:my_sitepackage/Resources/Private/Extensions/Jobboard/Templates/Jobboard/RememberedJobs.html
 
     <section data-jobboard-remembered-view>
-        <f:render partial="Types/Table"
+        <f:render partial="Types/List"
                   arguments="{objects: jobs, rememberedJobs: rememberedJobs}"/>
     </section>

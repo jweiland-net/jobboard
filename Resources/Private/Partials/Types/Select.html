@@ -7,8 +7,8 @@
         The id is prefixed to keep the id "address" reserved for the zip/city
         textfield, which gets the suggestions of address-suggestions.js.
     </f:comment>
-    <div class="mb-3">
-        <label for="jobboard-{name}" class="form-label">{f:translate(key: '{label}')}</label>
+    <div class="jb:grid jb:gap-1.5">
+        <label for="jobboard-{name}" class="jb:text-sm jb:font-medium jb:text-slate-700">{f:translate(key: '{label}')}</label>
         <f:form.select
             options="{options}"
             sortByOptionLabel="true"
@@ -18,7 +18,7 @@
             optionValueField="uid"
             name="{name}"
             id="jobboard-{name}"
-            class="form-select"
+            class="jb:block jb:min-h-11 jb:w-full jb:rounded-xl jb:border jb:border-slate-300 jb:bg-white jb:px-3 jb:text-sm jb:text-slate-900 jb:shadow-xs jb:transition jb:hover:border-slate-400 jb:focus:border-brand-600 jb:focus:ring-3 jb:focus:ring-brand-100 jb:focus:outline-none"
             value="{value}"/>
     </div>
 </f:if>
