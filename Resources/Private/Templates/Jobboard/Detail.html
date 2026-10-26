@@ -1,5 +1,6 @@
 <html lang="en"
       xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:jobboard="http://typo3.org/ns/JWeiland/Jobboard/ViewHelpers"
       data-namespace-typo3-fluid="true">
 
 <f:layout name="Default"/>
@@ -77,10 +78,10 @@
                             <dd>
                                 <f:if condition="{job.hasSalaryRange}">
                                     <f:then>
-                                        <f:format.currency currencySign="€">{job.salaryRangeMin}</f:format.currency> - <f:format.currency currencySign="€">{job.salaryRangeMax}</f:format.currency>
+                                        <jobboard:format.salary currencySign="€">{job.salaryRangeMin}</jobboard:format.salary> - <jobboard:format.salary currencySign="€">{job.salaryRangeMax}</jobboard:format.salary>
                                     </f:then>
                                     <f:else>
-                                        <f:format.currency currencySign="€">{job.salaryRangeMin}</f:format.currency>
+                                        <jobboard:format.salary currencySign="€">{job.salaryRangeMin}</jobboard:format.salary>
                                     </f:else>
                                 </f:if>
                             </dd>
@@ -229,10 +230,10 @@
                 <dd class="col-sm-8">
                     <f:if condition="{job.hasSalaryRange}">
                         <f:then>
-                            <f:format.currency currencySign="€">{job.salaryRangeMin}</f:format.currency> - <f:format.currency currencySign="€">{job.salaryRangeMax}</f:format.currency>
+                            <jobboard:format.salary currencySign="€">{job.salaryRangeMin}</jobboard:format.salary> - <jobboard:format.salary currencySign="€">{job.salaryRangeMax}</jobboard:format.salary>
                         </f:then>
                         <f:else>
-                            <f:format.currency currencySign="€">{job.salaryRangeMin}</f:format.currency>
+                            <jobboard:format.salary currencySign="€">{job.salaryRangeMin}</jobboard:format.salary>
                         </f:else>
                     </f:if>
                 </dd>
@@ -247,7 +248,7 @@
                         <dd class="col-sm-8">
                             <ul class="list-unstyled mb-0">
                                 <f:for each="{salaryGrade.salarySteps}" as="salaryStep">
-                                    <li>{salaryStep.stepLabel}: <f:format.currency currencySign="€">{salaryStep.amount}</f:format.currency></li>
+                                    <li>{salaryStep.stepLabel}: <jobboard:format.salary currencySign="€">{salaryStep.amount}</jobboard:format.salary></li>
                                 </f:for>
                             </ul>
                         </dd>

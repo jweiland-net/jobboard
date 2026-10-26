@@ -1,0 +1,28 @@
+"pages"
+,"uid","pid","title","slug","deleted","hidden","doktype","is_siteroot","sys_language_uid","l10n_parent"
+,1,0,"Root","/",0,0,1,1,0,0
+,2,1,"Storage for jobs","/storage",0,0,254,0,0,0
+,3,0,"Startseite","/",0,0,1,1,1,1
+
+"tt_content"
+,"uid","pid","CType","header","colPos","sys_language_uid"
+,1,1,"jobboard_jobboard","Jobboard",0,0
+
+"tx_jobboard_domain_model_salarygrade"
+,"uid","pid","title","has_steps","flat_amount"
+,1,2,"A7",1,0.00
+
+"tx_jobboard_domain_model_salarystep"
+,"uid","pid","salary_grade","step_label","amount"
+,1,2,1,"Step 1",1234.50
+,2,2,1,"Step 2",12345.67
+
+"tx_jobboard_domain_model_job"
+,"uid","pid","sys_language_uid","l10n_parent","title","salary_mode","salary_grades","effective_salary_min","effective_salary_max"
+,1,2,0,0,"Job with stepped grade",0,1,1234.50,12345.67
+,11,2,1,1,"Stelle mit Stufen",0,1,1234.50,12345.67
+
+"tx_jobboard_job_salarygrade_mm"
+,"uid_local","uid_foreign","sorting","sorting_foreign"
+,1,1,1,0
+,11,1,1,0
