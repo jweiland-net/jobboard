@@ -18,6 +18,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use TYPO3\CMS\Core\Core\Bootstrap;
 
 /**
@@ -57,8 +58,17 @@ use TYPO3\CMS\Core\Core\Bootstrap;
             (int)$input->getArgument('storage'),
         );
 
-        $this->importService->import($importConfiguration);
+        $importResult = $this->importService->import($importConfiguration);
+        if (!$importResult->hasErrors()) {
+            return Command::SUCCESS;
+        }
 
-        return 0;
+        (new SymfonyStyle($input, $output))->error(sprintf(
+            '%d job(s) could not be saved and %d API model(s) could not be fetched. See the log of jobboard.',
+            $importResult->getNumberOfFailedJobs(),
+            $importResult->getNumberOfFailedApiModels(),
+        ));
+
+        return Command::FAILURE;
     }
 }

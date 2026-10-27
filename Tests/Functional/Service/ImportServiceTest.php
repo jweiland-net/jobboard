@@ -197,7 +197,7 @@ final class ImportServiceTest extends FunctionalTestCase
             </jobs>',
         );
 
-        self::assertTrue($importService->import(new ImportConfiguration(2)));
+        self::assertFalse($importService->import(new ImportConfiguration(2))->hasErrors());
 
         $connectionPool = $this->get(ConnectionPool::class);
 
@@ -269,7 +269,7 @@ final class ImportServiceTest extends FunctionalTestCase
             </jobs>',
         );
 
-        self::assertTrue($importService->import(new ImportConfiguration(2)));
+        self::assertFalse($importService->import(new ImportConfiguration(2))->hasErrors());
 
         $queryBuilder = $this->get(ConnectionPool::class)->getQueryBuilderForTable('tx_jobboard_domain_model_job');
         $queryBuilder->getRestrictions()->removeAll();
@@ -288,7 +288,7 @@ final class ImportServiceTest extends FunctionalTestCase
     {
         $importService = $this->buildImportService('<jobs></jobs>');
 
-        self::assertTrue($importService->import(new ImportConfiguration(2)));
+        self::assertFalse($importService->import(new ImportConfiguration(2))->hasErrors());
 
         $queryBuilder = $this->get(ConnectionPool::class)->getQueryBuilderForTable('tx_jobboard_domain_model_job');
         $queryBuilder->getRestrictions()->removeAll();
@@ -315,7 +315,7 @@ final class ImportServiceTest extends FunctionalTestCase
 
         $importService = $this->buildImportServiceWithXmlClient($xmlClient, [$this->buildApiModel()], $logger);
 
-        self::assertTrue($importService->import(new ImportConfiguration(2)));
+        self::assertSame(1, $importService->import(new ImportConfiguration(2))->getNumberOfFailedApiModels());
         self::assertFalse($this->isJobDeleted(1));
     }
 
@@ -334,7 +334,7 @@ final class ImportServiceTest extends FunctionalTestCase
 
         $importService = $this->buildImportServiceWithXmlClient($xmlClient, [$this->buildApiModel()], $logger);
 
-        self::assertTrue($importService->import(new ImportConfiguration(2)));
+        self::assertSame(1, $importService->import(new ImportConfiguration(2))->getNumberOfFailedApiModels());
         self::assertFalse($this->isJobDeleted(1));
     }
 
@@ -348,7 +348,7 @@ final class ImportServiceTest extends FunctionalTestCase
 
         $importService = $this->buildImportService('<jobs><job>', $logger);
 
-        self::assertTrue($importService->import(new ImportConfiguration(2)));
+        self::assertSame(1, $importService->import(new ImportConfiguration(2))->getNumberOfFailedApiModels());
         self::assertFalse($this->isJobDeleted(1));
     }
 
@@ -373,7 +373,7 @@ final class ImportServiceTest extends FunctionalTestCase
 
         $importService = $this->buildImportServiceWithXmlClient($xmlClient, [$failingApiModel, $this->buildApiModel()]);
 
-        self::assertTrue($importService->import(new ImportConfiguration(2)));
+        self::assertSame(1, $importService->import(new ImportConfiguration(2))->getNumberOfFailedApiModels());
         self::assertFalse($this->isJobDeleted(2));
         self::assertTrue($this->isJobDeleted(1));
     }
@@ -385,11 +385,11 @@ final class ImportServiceTest extends FunctionalTestCase
             '<jobs>' . $this->buildJobXml('AB-0815', 'Web Developer (m/f/d)') . '</jobs>',
         );
 
-        self::assertTrue($importService->import(new ImportConfiguration(2)));
+        self::assertFalse($importService->import(new ImportConfiguration(2))->hasErrors());
         $importService = $this->buildImportService(
             '<jobs>' . $this->buildJobXml('AB-0815', 'Senior Web Developer (m/f/d)') . '</jobs>',
         );
-        self::assertTrue($importService->import(new ImportConfiguration(2)));
+        self::assertFalse($importService->import(new ImportConfiguration(2))->hasErrors());
 
         $jobRecords = array_values(array_filter(
             $this->getJobRecords(),
@@ -415,7 +415,7 @@ final class ImportServiceTest extends FunctionalTestCase
             $logger,
         );
 
-        self::assertTrue($importService->import(new ImportConfiguration(2)));
+        self::assertSame(1, $importService->import(new ImportConfiguration(2))->getNumberOfFailedJobs());
         self::assertFalse($this->isJobDeleted(1));
     }
 
@@ -432,7 +432,7 @@ final class ImportServiceTest extends FunctionalTestCase
             $logger,
         );
 
-        self::assertTrue($importService->import(new ImportConfiguration(2)));
+        self::assertFalse($importService->import(new ImportConfiguration(2))->hasErrors());
         self::assertCount(1, $this->getJobRecords());
     }
 
@@ -451,6 +451,6 @@ final class ImportServiceTest extends FunctionalTestCase
             $logger,
         );
 
-        self::assertTrue($importService->import(new ImportConfiguration(1)));
+        self::assertSame(1, $importService->import(new ImportConfiguration(1))->getNumberOfFailedJobs());
     }
 }
