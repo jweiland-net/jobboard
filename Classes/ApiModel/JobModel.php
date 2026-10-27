@@ -37,6 +37,17 @@ class JobModel extends AbstractModel
         return array_map(fn($location) => new LocationModel($location), $locations);
     }
 
+    public function hasPrimaryLocation(): bool
+    {
+        foreach ($this->getLocations() as $location) {
+            if ($location->isPrimary()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function getPrimaryLocation(): LocationModel
     {
         foreach ($this->getLocations() as $location) {

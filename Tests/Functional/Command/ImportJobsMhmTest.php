@@ -64,4 +64,20 @@ final class ImportJobsMhmTest extends FunctionalTestCase
         self::assertStringContainsString('2 job(s) could not be saved', $commandTester->getDisplay());
         self::assertStringContainsString('1 API model(s) could not be fetched', $commandTester->getDisplay());
     }
+
+    #[Test]
+    public function executeWithSkippedJobsOnlyShowsWarningAndReturnsSuccess(): void
+    {
+        $GLOBALS['BE_USER'] = GeneralUtility::makeInstance(CommandLineUserAuthentication::class);
+
+        $importService = self::createStub(ImportService::class);
+        $importService->method('import')->willReturn(new ImportResult([1], 0, 0, 3));
+
+        $commandTester = new CommandTester(new ImportJobsMhm($importService));
+        $exitCode = $commandTester->execute(['storage' => '5']);
+
+        self::assertSame(0, $exitCode);
+        self::assertStringContainsString('3 job(s) skipped', $commandTester->getDisplay());
+        self::assertStringNotContainsString('could not be saved', $commandTester->getDisplay());
+    }
 }
