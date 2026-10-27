@@ -16,6 +16,7 @@ use JWeiland\Jobboard\ApiModel\ApiModelInterface;
 use JWeiland\Jobboard\ApiModel\JobModel;
 use JWeiland\Jobboard\Client\XmlClient;
 use JWeiland\Jobboard\Configuration\ImportConfiguration;
+use JWeiland\Jobboard\Domain\Model\ImportResult;
 use JWeiland\Jobboard\Traits\ConnectionPoolTrait;
 use JWeiland\Jobboard\Traits\DataHandlerTrait;
 use Psr\Http\Message\ResponseInterface;
@@ -43,19 +44,17 @@ readonly class ImportService
      * are deleted after all API models have been processed. If the jobs of
      * an API model could not be fetched completely, all its jobs are kept.
      */
-    public function import(ImportConfiguration $importConfiguration): bool
+    public function import(ImportConfiguration $importConfiguration): ImportResult
     {
         $importStatus = $this->jobService->getInitialImportStatusOfAlreadyImportedJobs($importConfiguration);
 
+        $importResult = new ImportResult();
         foreach ($this->getApiModels($importConfiguration) as $apiModel) {
-            $jobModels = $this->getJobModelsFromApiEndpoint($apiModel);
-            $jobUids = $jobModels === null
-                ? $this->jobService->getJobUidsOfApiModel($apiModel)
-                : $this->importJobModels($jobModels, $apiModel);
+            $importResult = $importResult->merge($this->importApiModel($apiModel));
+        }
 
-            foreach ($jobUids as $jobUid) {
-                $importStatus[$jobUid] = true;
-            }
+        foreach ($importResult->getJobUids() as $jobUid) {
+            $importStatus[$jobUid] = true;
         }
 
         $this->deleteAlreadyImportedJobsNotInImport($this->getNotImportedVacancyIds($importStatus));
@@ -63,20 +62,29 @@ readonly class ImportService
         // Cache Clear is not needed as we are using DataHandler to store the
         // records. Configure TCEMAIN.clearCacheCmd for the storage folder.
 
-        return true;
+        return $importResult;
+    }
+
+    private function importApiModel(ApiModelInterface $apiModel): ImportResult
+    {
+        $jobModels = $this->getJobModelsFromApiEndpoint($apiModel);
+        if ($jobModels === null) {
+            return new ImportResult($this->jobService->getJobUidsOfApiModel($apiModel), 0, 1);
+        }
+
+        return $this->importJobModels($jobModels, $apiModel);
     }
 
     /**
-     * Returns the UIDs of all jobs delivered by the API model. That includes
-     * existing jobs, which could not be updated, as they still exist in the
-     * API and must not be deleted.
+     * The result contains the UIDs of all jobs delivered by the API model.
+     * That includes existing jobs, which could not be updated, as they still
+     * exist in the API and must not be deleted.
      *
      * @param JobModel[] $jobModels
-     * @return int[]
      */
-    private function importJobModels(array $jobModels, ApiModelInterface $apiModel): array
+    private function importJobModels(array $jobModels, ApiModelInterface $apiModel): ImportResult
     {
-        $jobUids = [];
+        $importResult = new ImportResult();
         foreach ($jobModels as $jobModel) {
             if ($jobModel->getVacancyId() === '') {
                 $this->logger->warning(sprintf('Job without vacancy ID of API model "%s" skipped', $apiModel->getName()));
@@ -85,16 +93,18 @@ readonly class ImportService
 
             $jobUidOrNew = $this->jobService->getJobUid($jobModel->getVacancyId(), $apiModel);
             $jobUid = $this->saveImportedJob($jobModel, $jobUidOrNew, $apiModel);
-            if ($jobUid === null && is_int($jobUidOrNew)) {
-                $jobUid = $jobUidOrNew;
+            if ($jobUid !== null) {
+                $importResult = $importResult->withJobUid($jobUid);
+                continue;
             }
 
-            if ($jobUid !== null) {
-                $jobUids[] = $jobUid;
+            $importResult = $importResult->withFailedJob();
+            if (is_int($jobUidOrNew)) {
+                $importResult = $importResult->withJobUid($jobUidOrNew);
             }
         }
 
-        return $jobUids;
+        return $importResult;
     }
 
     /**

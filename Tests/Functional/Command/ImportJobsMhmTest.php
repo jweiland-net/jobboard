@@ -13,6 +13,7 @@ namespace JWeiland\Jobboard\Tests\Functional\Command;
 
 use JWeiland\Jobboard\Command\ImportJobsMhm;
 use JWeiland\Jobboard\Configuration\ImportConfiguration;
+use JWeiland\Jobboard\Domain\Model\ImportResult;
 use JWeiland\Jobboard\Service\ImportService;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -40,11 +41,27 @@ final class ImportJobsMhmTest extends FunctionalTestCase
         $importService->expects($this->once())
             ->method('import')
             ->with(self::callback(static fn(ImportConfiguration $configuration): bool => $configuration->getStorage() === 5))
-            ->willReturn(true);
+            ->willReturn(new ImportResult([1]));
 
         $commandTester = new CommandTester(new ImportJobsMhm($importService));
         $exitCode = $commandTester->execute(['storage' => '5']);
 
         self::assertSame(0, $exitCode);
+    }
+
+    #[Test]
+    public function executeWithFailedJobsReportsErrorsAndReturnsFailure(): void
+    {
+        $GLOBALS['BE_USER'] = GeneralUtility::makeInstance(CommandLineUserAuthentication::class);
+
+        $importService = self::createStub(ImportService::class);
+        $importService->method('import')->willReturn(new ImportResult([1], 2, 1));
+
+        $commandTester = new CommandTester(new ImportJobsMhm($importService));
+        $exitCode = $commandTester->execute(['storage' => '5']);
+
+        self::assertSame(1, $exitCode);
+        self::assertStringContainsString('2 job(s) could not be saved', $commandTester->getDisplay());
+        self::assertStringContainsString('1 API model(s) could not be fetched', $commandTester->getDisplay());
     }
 }
