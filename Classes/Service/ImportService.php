@@ -37,6 +37,7 @@ readonly class ImportService
         private TtAddressService $ttAddressService,
         private iterable $apiModels,
         private LoggerInterface $logger,
+        private ImportRecordValidator $importRecordValidator,
     ) {}
 
     /**
@@ -77,8 +78,8 @@ readonly class ImportService
 
     /**
      * The result contains the UIDs of all jobs delivered by the API model.
-     * That includes existing jobs, which could not be updated, as they still
-     * exist in the API and must not be deleted.
+     * That includes existing jobs, which could not be updated or were
+     * skipped, as they still exist in the API and must not be deleted.
      *
      * @param JobModel[] $jobModels
      */
@@ -86,25 +87,60 @@ readonly class ImportService
     {
         $importResult = new ImportResult();
         foreach ($jobModels as $jobModel) {
-            if ($jobModel->getVacancyId() === '') {
-                $this->logger->warning(sprintf('Job without vacancy ID of API model "%s" skipped', $apiModel->getName()));
-                continue;
-            }
-
-            $jobUidOrNew = $this->jobService->getJobUid($jobModel->getVacancyId(), $apiModel);
-            $jobUid = $this->saveImportedJob($jobModel, $jobUidOrNew, $apiModel);
-            if ($jobUid !== null) {
-                $importResult = $importResult->withJobUid($jobUid);
-                continue;
-            }
-
-            $importResult = $importResult->withFailedJob();
-            if (is_int($jobUidOrNew)) {
-                $importResult = $importResult->withJobUid($jobUidOrNew);
-            }
+            $skipReason = $this->getSkipReason($jobModel);
+            $importResult = $skipReason === ''
+                ? $this->importJobModel($jobModel, $apiModel, $importResult)
+                : $this->skipJobModel($jobModel, $apiModel, $importResult, $skipReason);
         }
 
         return $importResult;
+    }
+
+    private function importJobModel(JobModel $jobModel, ApiModelInterface $apiModel, ImportResult $importResult): ImportResult
+    {
+        $jobUidOrNew = $this->jobService->getJobUid($jobModel->getVacancyId(), $apiModel);
+        $jobUid = $this->saveImportedJob($jobModel, $jobUidOrNew, $apiModel);
+        if ($jobUid !== null) {
+            return $importResult->withJobUid($jobUid);
+        }
+
+        $importResult = $importResult->withFailedJob();
+
+        return is_int($jobUidOrNew) ? $importResult->withJobUid($jobUidOrNew) : $importResult;
+    }
+
+    /**
+     * An existing job is kept unchanged, as it is still delivered by the API
+     */
+    private function skipJobModel(
+        JobModel $jobModel,
+        ApiModelInterface $apiModel,
+        ImportResult $importResult,
+        string $skipReason,
+    ): ImportResult {
+        $this->logger->warning(sprintf(
+            'Job with vacancy ID "%s" of API model "%s" skipped: %s',
+            $jobModel->getVacancyId(),
+            $apiModel->getName(),
+            $skipReason,
+        ));
+
+        $importResult = $importResult->withSkippedJob();
+        $jobUid = $jobModel->getVacancyId() === '' ? '' : $this->jobService->getJobUid($jobModel->getVacancyId(), $apiModel);
+
+        return is_int($jobUid) ? $importResult->withJobUid($jobUid) : $importResult;
+    }
+
+    /**
+     * Returns an empty string, if the job can be imported
+     */
+    private function getSkipReason(JobModel $jobModel): string
+    {
+        return match (true) {
+            $jobModel->getVacancyId() === '' => 'no vacancy ID',
+            !$jobModel->hasPrimaryLocation() => 'no primary location',
+            default => '',
+        };
     }
 
     /**
@@ -173,13 +209,19 @@ readonly class ImportService
         $migratedJobRecord = $this->jobService->getPreparedJobByImportedJob($importedJob, $apiModel);
         $migratedJobRecord['address'] = $addressUid;
 
+        $vacancyId = $importedJob->getVacancyId();
+
         return [
             [
                 'tt_address' => [
-                    $addressUid => $migratedAddressRecord,
+                    $addressUid => $this->importRecordValidator->emptyInvalidValues('tt_address', $migratedAddressRecord, $vacancyId),
                 ],
                 'tx_jobboard_domain_model_job' => [
-                    $jobUid => $migratedJobRecord,
+                    $jobUid => $this->importRecordValidator->emptyInvalidValues(
+                        'tx_jobboard_domain_model_job',
+                        $migratedJobRecord,
+                        $vacancyId,
+                    ),
                 ],
             ],
             [],

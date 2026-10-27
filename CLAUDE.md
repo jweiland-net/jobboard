@@ -424,8 +424,12 @@ Key points:
 - Errors from `DataHandler` are logged via the injected PSR-3 `LoggerInterface` (channel configured in
   `ext_localconf.php` under `TYPO3_CONF_VARS.LOG.JWeiland.Jobboard`), not thrown further - a failed record
   is skipped, not fatal for the whole import run. `ImportService::import()` returns the value object
-  `Domain/Model/ImportResult` (job UIDs, number of failed jobs and API models); `ImportJobsMhm` prints the
-  numbers and returns `Command::FAILURE` if anything failed, so errors are visible on the CLI/scheduler.
+  `Domain/Model/ImportResult` (job UIDs, number of failed jobs and API models, number of skipped jobs);
+  `ImportJobsMhm` prints the numbers and returns `Command::FAILURE` only if a job could not be saved or an API
+  model could not be fetched. Data problems of the source are no failure: jobs without vacancy ID or primary
+  location are skipped with a warning (`Command::SUCCESS`, skipped count as console warning), and
+  `ImportRecordValidator` empties values DataHandler would reject (invalid email, invalid URL of a `link`
+  field with `allowedTypes` `['url']`) with a warning before saving.
 
 Follow standard TYPO3/PER-CS conventions for anything not called out above: alphabetically sorted `use`
 statements, no FQCN in the method body (except global-namespace classes like `\DateTime`, `\Exception`,

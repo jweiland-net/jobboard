@@ -18,6 +18,7 @@ use JWeiland\Jobboard\ApiModel\ApiModelInterface;
 use JWeiland\Jobboard\ApiModel\ApiModelTrait;
 use JWeiland\Jobboard\Client\XmlClient;
 use JWeiland\Jobboard\Configuration\ImportConfiguration;
+use JWeiland\Jobboard\Service\ImportRecordValidator;
 use JWeiland\Jobboard\Service\ImportService;
 use JWeiland\Jobboard\Service\JobService;
 use JWeiland\Jobboard\Service\TtAddressService;
@@ -26,6 +27,7 @@ use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Authentication\CommandLineUserAuthentication;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Http\Response;
+use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
@@ -123,6 +125,10 @@ final class ImportServiceTest extends FunctionalTestCase
             $this->get(TtAddressService::class),
             $apiModels,
             $logger ?? self::createStub(LoggerInterface::class),
+            new ImportRecordValidator(
+                $this->get(TcaSchemaFactory::class),
+                $logger ?? self::createStub(LoggerInterface::class),
+            ),
         );
     }
 
@@ -430,21 +436,24 @@ final class ImportServiceTest extends FunctionalTestCase
     }
 
     #[Test]
-    public function importKeepsExistingJobWhichCouldNotBeSaved(): void
+    public function importSkipsJobWithoutPrimaryLocationAndKeepsExistingJob(): void
     {
-        // A job without primary location can not be saved, but it was still
+        // A job without primary location is skipped, but it was still
         // delivered by the source and must not be deleted.
         $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects($this->never())->method('error');
         $logger->expects($this->once())
-            ->method('error')
-            ->with(self::stringContains('vacancy ID "9999"'));
+            ->method('warning')
+            ->with(self::stringContains('Job with vacancy ID "9999" of API model "test" skipped: no primary location'));
 
         $importService = $this->buildImportService(
             '<jobs>' . $this->buildJobXml('9999', 'Old job to be deleted', false) . '</jobs>',
             $logger,
         );
+        $importResult = $importService->import(new ImportConfiguration(2));
 
-        self::assertSame(1, $importService->import(new ImportConfiguration(2))->getNumberOfFailedJobs());
+        self::assertFalse($importResult->hasErrors());
+        self::assertSame(1, $importResult->getNumberOfSkippedJobs());
         self::assertFalse($this->isJobDeleted(1));
     }
 
@@ -454,14 +463,16 @@ final class ImportServiceTest extends FunctionalTestCase
         $logger = $this->createMock(LoggerInterface::class);
         $logger->expects($this->once())
             ->method('warning')
-            ->with(self::stringContains('Job without vacancy ID'));
+            ->with(self::stringContains('skipped: no vacancy ID'));
 
         $importService = $this->buildImportService(
             '<jobs>' . $this->buildJobXml('', 'Web Developer (m/f/d)') . '</jobs>',
             $logger,
         );
+        $importResult = $importService->import(new ImportConfiguration(2));
 
-        self::assertFalse($importService->import(new ImportConfiguration(2))->hasErrors());
+        self::assertFalse($importResult->hasErrors());
+        self::assertSame(1, $importResult->getNumberOfSkippedJobs());
         self::assertCount(1, $this->getJobRecords());
     }
 
@@ -511,6 +522,30 @@ final class ImportServiceTest extends FunctionalTestCase
         self::assertFalse($importService->import(new ImportConfiguration(2))->hasErrors());
 
         self::assertCount(1, $this->getRecordsByTitle('tx_jobboard_domain_model_jobarea', 'Jugendarbeit'));
+    }
+
+    #[Test]
+    public function importRemovesInvalidEmailOfAddressAndImportsJob(): void
+    {
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects($this->never())->method('error');
+        $logger->expects($this->once())
+            ->method('warning')
+            ->with(self::stringContains('Invalid value "not-an-email" of field "email" in table "tt_address"'));
+
+        $importService = $this->buildImportService(
+            '<jobs>' . str_replace(
+                '<salary_mode>',
+                '<manager_email>not-an-email</manager_email><salary_mode>',
+                $this->buildJobXml('4711', 'Web Developer (m/f/d)'),
+            ) . '</jobs>',
+            $logger,
+        );
+        $importResult = $importService->import(new ImportConfiguration(2));
+
+        self::assertFalse($importResult->hasErrors());
+        self::assertSame(0, $importResult->getNumberOfSkippedJobs());
+        self::assertGreaterThan(0, (int)$this->getImportedJob('test_4711')['address']);
     }
 
     #[Test]

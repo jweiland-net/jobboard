@@ -103,5 +103,13 @@ These events are logged, the import continues afterwards:
     The source is skipped and its existing jobs are kept.
 *   A job cannot be saved. It is skipped; if it already exists, it is kept
     with its previous data.
-*   A job has no vacancy ID. It is skipped with a warning.
+*   A job has no vacancy ID or no primary location. It is skipped with a
+    warning; if it already exists, it is kept with its previous data.
+*   A job or its address has an invalid email address or URL. The value is
+    removed with a warning, the job is imported without it.
 *   An occupational field or employment scope is created (INFO).
+
+The command shows the number of skipped jobs as warning and still ends
+successfully, as skipped jobs are a problem of the source data. It only
+ends with an error (exit code 1, shown as failed in the scheduler), if a
+source could not be fetched or a job could not be saved.

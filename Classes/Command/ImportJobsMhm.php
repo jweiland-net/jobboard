@@ -59,11 +59,19 @@ use TYPO3\CMS\Core\Core\Bootstrap;
         );
 
         $importResult = $this->importService->import($importConfiguration);
+        $symfonyStyle = new SymfonyStyle($input, $output);
+        if ($importResult->getNumberOfSkippedJobs() > 0) {
+            $symfonyStyle->warning(sprintf(
+                '%d job(s) skipped because of invalid data. See the log of jobboard.',
+                $importResult->getNumberOfSkippedJobs(),
+            ));
+        }
+
         if (!$importResult->hasErrors()) {
             return Command::SUCCESS;
         }
 
-        (new SymfonyStyle($input, $output))->error(sprintf(
+        $symfonyStyle->error(sprintf(
             '%d job(s) could not be saved and %d API model(s) could not be fetched. See the log of jobboard.',
             $importResult->getNumberOfFailedJobs(),
             $importResult->getNumberOfFailedApiModels(),

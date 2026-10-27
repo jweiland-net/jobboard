@@ -22,19 +22,23 @@ Architecture
     :caption: Flow of the console command jobboard:import:jobs:mhm
 
     ImportJobsMhm (console command, argument: storage page UID)
-     └── ImportService::import()
-          ├── for each service tagged "api.model"
-          │    ├── XmlClient: GET request to getApiEndpoint()
-          │    │    (failed request or invalid XML: source skipped,
-          │    │     all its jobs are kept)
-          │    ├── every child element of the XML root element = one job
-          │    │    (jobs without vacancy_id are skipped)
-          │    ├── TtAddressService: address of the primary location
-          │    ├── JobService: job record built from getMapping(),
-          │    │    job_areas/job_type resolved or created by title
-          │    └── DataHandler: save address and job
-          └── DataHandler: delete imported jobs that a successfully
-                           fetched source no longer delivers
+     ├── ImportService::import() returns an ImportResult
+     │    ├── for each service tagged "api.model"
+     │    │    ├── XmlClient: GET request to getApiEndpoint()
+     │    │    │    (failed request or invalid XML: source failed,
+     │    │    │     all its jobs are kept)
+     │    │    ├── every child element of the XML root element = one job
+     │    │    │    (jobs without vacancy_id or primary location are
+     │    │    │     skipped with a warning)
+     │    │    ├── TtAddressService: address of the primary location
+     │    │    ├── JobService: job record built from getMapping(),
+     │    │    │    job_areas/job_type resolved or created by title
+     │    │    ├── ImportRecordValidator: remove invalid emails/URLs
+     │    │    └── DataHandler: save address and job
+     │    └── DataHandler: delete imported jobs that a successfully
+     │                     fetched source no longer delivers
+     └── exit code 0, or 1 if a source or job failed (skipped jobs are
+         only shown as warning)
 
 ..  _developer-import-class:
 
@@ -163,6 +167,12 @@ Occupational fields and employment scopes are found by their exact title
 in any language, hidden records included, and the record of the default
 language is related. A title without a matching record is created as new
 record in the default language on the storage page of the command.
+
+Jobs with invalid data are skipped with a warning in the log and do not
+let the command fail: jobs without vacancy ID or without primary
+location. Invalid email addresses and URLs are removed from the job or
+address with a warning, the job is imported without them. The command
+only fails, if a source could not be fetched or a job could not be saved.
 
 ..  _developer-import-salary:
 

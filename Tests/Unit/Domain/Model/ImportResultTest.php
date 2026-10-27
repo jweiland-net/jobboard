@@ -62,4 +62,23 @@ final class ImportResultTest extends UnitTestCase
         self::assertSame(3, $importResult->getNumberOfFailedJobs());
         self::assertSame(1, $importResult->getNumberOfFailedApiModels());
     }
+
+    #[Test]
+    public function withSkippedJobIncreasesNumberOfSkippedJobsWithoutErrors(): void
+    {
+        $importResult = (new ImportResult())->withSkippedJob()->withJobUid(1)->withFailedJob()->withSkippedJob();
+
+        self::assertSame(2, $importResult->getNumberOfSkippedJobs());
+        self::assertSame(1, $importResult->getNumberOfFailedJobs());
+        self::assertSame([1], $importResult->getJobUids());
+        self::assertFalse((new ImportResult([], 0, 0, 5))->hasErrors());
+    }
+
+    #[Test]
+    public function mergeAddsNumbersOfSkippedJobs(): void
+    {
+        $importResult = (new ImportResult([], 0, 0, 1))->merge(new ImportResult([], 0, 0, 2));
+
+        self::assertSame(3, $importResult->getNumberOfSkippedJobs());
+    }
 }
