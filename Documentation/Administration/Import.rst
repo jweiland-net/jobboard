@@ -54,8 +54,10 @@ For each job of a source:
     which is stored as :code:`<source name>_<ID of the source>`, so several
     sources can share one storage folder.
 *   Imported jobs are marked as imported (:guilabel:`Is imported record?`).
-*   Occupational fields and employment scopes are assigned by their title.
-    They must already exist in TYPO3, the import does not create them.
+*   Occupational fields and employment scopes are assigned by their title
+    in any language. If no record with this title exists, the import
+    creates it in the storage folder. Translate or rename it there, the
+    import finds it by its translated title, too.
 
 After all sources have been processed, the import **deletes the imported
 jobs of a source that this source no longer delivers**. Each source always
@@ -102,3 +104,4 @@ These events are logged, the import continues afterwards:
 *   A job cannot be saved. It is skipped; if it already exists, it is kept
     with its previous data.
 *   A job has no vacancy ID. It is skipped with a warning.
+*   An occupational field or employment scope is created (INFO).

@@ -160,6 +160,35 @@ final class ImportServiceTest extends FunctionalTestCase
             ->fetchAllAssociative();
     }
 
+    /**
+     * @return array<string, mixed>
+     */
+    private function getImportedJob(string $vacancyId): array
+    {
+        $queryBuilder = $this->get(ConnectionPool::class)->getQueryBuilderForTable('tx_jobboard_domain_model_job');
+        $queryBuilder->getRestrictions()->removeAll();
+        $job = $queryBuilder
+            ->select('*')
+            ->from('tx_jobboard_domain_model_job')
+            ->where($queryBuilder->expr()->eq('vacancy_id', $queryBuilder->createNamedParameter($vacancyId)))
+            ->executeQuery()
+            ->fetchAssociative();
+        self::assertIsArray($job);
+
+        return $job;
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function getRecordsByTitle(string $table, string $title): array
+    {
+        return $this->get(ConnectionPool::class)
+            ->getConnectionForTable($table)
+            ->select(['uid', 'pid', 'title'], $table, ['title' => $title])
+            ->fetchAllAssociative();
+    }
+
     private function isJobDeleted(int $jobUid): bool
     {
         foreach ($this->getJobRecords() as $jobRecord) {
@@ -434,6 +463,54 @@ final class ImportServiceTest extends FunctionalTestCase
 
         self::assertFalse($importService->import(new ImportConfiguration(2))->hasErrors());
         self::assertCount(1, $this->getJobRecords());
+    }
+
+    #[Test]
+    public function importCreatesUnknownJobAreasAndJobTypeAndRelatesThem(): void
+    {
+        $importService = $this->buildImportService(
+            '<jobs>' . str_replace(
+                ['<de>IT</de>', '<de>Vollzeit</de>'],
+                ["<de>Bildung/Erziehung\nIT</de>", '<de>Teil-/Vollzeit</de>'],
+                $this->buildJobXml('4711', 'Educator (m/f/d)'),
+            ) . '</jobs>',
+        );
+
+        self::assertFalse($importService->import(new ImportConfiguration(2))->hasErrors());
+
+        $jobAreas = $this->getRecordsByTitle('tx_jobboard_domain_model_jobarea', 'Bildung/Erziehung');
+        $jobTypes = $this->getRecordsByTitle('tx_jobboard_domain_model_jobtype', 'Teil-/Vollzeit');
+        self::assertCount(1, $jobAreas);
+        self::assertSame(2, (int)$jobAreas[0]['pid']);
+        self::assertCount(1, $jobTypes);
+
+        $job = $this->getImportedJob('test_4711');
+        self::assertSame(2, (int)$job['job_areas']);
+        self::assertSame((int)$jobTypes[0]['uid'], (int)$job['job_type']);
+        self::assertEqualsCanonicalizing(
+            [1, (int)$jobAreas[0]['uid']],
+            array_map(
+                intval(...),
+                $this->get(ConnectionPool::class)
+                    ->getConnectionForTable('tx_jobboard_job_jobarea_mm')
+                    ->select(['uid_foreign'], 'tx_jobboard_job_jobarea_mm', ['uid_local' => (int)$job['uid']])
+                    ->fetchFirstColumn(),
+            ),
+        );
+    }
+
+    #[Test]
+    public function importCreatesUnknownJobAreaOnlyOnce(): void
+    {
+        $jobXml = str_replace('<de>IT</de>', '<de>Jugendarbeit</de>', $this->buildJobXml('4711', 'Youth worker (m/f/d)'));
+        $importService = $this->buildImportService(
+            '<jobs>' . $jobXml . str_replace('4711', '4712', $jobXml) . '</jobs>',
+        );
+
+        self::assertFalse($importService->import(new ImportConfiguration(2))->hasErrors());
+        self::assertFalse($importService->import(new ImportConfiguration(2))->hasErrors());
+
+        self::assertCount(1, $this->getRecordsByTitle('tx_jobboard_domain_model_jobarea', 'Jugendarbeit'));
     }
 
     #[Test]

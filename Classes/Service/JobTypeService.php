@@ -11,44 +11,33 @@ declare(strict_types=1);
 
 namespace JWeiland\Jobboard\Service;
 
-use Doctrine\DBAL\Driver\Exception;
-use JWeiland\Jobboard\Traits\ConnectionPoolTrait;
-
 /**
  * This service handles data for table tx_jobboard_domain_model_jobtype
  * Do not migrate content to Extbase Repository as this service will be called via Command.
  */
 class JobTypeService
 {
-    use ConnectionPoolTrait;
-
     private const TABLE = 'tx_jobboard_domain_model_jobtype';
 
+    public function __construct(
+        private readonly TitleRecordService $titleRecordService,
+    ) {}
+
     /**
-     * The job_area in XML API is located in "custom_select_multi_4".
-     * These values are divided by "\n".
-     * As our database can only handle one record we just check first value.
+     * Returns the UID of the job type in the default language, also if the
+     * title matches a translation. 0, if the job type does not exist.
      */
     public function getJobTypeUid(string $jobType): int
     {
-        if ($jobType === '') {
-            return 0;
-        }
+        return $this->titleRecordService->findUidByTitle(self::TABLE, trim($jobType));
+    }
 
-        $queryBuilder = $this->getQueryBuilderForTable(self::TABLE);
-
-        try {
-            $jobTypeRecord = $queryBuilder
-                ->select('uid')
-                ->from(self::TABLE)->where($queryBuilder->expr()->eq(
-                    'title',
-                    $queryBuilder->createNamedParameter($jobType),
-                ))->executeQuery()
-                ->fetchAssociative();
-        } catch (Exception) {
-            $jobTypeRecord = false;
-        }
-
-        return (int)(is_array($jobTypeRecord) ? $jobTypeRecord['uid'] : 0);
+    /**
+     * Like getJobTypeUid(), but an unknown job type is created on the storage
+     * page, so the job type of the XML API is never lost.
+     */
+    public function getOrCreateJobTypeUid(string $jobType, int $storagePid): int
+    {
+        return $this->titleRecordService->getOrCreateUidByTitle(self::TABLE, trim($jobType), $storagePid);
     }
 }

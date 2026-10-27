@@ -210,4 +210,37 @@ final class JobServiceTest extends FunctionalTestCase
             $this->subject->getInitialImportStatusOfAlreadyImportedJobs(new ImportConfiguration(2)),
         );
     }
+
+    #[Test]
+    public function getPreparedJobByImportedJobResolvesMappedJobAreasAndJobTypeInsteadOfWritingTitles(): void
+    {
+        $apiModel = new class () implements ApiModelInterface {
+            use ApiModelTrait;
+
+            private const NAME = 'test';
+
+            private const API_ENDPOINT = 'https://example.org/api/jobs.xml';
+
+            private const MAPPING = [
+                'job_areas' => [
+                    'apiPath' => 'area',
+                    'isDate' => false,
+                    'default' => '',
+                ],
+                'job_type' => [
+                    'apiPath' => 'type',
+                    'isDate' => false,
+                    'default' => '',
+                ],
+            ];
+
+            private int $storagePid = 2;
+        };
+        $jobModel = new JobModel(new \SimpleXMLElement('<job><area>IT</area><type>Vollzeit</type></job>'));
+
+        $preparedJob = $this->subject->getPreparedJobByImportedJob($jobModel, $apiModel);
+
+        self::assertSame('1', $preparedJob['job_areas']);
+        self::assertSame(1, $preparedJob['job_type']);
+    }
 }

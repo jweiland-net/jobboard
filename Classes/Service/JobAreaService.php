@@ -11,8 +11,6 @@ declare(strict_types=1);
 
 namespace JWeiland\Jobboard\Service;
 
-use Doctrine\DBAL\Driver\Exception;
-use JWeiland\Jobboard\Traits\ConnectionPoolTrait;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -21,9 +19,11 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class JobAreaService
 {
-    use ConnectionPoolTrait;
-
     private const TABLE = 'tx_jobboard_domain_model_jobarea';
+
+    public function __construct(
+        private readonly TitleRecordService $titleRecordService,
+    ) {}
 
     /**
      * Resolves one or more job area titles (divided by "\n", as delivered by
@@ -33,37 +33,43 @@ class JobAreaService
      */
     public function getJobAreaUidList(string $jobAreas): string
     {
+        return $this->buildUidList($jobAreas, $this->getJobAreaUid(...));
+    }
+
+    /**
+     * Like getJobAreaUidList(), but unknown job areas are created on the
+     * storage page, so the job areas of the XML API are never lost.
+     */
+    public function getOrCreateJobAreaUidList(string $jobAreas, int $storagePid): string
+    {
+        return $this->buildUidList(
+            $jobAreas,
+            fn(string $jobArea): int => $this->titleRecordService->getOrCreateUidByTitle(self::TABLE, $jobArea, $storagePid),
+        );
+    }
+
+    /**
+     * Returns the UID of the job area in the default language, also if the
+     * title matches a translation
+     */
+    public function getJobAreaUid(string $jobArea): int
+    {
+        return $this->titleRecordService->findUidByTitle(self::TABLE, $jobArea);
+    }
+
+    /**
+     * @param callable(string): int $getUid
+     */
+    private function buildUidList(string $jobAreas, callable $getUid): string
+    {
         $jobAreaUids = [];
         foreach (GeneralUtility::trimExplode("\n", $jobAreas, true) as $jobArea) {
-            $jobAreaUid = $this->getJobAreaUid($jobArea);
+            $jobAreaUid = $getUid($jobArea);
             if ($jobAreaUid > 0) {
                 $jobAreaUids[$jobAreaUid] = $jobAreaUid;
             }
         }
 
         return implode(',', $jobAreaUids);
-    }
-
-    public function getJobAreaUid(string $jobArea): int
-    {
-        if ($jobArea === '') {
-            return 0;
-        }
-
-        $queryBuilder = $this->getQueryBuilderForTable(self::TABLE);
-
-        try {
-            $jobAreaRecord = $queryBuilder
-                ->select('uid')
-                ->from(self::TABLE)->where($queryBuilder->expr()->eq(
-                    'title',
-                    $queryBuilder->createNamedParameter($jobArea),
-                ))->executeQuery()
-                ->fetchAssociative();
-        } catch (Exception) {
-            $jobAreaRecord = false;
-        }
-
-        return (int)(is_array($jobAreaRecord) ? $jobAreaRecord['uid'] : 0);
     }
 }
