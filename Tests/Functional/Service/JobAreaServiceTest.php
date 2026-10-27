@@ -13,6 +13,8 @@ namespace JWeiland\Jobboard\Tests\Functional\Service;
 
 use JWeiland\Jobboard\Service\JobAreaService;
 use PHPUnit\Framework\Attributes\Test;
+use TYPO3\CMS\Core\Authentication\CommandLineUserAuthentication;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 /**
@@ -107,5 +109,18 @@ final class JobAreaServiceTest extends FunctionalTestCase
             '',
             $this->subject->getJobAreaUidList(''),
         );
+    }
+
+    #[Test]
+    public function getOrCreateJobAreaUidListCreatesUnknownJobAreas(): void
+    {
+        $GLOBALS['BE_USER'] = GeneralUtility::makeInstance(CommandLineUserAuthentication::class);
+        $GLOBALS['BE_USER']->backendCheckLogin();
+
+        $uidList = $this->subject->getOrCreateJobAreaUidList("IT\nBildung/Erziehung", 2);
+
+        $newUid = $this->subject->getJobAreaUid('Bildung/Erziehung');
+        self::assertGreaterThan(2, $newUid);
+        self::assertSame('1,' . $newUid, $uidList);
     }
 }

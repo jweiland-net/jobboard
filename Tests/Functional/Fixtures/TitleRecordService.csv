@@ -1,0 +1,11 @@
+"pages"
+,"uid","pid","title","slug","deleted","hidden","doktype","is_siteroot"
+,1,0,"Root","/",0,0,1,1
+,2,1,"Storage","/storage",0,0,254,0
+
+"tx_jobboard_domain_model_jobarea"
+,"uid","pid","title","sys_language_uid","l10n_parent","hidden","deleted"
+,1,2,"General administration",0,0,0,0
+,2,2,"Allgemeine Verwaltung",1,1,0,0
+,3,2,"Hidden area",0,0,1,0
+,4,2,"Deleted area",0,0,0,1

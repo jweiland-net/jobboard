@@ -30,6 +30,15 @@ readonly class JobService
 
     private const TABLE = 'tx_jobboard_domain_model_job';
 
+    /**
+     * Relation columns, filled with titles of the XML API, and their default
+     * API paths, if the API model does not map them
+     */
+    private const RELATION_COLUMNS = [
+        'job_areas' => 'custom_select_4/de',
+        'job_type' => 'custom_select_2/de',
+    ];
+
     public function __construct(
         private JobAreaService $jobAreaService,
         private JobTypeService $jobTypeService,
@@ -98,24 +107,48 @@ readonly class JobService
         return array_map(intval(...), $jobUids);
     }
 
+    /**
+     * The relation columns "job_areas" and "job_type" get the titles of the
+     * XML API (from the mapping or the default paths of MHM), which are
+     * resolved to UIDs. Unknown job areas and job types are created.
+     */
     public function getPreparedJobByImportedJob(JobModel $importedJob, ApiModelInterface $apiModel): array
     {
+        $storagePid = $apiModel->getStoragePid();
+        $mapping = $apiModel->getMapping();
         $preparedJob = [
-            'pid' => $apiModel->getStoragePid(),
+            'pid' => $storagePid,
             'is_import' => true,
-            'job_areas' => $this->jobAreaService->getJobAreaUidList(
-                $importedJob->getValueByPath('custom_select_4/de'),
-            ),
-            'job_type' => $this->jobTypeService->getJobTypeUid(
-                $importedJob->getValueByPath('custom_select_2/de'),
-            ),
         ];
 
-        foreach ($apiModel->getMapping() as $dbColumn => $apiMapping) {
-            $preparedJob[$dbColumn] = $this->getMappedValue($importedJob, $apiMapping);
+        foreach ($mapping as $dbColumn => $apiMapping) {
+            if (!array_key_exists($dbColumn, self::RELATION_COLUMNS)) {
+                $preparedJob[$dbColumn] = $this->getMappedValue($importedJob, $apiMapping);
+            }
         }
 
+        $preparedJob['job_areas'] = $this->jobAreaService->getOrCreateJobAreaUidList(
+            $this->getRelationTitles($importedJob, $mapping, 'job_areas'),
+            $storagePid,
+        );
+        $preparedJob['job_type'] = $this->jobTypeService->getOrCreateJobTypeUid(
+            $this->getRelationTitles($importedJob, $mapping, 'job_type'),
+            $storagePid,
+        );
+
         return $preparedJob;
+    }
+
+    /**
+     * @param ApiMapping[] $mapping
+     */
+    private function getRelationTitles(JobModel $importedJob, array $mapping, string $dbColumn): string
+    {
+        $apiPath = isset($mapping[$dbColumn])
+            ? $mapping[$dbColumn]->getApiPath()
+            : self::RELATION_COLUMNS[$dbColumn];
+
+        return trim((string)$importedJob->getValueByPath($apiPath));
     }
 
     /**

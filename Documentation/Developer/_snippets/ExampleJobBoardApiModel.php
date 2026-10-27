@@ -55,6 +55,18 @@ final class ExampleJobBoardApiModel implements ApiModelInterface
             'isDate' => false,
             'default' => '',
         ],
+        // Titles, resolved to (or created as) occupational field records
+        'job_areas' => [
+            'apiPath' => 'custom_select_4/de',
+            'isDate' => false,
+            'default' => '',
+        ],
+        // Title, resolved to (or created as) an employment scope record
+        'job_type' => [
+            'apiPath' => 'custom_select_2/de',
+            'isDate' => false,
+            'default' => '',
+        ],
         'start_date' => [
             'apiPath' => 'start_date',
             'isDate' => true,

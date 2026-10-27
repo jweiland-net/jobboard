@@ -30,7 +30,8 @@ Architecture
           │    ├── every child element of the XML root element = one job
           │    │    (jobs without vacancy_id are skipped)
           │    ├── TtAddressService: address of the primary location
-          │    ├── JobService: job record built from getMapping()
+          │    ├── JobService: job record built from getMapping(),
+          │    │    job_areas/job_type resolved or created by title
           │    └── DataHandler: save address and job
           └── DataHandler: delete imported jobs that a successfully
                            fetched source no longer delivers
@@ -118,8 +119,11 @@ keys:
     a source by this prefix.
 
 These columns are set by the import itself and need no mapping:
-:sql:`pid` (the storage page of the command), :sql:`is_import`,
-:sql:`address`, :sql:`job_areas` and :sql:`job_type`.
+:sql:`pid` (the storage page of the command), :sql:`is_import` and
+:sql:`address`. :sql:`job_areas` and :sql:`job_type` are read from the
+default paths below; map them only to read their titles from another
+element. Their mapping is never written as it is, its titles are always
+resolved to records.
 
 ..  _developer-import-xml:
 
@@ -156,8 +160,9 @@ Root element
     Name and email of the address.
 
 Occupational fields and employment scopes are found by their exact title
-in the table of the job board. Titles without a matching record are
-skipped, records are not created.
+in any language, hidden records included, and the record of the default
+language is related. A title without a matching record is created as new
+record in the default language on the storage page of the command.
 
 ..  _developer-import-salary:
 

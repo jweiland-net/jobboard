@@ -233,6 +233,11 @@ Key points:
   prefix). New job sources are added by creating a new class tagged `api.model` via
   `#[Autoconfigure(tags: ['api.model'], shared: false)]` - no changes to `ImportService` are needed.
   `ApiMapping`/`ApiModelTrait`/`AbstractModel` provide the shared plumbing (XPath lookup with type casting).
+- **Job areas and job types of the import are resolved by title** (`JobService::RELATION_COLUMNS`: `job_areas`,
+  `job_type`, titles from the API model's mapping or the default MHM paths `custom_select_4/de` /
+  `custom_select_2/de`; a mapping of these columns is never written as it is). `TitleRecordService` finds the
+  record by title in any language (hidden ones too, `DeletedRestriction` only) and returns the default-language
+  UID; unknown titles are created via DataHandler in the default language on the storage page of the import.
 - **Vacancy IDs are namespaced per source.** `vacancy_id` is prefixed with the API model's `NAME`
   (e.g. `drs_12345`) to avoid collisions between different job sources sharing one storage folder.
 - **Import is idempotent and self-cleaning.** `ImportService::import()` snapshots existing jobs for the
