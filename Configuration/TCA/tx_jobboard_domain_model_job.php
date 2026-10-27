@@ -90,7 +90,7 @@ return [
         'languageHidden' => ['showitem' => 'sys_language_uid, l10n_parent, hidden'],
         'job_details' => ['showitem' => 'title, reference_number, --linebreak--, subtitle, --linebreak--, path_segment'],
         'job_description' => ['showitem' => 'description, --linebreak--, offer, --linebreak--, requirements, --linebreak--, further_information'],
-        'import' => ['showitem' => 'is_import, vacancy_id'],
+        'import' => ['showitem' => 'is_import, vacancy_id, link'],
         'effective_salary' => ['showitem' => 'effective_salary_min, effective_salary_max, effective_salary_valid_until'],
         'address' => ['showitem' => 'address'],
         'information' => ['showitem' => 'job_role, job_type, contract_type, --linebreak--, job_areas, --linebreak--, tender_type'],
@@ -599,9 +599,17 @@ return [
             ],
         ],
         'link' => [
+            'exclude' => true,
+            'displayCond' => 'FIELD:is_import:REQ:true',
             'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.link',
+            'description' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.link.description',
             'config' => [
-                'type' => 'passthrough',
+                'type' => 'link',
+                'readOnly' => true,
+                'allowedTypes' => ['url'],
+                'appearance' => [
+                    'allowedOptions' => [],
+                ],
             ],
         ],
         'is_import' => [

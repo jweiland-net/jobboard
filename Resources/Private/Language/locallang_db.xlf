@@ -210,6 +210,9 @@
 			<trans-unit id="tx_jobboard_domain_model_job.link">
 				<source>Link to vacancy</source>
 			</trans-unit>
+			<trans-unit id="tx_jobboard_domain_model_job.link.description">
+				<source>External URL of the vacancy, set by the job import and read-only. If set, the job list and the map link to this URL in a new window instead of the detail page.</source>
+			</trans-unit>
 			<trans-unit id="tx_jobboard_domain_model_job.is_import">
 				<source>Is imported record?</source>
 			</trans-unit>
