@@ -180,16 +180,6 @@ final class RenderJobLocationInfoWindowContentEventListenerTest extends Function
         self::fail('No link to job ' . $jobUid . ' found.');
     }
 
-    private function addLinkColumn(): void
-    {
-        $connection = $this->get(ConnectionPool::class)->getConnectionForTable(self::TABLE_JOB);
-        if (!$connection->createSchemaManager()->introspectTable(self::TABLE_JOB)->hasColumn('link')) {
-            $connection->executeStatement(
-                'ALTER TABLE ' . self::TABLE_JOB . ' ADD COLUMN link VARCHAR(2048) DEFAULT \'\' NOT NULL',
-            );
-        }
-    }
-
     /**
      * @param array<string, mixed> $values
      */
@@ -715,9 +705,8 @@ final class RenderJobLocationInfoWindowContentEventListenerTest extends Function
     }
 
     #[Test]
-    public function withoutLinkColumnInDatabaseJobsLinkToDetailAction(): void
+    public function jobWithoutLinkLinksToDetailAction(): void
     {
-        // The TCA column "link" is "passthrough" without ext_tables.sql entry
         $jobLink = $this->getJobLink($this->findJobLocation(1), 1);
 
         self::assertFalse($jobLink->getIsExternal());
@@ -727,7 +716,6 @@ final class RenderJobLocationInfoWindowContentEventListenerTest extends Function
     #[Test]
     public function externalLinkOfJobIsOpenedInNewWindow(): void
     {
-        $this->addLinkColumn();
         $this->updateJob(1, ['link' => 'https://jobs.example.org/apply?id=1&lang=en']);
 
         $content = $this->renderInfoWindow(1);
@@ -762,7 +750,6 @@ final class RenderJobLocationInfoWindowContentEventListenerTest extends Function
     #[DataProvider('noExternalLinkDataProvider')]
     public function linkWhichIsNoHttpUrlIsIgnored(string $link): void
     {
-        $this->addLinkColumn();
         $this->updateJob(1, ['link' => $link]);
 
         $jobLink = $this->getJobLink($this->findJobLocation(1), 1);

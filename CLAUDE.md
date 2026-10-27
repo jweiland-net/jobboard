@@ -354,9 +354,10 @@ Key points:
   - Links: `JobUriBuilder` builds detail URIs with the site router (`generateUri()`, absolute path, cHash and
     route enhancer apply), target page = site setting `jobboard.pidOfDetailPage` if > 0, else the page of the
     request (`routing`). Jobs with an external http(s) `link` link there (`target="_blank" rel="noopener"`).
-    Known gap: the `link` column is TCA `passthrough` without an `ext_tables.sql` entry, so it does not exist in
-    the database (TYPO3 creates no column for passthrough) - `job.link` is always empty, in the list as well.
-    `JobLocationService` therefore selects `*` and reads `link` optionally.
+    The `link` column is TCA `type=link` (external URLs only, read-only, shown for imported jobs in the
+    "import" palette), so TYPO3 derives the column from TCA. Never make it `passthrough` again: TYPO3 creates
+    no column for passthrough and every job insert of the import fails ("Unknown column 'link'").
+    `JobLocationService` selects `*` and reads `link` optionally.
   - Markup: `Templates/Map/InfoWindow.html` (variable `jobLocation`, `f:spaceless`, Bootstrap 5, `h3.h6`, count
     labels `map.infoWindow.numberOfJobs.singular|plural`), rendered by `JobLocationInfoWindowRenderer` via
     `ViewFactoryInterface` with `plugin.tx_jobboard.view.*RootPaths` - or, on a cached page without TypoScript

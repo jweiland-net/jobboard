@@ -278,6 +278,10 @@
 				<source>Link to vacancy</source>
 				<target>Link zum Stellenangebot</target>
 			</trans-unit>
+			<trans-unit id="tx_jobboard_domain_model_job.link.description">
+				<source>External URL of the vacancy, set by the job import and read-only. If set, the job list and the map link to this URL in a new window instead of the detail page.</source>
+				<target>Externe URL des Stellenangebots, wird vom Job-Import gesetzt und ist schreibgeschützt. Ist sie gesetzt, verlinken Jobliste und Karte in einem neuen Fenster auf diese URL statt auf die Detailseite.</target>
+			</trans-unit>
 			<trans-unit id="tx_jobboard_domain_model_job.is_import">
 				<source>Is imported record?</source>
 				<target>Importierter Datensatz?</target>
