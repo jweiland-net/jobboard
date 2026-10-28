@@ -20,25 +20,22 @@ use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
  * Test case.
+ *
+ * The expected values of the automatic format are the output of ICU
+ * (\NumberFormatter) for locales whose format is stable across ICU versions.
  */
 final class SalaryNumberFormatTest extends UnitTestCase
 {
-    /**
-     * Separators of the labels "salary.thousandsSeparator" and
-     * "salary.decimalSeparator" in English and German
-     */
-    private const ENGLISH_SEPARATORS = [',', '.'];
-    private const GERMAN_SEPARATORS = ['.', ','];
+    private const NBSP = "\u{00A0}";
 
     /**
      * @param array<string, mixed> $salarySettings
-     * @param array{string, string} $languageSeparators
      */
-    private function buildFromSettings(array $salarySettings, array $languageSeparators): SalaryNumberFormat
+    private function buildFromSettings(array $salarySettings, string $locale = 'de-DE'): SalaryNumberFormat
     {
         return SalaryNumberFormat::fromSettings(
             SiteSettings::createFromSettingsTree(['jobboard' => ['salary' => $salarySettings]]),
-            ...$languageSeparators,
+            $locale,
         );
     }
 
@@ -51,13 +48,17 @@ final class SalaryNumberFormatTest extends UnitTestCase
         self::assertSame('jobboard.salary', $settings[SalaryNumberFormat::SETTING_FORMAT]['category'] ?? null);
         self::assertSame(SalaryNumberFormat::FORMAT_AUTOMATIC, $settings[SalaryNumberFormat::SETTING_FORMAT]['default'] ?? null);
         self::assertSame(
-            [
-                SalaryNumberFormat::FORMAT_AUTOMATIC,
-                SalaryNumberFormat::FORMAT_ENGLISH,
-                SalaryNumberFormat::FORMAT_GERMAN,
-                SalaryNumberFormat::FORMAT_CUSTOM,
-            ],
+            [SalaryNumberFormat::FORMAT_AUTOMATIC, SalaryNumberFormat::FORMAT_CUSTOM],
             array_keys($settings[SalaryNumberFormat::SETTING_FORMAT]['enum'] ?? []),
+        );
+        self::assertSame(
+            [
+                'category' => 'jobboard.salary',
+                'type' => 'string',
+                'default' => SalaryNumberFormat::DEFAULT_CURRENCY,
+                'options' => ['min' => 3, 'max' => 3],
+            ],
+            $settings[SalaryNumberFormat::SETTING_CURRENCY] ?? null,
         );
         self::assertSame(
             [
@@ -76,51 +77,95 @@ final class SalaryNumberFormatTest extends UnitTestCase
             ['category' => 'jobboard.salary', 'type' => 'string', 'default' => '.', 'options' => ['min' => 1, 'max' => 1]],
             $settings[SalaryNumberFormat::SETTING_DECIMAL_SEPARATOR] ?? null,
         );
+        self::assertSame('jobboard.salary', $settings[SalaryNumberFormat::SETTING_CURRENCY_POSITION]['category'] ?? null);
+        self::assertSame(
+            SalaryNumberFormat::CURRENCY_POSITION_AFTER,
+            $settings[SalaryNumberFormat::SETTING_CURRENCY_POSITION]['default'] ?? null,
+        );
+        self::assertSame(
+            [SalaryNumberFormat::CURRENCY_POSITION_AFTER, SalaryNumberFormat::CURRENCY_POSITION_BEFORE],
+            array_keys($settings[SalaryNumberFormat::SETTING_CURRENCY_POSITION]['enum'] ?? []),
+        );
+    }
+
+    /**
+     * @return array<string, array{string, string, string}>
+     */
+    public static function automaticDataProvider(): array
+    {
+        return [
+            'German, sign after the amount' => ['de-DE', 'EUR', '1.234,56' . self::NBSP . '€'],
+            'English (US), sign before the amount' => ['en-US', 'EUR', '€1,234.56'],
+            'Dutch, sign before the amount' => ['nl-NL', 'EUR', '€' . self::NBSP . '1.234,56'],
+            'Swiss German with Swiss francs' => ['de-CH', 'CHF', 'CHF' . self::NBSP . '1’234.56'],
+            'POSIX notation of the locale' => ['de_DE', 'EUR', '1.234,56' . self::NBSP . '€'],
+            'US dollars in German' => ['de-DE', 'USD', '1.234,56' . self::NBSP . '$'],
+        ];
     }
 
     #[Test]
-    public function englishFormatsWithCommaAndPeriod(): void
+    #[DataProvider('automaticDataProvider')]
+    public function automaticFormatsWithNumberFormatOfLocale(string $locale, string $currency, string $expected): void
     {
-        self::assertSame('1,234.56', SalaryNumberFormat::english()->format(1234.56));
-        self::assertSame('1,234,567.80', SalaryNumberFormat::english()->format(1234567.8));
+        self::assertSame($expected, SalaryNumberFormat::automatic($locale, $currency)->format(1234.56));
     }
 
     #[Test]
-    public function germanFormatsWithPeriodAndComma(): void
+    public function automaticUsesGivenDecimalsAndRoundsHalfUp(): void
     {
-        self::assertSame('1.234,56', SalaryNumberFormat::german()->format(1234.56));
-        self::assertSame('1.234.567,80', SalaryNumberFormat::german()->format(1234567.8));
+        self::assertSame('1.235' . self::NBSP . '€', SalaryNumberFormat::automatic('de-DE', 'EUR', 0)->format(1234.5));
+        self::assertSame('1.234,5600' . self::NBSP . '€', SalaryNumberFormat::automatic('de-DE', 'EUR', 4)->format(1234.56));
     }
 
     #[Test]
-    public function fixedFormatsUseGivenDecimals(): void
+    public function automaticUsesDefaultsForInvalidCurrencyAndDecimals(): void
     {
-        self::assertSame('1,235', SalaryNumberFormat::english(0)->format(1234.56));
-        self::assertSame('1.234,5600', SalaryNumberFormat::german(4)->format(1234.56));
+        $salaryNumberFormat = SalaryNumberFormat::automatic('de-DE', 'euro', SalaryNumberFormat::MAXIMUM_DECIMALS + 1);
+
+        self::assertSame(SalaryNumberFormat::DEFAULT_CURRENCY, $salaryNumberFormat->getCurrency());
+        self::assertSame(SalaryNumberFormat::DEFAULT_DECIMALS, $salaryNumberFormat->getDecimals());
+        self::assertFalse($salaryNumberFormat->isCustom());
     }
 
     #[Test]
-    public function fixedFormatsUseDefaultDecimalsForInvalidDecimals(): void
+    public function customFormatsWithGivenSeparatorsAndCurrencySignOfLocale(): void
     {
-        self::assertSame(2, SalaryNumberFormat::english(-1)->getDecimals());
-        self::assertSame(2, SalaryNumberFormat::german(SalaryNumberFormat::MAXIMUM_DECIMALS + 1)->getDecimals());
+        self::assertSame("1'234.6" . self::NBSP . '€', SalaryNumberFormat::custom('de-DE', "'", '.', 1)->format(1234.56));
+        self::assertSame(
+            'CHF' . self::NBSP . "1'234.56",
+            SalaryNumberFormat::custom('de-CH', "'", '.', 2, 'CHF', 'before')->format(1234.56),
+        );
+        self::assertSame(
+            '1234,56' . self::NBSP . '$',
+            SalaryNumberFormat::custom('en-US', '', ',', 2, 'USD')->format(1234.56),
+        );
+    }
+
+    /**
+     * @return array<string, array{string, string, int, string, string}>
+     */
+    public static function invalidCustomDataProvider(): array
+    {
+        return [
+            'same separators' => ['.', '.', 2, 'EUR', 'after'],
+            'invalid currency' => [',', '.', 2, 'Euro', 'after'],
+            'invalid currency position' => [',', '.', 2, 'EUR', 'left'],
+        ];
     }
 
     #[Test]
-    public function customFormatsWithGivenSeparators(): void
-    {
-        self::assertSame("1'234.6", SalaryNumberFormat::custom("'", '.', 1)->format(1234.56));
-        self::assertSame("1\u{202F}234,56", SalaryNumberFormat::custom("\u{202F}", ',', 2)->format(1234.56));
-        self::assertSame('1234,56', SalaryNumberFormat::custom('', ',', 2)->format(1234.56));
-    }
-
-    #[Test]
-    public function customThrowsExceptionForInvalidCombination(): void
-    {
+    #[DataProvider('invalidCustomDataProvider')]
+    public function customThrowsExceptionForInvalidCombination(
+        string $thousandsSeparator,
+        string $decimalSeparator,
+        int $decimals,
+        string $currency,
+        string $currencyPosition,
+    ): void {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionCode(1761484800);
 
-        SalaryNumberFormat::custom('.', '.', 2);
+        SalaryNumberFormat::custom('de-DE', $thousandsSeparator, $decimalSeparator, $decimals, $currency, $currencyPosition);
     }
 
     /**
@@ -164,80 +209,143 @@ final class SalaryNumberFormatTest extends UnitTestCase
         self::assertSame($expected, SalaryNumberFormat::isValid($thousandsSeparator, $decimalSeparator, $decimals));
     }
 
-    #[Test]
-    public function fromSettingsWithoutSettingsUsesSeparatorsOfEnglish(): void
+    /**
+     * @return array<string, array{string, bool}>
+     */
+    public static function isValidCurrencyDataProvider(): array
     {
-        self::assertSame('1,234.56', $this->buildFromSettings([], self::ENGLISH_SEPARATORS)->format(1234.56));
+        return [
+            'EUR' => ['EUR', true],
+            'CHF' => ['CHF', true],
+            'lowercase' => ['eur', false],
+            'sign' => ['€', false],
+            'two letters' => ['EU', false],
+            'four letters' => ['EURO', false],
+            'empty' => ['', false],
+        ];
     }
 
     #[Test]
-    public function fromSettingsWithoutSettingsUsesSeparatorsOfGerman(): void
+    #[DataProvider('isValidCurrencyDataProvider')]
+    public function isValidCurrencyChecksIsoCodeFormat(string $currency, bool $expected): void
     {
-        self::assertSame('1.234,56', $this->buildFromSettings([], self::GERMAN_SEPARATORS)->format(1234.56));
+        self::assertSame($expected, SalaryNumberFormat::isValidCurrency($currency));
     }
 
     /**
-     * @return array<string, array{array<string, mixed>, array{string, string}, string}>
+     * @return array<string, array{array<string, mixed>, string, string}>
      */
     public static function fromSettingsDataProvider(): array
     {
         return [
-            'automatic in English' => [['numberFormat' => 'automatic'], self::ENGLISH_SEPARATORS, '1,234.56'],
-            'automatic in German' => [['numberFormat' => 'automatic'], self::GERMAN_SEPARATORS, '1.234,56'],
-            'automatic with decimals' => [['numberFormat' => 'automatic', 'decimals' => 0], self::GERMAN_SEPARATORS, '1.235'],
-            'English in German' => [['numberFormat' => 'english'], self::GERMAN_SEPARATORS, '1,234.56'],
-            'German in English' => [['numberFormat' => 'german'], self::ENGLISH_SEPARATORS, '1.234,56'],
-            'German with decimals' => [['numberFormat' => 'german', 'decimals' => 3], self::ENGLISH_SEPARATORS, '1.234,560'],
-            'decimals as string' => [['numberFormat' => 'english', 'decimals' => '1'], self::GERMAN_SEPARATORS, '1,234.6'],
-            'invalid decimals' => [['numberFormat' => 'english', 'decimals' => 9], self::GERMAN_SEPARATORS, '1,234.56'],
-            'decimals no number' => [['numberFormat' => 'english', 'decimals' => 'two'], self::GERMAN_SEPARATORS, '1,234.56'],
+            'no settings in German' => [[], 'de-DE', '1.234,56' . self::NBSP . '€'],
+            'no settings in English' => [[], 'en-US', '€1,234.56'],
+            'automatic in Dutch' => [['numberFormat' => 'automatic'], 'nl-NL', '€' . self::NBSP . '1.234,56'],
+            'automatic with currency' => [['currency' => 'CHF'], 'de-CH', 'CHF' . self::NBSP . '1’234.56'],
+            'automatic with decimals' => [['decimals' => 0], 'de-DE', '1.235' . self::NBSP . '€'],
+            'decimals as string' => [['decimals' => '1'], 'de-DE', '1.234,6' . self::NBSP . '€'],
+            'invalid decimals' => [['decimals' => 9], 'de-DE', '1.234,56' . self::NBSP . '€'],
+            'decimals no number' => [['decimals' => 'two'], 'de-DE', '1.234,56' . self::NBSP . '€'],
+            // The Swiss locale writes the code instead of the euro sign
+            'invalid currency falls back to EUR' => [['currency' => 'Franken'], 'de-CH', 'EUR' . self::NBSP . '1’234.56'],
+            'currency position is ignored by automatic format' => [
+                ['currencyPosition' => 'before'],
+                'de-DE',
+                '1.234,56' . self::NBSP . '€',
+            ],
             'custom' => [
                 ['numberFormat' => 'custom', 'thousandsSeparator' => "'", 'decimalSeparator' => '.', 'decimals' => 1],
-                self::GERMAN_SEPARATORS,
-                "1'234.6",
+                'de-DE',
+                "1'234.6" . self::NBSP . '€',
+            ],
+            'custom with currency before the amount' => [
+                [
+                    'numberFormat' => 'custom',
+                    'thousandsSeparator' => "'",
+                    'decimalSeparator' => '.',
+                    'currency' => 'CHF',
+                    'currencyPosition' => 'before',
+                ],
+                'de-CH',
+                'CHF' . self::NBSP . "1'234.56",
             ],
             'custom without grouping' => [
                 ['numberFormat' => 'custom', 'thousandsSeparator' => '', 'decimalSeparator' => ','],
-                self::ENGLISH_SEPARATORS,
-                '1234,56',
+                'en-US',
+                '1234,56' . self::NBSP . '€',
             ],
-            'custom with default separators' => [['numberFormat' => 'custom'], self::GERMAN_SEPARATORS, '1,234.56'],
-            'custom separators are ignored by fixed formats' => [
-                ['numberFormat' => 'german', 'thousandsSeparator' => "'", 'decimalSeparator' => '.'],
-                self::ENGLISH_SEPARATORS,
-                '1.234,56',
-            ],
+            'custom with default separators' => [['numberFormat' => 'custom'], 'de-DE', '1,234.56' . self::NBSP . '€'],
             'invalid custom with same separators falls back to automatic' => [
                 ['numberFormat' => 'custom', 'thousandsSeparator' => ',', 'decimalSeparator' => ','],
-                self::GERMAN_SEPARATORS,
-                '1.234,56',
+                'de-DE',
+                '1.234,56' . self::NBSP . '€',
             ],
             'invalid custom with digit falls back to automatic' => [
                 ['numberFormat' => 'custom', 'thousandsSeparator' => 1, 'decimalSeparator' => '0'],
-                self::ENGLISH_SEPARATORS,
-                '1,234.56',
+                'en-US',
+                '€1,234.56',
             ],
-            'unknown format falls back to automatic' => [['numberFormat' => 'swiss'], self::GERMAN_SEPARATORS, '1.234,56'],
-            'invalid separators of language fall back to English' => [[], ['.', '.'], '1,234.56'],
-            'missing separators of language fall back to English' => [[], ['', ''], '1,234.56'],
+            'invalid currency position falls back to automatic' => [
+                ['numberFormat' => 'custom', 'currencyPosition' => 'left'],
+                'nl-NL',
+                '€' . self::NBSP . '1.234,56',
+            ],
+            'removed format "german" falls back to automatic' => [['numberFormat' => 'german'], 'en-US', '€1,234.56'],
         ];
     }
 
     /**
      * @param array<string, mixed> $salarySettings
-     * @param array{string, string} $languageSeparators
      */
     #[Test]
     #[DataProvider('fromSettingsDataProvider')]
-    public function fromSettingsSelectsNumberFormat(array $salarySettings, array $languageSeparators, string $expected): void
+    public function fromSettingsSelectsNumberFormat(array $salarySettings, string $locale, string $expected): void
     {
-        self::assertSame($expected, $this->buildFromSettings($salarySettings, $languageSeparators)->format(1234.56));
+        self::assertSame($expected, $this->buildFromSettings($salarySettings, $locale)->format(1234.56));
+    }
+
+    #[Test]
+    public function fromSettingsPrefersValidGivenCurrency(): void
+    {
+        $settings = SiteSettings::createFromSettingsTree(['jobboard' => ['salary' => ['currency' => 'USD']]]);
+
+        self::assertSame('CHF', SalaryNumberFormat::fromSettings($settings, 'de-CH', 'CHF')->getCurrency());
+        self::assertSame('USD', SalaryNumberFormat::fromSettings($settings, 'de-CH', 'chf')->getCurrency());
+    }
+
+    /**
+     * @return array<string, array{array<string, mixed>, string}>
+     */
+    public static function getCurrencyFromSettingsDataProvider(): array
+    {
+        return [
+            'not set' => [[], 'EUR'],
+            'valid code' => [['currency' => 'CHF'], 'CHF'],
+            'invalid code' => [['currency' => 'chf'], 'EUR'],
+            'no string' => [['currency' => 756], 'EUR'],
+        ];
+    }
+
+    /**
+     * @param array<string, mixed> $salarySettings
+     */
+    #[Test]
+    #[DataProvider('getCurrencyFromSettingsDataProvider')]
+    public function getCurrencyFromSettingsReturnsValidCodeOrEur(array $salarySettings, string $expected): void
+    {
+        self::assertSame(
+            $expected,
+            SalaryNumberFormat::getCurrencyFromSettings(
+                SiteSettings::createFromSettingsTree(['jobboard' => ['salary' => $salarySettings]]),
+            ),
+        );
     }
 
     #[Test]
     public function formatFormatsZeroAndNegativeAmounts(): void
     {
-        self::assertSame('0.00', SalaryNumberFormat::english()->format(0.0));
-        self::assertSame('-1.234,56', SalaryNumberFormat::german()->format(-1234.56));
+        self::assertSame('0,00' . self::NBSP . '€', SalaryNumberFormat::automatic('de-DE')->format(0.0));
+        self::assertSame('-1.234,56' . self::NBSP . '€', SalaryNumberFormat::automatic('de-DE')->format(-1234.56));
+        self::assertSame('-1,234.56' . self::NBSP . '€', SalaryNumberFormat::custom('de-DE', ',', '.', 2)->format(-1234.56));
     }
 }

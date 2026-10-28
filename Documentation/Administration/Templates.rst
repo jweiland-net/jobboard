@@ -211,7 +211,8 @@ The detail view adds a :code:`schema.org/JobPosting` as
 :html:`<script type="application/ld+json">` with these properties: title,
 description, identifier (employer and reference number), start date,
 :code:`validThrough` (application deadline), hiring organization with
-logo, job location, base salary (monthly, in EUR) and :code:`directApply`
+logo, job location, base salary (monthly, in the currency of
+:confval:`jobboard-salary-currency`) and :code:`directApply`
 (true if the job has an email address).
 
 Override :file:`Partials/Job/JsonLd.html` to change the properties. Follow
@@ -260,13 +261,6 @@ Some useful label keys:
     Date format of the list, the cards, the detail view and the PDF
     version, for example :code:`Y-m-d` (English) or :code:`d.m.Y` (German).
 
-:code:`salary.thousandsSeparator`, :code:`salary.decimalSeparator`
-    Separators of salary amounts in the language, for example :code:`,`
-    and :code:`.` (English, 1,234.56) or :code:`.` and :code:`,` (German,
-    1.234,56). Used with the number format :yaml:`automatic`, see
-    :confval:`jobboard-salary-numberformat`. Add these labels to the
-    translation of further languages.
-
 :code:`job.applyOnline`
     Text of the "Apply online" link.
 
@@ -301,9 +295,12 @@ ViewHelper for salary amounts
 The detail view formats every salary amount (salary range and salary
 steps) with the ViewHelper
 :php:`JWeiland\Jobboard\ViewHelpers\Format\SalaryViewHelper`. It uses the
-number format of the site settings, see
-:confval:`jobboard-salary-numberformat`, and appends the currency sign
-with a space.
+number format and the currency of the site settings, see
+:confval:`jobboard-salary-numberformat` and
+:confval:`jobboard-salary-currency`, and the locale of the site language,
+for example :code:`1.234,56 €` in German or :code:`€ 1.234,56` in Dutch.
+The optional argument :html:`currency` (ISO 4217 code) replaces the
+currency of the site settings.
 
 ..  code-block:: html
     :caption: Format a salary amount in an own template
@@ -311,14 +308,21 @@ with a space.
     <html xmlns:jobboard="http://typo3.org/ns/JWeiland/Jobboard/ViewHelpers"
           data-namespace-typo3-fluid="true">
 
-    <jobboard:format.salary currencySign="€">{job.salaryRangeMin}</jobboard:format.salary>
-    {job.salaryRangeMax -> jobboard:format.salary(currencySign: '€')}
+    <jobboard:format.salary>{job.salaryRangeMin}</jobboard:format.salary>
+    {job.salaryRangeMax -> jobboard:format.salary(currency: 'CHF')}
 
 If you have overridden :file:`Templates/Jobboard/Detail.html`, replace
-:html:`<f:format.currency>` of the salary amounts with this ViewHelper.
-Otherwise, your template keeps the German format and ignores the site
-settings. The structured data (:ref:`templates-json-ld`) keeps the plain
-numbers.
+:html:`<f:format.currency>` of the salary amounts with this ViewHelper
+and remove the currency sign after it. Otherwise, your template keeps the
+German format and ignores the site settings. The structured data
+(:ref:`templates-json-ld`) keeps the plain numbers and gets the currency
+code from the ViewHelper
+:php:`JWeiland\Jobboard\ViewHelpers\SalaryCurrencyViewHelper`:
+
+..  code-block:: html
+    :caption: Currency of the structured data in an own :file:`Partials/Job/JsonLd.html`
+
+    "currency": <f:format.json value="{jobboard:salaryCurrency()}"/>,
 
 ..  _templates-map-markers:
 

@@ -88,13 +88,19 @@
 				<source>Number format of salary amounts</source>
 			</trans-unit>
 			<trans-unit id="settings.description.jobboard.salary.numberFormat">
-				<source>How salary amounts are displayed. "Automatic" uses the separators of the language of the page (English 1,234.56, German 1.234,56), translated in the language files of the extension. "English" and "German" use these formats in every language. "Custom" uses the thousands and decimal separator below. Only the display changes, the stored salaries and the structured data for search engines stay the same.</source>
+				<source>How salary amounts are displayed. "Automatic" uses the number format of the locale of the page, including the position of the currency sign, for example 1.234,56 € (de-DE), € 1.234,56 (nl-NL) or CHF 1’234.56 (de-CH). "Custom" uses the thousands separator, decimal separator and currency position below. Only the display changes, the stored salaries and the structured data for search engines stay the same.</source>
+			</trans-unit>
+			<trans-unit id="settings.jobboard.salary.currency">
+				<source>Currency of salary amounts</source>
+			</trans-unit>
+			<trans-unit id="settings.description.jobboard.salary.currency">
+				<source>ISO 4217 code of the currency, for example EUR, CHF or USD. The currency sign is taken from the locale of the page, for example € or CHF. Also used in the structured data for search engines. An invalid code is replaced by EUR.</source>
 			</trans-unit>
 			<trans-unit id="settings.jobboard.salary.decimals">
 				<source>Decimal places of salary amounts</source>
 			</trans-unit>
 			<trans-unit id="settings.description.jobboard.salary.decimals">
-				<source>Number of decimal places (0 to 4) of salary amounts. Applies to every number format. Amounts are rounded for the display only.</source>
+				<source>Number of decimal places (0 to 4) of salary amounts. Applies to the automatic and the custom format. Amounts are rounded for the display only.</source>
 			</trans-unit>
 			<trans-unit id="settings.jobboard.salary.thousandsSeparator">
 				<source>Thousands separator (custom format)</source>
@@ -107,6 +113,12 @@
 			</trans-unit>
 			<trans-unit id="settings.description.jobboard.salary.decimalSeparator">
 				<source>One character between the whole number and the decimal places, for example a dot or a comma. Only used with the number format "Custom". Spaces, digits, plus and minus signs are not allowed, and it must differ from the thousands separator. Otherwise, the automatic format is used.</source>
+			</trans-unit>
+			<trans-unit id="settings.jobboard.salary.currencyPosition">
+				<source>Position of the currency sign (custom format)</source>
+			</trans-unit>
+			<trans-unit id="settings.description.jobboard.salary.currencyPosition">
+				<source>Whether the currency sign is put before or after the amount. Only used with the number format "Custom". The automatic format takes the position from the locale of the page.</source>
 			</trans-unit>
 		</body>
 	</file>

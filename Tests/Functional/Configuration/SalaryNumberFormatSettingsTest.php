@@ -56,10 +56,25 @@ final class SalaryNumberFormatSettingsTest extends FunctionalTestCase
         $settingDefinition = $this->getSettingDefinition(SalaryNumberFormat::SETTING_FORMAT);
 
         self::assertSame(SalaryNumberFormat::FORMAT_AUTOMATIC, $settingDefinition->default);
+        self::assertSame(['automatic', 'custom'], array_keys($settingDefinition->enum));
+    }
+
+    #[Test]
+    public function siteSetDefinesCurrencyWithEurAsDefault(): void
+    {
         self::assertSame(
-            ['automatic', 'english', 'german', 'custom'],
-            array_keys($settingDefinition->enum),
+            SalaryNumberFormat::DEFAULT_CURRENCY,
+            $this->getSettingDefinition(SalaryNumberFormat::SETTING_CURRENCY)->default,
         );
+    }
+
+    #[Test]
+    public function siteSetDefinesCurrencyPositionWithAfterAsDefault(): void
+    {
+        $settingDefinition = $this->getSettingDefinition(SalaryNumberFormat::SETTING_CURRENCY_POSITION);
+
+        self::assertSame(SalaryNumberFormat::CURRENCY_POSITION_AFTER, $settingDefinition->default);
+        self::assertSame(['after', 'before'], array_keys($settingDefinition->enum));
     }
 
     /**
@@ -78,6 +93,9 @@ final class SalaryNumberFormatSettingsTest extends FunctionalTestCase
             'decimal separator' => [SalaryNumberFormat::SETTING_DECIMAL_SEPARATOR, ',', true],
             'empty decimal separator' => [SalaryNumberFormat::SETTING_DECIMAL_SEPARATOR, '', false],
             'decimal separator with two characters' => [SalaryNumberFormat::SETTING_DECIMAL_SEPARATOR, ',,', false],
+            'currency' => [SalaryNumberFormat::SETTING_CURRENCY, 'CHF', true],
+            'currency with two characters' => [SalaryNumberFormat::SETTING_CURRENCY, 'EU', false],
+            'currency with four characters' => [SalaryNumberFormat::SETTING_CURRENCY, 'EURO', false],
         ];
     }
 

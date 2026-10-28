@@ -13,34 +13,39 @@ namespace JWeiland\Jobboard\ViewHelpers\Format;
 
 use JWeiland\Jobboard\Domain\Model\SalaryNumberFormat;
 use Psr\Http\Message\ServerRequestInterface;
-use TYPO3\CMS\Core\Localization\Locale;
-use TYPO3\CMS\Core\Localization\Locales;
 use TYPO3\CMS\Core\Site\Entity\Site;
+use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
 use TYPO3\CMS\Core\Site\Entity\SiteSettings;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
- * Formats a salary amount with the number format of the site settings
- * "jobboard.salary.*", see SalaryNumberFormat. Without configuration, the
- * separators of the language of the page are used: 1,234.56 in English,
- * 1.234,56 in German.
+ * Formats a salary amount with its currency, see SalaryNumberFormat. Without
+ * configuration, the number format of the locale of the page is used, e.g.
+ * "1.234,56 €" (de-DE), "€ 1.234,56" (nl-NL) or "€1,234.56" (en-US). The
+ * currency is site setting "jobboard.salary.currency" (default EUR).
  *
  * Only for display: use the plain value for machine readable output.
  *
- * <jobboard:format.salary currencySign="€">{job.salaryRangeMin}</jobboard:format.salary>
- * {job.salaryRangeMin -> jobboard:format.salary(currencySign: '€')}
+ * <jobboard:format.salary>{job.salaryRangeMin}</jobboard:format.salary>
+ * {job.salaryRangeMin -> jobboard:format.salary(currency: 'CHF')}
  */
 final class SalaryViewHelper extends AbstractViewHelper
 {
-    public function __construct(
-        private readonly Locales $locales,
-    ) {}
+    /**
+     * Locale, if the request has no site language, e.g. in the backend
+     */
+    private const DEFAULT_LOCALE = 'en-US';
 
     public function initializeArguments(): void
     {
         $this->registerArgument('amount', 'float', 'Salary amount. Default: the content of the tag');
-        $this->registerArgument('currencySign', 'string', 'Currency sign, appended with a space, e.g. "€"', false, '');
+        $this->registerArgument(
+            'currency',
+            'string',
+            'ISO 4217 currency code, e.g. "CHF". Default: site setting "jobboard.salary.currency"',
+            false,
+            '',
+        );
     }
 
     public function getContentArgumentName(): string
@@ -51,11 +56,8 @@ final class SalaryViewHelper extends AbstractViewHelper
     public function render(): string
     {
         $amount = $this->renderChildren();
-        $output = $this->getSalaryNumberFormat()->format(is_numeric($amount) ? (float)$amount : 0.0);
 
-        $currencySign = (string)$this->arguments['currencySign'];
-
-        return $currencySign === '' ? $output : $output . ' ' . $currencySign;
+        return $this->getSalaryNumberFormat()->format(is_numeric($amount) ? (float)$amount : 0.0);
     }
 
     private function getSalaryNumberFormat(): SalaryNumberFormat
@@ -67,18 +69,23 @@ final class SalaryViewHelper extends AbstractViewHelper
         $site = $request?->getAttribute('site');
         $settings = $site instanceof Site ? $site->getSettings() : SiteSettings::createFromSettingsTree([]);
 
-        // Same locale as f:translate, so the separators match the other labels of the page
-        $locale = $request instanceof ServerRequestInterface ? $this->locales->createLocaleFromRequest($request) : null;
-
         return SalaryNumberFormat::fromSettings(
             $settings,
-            $this->translate('salary.thousandsSeparator', $locale),
-            $this->translate('salary.decimalSeparator', $locale),
+            $this->getLocale($request, $site),
+            (string)$this->arguments['currency'],
         );
     }
 
-    private function translate(string $key, ?Locale $locale): string
+    /**
+     * Locale of the site language of the request, e.g. "de-CH"
+     */
+    private function getLocale(?ServerRequestInterface $request, mixed $site): string
     {
-        return (string)LocalizationUtility::translate($key, 'Jobboard', null, $locale);
+        $language = $request?->getAttribute('language');
+        if (!$language instanceof SiteLanguage && $site instanceof Site) {
+            $language = $site->getDefaultLanguage();
+        }
+
+        return $language instanceof SiteLanguage ? $language->getLocale()->getName() : self::DEFAULT_LOCALE;
     }
 }

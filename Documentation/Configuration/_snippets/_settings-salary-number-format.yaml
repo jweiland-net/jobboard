@@ -1,7 +1,9 @@
 jobboard:
   salary:
-    # 1'234.50 in every language
+    # CHF 1'234.50 in every language
     numberFormat: custom
+    currency: CHF
+    currencyPosition: before
     thousandsSeparator: "'"
     decimalSeparator: '.'
     decimals: 2

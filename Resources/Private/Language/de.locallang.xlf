@@ -325,14 +325,6 @@
 				<source>Y-m-d</source>
 				<target>d.m.Y</target>
 			</trans-unit>
-			<trans-unit id="salary.thousandsSeparator" xml:space="preserve">
-				<source>,</source>
-				<target>.</target>
-			</trans-unit>
-			<trans-unit id="salary.decimalSeparator" xml:space="preserve">
-				<source>.</source>
-				<target>,</target>
-			</trans-unit>
 
 			<trans-unit id="applicationTo">
 				<source>Application to</source>
