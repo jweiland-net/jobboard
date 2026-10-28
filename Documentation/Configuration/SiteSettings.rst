@@ -175,120 +175,43 @@ them in the backend module :guilabel:`Site Management > Settings`
         :guilabel:`Salary`. Flush the frontend caches after changing it,
         cached pages still show the jobs of the previous value.
 
-    ..  confval:: jobboard.salary.numberFormat
-        :name: jobboard-salary-numberformat
-        :type: string
-        :default: :yaml:`'automatic'`
-
-        How salary amounts are displayed in the detail view (salary range
-        and salary steps). Change it in the backend module
-        :guilabel:`Site Management > Settings`, category
-        :guilabel:`Salary`:
-
-        :yaml:`automatic`
-            The number format of the locale of the site language
-            (:yaml:`locale` in the site configuration), formatted with
-            :php:`\NumberFormatter` of the PHP extension intl. Separators,
-            grouping and the position of the currency sign follow the
-            locale, for example:
-
-            ========  ================
-            Locale    Display
-            ========  ================
-            de_DE     1.234,56 €
-            en_US     €1,234.56
-            nl_NL     € 1.234,56
-            de_CH     CHF 1’234.56
-            fr_FR     1 234,56 €
-            ========  ================
-
-            This is the default.
-
-        :yaml:`custom`
-            The separators of :confval:`jobboard-salary-thousandsseparator`
-            and :confval:`jobboard-salary-decimalseparator`, and the
-            currency sign before or after the amount, see
-            :confval:`jobboard-salary-currencyposition`.
-
-        The currency is :confval:`jobboard-salary-currency` and the number
-        of decimal places :confval:`jobboard-salary-decimals`, for both
-        formats. Only the display changes: the stored salaries, the
-        effective salary and the structured data for search engines (see
-        :ref:`templates-json-ld`) keep the plain numbers. Own templates
-        have to use the ViewHelper of :ref:`templates-viewhelper-salary`.
-
-        ..  literalinclude:: _snippets/_settings-salary-number-format.yaml
-            :language: yaml
-            :caption: config/sites/<site-identifier>/settings.yaml
-
-        Flush the frontend caches after changing one of the number format
-        settings.
-
     ..  confval:: jobboard.salary.currency
         :name: jobboard-salary-currency
         :type: string
         :default: :yaml:`'EUR'`
 
         ISO 4217 code of the currency of the salary amounts, for example
-        :yaml:`'EUR'`, :yaml:`'CHF'` or :yaml:`'USD'`. The currency sign is
-        taken from the locale of the page, for example :code:`€` or
-        :code:`CHF`. The structured data for search engines uses the same
-        code. A value that is not three uppercase letters is replaced by
-        :yaml:`'EUR'`.
+        :yaml:`'EUR'`, :yaml:`'CHF'` or :yaml:`'USD'`. Change it in the
+        backend module :guilabel:`Site Management > Settings`, category
+        :guilabel:`Salary`.
 
-    ..  confval:: jobboard.salary.decimals
-        :name: jobboard-salary-decimals
-        :type: int
-        :default: :yaml:`2`
+        The detail view (salary range and salary steps) formats every
+        amount with :php:`\NumberFormatter` of the PHP extension intl and
+        the locale of the site language (:yaml:`locale` in the site
+        configuration). Separators, decimal places and the currency sign
+        and its position follow the locale, for example:
 
-        Number of decimal places of salary amounts, from :yaml:`0` to
-        :yaml:`4`, for both number formats. The amounts are rounded half up
-        for the display only. An invalid value is replaced by the default.
+        ========  =========  ================
+        Locale    Currency   Display
+        ========  =========  ================
+        de_DE     EUR        1.234,56 €
+        en_US     EUR        €1,234.56
+        nl_NL     EUR        € 1.234,56
+        de_CH     CHF        CHF 1'234.56
+        fr_FR     EUR        1 234,56 €
+        ========  =========  ================
 
-    ..  confval:: jobboard.salary.thousandsSeparator
-        :name: jobboard-salary-thousandsseparator
-        :type: string
-        :default: :yaml:`','`
+        The structured data for search engines (see
+        :ref:`templates-json-ld`) uses the same code and keeps the plain
+        numbers. A value that is not three uppercase letters is replaced by
+        :yaml:`'EUR'`. For another format, override the template, see
+        :ref:`templates-viewhelper-salary`.
 
-        Character between groups of thousands of the number format
-        :yaml:`custom`, for example :yaml:`','`, :yaml:`'.'`, :yaml:`"'"`
-        or a space :yaml:`' '`. Leave it empty (:yaml:`''`) for no
-        grouping. Ignored by the automatic format.
+        ..  literalinclude:: _snippets/_settings-salary-number-format.yaml
+            :language: yaml
+            :caption: config/sites/<site-identifier>/settings.yaml
 
-        See :confval:`jobboard-salary-decimalseparator` for the rules.
-
-    ..  confval:: jobboard.salary.decimalSeparator
-        :name: jobboard-salary-decimalseparator
-        :type: string
-        :default: :yaml:`'.'`
-
-        Character between the whole number and the decimal places of the
-        number format :yaml:`custom`, for example :yaml:`'.'` or
-        :yaml:`','`. Ignored by the automatic format.
-
-        Both separators of the custom format are validated, so an amount
-        can not be misread:
-
-        *   The decimal separator is exactly one character, but no space.
-        *   The thousands separator is empty or one character.
-        *   No separator is a digit, a plus or a minus sign.
-        *   Both separators are different, for example :yaml:`'.'` and
-            :yaml:`'.'` is not allowed.
-
-        If the custom format breaks one of these rules, the
-        :yaml:`automatic` format is used instead.
-
-    ..  confval:: jobboard.salary.currencyPosition
-        :name: jobboard-salary-currencyposition
-        :type: string
-        :default: :yaml:`'after'`
-
-        Position of the currency sign of the number format :yaml:`custom`:
-        :yaml:`'after'` the amount (:code:`1.234,56 €`) or :yaml:`'before'`
-        the amount (:code:`€ 1.234,56`). A non-breaking space separates the
-        sign and the amount. Ignored by the automatic format, which takes
-        the position from the locale. Any other value uses the
-        :yaml:`automatic` format.
+        Flush the frontend caches after changing the currency.
 
     ..  confval:: jobboard.pdf.logo
         :name: jobboard-pdf-logo

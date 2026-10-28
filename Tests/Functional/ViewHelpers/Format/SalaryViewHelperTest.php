@@ -82,12 +82,6 @@ final class SalaryViewHelperTest extends FunctionalTestCase
                         'base' => '/nl/',
                         'locale' => 'nl_NL.UTF-8',
                     ],
-                    [
-                        'languageId' => 3,
-                        'title' => 'Deutsch (Schweiz)',
-                        'base' => '/ch/',
-                        'locale' => 'de_CH.UTF-8',
-                    ],
                 ],
             ],
             SiteSettings::createFromSettingsTree(['jobboard' => ['salary' => $salarySettings]]),
@@ -117,16 +111,6 @@ final class SalaryViewHelperTest extends FunctionalTestCase
             ],
             'argument amount' => [
                 '<jobboard:format.salary amount="{amount}"/>',
-                ['amount' => 1234.5],
-                '€1,234.50',
-            ],
-            'argument currency' => [
-                '<jobboard:format.salary currency="USD">{amount}</jobboard:format.salary>',
-                ['amount' => 1234.5],
-                '$1,234.50',
-            ],
-            'invalid argument currency is ignored' => [
-                '<jobboard:format.salary currency="dollar">{amount}</jobboard:format.salary>',
                 ['amount' => 1234.5],
                 '€1,234.50',
             ],
@@ -171,21 +155,10 @@ final class SalaryViewHelperTest extends FunctionalTestCase
     public static function requestDataProvider(): array
     {
         return [
-            'automatic in English' => [0, [], '€12,345.67'],
-            'automatic in German' => [1, [], '12.345,67' . self::NBSP . '€'],
-            'automatic in Dutch, sign before the amount' => [2, [], '€' . self::NBSP . '12.345,67'],
-            'automatic in German with Swiss francs' => [1, ['currency' => 'CHF'], '12.345,67' . self::NBSP . 'CHF'],
-            'automatic in German without decimals' => [1, ['decimals' => 0], '12.346' . self::NBSP . '€'],
-            'custom with sign before the amount' => [
-                1,
-                ['numberFormat' => 'custom', 'thousandsSeparator' => '.', 'decimalSeparator' => ',', 'currencyPosition' => 'before'],
-                '€' . self::NBSP . '12.345,67',
-            ],
-            'custom separator is escaped' => [
-                0,
-                ['numberFormat' => 'custom', 'thousandsSeparator' => '\'', 'decimalSeparator' => '.'],
-                '12&#039;345.67' . self::NBSP . '€',
-            ],
+            'English' => [0, [], '€12,345.67'],
+            'German' => [1, [], '12.345,67' . self::NBSP . '€'],
+            'Dutch, sign before the amount' => [2, [], '€' . self::NBSP . '12.345,67'],
+            'German with Swiss francs' => [1, ['currency' => 'CHF'], '12.345,67' . self::NBSP . 'CHF'],
         ];
     }
 
@@ -210,15 +183,10 @@ final class SalaryViewHelperTest extends FunctionalTestCase
     }
 
     #[Test]
-    public function argumentCurrencyOverridesSiteSetting(): void
+    public function currencyArgumentIsNotSupported(): void
     {
-        self::assertSame(
-            '12.345,67' . self::NBSP . '$',
-            $this->render(
-                '<jobboard:format.salary currency="USD">{amount}</jobboard:format.salary>',
-                ['amount' => 12345.67],
-                $this->createFrontendRequest(1, ['currency' => 'CHF']),
-            ),
-        );
+        $this->expectException(\TYPO3Fluid\Fluid\Core\ViewHelper\Exception::class);
+
+        $this->render('<jobboard:format.salary currency="USD">{amount}</jobboard:format.salary>', ['amount' => 1.0]);
     }
 }

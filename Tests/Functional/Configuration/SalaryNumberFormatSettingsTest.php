@@ -22,11 +22,10 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 /**
  * Test case.
  *
- * The settings of the number format are accepted by the site set registry
- * of TYPO3, and the setting types already reject invalid single values in
- * the backend module "Site Management > Settings". Combinations of values
- * (e.g. the same character for both separators) are validated by
- * SalaryNumberFormat.
+ * The currency setting is accepted by the site set registry of TYPO3, and
+ * its setting type already rejects values with the wrong length in the
+ * backend module "Site Management > Settings". The format of the code (three
+ * uppercase letters) is validated by SalaryNumberFormat.
  */
 final class SalaryNumberFormatSettingsTest extends FunctionalTestCase
 {
@@ -51,15 +50,6 @@ final class SalaryNumberFormatSettingsTest extends FunctionalTestCase
     }
 
     #[Test]
-    public function siteSetDefinesNumberFormatWithAutomaticAsDefault(): void
-    {
-        $settingDefinition = $this->getSettingDefinition(SalaryNumberFormat::SETTING_FORMAT);
-
-        self::assertSame(SalaryNumberFormat::FORMAT_AUTOMATIC, $settingDefinition->default);
-        self::assertSame(['automatic', 'custom'], array_keys($settingDefinition->enum));
-    }
-
-    #[Test]
     public function siteSetDefinesCurrencyWithEurAsDefault(): void
     {
         self::assertSame(
@@ -68,42 +58,23 @@ final class SalaryNumberFormatSettingsTest extends FunctionalTestCase
         );
     }
 
-    #[Test]
-    public function siteSetDefinesCurrencyPositionWithAfterAsDefault(): void
-    {
-        $settingDefinition = $this->getSettingDefinition(SalaryNumberFormat::SETTING_CURRENCY_POSITION);
-
-        self::assertSame(SalaryNumberFormat::CURRENCY_POSITION_AFTER, $settingDefinition->default);
-        self::assertSame(['after', 'before'], array_keys($settingDefinition->enum));
-    }
-
     /**
-     * @return array<string, array{string, mixed, bool}>
+     * @return array<string, array{mixed, bool}>
      */
-    public static function settingValueDataProvider(): array
+    public static function currencyValueDataProvider(): array
     {
         return [
-            'no decimals' => [SalaryNumberFormat::SETTING_DECIMALS, 0, true],
-            'maximum decimals' => [SalaryNumberFormat::SETTING_DECIMALS, 4, true],
-            'negative decimals' => [SalaryNumberFormat::SETTING_DECIMALS, -1, false],
-            'too many decimals' => [SalaryNumberFormat::SETTING_DECIMALS, 5, false],
-            'thousands separator' => [SalaryNumberFormat::SETTING_THOUSANDS_SEPARATOR, "'", true],
-            'empty thousands separator' => [SalaryNumberFormat::SETTING_THOUSANDS_SEPARATOR, '', true],
-            'thousands separator with two characters' => [SalaryNumberFormat::SETTING_THOUSANDS_SEPARATOR, '..', false],
-            'decimal separator' => [SalaryNumberFormat::SETTING_DECIMAL_SEPARATOR, ',', true],
-            'empty decimal separator' => [SalaryNumberFormat::SETTING_DECIMAL_SEPARATOR, '', false],
-            'decimal separator with two characters' => [SalaryNumberFormat::SETTING_DECIMAL_SEPARATOR, ',,', false],
-            'currency' => [SalaryNumberFormat::SETTING_CURRENCY, 'CHF', true],
-            'currency with two characters' => [SalaryNumberFormat::SETTING_CURRENCY, 'EU', false],
-            'currency with four characters' => [SalaryNumberFormat::SETTING_CURRENCY, 'EURO', false],
+            'currency' => ['CHF', true],
+            'currency with two characters' => ['EU', false],
+            'currency with four characters' => ['EURO', false],
         ];
     }
 
     #[Test]
-    #[DataProvider('settingValueDataProvider')]
-    public function settingTypeValidatesValue(string $key, mixed $value, bool $expected): void
+    #[DataProvider('currencyValueDataProvider')]
+    public function settingTypeValidatesCurrency(mixed $value, bool $expected): void
     {
-        $settingDefinition = $this->getSettingDefinition($key);
+        $settingDefinition = $this->getSettingDefinition(SalaryNumberFormat::SETTING_CURRENCY);
         $settingsType = $this->get(SettingsTypeRegistry::class)->get($settingDefinition->type);
 
         self::assertSame($expected, $settingsType->validate($value, $settingDefinition));
