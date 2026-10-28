@@ -22,11 +22,21 @@ use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
  * Test case.
  *
  * The expected values of the automatic format are the output of ICU
- * (\NumberFormatter) for locales whose format is stable across ICU versions.
+ * (\NumberFormatter). The thousands separator of de-CH depends on the ICU
+ * version: older versions use "’" (U+2019), newer ones "'" (U+0027), see
+ * normalizeSwissGrouping().
  */
 final class SalaryNumberFormatTest extends UnitTestCase
 {
     private const NBSP = "\u{00A0}";
+
+    /**
+     * Both are correct Swiss thousands separators, the ICU version decides
+     */
+    private static function normalizeSwissGrouping(string $formatted): string
+    {
+        return str_replace('’', "'", $formatted);
+    }
 
     /**
      * @param array<string, mixed> $salarySettings
@@ -97,7 +107,7 @@ final class SalaryNumberFormatTest extends UnitTestCase
             'German, sign after the amount' => ['de-DE', 'EUR', '1.234,56' . self::NBSP . '€'],
             'English (US), sign before the amount' => ['en-US', 'EUR', '€1,234.56'],
             'Dutch, sign before the amount' => ['nl-NL', 'EUR', '€' . self::NBSP . '1.234,56'],
-            'Swiss German with Swiss francs' => ['de-CH', 'CHF', 'CHF' . self::NBSP . '1’234.56'],
+            'Swiss German with Swiss francs' => ['de-CH', 'CHF', 'CHF' . self::NBSP . "1'234.56"],
             'POSIX notation of the locale' => ['de_DE', 'EUR', '1.234,56' . self::NBSP . '€'],
             'US dollars in German' => ['de-DE', 'USD', '1.234,56' . self::NBSP . '$'],
         ];
@@ -107,7 +117,10 @@ final class SalaryNumberFormatTest extends UnitTestCase
     #[DataProvider('automaticDataProvider')]
     public function automaticFormatsWithNumberFormatOfLocale(string $locale, string $currency, string $expected): void
     {
-        self::assertSame($expected, SalaryNumberFormat::automatic($locale, $currency)->format(1234.56));
+        self::assertSame(
+            $expected,
+            self::normalizeSwissGrouping(SalaryNumberFormat::automatic($locale, $currency)->format(1234.56)),
+        );
     }
 
     #[Test]
@@ -241,13 +254,13 @@ final class SalaryNumberFormatTest extends UnitTestCase
             'no settings in German' => [[], 'de-DE', '1.234,56' . self::NBSP . '€'],
             'no settings in English' => [[], 'en-US', '€1,234.56'],
             'automatic in Dutch' => [['numberFormat' => 'automatic'], 'nl-NL', '€' . self::NBSP . '1.234,56'],
-            'automatic with currency' => [['currency' => 'CHF'], 'de-CH', 'CHF' . self::NBSP . '1’234.56'],
+            'automatic with currency' => [['currency' => 'CHF'], 'de-CH', 'CHF' . self::NBSP . "1'234.56"],
             'automatic with decimals' => [['decimals' => 0], 'de-DE', '1.235' . self::NBSP . '€'],
             'decimals as string' => [['decimals' => '1'], 'de-DE', '1.234,6' . self::NBSP . '€'],
             'invalid decimals' => [['decimals' => 9], 'de-DE', '1.234,56' . self::NBSP . '€'],
             'decimals no number' => [['decimals' => 'two'], 'de-DE', '1.234,56' . self::NBSP . '€'],
             // The Swiss locale writes the code instead of the euro sign
-            'invalid currency falls back to EUR' => [['currency' => 'Franken'], 'de-CH', 'EUR' . self::NBSP . '1’234.56'],
+            'invalid currency falls back to EUR' => [['currency' => 'Franken'], 'de-CH', 'EUR' . self::NBSP . "1'234.56"],
             'currency position is ignored by automatic format' => [
                 ['currencyPosition' => 'before'],
                 'de-DE',
@@ -301,7 +314,10 @@ final class SalaryNumberFormatTest extends UnitTestCase
     #[DataProvider('fromSettingsDataProvider')]
     public function fromSettingsSelectsNumberFormat(array $salarySettings, string $locale, string $expected): void
     {
-        self::assertSame($expected, $this->buildFromSettings($salarySettings, $locale)->format(1234.56));
+        self::assertSame(
+            $expected,
+            self::normalizeSwissGrouping($this->buildFromSettings($salarySettings, $locale)->format(1234.56)),
+        );
     }
 
     #[Test]
