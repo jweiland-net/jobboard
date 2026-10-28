@@ -212,15 +212,19 @@ Key points:
     `{job.hasSalaryInformation}`, so a job without salary renders no salary section and no JSON-LD `baseSalary`.
   - Functional tests that write `settings.yaml` must flush the `core` cache in `setUp()`: TYPO3 caches site
     settings by the hash of `config.yaml` only, otherwise settings leak between tests.
-- **Salary number format (site settings `jobboard.salary.numberFormat` = `automatic`|`english`|`german`|`custom`,
-  `jobboard.salary.decimals` 0-4, `jobboard.salary.thousandsSeparator` / `decimalSeparator` for `custom`)**:
-  display only - stored salaries, `EffectiveSalary` and JSON-LD (`f:format.json`, plain numbers) stay untouched.
-  `Domain/Model/SalaryNumberFormat` (`final readonly`, `fromSettings()` + `format()`) validates and resolves the
-  format; `automatic` takes the separators of the page language from the labels `salary.thousandsSeparator` /
-  `salary.decimalSeparator` of `locallang.xlf` (the News/`dateFormat` approach: format values are translations).
-  Invalid custom separators fall back to `automatic`, invalid language separators to English - never an exception
-  in the frontend. Templates format every salary amount with `jobboard:format.salary` (`ViewHelpers/Format/
-  SalaryViewHelper`, request from the rendering context, same locale as `f:translate`), never `f:format.currency`.
+- **Salary number format (site settings `jobboard.salary.numberFormat` = `automatic`|`custom`, `jobboard.salary.currency`
+  ISO 4217 default `EUR`, `jobboard.salary.decimals` 0-4, and for `custom` `thousandsSeparator` / `decimalSeparator` /
+  `currencyPosition` `after`|`before`)**: display only - stored salaries, `EffectiveSalary` and JSON-LD amounts
+  (`f:format.json`, plain numbers) stay untouched. `Domain/Model/SalaryNumberFormat` (`final readonly`, `fromSettings()`
+  + `format()`) resolves the format: `automatic` = `\NumberFormatter::CURRENCY` with the full locale of the site language
+  (`SiteLanguage::getLocale()->getName()`, e.g. `de-CH`, not only the language), `ROUND_HALFUP`; `custom` =
+  `number_format()` plus the ICU currency symbol of the locale before/after, joined by NBSP. No English/German presets
+  and no separator labels: number formats differ per country (DIN 1333, nl `€ 1.234,56`, ch `CHF 1’234.56`), ICU knows
+  them. Invalid custom settings fall back to `automatic`, invalid currency to `EUR` - never an exception in the
+  frontend. Templates format every salary amount with `jobboard:format.salary` (`ViewHelpers/Format/SalaryViewHelper`,
+  optional `currency` argument), never `f:format.currency`; JSON-LD takes the code from `jobboard:salaryCurrency()`
+  (`ViewHelpers/SalaryCurrencyViewHelper`). Test expectations use only locales with stable ICU output (de-DE, en-US,
+  nl-NL, de-CH; not fr, its narrow NBSP changed in CLDR).
   The backend record titles (`UserFunc/SalaryStepTitleFormatter`) keep the backend user's locale.
 - **Search options** (`jobAreas` incl. optional count `showJobAreaCount`, `jobRoles`, `jobTypes`,
   `jobLocations`) come from `JobSearchOptionsService` (`final readonly`, behind

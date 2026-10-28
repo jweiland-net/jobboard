@@ -131,43 +131,58 @@ final class JobboardControllerSalaryNumberFormatTest extends FunctionalTestCase
      */
     public static function numberFormatDataProvider(): array
     {
+        $nbsp = "\u{00A0}";
+
         return [
-            'automatic by default in English' => [[], '/', '1,234.50 €', '12,345.67 €'],
-            'automatic by default in German' => [[], '/de/', '1.234,50 €', '12.345,67 €'],
-            'automatic in English' => [['numberFormat' => 'automatic'], '/', '1,234.50 €', '12,345.67 €'],
-            'automatic in German' => [['numberFormat' => 'automatic'], '/de/', '1.234,50 €', '12.345,67 €'],
+            'automatic by default in English' => [[], '/', '€1,234.50', '€12,345.67'],
+            'automatic by default in German' => [[], '/de/', '1.234,50' . $nbsp . '€', '12.345,67' . $nbsp . '€'],
             'automatic in German without decimals' => [
                 ['numberFormat' => 'automatic', 'decimals' => 0],
                 '/de/',
-                '1.235 €',
-                '12.346 €',
+                '1.235' . $nbsp . '€',
+                '12.346' . $nbsp . '€',
             ],
-            'English in German' => [['numberFormat' => 'english'], '/de/', '1,234.50 €', '12,345.67 €'],
-            'German in English' => [['numberFormat' => 'german'], '/', '1.234,50 €', '12.345,67 €'],
-            'German with one decimal' => [['numberFormat' => 'german', 'decimals' => 1], '/', '1.234,5 €', '12.345,7 €'],
+            'automatic with Swiss francs in German' => [
+                ['currency' => 'CHF'],
+                '/de/',
+                '1.234,50' . $nbsp . 'CHF',
+                '12.345,67' . $nbsp . 'CHF',
+            ],
+            'automatic with US dollars in English' => [['currency' => 'USD'], '/', '$1,234.50', '$12,345.67'],
             'custom in English' => [
                 ['numberFormat' => 'custom', 'thousandsSeparator' => ' ', 'decimalSeparator' => ',', 'decimals' => 2],
                 '/',
-                '1 234,50 €',
-                '12 345,67 €',
+                '1 234,50' . $nbsp . '€',
+                '12 345,67' . $nbsp . '€',
+            ],
+            'custom with currency sign before the amount in German' => [
+                [
+                    'numberFormat' => 'custom',
+                    'thousandsSeparator' => '.',
+                    'decimalSeparator' => ',',
+                    'currencyPosition' => 'before',
+                ],
+                '/de/',
+                '€' . $nbsp . '1.234,50',
+                '€' . $nbsp . '12.345,67',
             ],
             'custom without grouping in German' => [
                 ['numberFormat' => 'custom', 'thousandsSeparator' => '', 'decimalSeparator' => '.', 'decimals' => 3],
                 '/de/',
-                '1234.500 €',
-                '12345.670 €',
+                '1234.500' . $nbsp . '€',
+                '12345.670' . $nbsp . '€',
             ],
             'invalid custom falls back to automatic in German' => [
                 ['numberFormat' => 'custom', 'thousandsSeparator' => '.', 'decimalSeparator' => '.'],
                 '/de/',
-                '1.234,50 €',
-                '12.345,67 €',
+                '1.234,50' . $nbsp . '€',
+                '12.345,67' . $nbsp . '€',
             ],
-            'unknown format falls back to automatic in English' => [
-                ['numberFormat' => 'swiss'],
-                '/',
-                '1,234.50 €',
-                '12,345.67 €',
+            'removed format "english" falls back to automatic in German' => [
+                ['numberFormat' => 'english'],
+                '/de/',
+                '1.234,50' . $nbsp . '€',
+                '12.345,67' . $nbsp . '€',
             ],
         ];
     }
@@ -200,11 +215,33 @@ final class JobboardControllerSalaryNumberFormatTest extends FunctionalTestCase
     #[Test]
     public function detailActionKeepsPlainSalaryNumbersInStructuredData(): void
     {
-        $this->writeSalarySettings(['numberFormat' => 'german']);
+        $this->writeSalarySettings(['numberFormat' => 'custom', 'thousandsSeparator' => '.', 'decimalSeparator' => ',']);
 
         $body = $this->fetchDetailPageBody('/de/');
 
         self::assertMatchesRegularExpression('/"minValue":\s*1234\.5\b/', $body);
         self::assertMatchesRegularExpression('/"maxValue":\s*12345\.67\b/', $body);
+    }
+
+    /**
+     * The structured data uses the same currency as the salary amounts
+     */
+    #[Test]
+    public function detailActionUsesCurrencyOfSiteSettingsInStructuredData(): void
+    {
+        $this->writeSalarySettings(['currency' => 'CHF']);
+
+        $body = $this->fetchDetailPageBody('/de/');
+
+        self::assertMatchesRegularExpression('/"currency":\s*"CHF"/', $body);
+        self::assertStringContainsString("1.234,50\u{00A0}CHF", $body);
+    }
+
+    #[Test]
+    public function detailActionUsesEurInStructuredDataByDefault(): void
+    {
+        $this->writeSalarySettings([]);
+
+        self::assertMatchesRegularExpression('/"currency":\s*"EUR"/', $this->fetchDetailPageBody('/'));
     }
 }

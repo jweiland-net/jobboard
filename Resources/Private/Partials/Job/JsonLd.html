@@ -1,5 +1,6 @@
 <html lang="en"
       xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:jobboard="http://typo3.org/ns/JWeiland/Jobboard/ViewHelpers"
       data-namespace-typo3-fluid="true">
 
 <f:comment>
@@ -63,7 +64,7 @@
     <f:if condition="{job.hasSalaryInformation}">
     "baseSalary": {
         "@type": "MonetaryAmount",
-        "currency": "EUR",
+        "currency": <f:format.json value="{jobboard:salaryCurrency()}"/>,
         "value": {
             "@type": "QuantitativeValue",
             <f:if condition="{job.hasSalaryRange}">

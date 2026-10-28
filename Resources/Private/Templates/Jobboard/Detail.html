@@ -78,10 +78,10 @@
                             <dd>
                                 <f:if condition="{job.hasSalaryRange}">
                                     <f:then>
-                                        <jobboard:format.salary currencySign="€">{job.salaryRangeMin}</jobboard:format.salary> - <jobboard:format.salary currencySign="€">{job.salaryRangeMax}</jobboard:format.salary>
+                                        <jobboard:format.salary>{job.salaryRangeMin}</jobboard:format.salary> - <jobboard:format.salary>{job.salaryRangeMax}</jobboard:format.salary>
                                     </f:then>
                                     <f:else>
-                                        <jobboard:format.salary currencySign="€">{job.salaryRangeMin}</jobboard:format.salary>
+                                        <jobboard:format.salary>{job.salaryRangeMin}</jobboard:format.salary>
                                     </f:else>
                                 </f:if>
                             </dd>
@@ -230,10 +230,10 @@
                 <dd class="col-sm-8">
                     <f:if condition="{job.hasSalaryRange}">
                         <f:then>
-                            <jobboard:format.salary currencySign="€">{job.salaryRangeMin}</jobboard:format.salary> - <jobboard:format.salary currencySign="€">{job.salaryRangeMax}</jobboard:format.salary>
+                            <jobboard:format.salary>{job.salaryRangeMin}</jobboard:format.salary> - <jobboard:format.salary>{job.salaryRangeMax}</jobboard:format.salary>
                         </f:then>
                         <f:else>
-                            <jobboard:format.salary currencySign="€">{job.salaryRangeMin}</jobboard:format.salary>
+                            <jobboard:format.salary>{job.salaryRangeMin}</jobboard:format.salary>
                         </f:else>
                     </f:if>
                 </dd>
@@ -248,7 +248,7 @@
                         <dd class="col-sm-8">
                             <ul class="list-unstyled mb-0">
                                 <f:for each="{salaryGrade.salarySteps}" as="salaryStep">
-                                    <li>{salaryStep.stepLabel}: <jobboard:format.salary currencySign="€">{salaryStep.amount}</jobboard:format.salary></li>
+                                    <li>{salaryStep.stepLabel}: <jobboard:format.salary>{salaryStep.amount}</jobboard:format.salary></li>
                                 </f:for>
                             </ul>
                         </dd>

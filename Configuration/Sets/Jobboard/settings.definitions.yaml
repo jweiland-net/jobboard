@@ -57,10 +57,15 @@ settings:
     type: string
     default: 'automatic'
     enum:
-      automatic: 'Automatic (language of the page)'
-      english: 'English (1,234.56)'
-      german: 'German (1.234,56)'
-      custom: 'Custom (separators below)'
+      automatic: 'Automatic (locale of the page)'
+      custom: 'Custom (separators and currency position below)'
+  jobboard.salary.currency:
+    category: jobboard.salary
+    type: string
+    default: 'EUR'
+    options:
+      min: 3
+      max: 3
   jobboard.salary.decimals:
     category: jobboard.salary
     type: int
@@ -81,3 +86,10 @@ settings:
     options:
       min: 1
       max: 1
+  jobboard.salary.currencyPosition:
+    category: jobboard.salary
+    type: string
+    default: 'after'
+    enum:
+      after: 'After the amount (1.234,56 €)'
+      before: 'Before the amount (€ 1.234,56)'
