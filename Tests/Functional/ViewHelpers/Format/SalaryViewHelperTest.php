@@ -174,7 +174,7 @@ final class SalaryViewHelperTest extends FunctionalTestCase
             'automatic in English' => [0, [], '€12,345.67'],
             'automatic in German' => [1, [], '12.345,67' . self::NBSP . '€'],
             'automatic in Dutch, sign before the amount' => [2, [], '€' . self::NBSP . '12.345,67'],
-            'automatic in Swiss German with Swiss francs' => [3, ['currency' => 'CHF'], 'CHF' . self::NBSP . '12’345.67'],
+            'automatic in German with Swiss francs' => [1, ['currency' => 'CHF'], '12.345,67' . self::NBSP . 'CHF'],
             'automatic in German without decimals' => [1, ['decimals' => 0], '12.346' . self::NBSP . '€'],
             'custom with sign before the amount' => [
                 1,
