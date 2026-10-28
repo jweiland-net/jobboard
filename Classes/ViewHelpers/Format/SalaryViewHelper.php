@@ -19,15 +19,16 @@ use TYPO3\CMS\Core\Site\Entity\SiteSettings;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
- * Formats a salary amount with its currency, see SalaryNumberFormat. Without
- * configuration, the number format of the locale of the page is used, e.g.
- * "1.234,56 €" (de-DE), "€ 1.234,56" (nl-NL) or "€1,234.56" (en-US). The
- * currency is site setting "jobboard.salary.currency" (default EUR).
+ * Formats a salary amount with \NumberFormatter, see SalaryNumberFormat: the
+ * number format of the locale of the page, e.g. "1.234,56 €" (de-DE),
+ * "€ 1.234,56" (nl-NL) or "€1,234.56" (en-US), and the currency of site
+ * setting "jobboard.salary.currency" (default EUR).
  *
- * Only for display: use the plain value for machine readable output.
+ * Only for display: use the plain value for machine readable output. For an
+ * own format, use f:format.number in an overridden template.
  *
  * <jobboard:format.salary>{job.salaryRangeMin}</jobboard:format.salary>
- * {job.salaryRangeMin -> jobboard:format.salary(currency: 'CHF')}
+ * {job.salaryRangeMin -> jobboard:format.salary()}
  */
 final class SalaryViewHelper extends AbstractViewHelper
 {
@@ -39,13 +40,6 @@ final class SalaryViewHelper extends AbstractViewHelper
     public function initializeArguments(): void
     {
         $this->registerArgument('amount', 'float', 'Salary amount. Default: the content of the tag');
-        $this->registerArgument(
-            'currency',
-            'string',
-            'ISO 4217 currency code, e.g. "CHF". Default: site setting "jobboard.salary.currency"',
-            false,
-            '',
-        );
     }
 
     public function getContentArgumentName(): string
@@ -69,11 +63,7 @@ final class SalaryViewHelper extends AbstractViewHelper
         $site = $request?->getAttribute('site');
         $settings = $site instanceof Site ? $site->getSettings() : SiteSettings::createFromSettingsTree([]);
 
-        return SalaryNumberFormat::fromSettings(
-            $settings,
-            $this->getLocale($request, $site),
-            (string)$this->arguments['currency'],
-        );
+        return SalaryNumberFormat::fromSettings($settings, $this->getLocale($request, $site));
     }
 
     /**

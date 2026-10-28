@@ -24,7 +24,8 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
  *
  * Salary amounts of the detail view (salary range of the job details and of
  * the salary section, salary steps) in site language 0 (English) and 1
- * (German) with the site settings "jobboard.salary.*" of the number format.
+ * (German): \NumberFormatter with the locale of the site language and the
+ * currency of site setting "jobboard.salary.currency".
  * The job has a salary grade with the steps 1234.50 and 12345.67.
  */
 final class JobboardControllerSalaryNumberFormatTest extends FunctionalTestCase
@@ -134,55 +135,26 @@ final class JobboardControllerSalaryNumberFormatTest extends FunctionalTestCase
         $nbsp = "\u{00A0}";
 
         return [
-            'automatic by default in English' => [[], '/', '€1,234.50', '€12,345.67'],
-            'automatic by default in German' => [[], '/de/', '1.234,50' . $nbsp . '€', '12.345,67' . $nbsp . '€'],
-            'automatic in German without decimals' => [
-                ['numberFormat' => 'automatic', 'decimals' => 0],
-                '/de/',
-                '1.235' . $nbsp . '€',
-                '12.346' . $nbsp . '€',
-            ],
-            'automatic with Swiss francs in German' => [
+            'English' => [[], '/', '€1,234.50', '€12,345.67'],
+            'German' => [[], '/de/', '1.234,50' . $nbsp . '€', '12.345,67' . $nbsp . '€'],
+            'Swiss francs in German' => [
                 ['currency' => 'CHF'],
                 '/de/',
                 '1.234,50' . $nbsp . 'CHF',
                 '12.345,67' . $nbsp . 'CHF',
             ],
-            'automatic with US dollars in English' => [['currency' => 'USD'], '/', '$1,234.50', '$12,345.67'],
-            'custom in English' => [
-                ['numberFormat' => 'custom', 'thousandsSeparator' => ' ', 'decimalSeparator' => ',', 'decimals' => 2],
+            'US dollars in English' => [['currency' => 'USD'], '/', '$1,234.50', '$12,345.67'],
+            'invalid currency falls back to EUR' => [
+                ['currency' => 'Euro'],
+                '/de/',
+                '1.234,50' . $nbsp . '€',
+                '12.345,67' . $nbsp . '€',
+            ],
+            'settings of earlier versions are ignored' => [
+                ['numberFormat' => 'custom', 'thousandsSeparator' => ' ', 'decimalSeparator' => ',', 'decimals' => 0],
                 '/',
-                '1 234,50' . $nbsp . '€',
-                '12 345,67' . $nbsp . '€',
-            ],
-            'custom with currency sign before the amount in German' => [
-                [
-                    'numberFormat' => 'custom',
-                    'thousandsSeparator' => '.',
-                    'decimalSeparator' => ',',
-                    'currencyPosition' => 'before',
-                ],
-                '/de/',
-                '€' . $nbsp . '1.234,50',
-                '€' . $nbsp . '12.345,67',
-            ],
-            'custom without grouping in German' => [
-                ['numberFormat' => 'custom', 'thousandsSeparator' => '', 'decimalSeparator' => '.', 'decimals' => 3],
-                '/de/',
-                '1234.500' . $nbsp . '€',
-                '12345.670' . $nbsp . '€',
-            ],
-            'invalid custom falls back to automatic in German' => [
-                ['numberFormat' => 'custom', 'thousandsSeparator' => '.', 'decimalSeparator' => '.'],
-                '/de/',
-                '1.234,50' . $nbsp . '€',
-                '12.345,67' . $nbsp . '€',
-            ],
-            'removed format "english" falls back to automatic in German' => [
-                ['numberFormat' => 'english'],
-                '/de/',
-                '1.234,50' . $nbsp . '€',
-                '12.345,67' . $nbsp . '€',
+                '€1,234.50',
+                '€12,345.67',
             ],
         ];
     }
@@ -192,7 +164,7 @@ final class JobboardControllerSalaryNumberFormatTest extends FunctionalTestCase
      */
     #[Test]
     #[DataProvider('numberFormatDataProvider')]
-    public function detailActionFormatsAllSalaryAmountsWithConfiguredNumberFormat(
+    public function detailActionFormatsAllSalaryAmountsWithLocaleAndCurrency(
         array $salarySettings,
         string $base,
         string $expectedMinimum,
@@ -215,7 +187,7 @@ final class JobboardControllerSalaryNumberFormatTest extends FunctionalTestCase
     #[Test]
     public function detailActionKeepsPlainSalaryNumbersInStructuredData(): void
     {
-        $this->writeSalarySettings(['numberFormat' => 'custom', 'thousandsSeparator' => '.', 'decimalSeparator' => ',']);
+        $this->writeSalarySettings(['currency' => 'CHF']);
 
         $body = $this->fetchDetailPageBody('/de/');
 

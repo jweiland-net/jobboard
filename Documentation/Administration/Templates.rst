@@ -294,13 +294,10 @@ ViewHelper for salary amounts
 
 The detail view formats every salary amount (salary range and salary
 steps) with the ViewHelper
-:php:`JWeiland\Jobboard\ViewHelpers\Format\SalaryViewHelper`. It uses the
-number format and the currency of the site settings, see
-:confval:`jobboard-salary-numberformat` and
-:confval:`jobboard-salary-currency`, and the locale of the site language,
-for example :code:`1.234,56 €` in German or :code:`€ 1.234,56` in Dutch.
-The optional argument :html:`currency` (ISO 4217 code) replaces the
-currency of the site settings.
+:php:`JWeiland\Jobboard\ViewHelpers\Format\SalaryViewHelper`. It uses
+:php:`\NumberFormatter` with the locale of the site language and the
+currency of :confval:`jobboard-salary-currency`, for example
+:code:`1.234,56 €` in German or :code:`€ 1.234,56` in Dutch.
 
 ..  code-block:: html
     :caption: Format a salary amount in an own template
@@ -309,20 +306,33 @@ currency of the site settings.
           data-namespace-typo3-fluid="true">
 
     <jobboard:format.salary>{job.salaryRangeMin}</jobboard:format.salary>
-    {job.salaryRangeMax -> jobboard:format.salary(currency: 'CHF')}
+    {job.salaryRangeMax -> jobboard:format.salary()}
 
 If you have overridden :file:`Templates/Jobboard/Detail.html`, replace
 :html:`<f:format.currency>` of the salary amounts with this ViewHelper
 and remove the currency sign after it. Otherwise, your template keeps the
-German format and ignores the site settings. The structured data
-(:ref:`templates-json-ld`) keeps the plain numbers and gets the currency
-code from the ViewHelper
+German format. The structured data (:ref:`templates-json-ld`) keeps the
+plain numbers and gets the currency code from the ViewHelper
 :php:`JWeiland\Jobboard\ViewHelpers\SalaryCurrencyViewHelper`:
 
 ..  code-block:: html
     :caption: Currency of the structured data in an own :file:`Partials/Job/JsonLd.html`
 
     "currency": <f:format.json value="{jobboard:salaryCurrency()}"/>,
+
+Another format, for example a fixed one for all languages, needs no
+setting: override the template and use :html:`f:format.number` with
+separators from your own language file. :html:`f:format.number` uses
+:php:`number_format()`, so the separators of each language are
+translations:
+
+..  code-block:: html
+    :caption: Own format with the separators of an own language file
+
+    <f:format.number decimals="2"
+        decimalSeparator="{f:translate(key: 'LLL:EXT:my_sitepackage/Resources/Private/Language/locallang.xlf:salary.decimalSeparator')}"
+        thousandsSeparator="{f:translate(key: 'LLL:EXT:my_sitepackage/Resources/Private/Language/locallang.xlf:salary.thousandsSeparator')}"
+    >{job.salaryRangeMin}</f:format.number> €
 
 ..  _templates-map-markers:
 

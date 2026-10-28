@@ -111,53 +111,13 @@
 				<source>Only jobs with salary information (salary grade or salary range) are listed, shown, searchable, rememberable and shown on the map, as demanded by the EU pay transparency directive. Disable it, as long as the directive is not yet in force in your country: then jobs without salary information are shown like any other open job. Applies to the whole site and can not be overridden per content element.</source>
 				<target>Nur Stellen mit Gehaltsangabe (Entgeltgruppe oder Gehaltsspanne) werden aufgelistet, angezeigt, gefunden, gemerkt und auf der Karte gezeigt, wie es die EU-Entgelttransparenzrichtlinie verlangt. Deaktivieren Sie die Option, solange die Richtlinie in Ihrem Land noch nicht gilt: Dann werden Stellen ohne Gehaltsangabe wie jede andere offene Stelle angezeigt. Gilt für die gesamte Site und kann nicht je Inhaltselement überschrieben werden.</target>
 			</trans-unit>
-			<trans-unit id="settings.jobboard.salary.numberFormat">
-				<source>Number format of salary amounts</source>
-				<target>Zahlenformat der Gehaltsbeträge</target>
-			</trans-unit>
-			<trans-unit id="settings.description.jobboard.salary.numberFormat">
-				<source>How salary amounts are displayed. "Automatic" uses the number format of the locale of the page, including the position of the currency sign, for example 1.234,56 € (de-DE), € 1.234,56 (nl-NL) or CHF 1’234.56 (de-CH). "Custom" uses the thousands separator, decimal separator and currency position below. Only the display changes, the stored salaries and the structured data for search engines stay the same.</source>
-				<target>Wie Gehaltsbeträge angezeigt werden. "Automatic" verwendet das Zahlenformat des Gebietsschemas (Locale) der Seite, einschließlich der Position des Währungszeichens, zum Beispiel 1.234,56 € (de-DE), € 1.234,56 (nl-NL) oder CHF 1’234.56 (de-CH). "Custom" verwendet das Tausendertrennzeichen, das Dezimaltrennzeichen und die Position des Währungszeichens unten. Nur die Anzeige ändert sich, die gespeicherten Gehälter und die strukturierten Daten für Suchmaschinen bleiben gleich.</target>
-			</trans-unit>
 			<trans-unit id="settings.jobboard.salary.currency">
 				<source>Currency of salary amounts</source>
 				<target>Währung der Gehaltsbeträge</target>
 			</trans-unit>
 			<trans-unit id="settings.description.jobboard.salary.currency">
-				<source>ISO 4217 code of the currency, for example EUR, CHF or USD. The currency sign is taken from the locale of the page, for example € or CHF. Also used in the structured data for search engines. An invalid code is replaced by EUR.</source>
-				<target>ISO-4217-Code der Währung, zum Beispiel EUR, CHF oder USD. Das Währungszeichen kommt aus dem Gebietsschema (Locale) der Seite, zum Beispiel € oder CHF. Wird auch in den strukturierten Daten für Suchmaschinen verwendet. Ein ungültiger Code wird durch EUR ersetzt.</target>
-			</trans-unit>
-			<trans-unit id="settings.jobboard.salary.decimals">
-				<source>Decimal places of salary amounts</source>
-				<target>Nachkommastellen der Gehaltsbeträge</target>
-			</trans-unit>
-			<trans-unit id="settings.description.jobboard.salary.decimals">
-				<source>Number of decimal places (0 to 4) of salary amounts. Applies to the automatic and the custom format. Amounts are rounded for the display only.</source>
-				<target>Anzahl der Nachkommastellen (0 bis 4) der Gehaltsbeträge. Gilt für das automatische und das eigene Format. Die Beträge werden nur für die Anzeige gerundet.</target>
-			</trans-unit>
-			<trans-unit id="settings.jobboard.salary.thousandsSeparator">
-				<source>Thousands separator (custom format)</source>
-				<target>Tausendertrennzeichen (eigenes Format)</target>
-			</trans-unit>
-			<trans-unit id="settings.description.jobboard.salary.thousandsSeparator">
-				<source>One character between groups of thousands, for example a comma, a dot, an apostrophe or a space. Leave it empty for no grouping. Only used with the number format "Custom". Digits, plus and minus signs are not allowed, and it must differ from the decimal separator. Otherwise, the automatic format is used.</source>
-				<target>Ein Zeichen zwischen den Tausendergruppen, zum Beispiel Komma, Punkt, Apostroph oder Leerzeichen. Leer lassen, um die Ziffern nicht zu gruppieren. Wird nur mit dem Zahlenformat "Custom" verwendet. Ziffern, Plus- und Minuszeichen sind nicht erlaubt, und es muss sich vom Dezimaltrennzeichen unterscheiden. Andernfalls wird das automatische Format verwendet.</target>
-			</trans-unit>
-			<trans-unit id="settings.jobboard.salary.decimalSeparator">
-				<source>Decimal separator (custom format)</source>
-				<target>Dezimaltrennzeichen (eigenes Format)</target>
-			</trans-unit>
-			<trans-unit id="settings.description.jobboard.salary.decimalSeparator">
-				<source>One character between the whole number and the decimal places, for example a dot or a comma. Only used with the number format "Custom". Spaces, digits, plus and minus signs are not allowed, and it must differ from the thousands separator. Otherwise, the automatic format is used.</source>
-				<target>Ein Zeichen zwischen der ganzen Zahl und den Nachkommastellen, zum Beispiel Punkt oder Komma. Wird nur mit dem Zahlenformat "Custom" verwendet. Leerzeichen, Ziffern, Plus- und Minuszeichen sind nicht erlaubt, und es muss sich vom Tausendertrennzeichen unterscheiden. Andernfalls wird das automatische Format verwendet.</target>
-			</trans-unit>
-			<trans-unit id="settings.jobboard.salary.currencyPosition">
-				<source>Position of the currency sign (custom format)</source>
-				<target>Position des Währungszeichens (eigenes Format)</target>
-			</trans-unit>
-			<trans-unit id="settings.description.jobboard.salary.currencyPosition">
-				<source>Whether the currency sign is put before or after the amount. Only used with the number format "Custom". The automatic format takes the position from the locale of the page.</source>
-				<target>Ob das Währungszeichen vor oder nach dem Betrag steht. Wird nur mit dem Zahlenformat "Custom" verwendet. Das automatische Format übernimmt die Position aus dem Gebietsschema (Locale) der Seite.</target>
+				<source>ISO 4217 code of the currency of salary amounts, for example EUR, CHF or USD. Salary amounts are formatted with the number format of the locale of the page, including the currency sign and its position, for example 1.234,56 € (de-DE), € 1.234,56 (nl-NL) or CHF 1'234.56 (de-CH). Also used in the structured data for search engines. An invalid code is replaced by EUR.</source>
+				<target>ISO-4217-Code der Währung der Gehaltsbeträge, zum Beispiel EUR, CHF oder USD. Gehaltsbeträge werden im Zahlenformat des Gebietsschemas (Locale) der Seite angezeigt, einschließlich Währungszeichen und dessen Position, zum Beispiel 1.234,56 € (de-DE), € 1.234,56 (nl-NL) oder CHF 1'234.56 (de-CH). Wird auch in den strukturierten Daten für Suchmaschinen verwendet. Ein ungültiger Code wird durch EUR ersetzt.</target>
 			</trans-unit>
 		</body>
 	</file>

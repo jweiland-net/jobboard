@@ -1,9 +1,4 @@
 jobboard:
   salary:
-    # CHF 1'234.50 in every language
-    numberFormat: custom
+    # Swiss francs, e.g. CHF 1'234.50 on a de_CH site language
     currency: CHF
-    currencyPosition: before
-    thousandsSeparator: "'"
-    decimalSeparator: '.'
-    decimals: 2
