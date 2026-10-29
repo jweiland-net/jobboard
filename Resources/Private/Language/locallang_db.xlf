@@ -189,7 +189,7 @@
 			<trans-unit id="tx_jobboard_domain_model_job.media">
 				<source>Media</source>
 			</trans-unit>
-			<trans-unit id="tx_jobboard_domain_model_job.header_logo">
+			<trans-unit id="tx_jobboard_domain_model_job.header_logos">
 				<source>Header image</source>
 			</trans-unit>
 			<trans-unit id="tx_jobboard_domain_model_job.tender_file">

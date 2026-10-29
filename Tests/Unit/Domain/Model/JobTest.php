@@ -922,27 +922,27 @@ class JobTest extends UnitTestCase
     }
 
     #[Test]
-    public function getHeaderLogoInitiallyReturnsObjectStorage(): void
+    public function getHeaderLogosInitiallyReturnsObjectStorage(): void
     {
         self::assertEquals(
             new ObjectStorage(),
-            $this->subject->getHeaderLogo(),
+            $this->subject->getHeaderLogos(),
         );
     }
 
     #[Test]
-    public function setHeaderLogoSetsHeaderLogo(): void
+    public function setHeaderLogosSetsHeaderLogos(): void
     {
         $object = new FileReference();
 
         $objectStorage = new ObjectStorage();
         $objectStorage->attach($object);
 
-        $this->subject->setHeaderLogo($objectStorage);
+        $this->subject->setHeaderLogos($objectStorage);
 
         self::assertSame(
             $objectStorage,
-            $this->subject->getHeaderLogo(),
+            $this->subject->getHeaderLogos(),
         );
     }
 
@@ -953,7 +953,7 @@ class JobTest extends UnitTestCase
         $this->subject->addHeaderLogo($instance);
 
         self::assertTrue(
-            $this->subject->getHeaderLogo()->contains($instance),
+            $this->subject->getHeaderLogos()->contains($instance),
         );
     }
 
@@ -965,7 +965,7 @@ class JobTest extends UnitTestCase
         $this->subject->removeHeaderLogo($instance);
 
         self::assertFalse(
-            $this->subject->getHeaderLogo()->contains($instance),
+            $this->subject->getHeaderLogos()->contains($instance),
         );
     }
 

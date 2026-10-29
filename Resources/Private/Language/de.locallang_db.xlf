@@ -250,7 +250,7 @@
 				<source>Media</source>
 				<target>Medien</target>
 			</trans-unit>
-			<trans-unit id="tx_jobboard_domain_model_job.header_logo">
+			<trans-unit id="tx_jobboard_domain_model_job.header_logos">
 				<source>Header image</source>
 				<target>Headerbild</target>
 			</trans-unit>

@@ -1,0 +1,20 @@
+"pages"
+,"uid","pid","title","slug","deleted","hidden","doktype","is_siteroot"
+,1,0,"Root","/",0,0,1,1
+,2,1,"Storage for jobs","/storage",0,0,254,0
+
+"tx_jobboard_domain_model_job"
+,"uid","pid","title","deleted","header_logos","employer_logo"
+,1,2,"Job with header image",0,0,1
+,2,2,"Job with deleted header image",0,0,0
+,3,2,"Job without header image",0,0,0
+,4,2,"Deleted job with header image",1,0,0
+
+"sys_file_reference"
+,"uid","pid","uid_local","uid_foreign","tablenames","fieldname","deleted","hidden"
+,1,2,1,1,"tx_jobboard_domain_model_job","header_logo",0,0
+,2,2,1,2,"tx_jobboard_domain_model_job","header_logo",1,0
+,3,2,1,1,"tx_jobboard_domain_model_job","employer_logo",0,0
+,4,2,1,4,"tx_jobboard_domain_model_job","header_logo",0,0
+,5,1,1,1,"tt_content","header_logo",0,0
+,6,2,1,1,"tx_jobboard_domain_model_job","header_logo",0,1

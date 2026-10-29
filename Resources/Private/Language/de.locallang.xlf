@@ -194,7 +194,7 @@
 				<source>Application guidelines</source>
 				<target>Hinweise zur Bewerbung</target>
 			</trans-unit>
-			<trans-unit id="job.headerLogo">
+			<trans-unit id="job.headerLogos">
 				<source>Header image</source>
 				<target>Headerbild</target>
 			</trans-unit>

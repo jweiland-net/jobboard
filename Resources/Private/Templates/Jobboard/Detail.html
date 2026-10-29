@@ -368,15 +368,15 @@
     </section>
 </f:section>
 
-<!-- TCA div "media": header_logo, tender_file, pdf_files, pdf_tstamp -->
+<!-- TCA div "media": header_logos, tender_file, pdf_files, pdf_tstamp -->
 <f:section name="renderMedia">
-    <f:if condition="{job.headerLogo} || {job.tenderFile} || {job.pdfFiles}">
+    <f:if condition="{job.headerLogos} || {job.tenderFile} || {job.pdfFiles}">
         <section class="mt-5">
             <h2 class="h4 mb-3">{f:translate(key: 'job.groups.media')}</h2>
-            <f:if condition="{job.headerLogo}">
-                <h3 class="h5">{f:translate(key: 'job.headerLogo')}</h3>
+            <f:if condition="{job.headerLogos}">
+                <h3 class="h5">{f:translate(key: 'job.headerLogos')}</h3>
                 <div class="job-logos d-flex flex-wrap align-items-center gap-3 mb-3">
-                    <f:for each="{job.headerLogo}" as="headerLogo">
+                    <f:for each="{job.headerLogos}" as="headerLogo">
                         <f:image image="{headerLogo}" alt="{job.title}" class="img-fluid"/>
                     </f:for>
                 </div>

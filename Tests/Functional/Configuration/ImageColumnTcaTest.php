@@ -35,7 +35,7 @@ final class ImageColumnTcaTest extends FunctionalTestCase
     {
         return [
             'employer logo of job' => ['tx_jobboard_domain_model_job', 'employer_logo'],
-            'header logo of job' => ['tx_jobboard_domain_model_job', 'header_logo'],
+            'header logos of job' => ['tx_jobboard_domain_model_job', 'header_logos'],
             'image of benefit' => ['tx_jobboard_domain_model_benefit', 'image'],
         ];
     }
