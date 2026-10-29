@@ -17,7 +17,7 @@
                 This action is cached: never pass "rememberedJobs" here, the
                 remembered jobs are highlighted by remember-jobs.js.
             </f:comment>
-            <f:render partial="Types/Table" arguments="{objects: jobs}"/>
+            <f:render partial="Types/Table" arguments="{jobs: jobs}"/>
             <f:render partial="Pagination" arguments="{pagination: pagination, paginator: paginator, numberOfJobs: numberOfJobs, actionName: actionName}"/>
         </f:then>
         <f:else>

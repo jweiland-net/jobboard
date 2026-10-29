@@ -3,7 +3,7 @@
       data-namespace-typo3-fluid="true">
 
 <f:comment>
-    objects: jobs to render.
+    jobs: jobs to render.
     rememberedJobs (optional): UIDs of the jobs remembered by the visitor as
     keys, renders their checkboxes checked. Pass it from uncached actions only
     (rememberedJobs). List is cached, so List and Search render the same
@@ -29,7 +29,7 @@
 
         <tbody>
         <f:variable name="dateFormat" value="{f:translate(key: 'dateFormat')}"/>
-        <f:for each="{objects}" as="job">
+        <f:for each="{jobs}" as="job">
             <f:variable name="isRemembered" value="{f:if(condition: '{rememberedJobs.{job.uid}}', then: 1, else: 0)}"/>
             <tr data-jobboard-uid="{job.uid}">
                 <f:render partial="Job/TitleLink" arguments="{job: job}"/>

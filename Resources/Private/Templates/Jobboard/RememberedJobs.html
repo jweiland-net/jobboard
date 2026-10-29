@@ -22,7 +22,7 @@
         <f:if condition="{jobs}">
             <f:then>
                 <p class="text-body-secondary">{f:translate(key: 'rememberedJobs.description')}</p>
-                <f:render partial="Types/Table" arguments="{objects: jobs, rememberedJobs: rememberedJobs}"/>
+                <f:render partial="Types/Table" arguments="{jobs: jobs, rememberedJobs: rememberedJobs}"/>
             </f:then>
             <f:else>
                 <p class="alert alert-info" role="status">{f:translate(key: 'rememberedJobs.empty')}</p>
