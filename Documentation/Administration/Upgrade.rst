@@ -84,9 +84,12 @@ Available wizards
         -   Moves the single salary grade of early job board installations
             (column :sql:`salary_grade`) to the relation
             :sql:`salary_grades`. Only needed if this column still exists.
-    *   -   :code:`jweilandJobboardHeaderLogoToHeaderLogosMigration`
-        -   Moves the header images of jobs from the former column
-            :sql:`header_logo` to the renamed column :sql:`header_logos`.
+    *   -   :code:`jweilandJobboardJobFileColumnsToPluralMigration`
+        -   Moves the header images, employer logos and tender documents of
+            jobs from the former columns :sql:`header_logo`,
+            :sql:`employer_logo` and :sql:`tender_file` to the renamed
+            columns :sql:`header_logos`, :sql:`employer_logos` and
+            :sql:`tender_files`.
     *   -   :code:`jweilandJobboardJobPathSegmentUpdate`
         -   Creates the URL segment of all jobs without one, see
             :ref:`configuration-routing`.

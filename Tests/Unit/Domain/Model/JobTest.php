@@ -682,27 +682,27 @@ class JobTest extends UnitTestCase
     }
 
     #[Test]
-    public function getEmployerLogoInitiallyReturnsObjectStorage(): void
+    public function getEmployerLogosInitiallyReturnsObjectStorage(): void
     {
         self::assertEquals(
             new ObjectStorage(),
-            $this->subject->getEmployerLogo(),
+            $this->subject->getEmployerLogos(),
         );
     }
 
     #[Test]
-    public function setEmployerLogoSetsEmployerLogo(): void
+    public function setEmployerLogosSetsEmployerLogos(): void
     {
         $object = new FileReference();
 
         $objectStorage = new ObjectStorage();
         $objectStorage->attach($object);
 
-        $this->subject->setEmployerLogo($objectStorage);
+        $this->subject->setEmployerLogos($objectStorage);
 
         self::assertSame(
             $objectStorage,
-            $this->subject->getEmployerLogo(),
+            $this->subject->getEmployerLogos(),
         );
     }
 
@@ -713,7 +713,7 @@ class JobTest extends UnitTestCase
         $this->subject->addEmployerLogo($instance);
 
         self::assertTrue(
-            $this->subject->getEmployerLogo()->contains($instance),
+            $this->subject->getEmployerLogos()->contains($instance),
         );
     }
 
@@ -725,7 +725,7 @@ class JobTest extends UnitTestCase
         $this->subject->removeEmployerLogo($instance);
 
         self::assertFalse(
-            $this->subject->getEmployerLogo()->contains($instance),
+            $this->subject->getEmployerLogos()->contains($instance),
         );
     }
 
@@ -970,27 +970,27 @@ class JobTest extends UnitTestCase
     }
 
     #[Test]
-    public function getTenderFileInitiallyReturnsObjectStorage(): void
+    public function getTenderFilesInitiallyReturnsObjectStorage(): void
     {
         self::assertEquals(
             new ObjectStorage(),
-            $this->subject->getTenderFile(),
+            $this->subject->getTenderFiles(),
         );
     }
 
     #[Test]
-    public function setTenderFileSetsTenderFile(): void
+    public function setTenderFilesSetsTenderFiles(): void
     {
         $object = new FileReference();
 
         $objectStorage = new ObjectStorage();
         $objectStorage->attach($object);
 
-        $this->subject->setTenderFile($objectStorage);
+        $this->subject->setTenderFiles($objectStorage);
 
         self::assertSame(
             $objectStorage,
-            $this->subject->getTenderFile(),
+            $this->subject->getTenderFiles(),
         );
     }
 
@@ -1001,7 +1001,7 @@ class JobTest extends UnitTestCase
         $this->subject->addTenderFile($instance);
 
         self::assertTrue(
-            $this->subject->getTenderFile()->contains($instance),
+            $this->subject->getTenderFiles()->contains($instance),
         );
     }
 
@@ -1013,7 +1013,7 @@ class JobTest extends UnitTestCase
         $this->subject->removeTenderFile($instance);
 
         self::assertFalse(
-            $this->subject->getTenderFile()->contains($instance),
+            $this->subject->getTenderFiles()->contains($instance),
         );
     }
 

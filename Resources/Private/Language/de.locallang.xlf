@@ -126,7 +126,7 @@
 				<source>Employer</source>
 				<target>Arbeitgeber</target>
 			</trans-unit>
-			<trans-unit id="job.employerLogo">
+			<trans-unit id="job.employerLogos">
 				<source>Employer logo</source>
 				<target>Logo des Arbeitgebers</target>
 			</trans-unit>
@@ -198,7 +198,7 @@
 				<source>Header image</source>
 				<target>Headerbild</target>
 			</trans-unit>
-			<trans-unit id="job.tenderFile">
+			<trans-unit id="job.tenderFiles">
 				<source>Job ad</source>
 				<target>Stelleninfos</target>
 			</trans-unit>

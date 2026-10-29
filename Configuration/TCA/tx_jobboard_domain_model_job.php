@@ -50,12 +50,12 @@ return [
             --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.salary;salary_grade,
             --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.benefit;benefit,
             --div--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.employer,
-            employer, employer_logo, employer_address,
+            employer, employer_logos, employer_address,
             --div--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.application_information,
             --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.contact_person;contact_person,
             --palette--;;startEndDate, application_deadline, application_guidelines,
             --div--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.media,
-            header_logos, tender_file, pdf_files, pdf_tstamp,
+            header_logos, tender_files, pdf_files, pdf_tstamp,
             --div--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.relations,
             related_jobs,
             --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_tca.xlf:pages.tabs.access,
@@ -74,12 +74,12 @@ return [
             --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.salary;salary_min_max,
             --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.benefit;benefit,
             --div--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.employer,
-            employer, employer_logo, employer_address,
+            employer, employer_logos, employer_address,
             --div--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.application_information,
             --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.contact_person;contact_person,
             --palette--;;startEndDate, application_deadline, application_guidelines,
             --div--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.media,
-            header_logos, tender_file, pdf_files, pdf_tstamp,
+            header_logos, tender_files, pdf_files, pdf_tstamp,
             --div--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.relations,
             related_jobs,
             --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_tca.xlf:pages.tabs.access,
@@ -421,9 +421,9 @@ return [
                 'required' => true,
             ],
         ],
-        'employer_logo' => [
+        'employer_logos' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.employer_logo',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.employer_logos',
             'config' => [
                 'type' => 'file',
                 'allowed' => 'common-image-types',
@@ -553,9 +553,9 @@ return [
                 ],
             ],
         ],
-        'tender_file' => [
+        'tender_files' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.tender_file',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.tender_files',
             'config' => [
                 'type' => 'file',
                 'allowed' => 'pdf',

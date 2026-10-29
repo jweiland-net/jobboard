@@ -118,13 +118,13 @@ adding ad-hoc fields elsewhere in the template.
   - `Command\UpdateEffectiveSalaryCommand` (`jobboard:salary:update`, schedulable, meant to run once a day,
     e.g. nightly) recalculates due jobs (`effective_salary_valid_until > 0 AND <= now + LOOK_AHEAD`);
     `--all` recalculates every job (needed once for existing data). Bootstraps backend authentication.
-- **File relations** (`employerLogo`, `headerLogos`, `tenderFile`, `pdfFiles` on `Job`; `image` on
+- **File relations** (`employerLogos`, `headerLogos`, `tenderFiles`, `pdfFiles` on `Job`; `image` on
   `Benefit`) are all `ObjectStorage<FileReference>`, never a single `FileReference`, and their columns and
   properties are named in plural if they may hold several files - even `header_logos` and `Benefit::image`,
   which ARE limited to 1 via `maxitems` for now, use `ObjectStorage` for consistency with the rest of the
   model. Each has
-  `add`/`remove` methods in addition to `get`/`set` (e.g. `addPdfFile()`/`removePdfFile()`, singularized
-  from the plural property name where applicable).
+  `add`/`remove` methods in addition to `get`/`set` (e.g. `addPdfFile()`/`removePdfFile()`,
+  `addEmployerLogo()`, `addTenderFile()`, singularized from the plural property name).
 - **Boolean getters and Fluid**: if a property name already starts with `is`/`has` (e.g. `isImport`,
   `hasSteps`), Fluid's `{job.isImport}` still resolves via a `get`-prefixed method
   (`getIsImport()`), never a bare `isImport()`/`hasSteps()`. A bare method is invisible to the Fluid/Extbase
@@ -391,16 +391,20 @@ Key points:
   between these tables stay valid). It copies columns generically by diffing the *actual* schema of the old and new table
   (`getCommonColumns()`), not via a hardcoded field list - adding or removing a plain `Job` column normally needs no wizard change. FAL
   fields are the exception: `sys_file_reference.tablenames` is rewritten only for the columns listed in
-  `JOB_FAL_FIELDS` (`employer_logo`, `header_logo`, `tender_file`, `pdf_files`), so a *new* FAL column that
-  already existed under the old `tx_jobfair2_*` table name must be added to that constant, or its file
-  relations will silently point at the old, no-longer-existing table after migration. Columns renamed since
-  jobfair2 are listed in `RENAMED_JOB_COLUMNS` (old => new, currently `header_logo` => `header_logos`): their
-  values are copied to the new column and the `fieldname` of the file references of the migrated jobs is
-  renamed.
-- **`HeaderLogoToHeaderLogosMigration`** renames `sys_file_reference.fieldname` `header_logo` to `header_logos`
-  for all references of jobs (also deleted ones) and recalculates the local count column `header_logos`
-  (live, not deleted references). The only places that may still mention `header_logo` are these two wizards
-  and their tests.
+  `JOB_FAL_FIELDS` (the *old* jobfair2 names `employer_logo`, `header_logo`, `tender_file`, `pdf_files`), so a
+  *new* FAL column that already existed under the old `tx_jobfair2_*` table name must be added to that constant,
+  or its file relations will silently point at the old, no-longer-existing table after migration. Columns renamed
+  since jobfair2 are listed in `RENAMED_JOB_COLUMNS` (old => new, currently `header_logo` => `header_logos`,
+  `employer_logo` => `employer_logos`, `tender_file` => `tender_files`): their values are copied to the new
+  column and the `fieldname` of the file references of the migrated jobs is renamed.
+- **`JobFileColumnsToPluralMigration`** (`jweilandJobboardJobFileColumnsToPluralMigration`, replaces the former
+  `HeaderLogoToHeaderLogosMigration` under a new identifier, as installations that ran the header wizard have it
+  marked as done) renames `sys_file_reference.fieldname` per `RENAMED_FIELDS` (`header_logo`, `employer_logo`,
+  `tender_file` => plural) for all references of jobs (also deleted ones, no restrictions) and recalculates the
+  local count column of each affected job (not deleted, `t3ver_wsid = 0`, hidden included; QueryBuilder with
+  `removeAll()`, never `Connection::select()`/`count()`, which apply default restrictions). Idempotent. The only
+  places that may still mention the old singular names are these two wizards, their tests/fixtures and the
+  changelog/upgrade docs.
 - **`JobAreaToJobAreasMigration`** / **`SalaryGradeToSalaryGradesMigration`** move the former single job
   area (int column `job_area`) / salary grade (text column `salary_grade`) of
   `tx_jobboard_domain_model_job` into the MM relations `job_areas` / `salary_grades`. Both legacy columns are

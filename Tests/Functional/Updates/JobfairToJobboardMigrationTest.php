@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace JWeiland\Jobboard\Tests\Functional\Updates;
 
 use JWeiland\Jobboard\Updates\JobfairToJobboardMigration;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -23,8 +24,8 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
  * The old "tx_jobfair2_domain_model_*" tables belong to no loaded extension,
  * so they are created manually in setUp() via raw SQL instead of a CSV
  * fixture, which requires the target table to already exist in the schema.
- * The FAL (sys_file_reference) migration is covered for the renamed header
- * image column only. This does not cover the MySQL AUTO_INCREMENT fix, which
+ * The FAL (sys_file_reference) migration is covered for the renamed file
+ * columns only. This does not cover the MySQL AUTO_INCREMENT fix, which
  * is already a no-op on the sqlite platform this test runs against.
  */
 final class JobfairToJobboardMigrationTest extends FunctionalTestCase
@@ -119,29 +120,42 @@ final class JobfairToJobboardMigrationTest extends FunctionalTestCase
         self::assertSame(0.0, (float)$row['salary_max']);
     }
 
+    /**
+     * @return array<string, array{string, string}>
+     */
+    public static function renamedFileColumnDataProvider(): array
+    {
+        return [
+            'header images' => ['header_logo', 'header_logos'],
+            'employer logos' => ['employer_logo', 'employer_logos'],
+            'tender files' => ['tender_file', 'tender_files'],
+        ];
+    }
+
     #[Test]
-    public function executeUpdateMovesHeaderImagesToRenamedColumn(): void
+    #[DataProvider('renamedFileColumnDataProvider')]
+    public function executeUpdateMovesFilesToRenamedColumn(string $legacyColumn, string $column): void
     {
         $connection = $this->get(ConnectionPool::class)->getConnectionForTable('tx_jobboard_domain_model_job');
-        $connection->executeStatement('ALTER TABLE tx_jobfair2_domain_model_job ADD COLUMN header_logo INTEGER');
-        $connection->update('tx_jobfair2_domain_model_job', ['header_logo' => 1], ['uid' => 1]);
+        $connection->executeStatement('ALTER TABLE tx_jobfair2_domain_model_job ADD COLUMN ' . $legacyColumn . ' INTEGER');
+        $connection->update('tx_jobfair2_domain_model_job', [$legacyColumn => 1], ['uid' => 1]);
         $this->get(ConnectionPool::class)->getConnectionForTable('sys_file_reference')->insert('sys_file_reference', [
             'uid' => 1,
             'pid' => 2,
             'uid_local' => 1,
             'uid_foreign' => 1,
             'tablenames' => 'tx_jobfair2_domain_model_job',
-            'fieldname' => 'header_logo',
+            'fieldname' => $legacyColumn,
         ]);
 
         $this->subject->executeUpdate();
 
         self::assertSame(
             1,
-            (int)$connection->select(['header_logos'], 'tx_jobboard_domain_model_job', ['uid' => 1])->fetchOne(),
+            (int)$connection->select([$column], 'tx_jobboard_domain_model_job', ['uid' => 1])->fetchOne(),
         );
         self::assertSame(
-            ['tablenames' => 'tx_jobboard_domain_model_job', 'fieldname' => 'header_logos'],
+            ['tablenames' => 'tx_jobboard_domain_model_job', 'fieldname' => $column],
             $this->get(ConnectionPool::class)
                 ->getConnectionForTable('sys_file_reference')
                 ->select(['tablenames', 'fieldname'], 'sys_file_reference', ['uid' => 1])

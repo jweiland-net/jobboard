@@ -18,22 +18,29 @@ use TYPO3\CMS\Install\Updates\DatabaseUpdatedPrerequisite;
 use TYPO3\CMS\Install\Updates\UpgradeWizardInterface;
 
 /**
- * Moves the file references of the former job column "header_logo" to the
- * renamed column "header_logos" (field name in "sys_file_reference") and
- * stores the number of references in the new local column, as DataHandler
- * does.
+ * Moves the file references of the former job columns "header_logo",
+ * "employer_logo" and "tender_file" to the renamed plural columns (field
+ * name in "sys_file_reference") and stores the number of references in the
+ * new local columns, as DataHandler does.
  *
  * All file references are moved, also deleted ones and those of deleted
- * jobs, so no reference keeps pointing to the old column. The legacy local
- * column is not read: the reference count is recalculated.
+ * jobs, so no reference keeps pointing to an old column. The legacy local
+ * columns are not read: the reference count is recalculated.
  */
-#[UpgradeWizard('jweilandJobboardHeaderLogoToHeaderLogosMigration')]
-final readonly class HeaderLogoToHeaderLogosMigration implements UpgradeWizardInterface
+#[UpgradeWizard('jweilandJobboardJobFileColumnsToPluralMigration')]
+final readonly class JobFileColumnsToPluralMigration implements UpgradeWizardInterface
 {
     private const TABLE_JOB = 'tx_jobboard_domain_model_job';
     private const TABLE_FILE_REFERENCE = 'sys_file_reference';
-    private const LEGACY_FIELD = 'header_logo';
-    private const FIELD = 'header_logos';
+
+    /**
+     * Renamed file columns of the job (old name => new name)
+     */
+    private const RENAMED_FIELDS = [
+        'header_logo' => 'header_logos',
+        'employer_logo' => 'employer_logos',
+        'tender_file' => 'tender_files',
+    ];
 
     public function __construct(
         private ConnectionPool $connectionPool,
@@ -41,14 +48,15 @@ final readonly class HeaderLogoToHeaderLogosMigration implements UpgradeWizardIn
 
     public function getTitle(): string
     {
-        return '[jobboard] Migrate the header images of jobs to the renamed column "header_logos".';
+        return '[jobboard] Migrate the files of jobs to the renamed plural columns.';
     }
 
     public function getDescription(): string
     {
-        return 'The column "' . self::LEGACY_FIELD . '" of the jobs was renamed to "' . self::FIELD . '". '
-            . 'This wizard moves all file references (header images) of jobs to the new column and '
-            . 'updates the number of header images stored in the job records.';
+        return 'The job columns "header_logo", "employer_logo" and "tender_file" were renamed to '
+            . '"header_logos", "employer_logos" and "tender_files". This wizard moves all file references '
+            . '(header images, employer logos, tender documents) of jobs to the new columns and updates the '
+            . 'number of files stored in the job records.';
     }
 
     public function getPrerequisites(): array
@@ -60,33 +68,46 @@ final readonly class HeaderLogoToHeaderLogosMigration implements UpgradeWizardIn
 
     public function updateNecessary(): bool
     {
-        return $this->fetchJobUidsToMigrate() !== [];
+        foreach (self::RENAMED_FIELDS as $legacyField => $_) {
+            if ($this->fetchJobUidsToMigrate($legacyField) !== []) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function executeUpdate(): bool
     {
-        $jobUids = $this->fetchJobUidsToMigrate();
-        if ($jobUids === []) {
-            return true;
-        }
-
-        $this->connectionPool->getConnectionForTable(self::TABLE_FILE_REFERENCE)->update(
-            self::TABLE_FILE_REFERENCE,
-            ['fieldname' => self::FIELD],
-            ['tablenames' => self::TABLE_JOB, 'fieldname' => self::LEGACY_FIELD],
-        );
-
-        foreach ($jobUids as $jobUid) {
-            $this->updateJob($jobUid);
+        foreach (self::RENAMED_FIELDS as $legacyField => $field) {
+            $this->migrateField($legacyField, $field);
         }
 
         return true;
     }
 
+    private function migrateField(string $legacyField, string $field): void
+    {
+        $jobUids = $this->fetchJobUidsToMigrate($legacyField);
+        if ($jobUids === []) {
+            return;
+        }
+
+        $this->connectionPool->getConnectionForTable(self::TABLE_FILE_REFERENCE)->update(
+            self::TABLE_FILE_REFERENCE,
+            ['fieldname' => $field],
+            ['tablenames' => self::TABLE_JOB, 'fieldname' => $legacyField],
+        );
+
+        foreach ($jobUids as $jobUid) {
+            $this->updateJob($jobUid, $field);
+        }
+    }
+
     /**
      * @return list<int>
      */
-    private function fetchJobUidsToMigrate(): array
+    private function fetchJobUidsToMigrate(string $legacyField): array
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::TABLE_FILE_REFERENCE);
         $queryBuilder->getRestrictions()->removeAll();
@@ -96,7 +117,7 @@ final readonly class HeaderLogoToHeaderLogosMigration implements UpgradeWizardIn
             ->from(self::TABLE_FILE_REFERENCE)
             ->where(
                 $queryBuilder->expr()->eq('tablenames', $queryBuilder->createNamedParameter(self::TABLE_JOB)),
-                $queryBuilder->expr()->eq('fieldname', $queryBuilder->createNamedParameter(self::LEGACY_FIELD)),
+                $queryBuilder->expr()->eq('fieldname', $queryBuilder->createNamedParameter($legacyField)),
             )
             ->groupBy('uid_foreign')
             ->executeQuery()
@@ -109,16 +130,16 @@ final readonly class HeaderLogoToHeaderLogosMigration implements UpgradeWizardIn
      * Stores the number of live, not deleted file references (hidden ones
      * included) in the local column of the job, as DataHandler does.
      */
-    private function updateJob(int $jobUid): void
+    private function updateJob(int $jobUid, string $field): void
     {
         $this->connectionPool->getConnectionForTable(self::TABLE_JOB)->update(
             self::TABLE_JOB,
-            [self::FIELD => $this->countFileReferences($jobUid)],
+            [$field => $this->countFileReferences($jobUid, $field)],
             ['uid' => $jobUid],
         );
     }
 
-    private function countFileReferences(int $jobUid): int
+    private function countFileReferences(int $jobUid, string $field): int
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::TABLE_FILE_REFERENCE);
         $queryBuilder->getRestrictions()->removeAll();
@@ -128,7 +149,7 @@ final readonly class HeaderLogoToHeaderLogosMigration implements UpgradeWizardIn
             ->from(self::TABLE_FILE_REFERENCE)
             ->where(
                 $queryBuilder->expr()->eq('tablenames', $queryBuilder->createNamedParameter(self::TABLE_JOB)),
-                $queryBuilder->expr()->eq('fieldname', $queryBuilder->createNamedParameter(self::FIELD)),
+                $queryBuilder->expr()->eq('fieldname', $queryBuilder->createNamedParameter($field)),
                 $queryBuilder->expr()->eq('uid_foreign', $queryBuilder->createNamedParameter($jobUid, Connection::PARAM_INT)),
                 $queryBuilder->expr()->eq('deleted', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT)),
                 $queryBuilder->expr()->eq('t3ver_wsid', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT)),

@@ -141,7 +141,7 @@
 			<trans-unit id="tx_jobboard_domain_model_job.employer">
 				<source>Employer</source>
 			</trans-unit>
-			<trans-unit id="tx_jobboard_domain_model_job.employer_logo">
+			<trans-unit id="tx_jobboard_domain_model_job.employer_logos">
 				<source>Employer logo</source>
 			</trans-unit>
 			<trans-unit id="tx_jobboard_domain_model_job.employer_address">
@@ -192,7 +192,7 @@
 			<trans-unit id="tx_jobboard_domain_model_job.header_logos">
 				<source>Header image</source>
 			</trans-unit>
-			<trans-unit id="tx_jobboard_domain_model_job.tender_file">
+			<trans-unit id="tx_jobboard_domain_model_job.tender_files">
 				<source>Tender documents</source>
 			</trans-unit>
 			<trans-unit id="tx_jobboard_domain_model_job.pdf_files">
