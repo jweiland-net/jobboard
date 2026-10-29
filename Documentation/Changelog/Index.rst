@@ -22,10 +22,14 @@ Version 0.0.1
     default EUR), also used by the structured data instead of the fixed
     EUR. Overridden detail templates have to use the new ViewHelper, see
     :ref:`templates-viewhelper-salary`.
-*   The job column :sql:`header_logo` is renamed to :sql:`header_logos`,
-    the property :html:`{job.headerLogo}` to :html:`{job.headerLogos}`.
-    Overridden templates have to use the new name. Run the upgrade wizard
-    :code:`jweilandJobboardHeaderLogoToHeaderLogosMigration`, see
+*   The job columns :sql:`header_logo`, :sql:`employer_logo` and
+    :sql:`tender_file` are renamed to :sql:`header_logos`,
+    :sql:`employer_logos` and :sql:`tender_files`, the properties
+    :html:`{job.headerLogo}`, :html:`{job.employerLogo}` and
+    :html:`{job.tenderFile}` to :html:`{job.headerLogos}`,
+    :html:`{job.employerLogos}` and :html:`{job.tenderFiles}`. Overridden
+    templates have to use the new names. Run the upgrade wizard
+    :code:`jweilandJobboardJobFileColumnsToPluralMigration`, see
     :ref:`upgrade-wizards`.
 
 All changes are listed in the

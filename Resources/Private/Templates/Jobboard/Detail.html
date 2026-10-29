@@ -291,7 +291,7 @@
     </f:if>
 </f:section>
 
-<!-- TCA div "employer": employer, employer_logo, employer_address -->
+<!-- TCA div "employer": employer, employer_logos, employer_address -->
 <f:section name="renderEmployer">
     <section class="mt-5">
         <h2 class="h4 mb-3">{f:translate(key: 'job.employer')}</h2>
@@ -306,9 +306,9 @@
                 </dd>
             </f:if>
         </dl>
-        <f:if condition="{job.employerLogo}">
+        <f:if condition="{job.employerLogos}">
             <div class="job-logos d-flex flex-wrap align-items-center gap-3 mt-3">
-                <f:for each="{job.employerLogo}" as="employerLogo">
+                <f:for each="{job.employerLogos}" as="employerLogo">
                     <f:image image="{employerLogo}" alt="{job.employer}" class="img-fluid"/>
                 </f:for>
             </div>
@@ -368,9 +368,9 @@
     </section>
 </f:section>
 
-<!-- TCA div "media": header_logos, tender_file, pdf_files, pdf_tstamp -->
+<!-- TCA div "media": header_logos, tender_files, pdf_files, pdf_tstamp -->
 <f:section name="renderMedia">
-    <f:if condition="{job.headerLogos} || {job.tenderFile} || {job.pdfFiles}">
+    <f:if condition="{job.headerLogos} || {job.tenderFiles} || {job.pdfFiles}">
         <section class="mt-5">
             <h2 class="h4 mb-3">{f:translate(key: 'job.groups.media')}</h2>
             <f:if condition="{job.headerLogos}">
@@ -381,10 +381,10 @@
                     </f:for>
                 </div>
             </f:if>
-            <f:if condition="{job.tenderFile}">
-                <h3 class="h5">{f:translate(key: 'job.tenderFile')}</h3>
+            <f:if condition="{job.tenderFiles}">
+                <h3 class="h5">{f:translate(key: 'job.tenderFiles')}</h3>
                 <ul class="list-group mb-3">
-                    <f:for each="{job.tenderFile}" as="tenderFile">
+                    <f:for each="{job.tenderFiles}" as="tenderFile">
                         <li class="list-group-item"><a class="text-break" href="{tenderFile.originalResource.publicUrl}">{tenderFile.originalResource.name}</a></li>
                     </f:for>
                 </ul>

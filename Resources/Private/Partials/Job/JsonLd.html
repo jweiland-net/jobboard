@@ -42,7 +42,7 @@
     </f:if>
     "hiringOrganization": {
         "@type": "Organization",
-        <f:for each="{job.employerLogo}" as="employerLogo" iteration="employerLogoIterator">
+        <f:for each="{job.employerLogos}" as="employerLogo" iteration="employerLogoIterator">
             <f:if condition="{employerLogoIterator.isFirst}">
         "logo": <f:format.json value="{f:uri.image(image: employerLogo, absolute: 1)}"/>,
             </f:if>

@@ -137,8 +137,8 @@ Useful properties of :html:`{job}` in Fluid:
     return the first record only.
 
 File properties
-    :html:`{job.employerLogo}`, :html:`{job.headerLogos}`,
-    :html:`{job.tenderFile}` and :html:`{job.pdfFiles}` are file
+    :html:`{job.employerLogos}`, :html:`{job.headerLogos}`,
+    :html:`{job.tenderFiles}` and :html:`{job.pdfFiles}` are file
     references. They are always lists, also :html:`{benefit.image}`.
     Use :html:`<f:for>` to render them.
 

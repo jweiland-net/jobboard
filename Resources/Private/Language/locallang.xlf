@@ -96,7 +96,7 @@
 			<trans-unit id="job.employer">
 				<source>Employer</source>
 			</trans-unit>
-			<trans-unit id="job.employerLogo">
+			<trans-unit id="job.employerLogos">
 				<source>Employer logo</source>
 			</trans-unit>
 			<trans-unit id="job.firstName">
@@ -150,7 +150,7 @@
 			<trans-unit id="job.headerLogos">
 				<source>Header image</source>
 			</trans-unit>
-			<trans-unit id="job.tenderFile">
+			<trans-unit id="job.tenderFiles">
 				<source>Job ad</source>
 			</trans-unit>
 			<trans-unit id="job.pdfFiles">

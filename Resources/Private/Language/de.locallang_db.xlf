@@ -186,7 +186,7 @@
 				<source>Employer</source>
 				<target>Arbeitgeber</target>
 			</trans-unit>
-			<trans-unit id="tx_jobboard_domain_model_job.employer_logo">
+			<trans-unit id="tx_jobboard_domain_model_job.employer_logos">
 				<source>Employer logo</source>
 				<target>Logo des Arbeitgebers</target>
 			</trans-unit>
@@ -254,7 +254,7 @@
 				<source>Header image</source>
 				<target>Headerbild</target>
 			</trans-unit>
-			<trans-unit id="tx_jobboard_domain_model_job.tender_file">
+			<trans-unit id="tx_jobboard_domain_model_job.tender_files">
 				<source>Tender documents</source>
 				<target>Ausschreibungsunterlagen</target>
 			</trans-unit>

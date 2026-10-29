@@ -60,7 +60,11 @@ final readonly class JobfairToJobboardMigration implements UpgradeWizardInterfac
      * Job columns renamed since EXT:jobfair2 (old name => new name). Their
      * values and file references are moved to the new column.
      */
-    private const RENAMED_JOB_COLUMNS = ['header_logo' => 'header_logos'];
+    private const RENAMED_JOB_COLUMNS = [
+        'header_logo' => 'header_logos',
+        'employer_logo' => 'employer_logos',
+        'tender_file' => 'tender_files',
+    ];
 
     public function __construct(
         private ConnectionPool $connectionPool,
@@ -227,7 +231,7 @@ final readonly class JobfairToJobboardMigration implements UpgradeWizardInterfac
 
     /**
      * Only the file references of the migrated jobs: the references of
-     * existing jobs are moved by HeaderLogoToHeaderLogosMigration, which also
+     * existing jobs are moved by JobFileColumnsToPluralMigration, which also
      * updates their reference count.
      *
      * @param list<int> $jobUids

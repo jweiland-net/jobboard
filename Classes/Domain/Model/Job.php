@@ -83,7 +83,7 @@ class Job extends AbstractEntity
     /**
      * @var ObjectStorage<FileReference>
      */
-    protected ObjectStorage $employerLogo;
+    protected ObjectStorage $employerLogos;
 
     protected ?Address $employerAddress = null;
 
@@ -113,7 +113,7 @@ class Job extends AbstractEntity
     /**
      * @var ObjectStorage<FileReference>
      */
-    protected ObjectStorage $tenderFile;
+    protected ObjectStorage $tenderFiles;
 
     /**
      * @var ObjectStorage<FileReference>
@@ -134,9 +134,9 @@ class Job extends AbstractEntity
         $this->jobAreas = new ObjectStorage();
         $this->salaryGrades = new ObjectStorage();
         $this->benefits = new ObjectStorage();
-        $this->employerLogo = new ObjectStorage();
+        $this->employerLogos = new ObjectStorage();
         $this->headerLogos = new ObjectStorage();
-        $this->tenderFile = new ObjectStorage();
+        $this->tenderFiles = new ObjectStorage();
         $this->pdfFiles = new ObjectStorage();
         $this->relatedJobs = new ObjectStorage();
     }
@@ -146,9 +146,9 @@ class Job extends AbstractEntity
         $this->jobAreas ??= new ObjectStorage();
         $this->salaryGrades ??= new ObjectStorage();
         $this->benefits ??= new ObjectStorage();
-        $this->employerLogo ??= new ObjectStorage();
+        $this->employerLogos ??= new ObjectStorage();
         $this->headerLogos ??= new ObjectStorage();
-        $this->tenderFile ??= new ObjectStorage();
+        $this->tenderFiles ??= new ObjectStorage();
         $this->pdfFiles ??= new ObjectStorage();
         $this->relatedJobs ??= new ObjectStorage();
     }
@@ -483,27 +483,27 @@ class Job extends AbstractEntity
     /**
      * @return ObjectStorage<FileReference>
      */
-    public function getEmployerLogo(): ObjectStorage
+    public function getEmployerLogos(): ObjectStorage
     {
-        return $this->employerLogo;
+        return $this->employerLogos;
     }
 
     /**
-     * @param ObjectStorage<FileReference> $employerLogo
+     * @param ObjectStorage<FileReference> $employerLogos
      */
-    public function setEmployerLogo(ObjectStorage $employerLogo): void
+    public function setEmployerLogos(ObjectStorage $employerLogos): void
     {
-        $this->employerLogo = $employerLogo;
+        $this->employerLogos = $employerLogos;
     }
 
     public function addEmployerLogo(FileReference $employerLogo): void
     {
-        $this->employerLogo->attach($employerLogo);
+        $this->employerLogos->attach($employerLogo);
     }
 
     public function removeEmployerLogo(FileReference $employerLogo): void
     {
-        $this->employerLogo->detach($employerLogo);
+        $this->employerLogos->detach($employerLogo);
     }
 
     public function getEmployerAddress(): ?Address
@@ -635,27 +635,27 @@ class Job extends AbstractEntity
     /**
      * @return ObjectStorage<FileReference>
      */
-    public function getTenderFile(): ObjectStorage
+    public function getTenderFiles(): ObjectStorage
     {
-        return $this->tenderFile;
+        return $this->tenderFiles;
     }
 
     /**
-     * @param ObjectStorage<FileReference> $tenderFile
+     * @param ObjectStorage<FileReference> $tenderFiles
      */
-    public function setTenderFile(ObjectStorage $tenderFile): void
+    public function setTenderFiles(ObjectStorage $tenderFiles): void
     {
-        $this->tenderFile = $tenderFile;
+        $this->tenderFiles = $tenderFiles;
     }
 
     public function addTenderFile(FileReference $tenderFile): void
     {
-        $this->tenderFile->attach($tenderFile);
+        $this->tenderFiles->attach($tenderFile);
     }
 
     public function removeTenderFile(FileReference $tenderFile): void
     {
-        $this->tenderFile->detach($tenderFile);
+        $this->tenderFiles->detach($tenderFile);
     }
 
     /**
