@@ -108,7 +108,7 @@ class Job extends AbstractEntity
     /**
      * @var ObjectStorage<FileReference>
      */
-    protected ObjectStorage $headerLogo;
+    protected ObjectStorage $headerLogos;
 
     /**
      * @var ObjectStorage<FileReference>
@@ -135,7 +135,7 @@ class Job extends AbstractEntity
         $this->salaryGrades = new ObjectStorage();
         $this->benefits = new ObjectStorage();
         $this->employerLogo = new ObjectStorage();
-        $this->headerLogo = new ObjectStorage();
+        $this->headerLogos = new ObjectStorage();
         $this->tenderFile = new ObjectStorage();
         $this->pdfFiles = new ObjectStorage();
         $this->relatedJobs = new ObjectStorage();
@@ -147,7 +147,7 @@ class Job extends AbstractEntity
         $this->salaryGrades ??= new ObjectStorage();
         $this->benefits ??= new ObjectStorage();
         $this->employerLogo ??= new ObjectStorage();
-        $this->headerLogo ??= new ObjectStorage();
+        $this->headerLogos ??= new ObjectStorage();
         $this->tenderFile ??= new ObjectStorage();
         $this->pdfFiles ??= new ObjectStorage();
         $this->relatedJobs ??= new ObjectStorage();
@@ -609,27 +609,27 @@ class Job extends AbstractEntity
     /**
      * @return ObjectStorage<FileReference>
      */
-    public function getHeaderLogo(): ObjectStorage
+    public function getHeaderLogos(): ObjectStorage
     {
-        return $this->headerLogo;
+        return $this->headerLogos;
     }
 
     /**
-     * @param ObjectStorage<FileReference> $headerLogo
+     * @param ObjectStorage<FileReference> $headerLogos
      */
-    public function setHeaderLogo(ObjectStorage $headerLogo): void
+    public function setHeaderLogos(ObjectStorage $headerLogos): void
     {
-        $this->headerLogo = $headerLogo;
+        $this->headerLogos = $headerLogos;
     }
 
     public function addHeaderLogo(FileReference $headerLogo): void
     {
-        $this->headerLogo->attach($headerLogo);
+        $this->headerLogos->attach($headerLogo);
     }
 
     public function removeHeaderLogo(FileReference $headerLogo): void
     {
-        $this->headerLogo->detach($headerLogo);
+        $this->headerLogos->detach($headerLogo);
     }
 
     /**

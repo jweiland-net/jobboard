@@ -23,10 +23,9 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
  * The old "tx_jobfair2_domain_model_*" tables belong to no loaded extension,
  * so they are created manually in setUp() via raw SQL instead of a CSV
  * fixture, which requires the target table to already exist in the schema.
- * This does not cover the FAL (sys_file_reference) migration or the MySQL
- * AUTO_INCREMENT fix - both are guarded by their own preconditions
- * (JOB_FAL_FIELDS never populated here, and the AUTO_INCREMENT fix is
- * already a no-op on the sqlite platform this test runs against).
+ * The FAL (sys_file_reference) migration is covered for the renamed header
+ * image column only. This does not cover the MySQL AUTO_INCREMENT fix, which
+ * is already a no-op on the sqlite platform this test runs against.
  */
 final class JobfairToJobboardMigrationTest extends FunctionalTestCase
 {
@@ -118,5 +117,35 @@ final class JobfairToJobboardMigrationTest extends FunctionalTestCase
         self::assertSame(1, (int)$row['salary_mode']);
         self::assertSame(0.0, (float)$row['salary_min']);
         self::assertSame(0.0, (float)$row['salary_max']);
+    }
+
+    #[Test]
+    public function executeUpdateMovesHeaderImagesToRenamedColumn(): void
+    {
+        $connection = $this->get(ConnectionPool::class)->getConnectionForTable('tx_jobboard_domain_model_job');
+        $connection->executeStatement('ALTER TABLE tx_jobfair2_domain_model_job ADD COLUMN header_logo INTEGER');
+        $connection->update('tx_jobfair2_domain_model_job', ['header_logo' => 1], ['uid' => 1]);
+        $this->get(ConnectionPool::class)->getConnectionForTable('sys_file_reference')->insert('sys_file_reference', [
+            'uid' => 1,
+            'pid' => 2,
+            'uid_local' => 1,
+            'uid_foreign' => 1,
+            'tablenames' => 'tx_jobfair2_domain_model_job',
+            'fieldname' => 'header_logo',
+        ]);
+
+        $this->subject->executeUpdate();
+
+        self::assertSame(
+            1,
+            (int)$connection->select(['header_logos'], 'tx_jobboard_domain_model_job', ['uid' => 1])->fetchOne(),
+        );
+        self::assertSame(
+            ['tablenames' => 'tx_jobboard_domain_model_job', 'fieldname' => 'header_logos'],
+            $this->get(ConnectionPool::class)
+                ->getConnectionForTable('sys_file_reference')
+                ->select(['tablenames', 'fieldname'], 'sys_file_reference', ['uid' => 1])
+                ->fetchAssociative(),
+        );
     }
 }

@@ -118,10 +118,11 @@ adding ad-hoc fields elsewhere in the template.
   - `Command\UpdateEffectiveSalaryCommand` (`jobboard:salary:update`, schedulable, meant to run once a day,
     e.g. nightly) recalculates due jobs (`effective_salary_valid_until > 0 AND <= now + LOOK_AHEAD`);
     `--all` recalculates every job (needed once for existing data). Bootstraps backend authentication.
-- **File relations** (`employerLogo`, `headerLogo`, `tenderFile`, `pdfFiles` on `Job`; `image` on
-  `Benefit`) are all `ObjectStorage<FileReference>`, never a single `FileReference` - none of the underlying
-  TCA `type=file` columns actually restrict `maxitems` to 1 (even `Benefit::image`, which IS limited to 1
-  via `maxitems`, still uses `ObjectStorage` for consistency with the rest of the model). Each has
+- **File relations** (`employerLogo`, `headerLogos`, `tenderFile`, `pdfFiles` on `Job`; `image` on
+  `Benefit`) are all `ObjectStorage<FileReference>`, never a single `FileReference`, and their columns and
+  properties are named in plural if they may hold several files - even `header_logos` and `Benefit::image`,
+  which ARE limited to 1 via `maxitems` for now, use `ObjectStorage` for consistency with the rest of the
+  model. Each has
   `add`/`remove` methods in addition to `get`/`set` (e.g. `addPdfFile()`/`removePdfFile()`, singularized
   from the plural property name where applicable).
 - **Boolean getters and Fluid**: if a property name already starts with `is`/`has` (e.g. `isImport`,
@@ -392,7 +393,14 @@ Key points:
   fields are the exception: `sys_file_reference.tablenames` is rewritten only for the columns listed in
   `JOB_FAL_FIELDS` (`employer_logo`, `header_logo`, `tender_file`, `pdf_files`), so a *new* FAL column that
   already existed under the old `tx_jobfair2_*` table name must be added to that constant, or its file
-  relations will silently point at the old, no-longer-existing table after migration.
+  relations will silently point at the old, no-longer-existing table after migration. Columns renamed since
+  jobfair2 are listed in `RENAMED_JOB_COLUMNS` (old => new, currently `header_logo` => `header_logos`): their
+  values are copied to the new column and the `fieldname` of the file references of the migrated jobs is
+  renamed.
+- **`HeaderLogoToHeaderLogosMigration`** renames `sys_file_reference.fieldname` `header_logo` to `header_logos`
+  for all references of jobs (also deleted ones) and recalculates the local count column `header_logos`
+  (live, not deleted references). The only places that may still mention `header_logo` are these two wizards
+  and their tests.
 - **`JobAreaToJobAreasMigration`** / **`SalaryGradeToSalaryGradesMigration`** move the former single job
   area (int column `job_area`) / salary grade (text column `salary_grade`) of
   `tx_jobboard_domain_model_job` into the MM relations `job_areas` / `salary_grades`. Both legacy columns are

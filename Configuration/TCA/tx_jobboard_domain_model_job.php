@@ -55,7 +55,7 @@ return [
             --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.contact_person;contact_person,
             --palette--;;startEndDate, application_deadline, application_guidelines,
             --div--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.media,
-            header_logo, tender_file, pdf_files, pdf_tstamp,
+            header_logos, tender_file, pdf_files, pdf_tstamp,
             --div--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.relations,
             related_jobs,
             --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_tca.xlf:pages.tabs.access,
@@ -79,7 +79,7 @@ return [
             --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.contact_person;contact_person,
             --palette--;;startEndDate, application_deadline, application_guidelines,
             --div--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.media,
-            header_logo, tender_file, pdf_files, pdf_tstamp,
+            header_logos, tender_file, pdf_files, pdf_tstamp,
             --div--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.relations,
             related_jobs,
             --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_tca.xlf:pages.tabs.access,
@@ -539,11 +539,12 @@ return [
                 'enableRichtext' => true,
             ],
         ],
-        'header_logo' => [
+        'header_logos' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.header_logo',
+            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.header_logos',
             'config' => [
                 'type' => 'file',
+                'maxitems' => 1,
                 'allowed' => 'common-image-types',
                 // A logo is an image, "common-image-types" also contains documents
                 'disallowed' => 'pdf,ai',

@@ -147,7 +147,7 @@
 			<trans-unit id="job.applicationGuidelines">
 				<source>Application guidelines</source>
 			</trans-unit>
-			<trans-unit id="job.headerLogo">
+			<trans-unit id="job.headerLogos">
 				<source>Header image</source>
 			</trans-unit>
 			<trans-unit id="job.tenderFile">

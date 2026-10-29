@@ -56,6 +56,12 @@ final readonly class JobfairToJobboardMigration implements UpgradeWizardInterfac
 
     private const JOB_FAL_FIELDS = ['employer_logo', 'header_logo', 'tender_file', 'pdf_files'];
 
+    /**
+     * Job columns renamed since EXT:jobfair2 (old name => new name). Their
+     * values and file references are moved to the new column.
+     */
+    private const RENAMED_JOB_COLUMNS = ['header_logo' => 'header_logos'];
+
     public function __construct(
         private ConnectionPool $connectionPool,
     ) {}
@@ -156,17 +162,22 @@ final readonly class JobfairToJobboardMigration implements UpgradeWizardInterfac
         }
 
         $oldColumns = $this->getColumns($oldTable);
-        $commonColumns = $this->getCommonColumns($oldTable, $newTable);
+        $renamedColumns = $this->getRenamedColumns($oldColumns, $newTable);
+        $commonColumns = array_values(array_diff(
+            $this->getCommonColumns($oldTable, $newTable),
+            array_keys($renamedColumns),
+        ));
         $legacyRowsNeedSalaryModeDefault = !isset($oldColumns['salary_mode']);
 
         if ($legacyRowsNeedSalaryModeDefault) {
             $commonColumns = array_values(array_diff($commonColumns, ['salary_mode', 'salary_min', 'salary_max']));
         }
 
-        $rows = $this->fetchRows($oldTable, $commonColumns, $pendingUids);
+        $rows = $this->fetchRows($oldTable, [...$commonColumns, ...array_keys($renamedColumns)], $pendingUids);
 
         $connection = $this->connectionPool->getConnectionForTable($newTable);
         foreach ($rows as $row) {
+            $row = $this->renameColumns($row, $renamedColumns);
             if ($legacyRowsNeedSalaryModeDefault) {
                 // Legacy job records predate the salary feature. "1" is "freeEntry", which does not
                 // require a salary_grade relation (unlike "0" = "grade"), so migrated records do not
@@ -181,6 +192,64 @@ final readonly class JobfairToJobboardMigration implements UpgradeWizardInterfac
 
         $this->fixAutoIncrement($newTable);
         $this->migrateFileReferences($oldTable, $newTable, self::JOB_FAL_FIELDS);
+        $this->renameFileReferenceFields($newTable, $pendingUids);
+    }
+
+    /**
+     * @param array<string, Column> $oldColumns
+     * @return array<string, string>
+     */
+    private function getRenamedColumns(array $oldColumns, string $newTable): array
+    {
+        $newColumns = $this->getColumns($newTable);
+
+        return array_filter(
+            self::RENAMED_JOB_COLUMNS,
+            static fn(string $newName, string $oldName): bool => isset($oldColumns[$oldName], $newColumns[$newName]),
+            ARRAY_FILTER_USE_BOTH,
+        );
+    }
+
+    /**
+     * @param array<string, mixed> $row
+     * @param array<string, string> $renamedColumns
+     * @return array<string, mixed>
+     */
+    private function renameColumns(array $row, array $renamedColumns): array
+    {
+        foreach ($renamedColumns as $oldName => $newName) {
+            $row[$newName] = $row[$oldName];
+            unset($row[$oldName]);
+        }
+
+        return $row;
+    }
+
+    /**
+     * Only the file references of the migrated jobs: the references of
+     * existing jobs are moved by HeaderLogoToHeaderLogosMigration, which also
+     * updates their reference count.
+     *
+     * @param list<int> $jobUids
+     */
+    private function renameFileReferenceFields(string $newTable, array $jobUids): void
+    {
+        foreach (self::RENAMED_JOB_COLUMNS as $oldName => $newName) {
+            $queryBuilder = $this->connectionPool->getQueryBuilderForTable('sys_file_reference');
+            $queryBuilder->getRestrictions()->removeAll();
+            $queryBuilder
+                ->update('sys_file_reference')
+                ->set('fieldname', $newName)
+                ->where(
+                    $queryBuilder->expr()->eq('tablenames', $queryBuilder->createNamedParameter($newTable)),
+                    $queryBuilder->expr()->eq('fieldname', $queryBuilder->createNamedParameter($oldName)),
+                    $queryBuilder->expr()->in(
+                        'uid_foreign',
+                        $queryBuilder->createNamedParameter($jobUids, Connection::PARAM_INT_ARRAY),
+                    ),
+                )
+                ->executeStatement();
+        }
     }
 
     private function migrateFileReferences(string $oldTable, string $newTable, array $fieldNames): void
