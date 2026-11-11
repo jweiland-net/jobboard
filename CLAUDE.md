@@ -118,13 +118,18 @@ adding ad-hoc fields elsewhere in the template.
   - `Command\UpdateEffectiveSalaryCommand` (`jobboard:salary:update`, schedulable, meant to run once a day,
     e.g. nightly) recalculates due jobs (`effective_salary_valid_until > 0 AND <= now + LOOK_AHEAD`);
     `--all` recalculates every job (needed once for existing data). Bootstraps backend authentication.
-- **File relations** (`employerLogos`, `headerLogos`, `tenderFiles`, `pdfFiles` on `Job`; `image` on
+- **File relations** (`headerLogos`, `tenderFiles`, `pdfFiles` on `Job`; `image` on
   `Benefit`) are all `ObjectStorage<FileReference>`, never a single `FileReference`, and their columns and
   properties are named in plural if they may hold several files - even `header_logos` and `Benefit::image`,
   which ARE limited to 1 via `maxitems` for now, use `ObjectStorage` for consistency with the rest of the
   model. Each has
   `add`/`remove` methods in addition to `get`/`set` (e.g. `addPdfFile()`/`removePdfFile()`,
-  `addEmployerLogo()`, `addTenderFile()`, singularized from the plural property name).
+  `addTenderFile()`, singularized from the plural property name).
+- **Employer**: the job has no own employer name or logo. Both come from the employer address
+  (`Job::$employerAddress`, tt_address, tab "Employer"): name = `{job.employerAddress.company}`, logo =
+  `{job.employerAddress.firstImage}` (tt_address' `image`, `ObjectStorage<FileReference>`, up to 6 files - only the
+  first one is the logo). Templates guard both, a job may have no employer address (e.g. imported jobs: the import
+  sets only the workplace `address`). JSON-LD `hiringOrganization.name` falls back to `{job.address.company}`.
 - **Boolean getters and Fluid**: if a property name already starts with `is`/`has` (e.g. `isImport`,
   `hasSteps`), Fluid's `{job.isImport}` still resolves via a `get`-prefixed method
   (`getIsImport()`), never a bare `isImport()`/`hasSteps()`. A bare method is invisible to the Fluid/Extbase
@@ -415,6 +420,19 @@ Key points:
 - **`JobPathSegmentUpdate`** (`jweilandJobboardJobPathSegmentUpdate`) fills empty `path_segment` slugs of
   jobs via `SlugHelper` (table-wide unique, as `PersistedAliasMapper` in `Configuration/Routes/Default.yaml`
   resolves slugs table-wide). New jobs, also imported ones, get their slug from `DataHandler` automatically.
+- **`EmployerToEmployerAddressMigration`** (`jweilandJobboardEmployerToEmployerAddressMigration`) moves the legacy
+  job columns `employer` (name) and `employer_logos` (file references, also legacy `employer_logo`) to the employer
+  address, for not deleted default-language jobs: name -> `tt_address.company` only if empty; without (or with a
+  deleted) employer address an address on the job's pid with exactly this company (default language, not hidden,
+  live, lowest uid; exact match compared in PHP) is related, else one is created (raw insert: pid, company,
+  tstamp, crdate), and translations of the job without own employer address get the same address. Live, not deleted
+  logo references move to `tt_address`/`image` (pid + `uid_foreign` of the address) only if the address has no image
+  yet; the address' `image` count is recalculated, the job's `employer_logos` count reset if the column still exists.
+  The name is read from the job table, or - after `JobfairToJobboardMigration`, which no longer finds the column in
+  the job table - from `tx_jobfair2_domain_model_job.employer` (same uid). Not migrated (stay unused at the job):
+  translated jobs' own names/logos, logos of jobs without name and address, logos if the address has an image.
+  Idempotent (a migrated job needs nothing anymore), must run before the database compare drops `employer`.
+  `JobFileColumnsToPluralMigration` only stores a reference count if the column exists (`employer_logos` doesn't).
 - **`JobfairToJobboardCTypeMigration`** migrates `tt_content.CType` and `be_groups` explicit-allow/deny
   permissions from `jobfair2_jobfair` to `jobboard_jobboard`. Unrelated to FAL/domain data.
 

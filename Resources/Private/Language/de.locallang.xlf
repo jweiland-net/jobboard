@@ -126,10 +126,6 @@
 				<source>Employer</source>
 				<target>Arbeitgeber</target>
 			</trans-unit>
-			<trans-unit id="job.employerLogos">
-				<source>Employer logo</source>
-				<target>Logo des Arbeitgebers</target>
-			</trans-unit>
 			<trans-unit id="job.firstName">
 				<source>First name</source>
 				<target>Vorname</target>

@@ -40,6 +40,10 @@ final class JobFileColumnsToPluralMigrationTest extends FunctionalTestCase
     {
         parent::setUp();
 
+        // The count column "employer_logos" is neither part of TCA nor of
+        // ext_tables.sql anymore, so it has to be created manually, as in a not
+        // yet updated database.
+        $this->addLegacyColumn();
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/JobFileColumnsToPluralMigration.csv');
 
         $this->subject = GeneralUtility::makeInstance(
@@ -171,6 +175,21 @@ final class JobFileColumnsToPluralMigrationTest extends FunctionalTestCase
         self::assertSame(3, $this->getFieldOfJob(1, 'tender_files'));
     }
 
+    #[Test]
+    public function executeUpdateMovesFileReferencesWithoutStoringNumberIfColumnDoesNotExist(): void
+    {
+        $this->dropLegacyColumn();
+
+        self::assertTrue($this->subject->executeUpdate());
+
+        self::assertSame('employer_logos', $this->getFieldNameOfFileReference(7));
+        self::assertSame('employer_logos', $this->getFieldNameOfFileReference(18));
+        self::assertFalse($this->hasLegacyColumn());
+        self::assertSame(2, $this->getFieldOfJob(1, 'header_logos'));
+        self::assertSame(3, $this->getFieldOfJob(1, 'tender_files'));
+        self::assertFalse($this->subject->updateNecessary());
+    }
+
     private function getFieldNameOfFileReference(int $uid): string
     {
         // Without restrictions, as deleted file references are migrated, too
@@ -197,5 +216,40 @@ final class JobFileColumnsToPluralMigrationTest extends FunctionalTestCase
             ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($jobUid, Connection::PARAM_INT)))
             ->executeQuery()
             ->fetchOne();
+    }
+
+    private function getJobConnection(): Connection
+    {
+        return $this->get(ConnectionPool::class)->getConnectionForTable('tx_jobboard_domain_model_job');
+    }
+
+    private function hasLegacyColumn(): bool
+    {
+        return $this->getJobConnection()
+            ->createSchemaManager()
+            ->introspectTable('tx_jobboard_domain_model_job')
+            ->hasColumn('employer_logos');
+    }
+
+    /**
+     * Non-sqlite DBMS keep the schema between test methods, so the column
+     * may already exist.
+     */
+    private function addLegacyColumn(): void
+    {
+        if (!$this->hasLegacyColumn()) {
+            $this->getJobConnection()->executeStatement(
+                'ALTER TABLE tx_jobboard_domain_model_job ADD COLUMN employer_logos INTEGER DEFAULT 0 NOT NULL',
+            );
+        }
+    }
+
+    private function dropLegacyColumn(): void
+    {
+        if ($this->hasLegacyColumn()) {
+            $this->getJobConnection()->executeStatement(
+                'ALTER TABLE tx_jobboard_domain_model_job DROP COLUMN employer_logos',
+            );
+        }
     }
 }

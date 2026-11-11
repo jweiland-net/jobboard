@@ -93,6 +93,19 @@ Available wizards
     *   -   :code:`jweilandJobboardJobPathSegmentUpdate`
         -   Creates the URL segment of all jobs without one, see
             :ref:`configuration-routing`.
+    *   -   :code:`jweilandJobboardEmployerToEmployerAddressMigration`
+        -   Moves the employer name and logos of jobs (former columns
+            :sql:`employer` and :sql:`employer_logos`) to the employer
+            address: the name becomes the company of the address (only if
+            it is empty), the logos become its images (only if the address
+            has no image yet). Jobs without employer address get an
+            address of the same folder with exactly this company, or a new
+            one. Only jobs of the default language are migrated; their
+            translations without own employer address get the same
+            address. Run it before the database compare removes the column
+            :sql:`employer`. For jobs of EXT:jobfair2, it reads the name
+            from the table :sql:`tx_jobfair2_domain_model_job`, so run it
+            after :code:`jweilandJobboardJobfairToJobboardMigration`.
 
 ..  _upgrade-jobfair2:
 
@@ -104,6 +117,7 @@ Migrate from EXT:jobfair2
 #.  Run :bash:`vendor/bin/typo3 extension:setup`.
 #.  Run :code:`jweilandJobboardJobfairToJobboardMigration`.
 #.  Run :code:`jweilandJobboardJobfairToJobboardCTypeMigration`.
+#.  Run :code:`jweilandJobboardEmployerToEmployerAddressMigration`.
 #.  Run :code:`jweilandJobboardJobPathSegmentUpdate`.
 #.  Calculate the effective salary of the migrated jobs:
     :bash:`vendor/bin/typo3 jobboard:salary:update --all`.

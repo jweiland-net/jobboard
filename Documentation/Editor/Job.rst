@@ -119,14 +119,13 @@ Tab "Employer" (Arbeitgeber)
 
     Tab "Employer"
 
-:guilabel:`Employer` (Arbeitgeber)
-    Required, maximum 60 characters.
-
-:guilabel:`Employer logo`
-    Optional image files. Other file types can not be added.
-
-:guilabel:`Address of the employer`
-    Optional address record.
+:guilabel:`Address of the employer` (Adresse des Arbeitgebers)
+    Optional address record. Name and logo of the employer are taken from
+    this address: the field :guilabel:`Organization` (Organisation) is
+    shown as name of the employer, the first image of the address as logo.
+    Edit the address to change them, see :ref:`editor-addresses`. Without
+    an address, the detail view shows no employer section, and the job
+    list shows the organization of the workplace as employer.
 
 ..  _editor-job-application:
 

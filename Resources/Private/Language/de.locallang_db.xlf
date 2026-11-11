@@ -186,13 +186,13 @@
 				<source>Employer</source>
 				<target>Arbeitgeber</target>
 			</trans-unit>
-			<trans-unit id="tx_jobboard_domain_model_job.employer_logos">
-				<source>Employer logo</source>
-				<target>Logo des Arbeitgebers</target>
-			</trans-unit>
 			<trans-unit id="tx_jobboard_domain_model_job.employer_address">
 				<source>Address of the employer</source>
 				<target>Adresse des Arbeitgebers</target>
+			</trans-unit>
+			<trans-unit id="tx_jobboard_domain_model_job.employer_address.description">
+				<source>Name and logo of the employer are taken from this address: the field "Organization" and the first image.</source>
+				<target>Name und Logo des Arbeitgebers stammen aus dieser Adresse: aus dem Feld „Organisation“ und dem ersten Bild.</target>
 			</trans-unit>
 			<trans-unit id="tx_jobboard_domain_model_job.application_information">
 				<source>Application Info</source>

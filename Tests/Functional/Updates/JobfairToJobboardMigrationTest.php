@@ -127,7 +127,6 @@ final class JobfairToJobboardMigrationTest extends FunctionalTestCase
     {
         return [
             'header images' => ['header_logo', 'header_logos'],
-            'employer logos' => ['employer_logo', 'employer_logos'],
             'tender files' => ['tender_file', 'tender_files'],
         ];
     }
@@ -159,6 +158,41 @@ final class JobfairToJobboardMigrationTest extends FunctionalTestCase
             $this->get(ConnectionPool::class)
                 ->getConnectionForTable('sys_file_reference')
                 ->select(['tablenames', 'fieldname'], 'sys_file_reference', ['uid' => 1])
+                ->fetchAssociative(),
+        );
+    }
+
+    /**
+     * The job has no column "employer_logos" anymore: nothing is copied, but
+     * the file references are renamed, so EmployerToEmployerAddressMigration
+     * can move them to the employer address.
+     */
+    #[Test]
+    public function executeUpdateMovesEmployerLogosWithoutLogoColumnOfJob(): void
+    {
+        $connection = $this->get(ConnectionPool::class)->getConnectionForTable('tx_jobboard_domain_model_job');
+        $connection->executeStatement('ALTER TABLE tx_jobfair2_domain_model_job ADD COLUMN employer_logo INTEGER');
+        $connection->update('tx_jobfair2_domain_model_job', ['employer_logo' => 1], ['uid' => 1]);
+        $this->get(ConnectionPool::class)->getConnectionForTable('sys_file_reference')->insert('sys_file_reference', [
+            'uid' => 1,
+            'pid' => 2,
+            'uid_local' => 1,
+            'uid_foreign' => 1,
+            'tablenames' => 'tx_jobfair2_domain_model_job',
+            'fieldname' => 'employer_logo',
+        ]);
+
+        $this->subject->executeUpdate();
+
+        self::assertSame(
+            'Legacy job without salary_mode',
+            $connection->select(['title'], 'tx_jobboard_domain_model_job', ['uid' => 1])->fetchOne(),
+        );
+        self::assertSame(
+            ['tablenames' => 'tx_jobboard_domain_model_job', 'fieldname' => 'employer_logos', 'uid_foreign' => 1],
+            $this->get(ConnectionPool::class)
+                ->getConnectionForTable('sys_file_reference')
+                ->select(['tablenames', 'fieldname', 'uid_foreign'], 'sys_file_reference', ['uid' => 1])
                 ->fetchAssociative(),
         );
     }

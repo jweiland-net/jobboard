@@ -36,7 +36,7 @@
                 <f:render partial="Types/Date" arguments="{value: job.applicationDeadline, format: dateFormat}"/>
                 <f:render partial="Types/Text" arguments="{value: job.address.zip}"/>
                 <f:render partial="Types/Text" arguments="{value: job.address.city}"/>
-                <f:render partial="Types/Text" arguments="{value: job.employer}"/>
+                <f:render partial="Types/Text" arguments="{value: '{f:if(condition: job.employerAddress.company, then: job.employerAddress.company, else: job.address.company)}'}"/>
                 <f:render partial="Types/Text" arguments="{value: job.jobType.title}"/>
                 <td class="text-center">
                     <f:comment>
