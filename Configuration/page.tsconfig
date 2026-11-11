@@ -2,4 +2,4 @@
 
 # Record title of addresses: workplaces and employers often only have a
 # company, which the default label of tt_address does not consider
-tt_address.label = last_name, first_name; company; email
+tt_address.label = name; last_name, first_name; company; email
