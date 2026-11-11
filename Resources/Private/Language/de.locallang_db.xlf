@@ -79,8 +79,8 @@
 				<target>Jobbeschreibung</target>
 			</trans-unit>
 			<trans-unit id="tx_jobboard_domain_model_job.offer">
-				<source>Offer</source>
-				<target>Angebot</target>
+				<source>Tasks</source>
+				<target>Aufgaben</target>
 			</trans-unit>
 			<trans-unit id="tx_jobboard_domain_model_job.requirements">
 				<source>Requirements</source>
