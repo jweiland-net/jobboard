@@ -7,6 +7,32 @@
 Changelog
 =========
 
+..  _changelog-0-0-2:
+
+Version 0.0.2
+=============
+
+*   The field :sql:`offer` is labelled "Tasks" ("Aufgaben") in the
+    backend and in the detail view. The column name is unchanged.
+*   The reference number of a job is optional.
+*   The contact email address of a job is optional.
+*   The start of employment is optional. If it is empty, the detail view
+    shows "As soon as possible" ("baldmöglichst") instead of a date.
+    Overridden detail templates should render the new label
+    :code:`job.startEndDate.startDate.asSoonAsPossible`.
+*   **Breaking:** Name and logo of the employer are taken from the employer
+    address: the company and the first image of the address. The job
+    columns :sql:`employer` and :sql:`employer_logos` are removed, the
+    properties :html:`{job.employer}` and :html:`{job.employerLogos}` no
+    longer exist. Overridden templates have to use
+    :html:`{job.employerAddress.company}` and
+    :html:`{job.employerAddress.firstImage}`. Without a company of the
+    employer address, the list, the sidebar of the detail view and the
+    structured data use the company of the workplace. Run the upgrade
+    wizard
+    :code:`jweilandJobboardEmployerToEmployerAddressMigration` before the
+    database compare removes the old columns, see :ref:`upgrade-wizards`.
+
 ..  _changelog-0-0-1:
 
 Version 0.0.1

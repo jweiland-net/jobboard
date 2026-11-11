@@ -40,7 +40,7 @@ combines three building blocks:
   `RenderJobLocationInfoWindowContentEventListenerTest`).
 - **Site Sets:** this extension ships two TYPO3 Site Sets (`jweiland/jobboard` main set,
   `jweiland/jobboard-pdf` for the PDF variant) instead of classic static TypoScript templates.
-- **State:** `ext_emconf.php` declares `'state' => 'alpha'`, version `0.0.1`. Treat the extension as not yet
+- **State:** `ext_emconf.php` declares `'state' => 'alpha'`, version `0.0.2`. Treat the extension as not yet
   API-stable.
 
 ## 3. Domain model
@@ -129,7 +129,8 @@ adding ad-hoc fields elsewhere in the template.
   (`Job::$employerAddress`, tt_address, tab "Employer"): name = `{job.employerAddress.company}`, logo =
   `{job.employerAddress.firstImage}` (tt_address' `image`, `ObjectStorage<FileReference>`, up to 6 files - only the
   first one is the logo). Templates guard both, a job may have no employer address (e.g. imported jobs: the import
-  sets only the workplace `address`). JSON-LD `hiringOrganization.name` falls back to `{job.address.company}`.
+  sets only the workplace `address`). The name falls back to `{job.address.company}` in the Table column, the detail
+  sidebar and JSON-LD `hiringOrganization.name`.
 - **Boolean getters and Fluid**: if a property name already starts with `is`/`has` (e.g. `isImport`,
   `hasSteps`), Fluid's `{job.isImport}` still resolves via a `get`-prefixed method
   (`getIsImport()`), never a bare `isImport()`/`hasSteps()`. A bare method is invisible to the Fluid/Extbase
