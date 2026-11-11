@@ -27,7 +27,7 @@ Tab "Job Description" (Job-Beschreibung)
     view.
 
 :guilabel:`Reference number` (Kennziffer)
-    Required, maximum 60 characters.
+    Optional, maximum 60 characters.
 
 :guilabel:`Subtitle` (Untertitel)
     Optional.

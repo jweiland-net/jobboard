@@ -133,7 +133,6 @@ return [
                 'size' => 13,
                 'max' => 60,
                 'eval' => 'trim',
-                'required' => true,
             ],
         ],
         'path_segment' => [
