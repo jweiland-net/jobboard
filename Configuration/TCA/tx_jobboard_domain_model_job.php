@@ -50,7 +50,7 @@ return [
             --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.salary;salary_grade,
             --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.benefit;benefit,
             --div--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.employer,
-            employer, employer_logos, employer_address,
+            employer_address,
             --div--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.application_information,
             --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.contact_person;contact_person,
             --palette--;;startEndDate, application_deadline, application_guidelines,
@@ -74,7 +74,7 @@ return [
             --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.salary;salary_min_max,
             --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.benefit;benefit,
             --div--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.employer,
-            employer, employer_logos, employer_address,
+            employer_address,
             --div--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.application_information,
             --palette--;LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:palette.contact_person;contact_person,
             --palette--;;startEndDate, application_deadline, application_guidelines,
@@ -409,33 +409,10 @@ return [
                 'default' => 0,
             ],
         ],
-        'employer' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.employer',
-            'config' => [
-                'type' => 'input',
-                'size' => 30,
-                'max' => 60,
-                'eval' => 'trim',
-                'required' => true,
-            ],
-        ],
-        'employer_logos' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.employer_logos',
-            'config' => [
-                'type' => 'file',
-                'allowed' => 'common-image-types',
-                // A logo is an image, "common-image-types" also contains documents
-                'disallowed' => 'pdf,ai',
-                'appearance' => [
-                    'createNewRelationLinkTitle' => 'LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:images.addFileReference',
-                ],
-            ],
-        ],
         'employer_address' => [
             'exclude' => true,
             'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.employer_address',
+            'description' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.employer_address.description',
             'config' => [
                 'type' => 'group',
                 'allowed' => 'tt_address',

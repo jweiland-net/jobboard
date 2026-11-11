@@ -69,7 +69,7 @@
         </pdf:html>
 
         <pdf:text paragraphSpacing="0">
-            {f:if(condition: job.address.company, then: job.address.company, else: job.employer)}
+            {f:if(condition: job.address.company, then: job.address.company, else: job.employerAddress.company)}
             {job.address.address}
             {job.address.zip} {job.address.city}
 
@@ -86,7 +86,7 @@
         </pdf:html>
 
         <pdf:text paragraphSpacing="0">
-            {job.employer}
+            {job.employerAddress.company}
             {job.employerAddress.address}
             {job.employerAddress.zip} {job.employerAddress.city}
 

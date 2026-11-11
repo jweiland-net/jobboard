@@ -191,7 +191,6 @@ final class UpdateEffectiveSalaryHookTest extends FunctionalTestCase
                 'NEW1' => [
                     'pid' => 2,
                     'title' => 'New job',
-                    'employer' => 'Example Employer Ltd.',
                     'salary_mode' => 1,
                     'salary_min' => '2500.00',
                     'salary_max' => '3000.00',
@@ -210,7 +209,6 @@ final class UpdateEffectiveSalaryHookTest extends FunctionalTestCase
                 'NEW1' => [
                     'pid' => 2,
                     'title' => 'New job',
-                    'employer' => 'Example Employer Ltd.',
                     'salary_mode' => 0,
                     'salary_grades' => '1,2,3',
                 ],

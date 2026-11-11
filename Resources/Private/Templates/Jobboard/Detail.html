@@ -100,21 +100,24 @@
                             </f:if>
                         </dd>
 
-                        <dt>{f:translate(key: 'job.employer')}</dt>
-                        <f:if condition="{job.employer}">
-                            <dd class="mb-0">{job.employer}</dd>
-                        </f:if>
-                        <dd class="mb-0">
-                            <f:if condition="{job.employerAddress}">
-                                <f:if condition="{job.employerAddress.address}">{job.employerAddress.address}<br/></f:if>
-                                <f:if condition="{job.employerAddress.city}">{job.employerAddress.zip} {job.employerAddress.city}</f:if>
+                        <f:variable name="employerName" value="{f:if(condition: job.employerAddress.company, then: job.employerAddress.company, else: job.address.company)}"/>
+                        <f:if condition="{employerName} || {job.employerAddress} || {job.email}">
+                            <dt>{f:translate(key: 'job.employer')}</dt>
+                            <f:if condition="{employerName}">
+                                <dd class="mb-0">{employerName}</dd>
                             </f:if>
+                            <dd class="mb-0">
+                                <f:if condition="{job.employerAddress}">
+                                    <f:if condition="{job.employerAddress.address}">{job.employerAddress.address}<br/></f:if>
+                                    <f:if condition="{job.employerAddress.city}">{job.employerAddress.zip} {job.employerAddress.city}</f:if>
+                                </f:if>
 
-                            <f:if condition="{job.email}">
-                                <br/>
-                                <f:link.email email="{job.email}" class="text-break"/>
-                            </f:if>
-                        </dd>
+                                <f:if condition="{job.email}">
+                                    <br/>
+                                    <f:link.email email="{job.email}" class="text-break"/>
+                                </f:if>
+                            </dd>
+                        </f:if>
                     </dl>
                 </div>
             </div>
@@ -293,29 +296,31 @@
     </f:if>
 </f:section>
 
-<!-- TCA div "employer": employer, employer_logos, employer_address -->
+<!-- TCA div "employer": employer_address (name = company, logo = first image of the address) -->
 <f:section name="renderEmployer">
-    <section class="mt-5">
-        <h2 class="h4 mb-3">{f:translate(key: 'job.employer')}</h2>
-        <dl class="row mb-0">
-            <dt class="col-sm-4">{f:translate(key: 'job.employer')}</dt>
-            <dd class="col-sm-8">{job.employer}</dd>
-            <f:if condition="{job.employerAddress}">
-                <dt class="col-sm-4">{f:translate(key: 'job.address.city')}</dt>
-                <dd class="col-sm-8">
-                    <f:if condition="{job.employerAddress.address}">{job.employerAddress.address}<br/></f:if>
-                    <f:if condition="{job.employerAddress.city}">{job.employerAddress.zip} {job.employerAddress.city}</f:if>
-                </dd>
+    <f:if condition="{job.employerAddress}">
+        <section class="mt-5">
+            <h2 class="h4 mb-3">{f:translate(key: 'job.employer')}</h2>
+            <dl class="row mb-0">
+                <f:if condition="{job.employerAddress.company}">
+                    <dt class="col-sm-4">{f:translate(key: 'job.employer')}</dt>
+                    <dd class="col-sm-8">{job.employerAddress.company}</dd>
+                </f:if>
+                <f:if condition="{job.employerAddress.address} || {job.employerAddress.city}">
+                    <dt class="col-sm-4">{f:translate(key: 'job.address.city')}</dt>
+                    <dd class="col-sm-8">
+                        <f:if condition="{job.employerAddress.address}">{job.employerAddress.address}<br/></f:if>
+                        <f:if condition="{job.employerAddress.city}">{job.employerAddress.zip} {job.employerAddress.city}</f:if>
+                    </dd>
+                </f:if>
+            </dl>
+            <f:if condition="{job.employerAddress.firstImage}">
+                <div class="job-logos d-flex flex-wrap align-items-center gap-3 mt-3">
+                    <f:image image="{job.employerAddress.firstImage}" alt="{job.employerAddress.company}" class="img-fluid"/>
+                </div>
             </f:if>
-        </dl>
-        <f:if condition="{job.employerLogos}">
-            <div class="job-logos d-flex flex-wrap align-items-center gap-3 mt-3">
-                <f:for each="{job.employerLogos}" as="employerLogo">
-                    <f:image image="{employerLogo}" alt="{job.employer}" class="img-fluid"/>
-                </f:for>
-            </div>
-        </f:if>
-    </section>
+        </section>
+    </f:if>
 </f:section>
 
 <!-- TCA palette "contact_person" -->

@@ -40,11 +40,6 @@ final class ExampleJobBoardApiModel implements ApiModelInterface
             'isDate' => false,
             'default' => '',
         ],
-        'employer' => [
-            'apiPath' => 'company/de',
-            'isDate' => false,
-            'default' => '',
-        ],
         'email' => [
             'apiPath' => 'application_email',
             'isDate' => false,

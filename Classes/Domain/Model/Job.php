@@ -78,13 +78,6 @@ class Job extends AbstractEntity
      */
     protected ObjectStorage $benefits;
 
-    protected string $employer = '';
-
-    /**
-     * @var ObjectStorage<FileReference>
-     */
-    protected ObjectStorage $employerLogos;
-
     protected ?Address $employerAddress = null;
 
     protected string $firstName = '';
@@ -134,7 +127,6 @@ class Job extends AbstractEntity
         $this->jobAreas = new ObjectStorage();
         $this->salaryGrades = new ObjectStorage();
         $this->benefits = new ObjectStorage();
-        $this->employerLogos = new ObjectStorage();
         $this->headerLogos = new ObjectStorage();
         $this->tenderFiles = new ObjectStorage();
         $this->pdfFiles = new ObjectStorage();
@@ -146,7 +138,6 @@ class Job extends AbstractEntity
         $this->jobAreas ??= new ObjectStorage();
         $this->salaryGrades ??= new ObjectStorage();
         $this->benefits ??= new ObjectStorage();
-        $this->employerLogos ??= new ObjectStorage();
         $this->headerLogos ??= new ObjectStorage();
         $this->tenderFiles ??= new ObjectStorage();
         $this->pdfFiles ??= new ObjectStorage();
@@ -468,42 +459,6 @@ class Job extends AbstractEntity
     public function removeBenefit(Benefit $benefit): void
     {
         $this->benefits->detach($benefit);
-    }
-
-    public function getEmployer(): string
-    {
-        return $this->employer;
-    }
-
-    public function setEmployer(string $employer): void
-    {
-        $this->employer = $employer;
-    }
-
-    /**
-     * @return ObjectStorage<FileReference>
-     */
-    public function getEmployerLogos(): ObjectStorage
-    {
-        return $this->employerLogos;
-    }
-
-    /**
-     * @param ObjectStorage<FileReference> $employerLogos
-     */
-    public function setEmployerLogos(ObjectStorage $employerLogos): void
-    {
-        $this->employerLogos = $employerLogos;
-    }
-
-    public function addEmployerLogo(FileReference $employerLogo): void
-    {
-        $this->employerLogos->attach($employerLogo);
-    }
-
-    public function removeEmployerLogo(FileReference $employerLogo): void
-    {
-        $this->employerLogos->detach($employerLogo);
     }
 
     public function getEmployerAddress(): ?Address

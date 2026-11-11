@@ -211,7 +211,8 @@ The detail view adds a :code:`schema.org/JobPosting` as
 :html:`<script type="application/ld+json">` with these properties: title,
 description, identifier (employer and reference number), start date,
 :code:`validThrough` (application deadline), hiring organization with
-logo, job location, base salary (monthly, in the currency of
+logo (company and first image of the employer address; without company,
+the company of the workplace), job location, base salary (monthly, in the currency of
 :confval:`jobboard-salary-currency`) and :code:`directApply`
 (true if the job has an email address).
 

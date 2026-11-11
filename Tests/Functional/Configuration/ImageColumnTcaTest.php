@@ -34,7 +34,6 @@ final class ImageColumnTcaTest extends FunctionalTestCase
     public static function imageColumnDataProvider(): array
     {
         return [
-            'employer logos of job' => ['tx_jobboard_domain_model_job', 'employer_logos'],
             'header logos of job' => ['tx_jobboard_domain_model_job', 'header_logos'],
             'image of benefit' => ['tx_jobboard_domain_model_benefit', 'image'],
         ];

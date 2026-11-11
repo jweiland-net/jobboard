@@ -4,7 +4,6 @@
         <vacancy_id>4711</vacancy_id>
         <title><de>Web Developer (m/f/d)</de></title>
         <description><de>&lt;p&gt;We are looking for ...&lt;/p&gt;</de></description>
-        <company><de>Sample Company Ltd.</de></company>
         <application_email>jobs@example.org</application_email>
         <publication_link>https://example.org/jobs/4711</publication_link>
         <start_date>2026-12-01</start_date>

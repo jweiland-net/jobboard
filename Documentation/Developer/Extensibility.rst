@@ -137,10 +137,15 @@ Useful properties of :html:`{job}` in Fluid:
     return the first record only.
 
 File properties
-    :html:`{job.employerLogos}`, :html:`{job.headerLogos}`,
-    :html:`{job.tenderFiles}` and :html:`{job.pdfFiles}` are file
-    references. They are always lists, also :html:`{benefit.image}`.
-    Use :html:`<f:for>` to render them.
+    :html:`{job.headerLogos}`, :html:`{job.tenderFiles}` and
+    :html:`{job.pdfFiles}` are file references. They are always lists,
+    also :html:`{benefit.image}`. Use :html:`<f:for>` to render them.
+
+:html:`{job.employerAddress}`
+    The address of the employer (EXT:tt_address). The name of the employer
+    is :html:`{job.employerAddress.company}`, the logo
+    :html:`{job.employerAddress.firstImage}`. Both may be empty, and the
+    job may have no employer address at all.
 
 :html:`{job.isImport}`, :html:`{salaryGrade.hasSteps}`
     Boolean values.

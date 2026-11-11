@@ -129,6 +129,12 @@ default paths below; map them only to read their titles from another
 element. Their mapping is never written as it is, its titles are always
 resolved to records.
 
+The import sets no employer address. Name and logo of the employer are
+taken from the address, which editors select in the field
+:guilabel:`Address of the employer` (company and first image of the
+address). The structured data of a job without employer address uses the
+company of the workplace address as organization name.
+
 ..  _developer-import-xml:
 
 Expected XML structure

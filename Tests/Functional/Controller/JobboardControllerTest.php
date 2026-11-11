@@ -45,6 +45,10 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
  * with EffectiveSalaryUpdater (like the command "jobboard:salary:update
  * --all"), so the visibility tests cover calculator, updater and the SQL
  * filter of JobRepository end-to-end. Listed jobs: 1, 7 and 8.
+ *
+ * Employer: job 1 has an employer address with company and logo, job 7 has
+ * no employer address and job 8 one without company. Without company, the
+ * company of the workplace address ("Workplace & Co. Ltd.") is shown.
  */
 final class JobboardControllerTest extends FunctionalTestCase
 {
@@ -57,6 +61,13 @@ final class JobboardControllerTest extends FunctionalTestCase
         'bithost-gmbh/pdfviewhelpers',
         'friendsoftypo3/tt-address',
         'jweiland/jobboard',
+    ];
+
+    /**
+     * Logo of the employer address (tt_address 2, sys_file 1)
+     */
+    protected array $pathsToProvideInTestInstance = [
+        'typo3conf/ext/jobboard/Tests/Functional/Fixtures/Files/employer-logo.png' => 'fileadmin/employer-logo.png',
     ];
 
     /**
@@ -861,6 +872,153 @@ final class JobboardControllerTest extends FunctionalTestCase
         );
         self::assertStringNotContainsString('As soon as possible', $body);
         self::assertMatchesRegularExpression('/"jobStartDate":\s*"2026-12-01"/', $body);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function fetchJsonLdOfJob(int $jobUid): array
+    {
+        $body = (string)$this->executeFrontendSubRequest($this->buildDetailActionRequest($jobUid))->getBody();
+        self::assertMatchesRegularExpression('#<script type="application/ld\+json"[^>]*>(.*?)</script>#s', $body);
+        preg_match('#<script type="application/ld\+json"[^>]*>(.*?)</script>#s', $body, $matches);
+
+        return json_decode($matches[1], true, 512, JSON_THROW_ON_ERROR);
+    }
+
+    private function fetchListRowOfJob(int $jobUid): string
+    {
+        $body = $this->fetchListPageBody();
+        self::assertMatchesRegularExpression('#<tr data-jobboard-uid="' . $jobUid . '">.*?</tr>#s', $body);
+        preg_match('#<tr data-jobboard-uid="' . $jobUid . '">.*?</tr>#s', $body, $matches);
+
+        return $matches[0];
+    }
+
+    #[Test]
+    public function detailActionRendersEmployerSectionWithCompanyAddressAndLogoOfEmployerAddress(): void
+    {
+        $body = (string)$this->executeFrontendSubRequest($this->buildDetailActionRequest(1))->getBody();
+
+        self::assertStringContainsString('<h2 class="h4 mb-3">Employer</h2>', $body);
+        self::assertMatchesRegularExpression(
+            '#<dt class="col-sm-4">Employer</dt>\s*<dd class="col-sm-8">Example Employer Ltd\.</dd>#',
+            $body,
+        );
+        self::assertMatchesRegularExpression(
+            '#<dt class="col-sm-4">City</dt>\s*<dd class="col-sm-8">\s*Employer Street 1<br\s*/>\s*54321 Employer City\s*</dd>#',
+            $body,
+        );
+        self::assertMatchesRegularExpression(
+            '#<img (?=[^>]*src="/fileadmin/employer-logo\.png")(?=[^>]*alt="Example Employer Ltd\.")[^>]*>#',
+            $body,
+        );
+    }
+
+    #[Test]
+    public function detailActionRendersCompanyOfEmployerAddressInJobDetails(): void
+    {
+        $body = (string)$this->executeFrontendSubRequest($this->buildDetailActionRequest(1))->getBody();
+
+        self::assertMatchesRegularExpression(
+            '#<dt>Employer</dt>\s*<dd class="mb-0">Example Employer Ltd\.</dd>#',
+            $body,
+        );
+    }
+
+    #[Test]
+    public function detailActionRendersNoEmployerSectionWithoutEmployerAddress(): void
+    {
+        $body = (string)$this->executeFrontendSubRequest($this->buildDetailActionRequest(7))->getBody();
+
+        self::assertStringNotContainsString('<h2 class="h4 mb-3">Employer</h2>', $body);
+        self::assertStringNotContainsString('employer-logo', $body);
+        // Job details: company of the workplace address instead
+        self::assertMatchesRegularExpression(
+            '#<dt>Employer</dt>\s*<dd class="mb-0">Workplace &amp; Co\. Ltd\.</dd>#',
+            $body,
+        );
+    }
+
+    #[Test]
+    public function detailActionRendersEmployerSectionWithoutCompanyAndLogoOfEmployerAddress(): void
+    {
+        $body = (string)$this->executeFrontendSubRequest($this->buildDetailActionRequest(8))->getBody();
+
+        self::assertStringContainsString('<h2 class="h4 mb-3">Employer</h2>', $body);
+        self::assertStringNotContainsString('<dt class="col-sm-4">Employer</dt>', $body);
+        self::assertMatchesRegularExpression(
+            '#<dt class="col-sm-4">City</dt>\s*<dd class="col-sm-8">'
+            . '\s*Anonymous Street 2<br\s*/>\s*67890 Anonymous City\s*</dd>#',
+            $body,
+        );
+        self::assertStringNotContainsString('employer-logo', $body);
+        // Job details: company of the workplace address instead
+        self::assertMatchesRegularExpression(
+            '#<dt>Employer</dt>\s*<dd class="mb-0">Workplace &amp; Co\. Ltd\.</dd>#',
+            $body,
+        );
+    }
+
+    /**
+     * @return array<string, array{int, string}>
+     */
+    public static function employerNameOfJobDataProvider(): array
+    {
+        return [
+            'company of employer address' => [1, 'Example Employer Ltd.'],
+            'no employer address' => [7, 'Workplace & Co. Ltd.'],
+            'employer address without company' => [8, 'Workplace & Co. Ltd.'],
+        ];
+    }
+
+    #[Test]
+    #[DataProvider('employerNameOfJobDataProvider')]
+    public function listActionRendersEmployerNameOfJob(int $jobUid, string $expectedName): void
+    {
+        self::assertStringContainsString(
+            '<td>' . htmlspecialchars($expectedName) . '</td>',
+            $this->fetchListRowOfJob($jobUid),
+        );
+    }
+
+    #[Test]
+    #[DataProvider('employerNameOfJobDataProvider')]
+    public function detailActionRendersEmployerNameAsHiringOrganizationAndIdentifier(int $jobUid, string $expectedName): void
+    {
+        $jsonLd = $this->fetchJsonLdOfJob($jobUid);
+
+        self::assertSame($expectedName, $jsonLd['hiringOrganization']['name'] ?? null);
+        self::assertSame($expectedName, $jsonLd['identifier']['name'] ?? null);
+        self::assertSame((string)$jobUid, $jsonLd['identifier']['value'] ?? null);
+    }
+
+    #[Test]
+    public function detailActionRendersAbsoluteLogoOfEmployerAddressAsLogoOfHiringOrganization(): void
+    {
+        $logo = $this->fetchJsonLdOfJob(1)['hiringOrganization']['logo'] ?? '';
+
+        // The frontend sub-request of the testing framework is no HTTPS request
+        self::assertIsString($logo);
+        self::assertMatchesRegularExpression('#^https?://example\.com/fileadmin/employer-logo\.png$#', $logo);
+    }
+
+    /**
+     * @return array<string, array{int}>
+     */
+    public static function jobWithoutEmployerLogoDataProvider(): array
+    {
+        return [
+            'no employer address' => [7],
+            'employer address without image' => [8],
+        ];
+    }
+
+    #[Test]
+    #[DataProvider('jobWithoutEmployerLogoDataProvider')]
+    public function detailActionRendersNoLogoOfHiringOrganizationWithoutImageOfEmployerAddress(int $jobUid): void
+    {
+        self::assertArrayNotHasKey('logo', $this->fetchJsonLdOfJob($jobUid)['hiringOrganization'] ?? []);
     }
 
     #[Test]

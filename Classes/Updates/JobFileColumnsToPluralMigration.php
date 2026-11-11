@@ -25,7 +25,10 @@ use TYPO3\CMS\Install\Updates\UpgradeWizardInterface;
  *
  * All file references are moved, also deleted ones and those of deleted
  * jobs, so no reference keeps pointing to an old column. The legacy local
- * columns are not read: the reference count is recalculated.
+ * columns are not read: the reference count is recalculated. A count is only
+ * stored if its column exists: "employer_logos" is no longer declared, its
+ * references are moved to the employer address by
+ * EmployerToEmployerAddressMigration.
  */
 #[UpgradeWizard('jweilandJobboardJobFileColumnsToPluralMigration')]
 final readonly class JobFileColumnsToPluralMigration implements UpgradeWizardInterface
@@ -99,9 +102,22 @@ final readonly class JobFileColumnsToPluralMigration implements UpgradeWizardInt
             ['tablenames' => self::TABLE_JOB, 'fieldname' => $legacyField],
         );
 
+        if (!$this->hasJobColumn($field)) {
+            return;
+        }
+
         foreach ($jobUids as $jobUid) {
             $this->updateJob($jobUid, $field);
         }
+    }
+
+    private function hasJobColumn(string $column): bool
+    {
+        return $this->connectionPool
+            ->getConnectionForTable(self::TABLE_JOB)
+            ->createSchemaManager()
+            ->introspectTable(self::TABLE_JOB)
+            ->hasColumn($column);
     }
 
     /**
