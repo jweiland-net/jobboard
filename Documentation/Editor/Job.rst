@@ -141,10 +141,10 @@ Tab "Application Info" (Bewerbungsinfos)
     Tab "Application Info"
 
 Contact person
-    :guilabel:`First name`, :guilabel:`Last name`, :guilabel:`Phone
-    number`, :guilabel:`Function` are optional. :guilabel:`Email address`
-    is required. The "Apply online" link of the detail view is only shown
-    for jobs with an email address.
+    :guilabel:`First name`, :guilabel:`Last name`, :guilabel:`Email
+    address`, :guilabel:`Phone number` and :guilabel:`Function` are
+    optional. The "Apply online" link of the detail view is only shown for
+    jobs with an email address.
 
 :guilabel:`Start of employment` (Datum für Arbeitsbeginn)
     Required. Information for applicants only: the job is shown as soon as

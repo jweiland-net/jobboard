@@ -476,7 +476,6 @@ return [
             'label' => 'LLL:EXT:jobboard/Resources/Private/Language/locallang_db.xlf:tx_jobboard_domain_model_job.email',
             'config' => [
                 'type' => 'email',
-                'required' => true,
             ],
         ],
         'telephone' => [
