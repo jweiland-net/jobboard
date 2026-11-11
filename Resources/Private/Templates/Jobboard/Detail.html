@@ -350,10 +350,13 @@
     <section class="mt-5">
         <h2 class="h4 mb-3">{f:translate(key: 'job.groups.applicationInformation')}</h2>
         <dl class="row mb-0">
-            <f:if condition="{job.startDate}">
-                <dt class="col-sm-4">{f:translate(key: 'job.startEndDate.startDate')}</dt>
-                <dd class="col-sm-8"><f:format.date format="{f:translate(key: 'dateFormat')}">{job.startDate}</f:format.date></dd>
-            </f:if>
+            <dt class="col-sm-4">{f:translate(key: 'job.startEndDate.startDate')}</dt>
+            <dd class="col-sm-8">
+                <f:if condition="{job.startDate}">
+                    <f:then><f:format.date format="{f:translate(key: 'dateFormat')}">{job.startDate}</f:format.date></f:then>
+                    <f:else>{f:translate(key: 'job.startEndDate.startDate.asSoonAsPossible')}</f:else>
+                </f:if>
+            </dd>
             <f:if condition="{job.endingDate}">
                 <dt class="col-sm-4">{f:translate(key: 'job.startEndDate.endDate')}</dt>
                 <dd class="col-sm-8"><f:format.date format="{f:translate(key: 'dateFormat')}">{job.endingDate}</f:format.date></dd>

@@ -154,6 +154,10 @@
 				<source>Start Date</source>
 				<target>Beginn</target>
 			</trans-unit>
+			<trans-unit id="job.startEndDate.startDate.asSoonAsPossible">
+				<source>As soon as possible</source>
+				<target>baldmöglichst</target>
+			</trans-unit>
 			<trans-unit id="job.startEndDate.endDate">
 				<source>End of employment</source>
 				<target>Ende der Beschäftigung</target>

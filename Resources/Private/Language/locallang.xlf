@@ -117,6 +117,9 @@
 			<trans-unit id="job.startEndDate.startDate">
 				<source>Start Date</source>
 			</trans-unit>
+			<trans-unit id="job.startEndDate.startDate.asSoonAsPossible">
+				<source>As soon as possible</source>
+			</trans-unit>
 			<trans-unit id="job.startEndDate.endDate">
 				<source>End of employment</source>
 			</trans-unit>

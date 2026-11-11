@@ -169,7 +169,7 @@
 				<source>Start of employment</source>
 			</trans-unit>
 			<trans-unit id="tx_jobboard_domain_model_job.start_date.description">
-				<source>When the data record is saved, the job offer appears immediately in the job market, regardless of this date.</source>
+				<source>Optional. When the data record is saved, the job offer appears immediately in the job market, regardless of this date. If empty, "As soon as possible" is shown in the frontend.</source>
 			</trans-unit>
 			<trans-unit id="tx_jobboard_domain_model_job.ending_date">
 				<source>End of employment</source>

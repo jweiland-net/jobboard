@@ -506,7 +506,6 @@ return [
                 'type' => 'datetime',
                 'default' => 0,
                 'format' => 'date',
-                'required' => true,
             ],
         ],
         'ending_date' => [

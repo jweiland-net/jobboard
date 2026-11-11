@@ -830,6 +830,40 @@ final class JobboardControllerTest extends FunctionalTestCase
     }
 
     #[Test]
+    public function detailActionRendersAsSoonAsPossibleForEmptyStartDate(): void
+    {
+        $this->updateRecordWithoutDataHandler('tx_jobboard_domain_model_job', 1, ['start_date' => 0]);
+
+        $body = (string)$this->executeFrontendSubRequest($this->buildDetailActionRequest(1))->getBody();
+
+        self::assertMatchesRegularExpression(
+            '#<dt[^>]*>Start Date</dt>\s*<dd[^>]*>\s*As soon as possible\s*</dd>#',
+            $body,
+        );
+        // Structured data expects a date, so no text is put into jobStartDate
+        self::assertStringNotContainsString('jobStartDate', $body);
+    }
+
+    #[Test]
+    public function detailActionRendersFormattedStartDate(): void
+    {
+        $this->updateRecordWithoutDataHandler(
+            'tx_jobboard_domain_model_job',
+            1,
+            ['start_date' => (new \DateTimeImmutable('2026-12-01 12:00:00'))->getTimestamp()],
+        );
+
+        $body = (string)$this->executeFrontendSubRequest($this->buildDetailActionRequest(1))->getBody();
+
+        self::assertMatchesRegularExpression(
+            '#<dt[^>]*>Start Date</dt>\s*<dd[^>]*>\s*2026-12-01\s*</dd>#',
+            $body,
+        );
+        self::assertStringNotContainsString('As soon as possible', $body);
+        self::assertMatchesRegularExpression('/"jobStartDate":\s*"2026-12-01"/', $body);
+    }
+
+    #[Test]
     public function detailActionSetsJobTitleAsPageTitle(): void
     {
         $response = $this->executeFrontendSubRequest($this->buildDetailActionRequest(1));
