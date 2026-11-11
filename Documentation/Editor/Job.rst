@@ -38,7 +38,7 @@ Tab "Job Description" (Job-Beschreibung)
     changed the title.
 
 :guilabel:`Job description` and further text fields
-    :guilabel:`Job description`, :guilabel:`Offer`, :guilabel:`Requirements`
+    :guilabel:`Job description`, :guilabel:`Tasks`, :guilabel:`Requirements`
     and :guilabel:`Further Information` are rich text fields. The keyword
     search searches all of them.
 

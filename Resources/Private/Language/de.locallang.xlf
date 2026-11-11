@@ -49,8 +49,8 @@
 				<target>Beschreibung</target>
 			</trans-unit>
 			<trans-unit id="job.offer">
-				<source>Offer</source>
-				<target>Angebot</target>
+				<source>Tasks</source>
+				<target>Aufgaben</target>
 			</trans-unit>
 			<trans-unit id="job.requirements">
 				<source>Requirements</source>

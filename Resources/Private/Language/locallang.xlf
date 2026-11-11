@@ -38,7 +38,7 @@
 				<source>Description</source>
 			</trans-unit>
 			<trans-unit id="job.offer">
-				<source>Offer</source>
+				<source>Tasks</source>
 			</trans-unit>
 			<trans-unit id="job.requirements">
 				<source>Requirements</source>

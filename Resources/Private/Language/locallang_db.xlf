@@ -61,7 +61,7 @@
 				<source>Job description</source>
 			</trans-unit>
 			<trans-unit id="tx_jobboard_domain_model_job.offer">
-				<source>Offer</source>
+				<source>Tasks</source>
 			</trans-unit>
 			<trans-unit id="tx_jobboard_domain_model_job.requirements">
 				<source>Requirements</source>
