@@ -124,13 +124,15 @@
 
 <!-- TCA palette "job_details": reference_number (title/subtitle are already shown above as heading) -->
 <f:section name="renderDetails">
-    <section class="mt-5">
-        <h2 class="h4 mb-3">{f:translate(key: 'job.groups.details')}</h2>
-        <dl class="row mb-0">
-            <dt class="col-sm-4">{f:translate(key: 'job.referenceNumber')}</dt>
-            <dd class="col-sm-8">{job.referenceNumber}</dd>
-        </dl>
-    </section>
+    <f:if condition="{job.referenceNumber}">
+        <section class="mt-5">
+            <h2 class="h4 mb-3">{f:translate(key: 'job.groups.details')}</h2>
+            <dl class="row mb-0">
+                <dt class="col-sm-4">{f:translate(key: 'job.referenceNumber')}</dt>
+                <dd class="col-sm-8">{job.referenceNumber}</dd>
+            </dl>
+        </section>
+    </f:if>
 </f:section>
 
 <!-- TCA palette "job_description": offer, requirements, further_information -->
