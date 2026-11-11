@@ -223,8 +223,8 @@
 				<target>Datum für Arbeitsbeginn</target>
 			</trans-unit>
 			<trans-unit id="tx_jobboard_domain_model_job.start_date.description">
-				<source>When the data record is saved, the job offer appears immediately in the job market, regardless of this date.</source>
-				<target>Mit Speichern des Datensatzes erscheint das Stellenangebot unabhängig von diesem Datum unmittelbar in der Jobbörse.</target>
+				<source>Optional. When the data record is saved, the job offer appears immediately in the job market, regardless of this date. If empty, "As soon as possible" is shown in the frontend.</source>
+				<target>Optional. Mit Speichern des Datensatzes erscheint das Stellenangebot unabhängig von diesem Datum unmittelbar in der Jobbörse. Bleibt das Feld leer, wird im Frontend „baldmöglichst“ angezeigt.</target>
 			</trans-unit>
 			<trans-unit id="tx_jobboard_domain_model_job.ending_date">
 				<source>End of employment</source>

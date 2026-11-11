@@ -147,8 +147,10 @@ Contact person
     jobs with an email address.
 
 :guilabel:`Start of employment` (Datum für Arbeitsbeginn)
-    Required. Information for applicants only: the job is shown as soon as
-    it is saved, regardless of this date.
+    Optional. Information for applicants only: the job is shown as soon as
+    it is saved, regardless of this date. If the field is empty, the detail
+    view shows "As soon as possible" (German: "baldmöglichst") instead of a
+    date.
 
 :guilabel:`End of employment` (Ende der Beschäftigung)
     Optional, only for fixed-term positions: the last day of employment.
