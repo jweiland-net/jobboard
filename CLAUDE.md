@@ -40,7 +40,7 @@ combines three building blocks:
   `RenderJobLocationInfoWindowContentEventListenerTest`).
 - **Site Sets:** this extension ships two TYPO3 Site Sets (`jweiland/jobboard` main set,
   `jweiland/jobboard-pdf` for the PDF variant) instead of classic static TypoScript templates.
-- **State:** `ext_emconf.php` declares `'state' => 'alpha'`, version `0.0.2`. Treat the extension as not yet
+- **State:** `ext_emconf.php` declares `'state' => 'alpha'`, version `0.0.3`. Treat the extension as not yet
   API-stable.
 
 ## 3. Domain model
