@@ -19,6 +19,7 @@ return [
         'label' => 'title',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
+        'default_sortby' => 'crdate DESC',
         'type' => 'salary_mode',
         'typeicon_column' => 'salary_mode',
         'typeicon_classes' => [
