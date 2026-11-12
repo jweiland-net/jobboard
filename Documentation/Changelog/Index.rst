@@ -7,6 +7,19 @@
 Changelog
 =========
 
+..  _changelog-0-0-3:
+
+Version 0.0.3
+=============
+
+*   Jobs are sorted by creation date, newest first, in the list module
+    of the backend.
+*   The record title of addresses prefers the full name and falls back
+    to the last and first name, the company and the email address.
+    Addresses with a company only are no longer shown as "[No title]".
+*   The description of the employer address in the backend explains the
+    fallback to the company of the workplace.
+
 ..  _changelog-0-0-2:
 
 Version 0.0.2

@@ -42,7 +42,7 @@ EXT:maps2. A console command can import jobs from external XML sources.
 
 ..  warning::
 
-    This extension is in **alpha** state (version 0.0.2) and supports
+    This extension is in **alpha** state (version 0.0.3) and supports
     TYPO3 13.4 LTS only. PHP classes, template variables and settings can
     still change without notice until the first stable release.
 

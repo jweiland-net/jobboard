@@ -13,7 +13,7 @@
                typo3-core-preferred="13.4"
                interlink-shortcode="jweiland/jobboard"/>
     <project title="Job board"
-             release="0.0.2"
+             release="0.0.3"
              version="0.0"
              copyright="jweiland.net"/>
 </guides>
