@@ -163,10 +163,6 @@ final class LimitJobListCacheLifetimeEventListenerTest extends FunctionalTestCas
                 ['application_deadline' => '2026-01-16 00:00:00'],
                 '2026-01-17 00:00:00',
             ],
-            'ending date today: listed until midnight' => [
-                ['ending_date' => '2026-01-15 00:00:00'],
-                '2026-01-16 00:00:00',
-            ],
             'starttime in one hour: job appears' => [
                 ['starttime' => '2026-01-15 11:00:00'],
                 '2026-01-15 11:00:00',
@@ -230,9 +226,20 @@ final class LimitJobListCacheLifetimeEventListenerTest extends FunctionalTestCas
     {
         $this->insertJob(['application_deadline' => $this->getTimestamp('2026-01-16 00:00:00')]);
         $this->insertJob(['starttime' => $this->getTimestamp('2026-01-15 13:00:00')]);
-        $this->insertJob(['ending_date' => $this->getTimestamp('2026-01-15 00:00:00')]);
+        $this->insertJob(['endtime' => $this->getTimestamp('2026-01-15 16:00:00')]);
 
         self::assertSame(3 * 3600, $this->getCacheLifetime(1));
+    }
+
+    /**
+     * The end of employment of fixed-term positions does not change the list.
+     */
+    #[Test]
+    public function cacheLifetimeIgnoresEndingDate(): void
+    {
+        $this->insertJob(['ending_date' => $this->getTimestamp('2026-01-15 00:00:00')]);
+
+        self::assertSame(self::INITIAL_LIFETIME, $this->getCacheLifetime(1));
     }
 
     /**
@@ -242,7 +249,6 @@ final class LimitJobListCacheLifetimeEventListenerTest extends FunctionalTestCas
     {
         return [
             'application deadline yesterday' => [['application_deadline' => '2026-01-14 00:00:00']],
-            'ending date yesterday' => [['ending_date' => '2026-01-14 00:00:00']],
             'starttime passed' => [['starttime' => '2026-01-15 09:00:00']],
             'endtime is now' => [['endtime' => '2026-01-15 10:00:00']],
         ];

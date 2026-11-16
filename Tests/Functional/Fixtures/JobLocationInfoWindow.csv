@@ -28,7 +28,7 @@
 ,4,2,0,0,1,0,"Hidden job","hidden-job",1,0,0,3000.00,3000.00
 ,5,2,0,0,0,0,"Job without salary information","job-without-salary-information",1,0,0,0.00,0.00
 ,6,2,0,0,0,0,"Job with passed application deadline","job-with-passed-application-deadline",1,946684800,0,3000.00,3000.00
-,7,2,0,0,0,0,"Job with ended employment","job-with-ended-employment",1,0,946684800,3000.00,3000.00
+,7,2,0,0,0,0,"Job with passed application deadline and ended employment","job-with-passed-application-deadline-and-ended-employment",1,946684800,946684800,3000.00,3000.00
 ,8,2,0,0,0,0,"","job-without-title",1,0,0,3000.00,3000.00
 ,9,99,0,0,0,0,"Job outside of the storage","job-outside-of-the-storage",1,0,0,3000.00,3000.00
 ,10,2,0,0,0,1,"Deleted job","deleted-job",1,0,0,3000.00,3000.00

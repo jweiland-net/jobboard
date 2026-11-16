@@ -510,8 +510,9 @@ final class RememberJobMiddlewareTest extends FunctionalTestCase
     /**
      * Jobs which are visible (not hidden, in the storage), but not listed:
      * 20 without salary information, 21 with passed application deadline,
-     * 22 with ended employment, 23 without title. 24 is listed through the
-     * end of its deadline day.
+     * 23 without title. 24 is listed through the end of its deadline day.
+     * 22 is listed although its employment has ended, the ending date is
+     * irrelevant for listing.
      */
     private function insertJobsWhichAreNotListed(): void
     {
@@ -542,7 +543,6 @@ final class RememberJobMiddlewareTest extends FunctionalTestCase
         return [
             'no salary information' => ['20'],
             'application deadline passed' => ['21'],
-            'employment ended' => ['22'],
             'no title' => ['23'],
         ];
     }
@@ -583,7 +583,7 @@ final class RememberJobMiddlewareTest extends FunctionalTestCase
 
         $response = $subject->process($this->buildRequest([]), $this->createFailingHandler());
 
-        self::assertSame(['rememberedJobs' => [1, 24]], $this->decode($response));
+        self::assertSame(['rememberedJobs' => [1, 22, 24]], $this->decode($response));
         self::assertSame(0, $rememberedJobsService->numberOfStoreCalls);
         self::assertSame([20, 1, 21, 22, 23, 24], $rememberedJobsService->rememberedJobs->getUids());
     }
@@ -614,9 +614,9 @@ final class RememberJobMiddlewareTest extends FunctionalTestCase
         );
 
         self::assertSame(200, $response->getStatusCode());
-        self::assertSame(['rememberedJobs' => [1]], $this->decode($response));
+        self::assertSame(['rememberedJobs' => [1, 22]], $this->decode($response));
         self::assertSame(1, $rememberedJobsService->numberOfStoreCalls);
-        self::assertSame([1], $rememberedJobsService->rememberedJobs->getUids());
+        self::assertSame([1, 22], $rememberedJobsService->rememberedJobs->getUids());
     }
 
     #[Test]
@@ -733,7 +733,7 @@ final class RememberJobMiddlewareTest extends FunctionalTestCase
 
         $response = $subject->process($this->buildRequest([], 'POST', false), $this->createFailingHandler());
 
-        self::assertSame(['rememberedJobs' => [20, 1, 24]], $this->decode($response));
+        self::assertSame(['rememberedJobs' => [20, 1, 22, 24]], $this->decode($response));
         self::assertSame(0, $rememberedJobsService->numberOfStoreCalls);
     }
 
