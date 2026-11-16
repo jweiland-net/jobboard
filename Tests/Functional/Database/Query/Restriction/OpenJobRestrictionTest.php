@@ -144,14 +144,14 @@ final class OpenJobRestrictionTest extends FunctionalTestCase
     }
 
     #[Test]
-    public function restrictionListsJobsThroughTheEndOfTheirDeadlineOrEndingDay(): void
+    public function restrictionListsJobsThroughTheEndOfTheirDeadlineDay(): void
     {
         $uids = $this->findUidsByRestriction();
 
-        foreach ([100, 102, 103, 105, 113] as $listedUid) {
+        foreach ([100, 102, 113] as $listedUid) {
             self::assertContains($listedUid, $uids, 'Job ' . $listedUid . ' must be listed');
         }
-        foreach ([101, 104, 111, 112] as $notListedUid) {
+        foreach ([101, 111] as $notListedUid) {
             self::assertNotContains($notListedUid, $uids, 'Job ' . $notListedUid . ' must not be listed');
         }
     }
@@ -190,10 +190,10 @@ final class OpenJobRestrictionTest extends FunctionalTestCase
     {
         $uids = $this->findUidsByRestriction(OpenJobRestriction::forToday(false));
 
-        foreach ([101, 104, 109, 111, 112, 6] as $notListedUid) {
+        foreach ([101, 109, 111, 6] as $notListedUid) {
             self::assertNotContains($notListedUid, $uids, 'Job ' . $notListedUid . ' must not be listed');
         }
-        foreach ([100, 102, 103, 105, 113] as $listedUid) {
+        foreach ([100, 102, 113] as $listedUid) {
             self::assertContains($listedUid, $uids, 'Job ' . $listedUid . ' must be listed');
         }
     }
@@ -234,8 +234,16 @@ final class OpenJobRestrictionTest extends FunctionalTestCase
 
         self::assertNotContains(100, $uids);
         self::assertContains(102, $uids);
-        self::assertNotContains(103, $uids);
-        self::assertContains(105, $uids);
+    }
+
+    #[Test]
+    public function restrictionIgnoresEndingDate(): void
+    {
+        $uids = $this->findUidsByRestriction();
+
+        foreach ([103, 104, 105, 112] as $listedUid) {
+            self::assertContains($listedUid, $uids, 'Job ' . $listedUid . ' must be listed');
+        }
     }
 
     #[Test]
@@ -256,7 +264,7 @@ final class OpenJobRestrictionTest extends FunctionalTestCase
             ->executeQuery()
             ->fetchFirstColumn());
 
-        // Address 6: 12 (deadline passed), 13 (open), 14 (employment ended)
+        // Address 6: 12 (deadline passed), 13 (open), 14 (deadline passed)
         self::assertSame([13], $uids);
     }
 

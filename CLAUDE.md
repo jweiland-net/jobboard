@@ -214,7 +214,7 @@ Key points:
   - Expired application deadline (`Job::isApplicationDeadlineExpired()`, start of today like the list): `detailAction()`
     renders `Jobboard/ApplicationDeadlineExpired.html` (title + notice `job.applicationDeadlineExpired`) instead of the
     job, so expired jobs reached by direct link (search engines, portals) offer no application link and no JSON-LD.
-    The salary 404 is checked first. Only the deadline is checked here, not `endingDate`.
+    The salary 404 is checked first.
   - `detailAction()` throws the 404 only if required. Related jobs: the controller assigns `relatedJobs`
     (`getRelatedJobsToLink()`, without salary-less jobs if required); `Detail.html` renders `relatedJobs`, never
     `job.relatedJobs`. Only the salary rule is applied there, expired related jobs are still linked.
@@ -247,7 +247,7 @@ Key points:
 - **Page cache lifetime**: `LimitJobListCacheLifetimeEventListener` (`ModifyCacheLifetimeForPageEvent`)
   limits the lifetime of pages with a `jobboard_jobboard` content element to the next change of the
   listed jobs: next future job starttime/endtime and the midnight after the earliest upcoming
-  `application_deadline` / `ending_date` (jobs are listed through the end of that day). One `tt_content`
+  `application_deadline` (jobs are listed through the end of that day). One `tt_content`
   query plus one conditional `MIN()` query over the plugin's storage pages (`pages`/`recursive`, else
   site setting `jobboard.storagePid` with depth 3). `effective_salary_valid_until` is deliberately not
   considered: salary changes are written by the daily command through DataHandler, which clears the cache.
@@ -366,7 +366,7 @@ Key points:
     visibility as the list - `StoragePidResolver` (site setting `jobboard.storagePid` + 3 levels, shared with
     `RememberJobMiddleware`), frontend restrictions and `OpenJobRestriction` (`Database/Query/Restriction/`, the
     QueryBuilder twin of `JobRepository::buildAndConstraintForOpenJobs()` - keep both in sync; title, effective
-    salary min/max > 0 if `jobboard.salary.required`, deadline/ending date >= today). Language: from the
+    salary min/max > 0 if `jobboard.salary.required`, deadline >= today; the ending date is ignored). Language: from the
     request's `SiteLanguage` (`LanguageAspectFactory`), job titles and address overlaid with
     `PageRepository::getLanguageOverlay()` (jobs without translation are skipped in strict mode; without overlays
     the jobs of the language are selected). The address is overlaid like Extbase relations

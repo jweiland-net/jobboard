@@ -387,7 +387,7 @@ final class RenderJobLocationInfoWindowContentEventListenerTest extends Function
             'hidden job' => ['Hidden job'],
             'job without salary information' => ['Job without salary information'],
             'job with passed application deadline' => ['Job with passed application deadline'],
-            'job with ended employment' => ['Job with ended employment'],
+            'job with passed application deadline and ended employment' => ['Job with passed application deadline and ended employment'],
             'job outside of the storage' => ['Job outside of the storage'],
             'deleted job' => ['Deleted job'],
             'translation of a job' => ['Zweite Stelle'],

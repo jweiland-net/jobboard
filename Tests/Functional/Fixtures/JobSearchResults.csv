@@ -33,7 +33,7 @@
 ,2,2,"Job with same city but different zip","Flexible Arbeitszeiten","","","","",2,1,1,2,0,0,1,3000.00,3000.00,3000.00
 ,3,2,"Job in a different city","","Firmenwagen inklusive","","","",3,2,1,1,0,0,1,3000.00,3000.00,3000.00
 ,4,2,"Job in city name containing search term","","","Führerschein Klasse B","","",4,1,1,1,0,0,1,3000.00,3000.00,3000.00
-,5,2,"Expired job in Pforzheim","","","","","",1,1,1,1,946684800,0,1,3000.00,3000.00,3000.00
+,5,2,"Expired job in Pforzheim","","","","","",1,1,1,1,0,946684800,1,3000.00,3000.00,3000.00
 ,6,2,"","","","","","",1,1,1,1,0,0,1,3000.00,3000.00,3000.00
 ,7,2,"Job with far future ending date in Pforzheim","","","","Weiterbildung garantiert","",1,1,1,1,4102444800,0,1,3000.00,3000.00,3000.00
 ,8,2,"Job in Pforzheim but other job area","","","","","Bewerbung per Email",1,1,1,1,0,0,1,3000.00,3000.00,3000.00
@@ -42,7 +42,7 @@
 ,11,2,"Job in Pforzheim but other job role","","","","","",1,1,2,1,0,0,1,3000.00,3000.00,3000.00
 ,12,2,"Job with passed application deadline","","","","","",6,1,1,1,4102444800,946684800,1,3000.00,3000.00,3000.00
 ,13,2,"Job with future application deadline","","","","","",6,1,2,2,0,4102444800,1,3000.00,3000.00,3000.00
-,14,2,"Job with future application deadline but ended employment","","","","","",6,1,2,2,946684800,4102444800,1,3000.00,3000.00,3000.00
+,14,2,"Job with passed application deadline and ended employment","","","","","",6,1,2,2,946684800,946684800,1,3000.00,3000.00,3000.00
 
 "tx_jobboard_job_jobarea_mm"
 ,"uid_local","uid_foreign","sorting","sorting_foreign"

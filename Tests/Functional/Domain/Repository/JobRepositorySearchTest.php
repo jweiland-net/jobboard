@@ -311,12 +311,20 @@ class JobRepositorySearchTest extends FunctionalTestCase
     }
 
     #[Test]
-    public function findBySettingsHidesJobWithEndedEmploymentEvenIfApplicationDeadlineIsInFuture(): void
+    public function findBySettingsListsJobWithEndedEmploymentIfApplicationDeadlineIsInFuture(): void
     {
-        $titles = $this->findJobTitlesBySettings([]);
+        $this->get(ConnectionPool::class)
+            ->getConnectionForTable('tx_jobboard_domain_model_job')
+            ->update(
+                'tx_jobboard_domain_model_job',
+                ['application_deadline' => 4102444800],
+                ['uid' => 14],
+            );
 
-        self::assertNotContains('Job with future application deadline but ended employment', $titles);
-        self::assertNotContains('Expired job in Pforzheim', $titles);
+        self::assertContains(
+            'Job with passed application deadline and ended employment',
+            $this->findJobTitlesBySettings([]),
+        );
     }
 
     #[Test]
@@ -573,7 +581,7 @@ class JobRepositorySearchTest extends FunctionalTestCase
     {
         $this->updateJob(1, ['effective_salary_min' => 0.0, 'effective_salary_max' => 0.0]);
 
-        // Zip 76133: 5 (ended employment) and 6 (no title) are not listed
+        // Zip 76133: 5 (deadline passed) and 6 (no title) are not listed
         $jobs = $this->subject->findBySearch(new Search(null, null, null, '76133', ''), 0, [], false);
 
         self::assertSame([1, 7, 8, 9, 11], $this->getUids($jobs));
@@ -584,7 +592,7 @@ class JobRepositorySearchTest extends FunctionalTestCase
     {
         $this->updateJob(1, ['effective_salary_min' => 0.0, 'effective_salary_max' => 0.0]);
 
-        // 5: ended employment, 6: no title, 12: deadline passed, 14: ended employment
+        // 5: deadline passed, 6: no title, 12: deadline passed, 14: deadline passed
         self::assertSame(
             [1, 2, 3, 4, 7, 8, 9, 10, 11, 13],
             $this->getUids($this->subject->findBySettings([], 0, false)),
@@ -643,7 +651,7 @@ class JobRepositorySearchTest extends FunctionalTestCase
     {
         $this->updateJob(3, ['effective_salary_min' => 0.0, 'effective_salary_max' => 0.0]);
 
-        // 3: no salary, 5: ended employment, 6: no title, 12: deadline
+        // 3: no salary, 5: deadline passed, 6: no title, 12: deadline
         // passed, 999: does not exist
         $jobs = $this->subject->findByUids([13, 999, 12, 6, 5, 3, 2, 1]);
 
@@ -655,7 +663,7 @@ class JobRepositorySearchTest extends FunctionalTestCase
     {
         $this->updateJob(3, ['effective_salary_min' => 0.0, 'effective_salary_max' => 0.0]);
 
-        // 5: ended employment, 6: no title, 12: deadline passed
+        // 5: deadline passed, 6: no title, 12: deadline passed
         $jobs = $this->subject->findByUids([13, 999, 12, 6, 5, 3, 2, 1], false);
 
         self::assertSame([1, 2, 3, 13], $this->getUids($jobs));

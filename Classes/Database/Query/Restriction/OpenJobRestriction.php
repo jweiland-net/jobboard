@@ -18,10 +18,11 @@ use TYPO3\CMS\Core\Database\Query\Restriction\QueryRestrictionInterface;
 
 /**
  * QueryBuilder version of JobRepository::buildAndConstraintForOpenJobs() for
- * code without Extbase: the job needs a title, its application deadline must
- * not have passed and, for fixed-term positions, its employment must not have
- * ended already. Salary information (effective salary min or max > 0) is
- * only required with "$salaryRequired", see SalaryRequirement (site setting
+ * code without Extbase: the job needs a title and its application deadline
+ * must not have passed. The ending date (end of employment of fixed-term
+ * positions) is irrelevant, the job is filled long before. Salary
+ * information (effective salary min or max > 0) is only required with
+ * "$salaryRequired", see SalaryRequirement (site setting
  * "jobboard.salary.required"). Keep both in sync.
  *
  * "$today" is the timestamp of the start of today, so a job is listed
@@ -63,10 +64,6 @@ final readonly class OpenJobRestriction implements QueryRestrictionInterface
             $expressionBuilder->or(
                 $expressionBuilder->eq($field('application_deadline'), 0),
                 $expressionBuilder->gte($field('application_deadline'), $this->today),
-            ),
-            $expressionBuilder->or(
-                $expressionBuilder->eq($field('ending_date'), 0),
-                $expressionBuilder->gte($field('ending_date'), $this->today),
             ),
         ];
 

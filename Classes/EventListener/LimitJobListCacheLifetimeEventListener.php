@@ -152,7 +152,6 @@ final readonly class LimitJobListCacheLifetimeEventListener
             (int)($row['next_endtime'] ?? 0),
             // Listed through the end of that day
             $this->getMidnightAfter((int)($row['next_deadline'] ?? 0)),
-            $this->getMidnightAfter((int)($row['next_ending_date'] ?? 0)),
         ]);
 
         return $nextChanges === [] ? 0 : min($nextChanges);
@@ -177,7 +176,6 @@ final readonly class LimitJobListCacheLifetimeEventListener
                 ? null
                 : $this->buildMinimumExpression($queryBuilder, $controlFields->endTimeField, '>', $now, 'next_endtime'),
             $this->buildMinimumExpression($queryBuilder, 'application_deadline', '>=', $today, 'next_deadline'),
-            $this->buildMinimumExpression($queryBuilder, 'ending_date', '>=', $today, 'next_ending_date'),
         ]));
 
         return $queryBuilder->executeQuery()->fetchAssociative() ?: [];

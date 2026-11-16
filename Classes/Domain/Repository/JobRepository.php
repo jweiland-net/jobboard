@@ -226,10 +226,6 @@ class JobRepository extends Repository
                 $query->equals('applicationDeadline', 0),
                 $query->greaterThanOrEqual('applicationDeadline', $today),
             ),
-            $query->logicalOr(
-                $query->equals('endingDate', 0),
-                $query->greaterThanOrEqual('endingDate', $today),
-            ),
         ];
 
         if ($salaryRequired) {
