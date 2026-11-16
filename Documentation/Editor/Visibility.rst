@@ -40,6 +40,27 @@ deadline "2026-11-20" is listed until the end of 20 November 2026.
 The :guilabel:`Start of employment` does **not** influence whether a job
 is shown.
 
+..  _editor-visibility-deadline:
+
+Detail view after the application deadline
+===========================================
+
+..  versionchanged:: 0.0.4
+    The detail view no longer shows the details of a job whose
+    application deadline has passed.
+
+A job with an expired :guilabel:`Application deadline` is no longer
+listed, but its detail view can still be opened by a direct link, for
+example from a search engine, a job portal or a bookmark. Instead of the
+job details, the detail view then shows only the job title and a notice
+that the application deadline has expired. The "Apply online" link and
+the structured data for search engines are not rendered. The rule is the
+same as for the list: applying is possible until the end of the deadline
+day.
+
+Only the application deadline is checked here. A job after its
+:guilabel:`End of employment` is hidden in the list only.
+
 ..  _editor-visibility-detail:
 
 Detail view returns "Page not found"

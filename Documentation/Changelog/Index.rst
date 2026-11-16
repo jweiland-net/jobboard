@@ -7,6 +7,24 @@
 Changelog
 =========
 
+..  _changelog-0-0-4:
+
+Version 0.0.4
+=============
+
+*   The detail view of a job whose application deadline has passed no
+    longer shows the job details and the "Apply online" link. Such jobs
+    were already hidden in the list, but were still reachable by a direct
+    link, for example from search engines, job portals or bookmarks. The
+    detail view now shows the job title and a notice that the application
+    deadline has expired, without structured data (JSON-LD). Like in the
+    list, applying is possible until the end of the deadline day, see
+    :ref:`editor-visibility-deadline`.
+*   New template :file:`Templates/Jobboard/ApplicationDeadlineExpired.html`
+    and new label :code:`job.applicationDeadlineExpired`. Integrators who
+    override the templates can override this template as well, see
+    :ref:`templates-files`.
+
 ..  _changelog-0-0-3:
 
 Version 0.0.3

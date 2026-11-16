@@ -158,7 +158,8 @@ Contact person
 :guilabel:`Application deadline` (Bewerbungsfrist)
     Optional. Last day for applications. It is shown in the list, the
     detail view and the PDF version. The job is listed until the
-    end of this day.
+    end of this day. Afterwards, the detail view shows only a notice
+    instead of the job details, see :ref:`editor-visibility-deadline`.
 
 :guilabel:`Application guidelines` (Hinweise zur Bewerbung)
     Rich text with information about the application process.
