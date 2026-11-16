@@ -16,7 +16,6 @@ met:
     :guilabel:`Access`) allow it.
 #.  The job has a title.
 #.  The :guilabel:`Application deadline` is empty, today or in the future.
-#.  The :guilabel:`End of employment` is empty, today or in the future.
 #.  The job has salary information. This condition only applies if the
     site setting :confval:`jobboard-salary-required` is enabled, which is
     the default:
@@ -37,8 +36,13 @@ met:
 The dates are compared with the current day. A job with the application
 deadline "2026-11-20" is listed until the end of 20 November 2026.
 
-The :guilabel:`Start of employment` does **not** influence whether a job
-is shown.
+The :guilabel:`Start of employment` and the :guilabel:`End of employment`
+do **not** influence whether a job is shown.
+
+..  versionchanged:: 0.0.5
+    The :guilabel:`End of employment` no longer hides a job. It lies long
+    after the position has been filled and is shown in the detail view
+    for information only.
 
 ..  _editor-visibility-deadline:
 
@@ -58,8 +62,7 @@ the structured data for search engines are not rendered. The rule is the
 same as for the list: applying is possible until the end of the deadline
 day.
 
-Only the application deadline is checked here. A job after its
-:guilabel:`End of employment` is hidden in the list only.
+Only the application deadline is checked here.
 
 ..  _editor-visibility-detail:
 

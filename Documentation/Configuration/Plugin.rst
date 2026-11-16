@@ -225,17 +225,17 @@ Changed records
 
 Dates of the jobs
     The list changes without any record being saved: a job appears at its
-    publish date and disappears at its expiration date, after its
-    application deadline or after its end of employment. The page cache of
-    TYPO3 (:typoscript:`config.cache`) only considers the publish and
-    expiration dates, not application deadlines or ending dates. The event
-    listener
+    publish date and disappears at its expiration date or after its
+    application deadline. The page cache of TYPO3
+    (:typoscript:`config.cache`) only considers the publish and expiration
+    dates, not application deadlines. The event listener
     :php:`JWeiland\Jobboard\EventListener\LimitJobListCacheLifetimeEventListener`
     therefore limits the cache lifetime of pages with the content element
     to the next of these points in time: the next publish or expiration
     date of a job, or the midnight after the earliest upcoming application
-    deadline or end of employment. Only jobs of the storage pages of the
-    content element are considered.
+    deadline. Only jobs of the storage pages of the content element are
+    considered. The end of employment does not influence the list and is
+    therefore not considered.
 
 Salary grades
     Publish and expiration dates of salary grades and steps are applied by
