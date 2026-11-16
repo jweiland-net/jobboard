@@ -211,6 +211,10 @@ Key points:
     (last parameter `$salaryRequired = true`) -> `buildAndConstraintForOpenJobs()`, and
     `OpenJobRestriction(int $today, bool $salaryRequired = true)` / `forToday(bool)`. Both add the salary
     constraint only if required - keep them in sync. `JobSearchOptionsService` inherits it from the action query.
+  - Expired application deadline (`Job::isApplicationDeadlineExpired()`, start of today like the list): `detailAction()`
+    renders `Jobboard/ApplicationDeadlineExpired.html` (title + notice `job.applicationDeadlineExpired`) instead of the
+    job, so expired jobs reached by direct link (search engines, portals) offer no application link and no JSON-LD.
+    The salary 404 is checked first. Only the deadline is checked here, not `endingDate`.
   - `detailAction()` throws the 404 only if required. Related jobs: the controller assigns `relatedJobs`
     (`getRelatedJobsToLink()`, without salary-less jobs if required); `Detail.html` renders `relatedJobs`, never
     `job.relatedJobs`. Only the salary rule is applied there, expired related jobs are still linked.

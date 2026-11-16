@@ -551,6 +551,17 @@ class Job extends AbstractEntity
         $this->applicationDeadline = $applicationDeadline;
     }
 
+    /**
+     * Same rule as the job list (see JobRepository): the deadline is compared
+     * with the start of $today, so a job can be applied for through the end
+     * of its deadline day. A job without deadline never expires.
+     */
+    public function isApplicationDeadlineExpired(\DateTimeInterface $today): bool
+    {
+        return $this->applicationDeadline instanceof \DateTime
+            && $this->applicationDeadline < $today;
+    }
+
     public function getApplicationGuidelines(): string
     {
         return $this->applicationGuidelines;

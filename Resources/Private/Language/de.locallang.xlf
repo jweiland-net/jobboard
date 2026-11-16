@@ -170,6 +170,10 @@
 				<source>Read more</source>
 				<target>Weiterlesen</target>
 			</trans-unit>
+			<trans-unit id="job.applicationDeadlineExpired">
+				<source>The application deadline for this job expired on %s. Applications are no longer possible.</source>
+				<target>Die Bewerbungsfrist für diese Stelle ist am %s abgelaufen. Eine Bewerbung ist nicht mehr möglich.</target>
+			</trans-unit>
 			<trans-unit id="job.applyOnline">
 				<source>Apply online</source>
 				<target>Online bewerben</target>

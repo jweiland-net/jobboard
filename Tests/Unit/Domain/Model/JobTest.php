@@ -834,6 +834,28 @@ class JobTest extends UnitTestCase
     }
 
     #[Test]
+    public function isApplicationDeadlineExpiredWithoutDeadlineReturnsFalse(): void
+    {
+        self::assertFalse($this->subject->isApplicationDeadlineExpired(new \DateTimeImmutable('today')));
+    }
+
+    #[Test]
+    public function isApplicationDeadlineExpiredWithDeadlineTodayReturnsFalse(): void
+    {
+        $this->subject->setApplicationDeadline(new \DateTime('today'));
+
+        self::assertFalse($this->subject->isApplicationDeadlineExpired(new \DateTimeImmutable('today')));
+    }
+
+    #[Test]
+    public function isApplicationDeadlineExpiredWithDeadlineYesterdayReturnsTrue(): void
+    {
+        $this->subject->setApplicationDeadline(new \DateTime('yesterday'));
+
+        self::assertTrue($this->subject->isApplicationDeadlineExpired(new \DateTimeImmutable('today')));
+    }
+
+    #[Test]
     public function getApplicationGuidelinesInitiallyReturnsEmptyString(): void
     {
         self::assertSame(
