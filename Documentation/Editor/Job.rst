@@ -153,7 +153,8 @@ Contact person
 
 :guilabel:`End of employment` (Ende der Beschäftigung)
     Optional, only for fixed-term positions: the last day of employment.
-    After this day, the job is no longer listed.
+    Information for applicants only: it is shown in the detail view, but
+    does not influence whether the job is listed.
 
 :guilabel:`Application deadline` (Bewerbungsfrist)
     Optional. Last day for applications. It is shown in the list, the

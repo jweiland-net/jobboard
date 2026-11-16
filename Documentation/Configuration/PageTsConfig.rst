@@ -46,8 +46,8 @@ moved. This applies to:
 
 List all pages that contain the content element, for example the job
 board page and a start page with a short list of jobs. Changes of the dates
-of jobs (application deadline, end of employment, publish and expiration
-date) do not need a cache clearing, see :ref:`configuration-plugin-caching`.
+of jobs (application deadline, publish and expiration date) do not need a
+cache clearing, see :ref:`configuration-plugin-caching`.
 
 ..  _configuration-page-tsconfig-recipes:
 

@@ -7,6 +7,23 @@
 Changelog
 =========
 
+..  _changelog-0-0-5:
+
+Version 0.0.5
+=============
+
+*   The :guilabel:`End of employment` of a job no longer influences
+    whether the job is listed. It is the last day of employment of a
+    fixed-term position and lies long after the position has been filled,
+    so it is meaningless for the list. Jobs are hidden by their
+    application deadline and their expiration date instead.
+    This applies to the list, the search result, the counts of the search
+    options, the remembered jobs and the map. The date is still shown in
+    the detail view, see :ref:`editor-visibility`.
+*   The cache lifetime of pages with the job board no longer considers
+    the end of employment, only the publish and expiration dates and the
+    application deadlines, see :ref:`configuration-plugin-caching`.
+
 ..  _changelog-0-0-4:
 
 Version 0.0.4

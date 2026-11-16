@@ -153,8 +153,8 @@ them in the backend module :guilabel:`Site Management > Settings`
 
         With :yaml:`false`, jobs without salary information are shown like
         any other open job. All other conditions still apply, for example
-        title, application deadline, end of employment and the publish and
-        expiration date of the job, see :ref:`editor-visibility`. The
+        title, application deadline and the publish and expiration date
+        of the job, see :ref:`editor-visibility`. The
         salary is shown for jobs that have one. The effective salary is
         calculated in both cases, so switching the setting later does not
         require a recalculation.
