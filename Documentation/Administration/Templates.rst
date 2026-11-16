@@ -56,6 +56,11 @@ All files are in :path:`EXT:jobboard/Resources/Private/`.
     *   -   :file:`Templates/Jobboard/Detail.html`
         -   Detail view. One :html:`<f:section>` per group of fields, for
             example :code:`renderSalary` or :code:`renderBenefits`.
+    *   -   :file:`Templates/Jobboard/ApplicationDeadlineExpired.html`
+        -   Rendered by the detail action instead of :file:`Detail.html`
+            if the application deadline of the job has passed: job title
+            and notice, no "Apply online" link, no structured data. See
+            :ref:`editor-visibility-deadline`.
     *   -   :file:`Partials/JobListAssets.html`
         -   CSS and JavaScript of list, search and the view of the
             remembered jobs, see :ref:`templates-assets`
@@ -214,7 +219,8 @@ description, identifier (employer and reference number), start date,
 logo (company and first image of the employer address; without company,
 the company of the workplace), job location, base salary (monthly, in the currency of
 :confval:`jobboard-salary-currency`) and :code:`directApply`
-(true if the job has an email address).
+(true if the job has an email address). Jobs with an expired application
+deadline get no structured data, see :ref:`editor-visibility-deadline`.
 
 Override :file:`Partials/Job/JsonLd.html` to change the properties. Follow
 the rules in the comment of this partial to keep the output valid JSON:
@@ -264,6 +270,10 @@ Some useful label keys:
 
 :code:`job.applyOnline`
     Text of the "Apply online" link.
+
+:code:`job.applicationDeadlineExpired`
+    Notice of :file:`Templates/Jobboard/ApplicationDeadlineExpired.html`.
+    Contains :code:`%s` for the formatted application deadline.
 
 :code:`job.downloadPdf`, :code:`job.downloadPdf.addition`
     Text of the link to the PDF version. The addition is hidden on small
