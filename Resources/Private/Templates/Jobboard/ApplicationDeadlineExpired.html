@@ -1,0 +1,18 @@
+<html lang="en"
+      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+<f:layout name="Default"/>
+
+<f:section name="main">
+    <f:comment>
+        Rendered by detailAction() instead of the job details, if the
+        application deadline of the job has expired.
+    </f:comment>
+    <header class="mb-3">
+        <h1 class="text-break">{job.title}</h1>
+    </header>
+    <f:variable name="deadline"><f:format.date format="{f:translate(key: 'dateFormat')}">{job.applicationDeadline}</f:format.date></f:variable>
+    <p class="alert alert-warning" role="status">{f:translate(key: 'job.applicationDeadlineExpired', arguments: {0: deadline})}</p>
+</f:section>
+</html>

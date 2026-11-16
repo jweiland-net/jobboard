@@ -183,6 +183,12 @@ class JobboardController extends ActionController
      * the job list (see JobRepository). No salary grade has to be loaded.
      * Only checked, if the site requires salary information.
      *
+     * A job with an expired application deadline is no longer listed, but
+     * still reachable by its link (search engines, job portals, bookmarks).
+     * Instead of its details, only a notice is rendered, so nobody can apply
+     * anymore. The cache lifetime of the page ends at the midnight after the
+     * deadline (see LimitJobListCacheLifetimeEventListener).
+     *
      * @throws PageNotFoundException
      */
     public function detailAction(Job $job): ResponseInterface
@@ -192,6 +198,12 @@ class JobboardController extends ActionController
                 'This job does not have any resolvable salary information and must not be displayed.',
                 1753868400,
             );
+        }
+
+        if ($job->isApplicationDeadlineExpired(new \DateTimeImmutable('today'))) {
+            $this->view->assign('job', $job);
+
+            return $this->htmlResponse($this->view->render('ApplicationDeadlineExpired'));
         }
 
         $this->view->assign('job', $job);

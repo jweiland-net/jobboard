@@ -129,6 +129,9 @@
 			<trans-unit id="job.readMore">
 				<source>Read more</source>
 			</trans-unit>
+			<trans-unit id="job.applicationDeadlineExpired">
+				<source>The application deadline for this job expired on %s. Applications are no longer possible.</source>
+			</trans-unit>
 			<trans-unit id="job.applyOnline">
 				<source>Apply online</source>
 			</trans-unit>

@@ -755,6 +755,48 @@ final class JobboardControllerTest extends FunctionalTestCase
     }
 
     #[Test]
+    public function detailActionRendersJobWithApplicationDeadlineToday(): void
+    {
+        $this->addTypoScriptToTemplateRecord(1, 'plugin.tx_jobboard.settings.pidOfApplicationForm = 1');
+        $this->updateRecordWithoutDataHandler(
+            'tx_jobboard_domain_model_job',
+            1,
+            ['application_deadline' => (new \DateTimeImmutable('today'))->getTimestamp()],
+        );
+
+        $body = (string)$this->executeFrontendSubRequest($this->buildDetailActionRequest(1))->getBody();
+
+        self::assertStringContainsString('jobuid=1', $body);
+        self::assertStringNotContainsString('Applications are no longer possible', $body);
+    }
+
+    #[Test]
+    public function detailActionRendersNoticeInsteadOfJobWithExpiredApplicationDeadline(): void
+    {
+        $this->addTypoScriptToTemplateRecord(1, 'plugin.tx_jobboard.settings.pidOfApplicationForm = 1');
+        $deadline = new \DateTimeImmutable('-2 days midnight');
+        $this->updateRecordWithoutDataHandler(
+            'tx_jobboard_domain_model_job',
+            1,
+            ['application_deadline' => $deadline->getTimestamp(), 'description' => 'Job description'],
+        );
+
+        $response = $this->executeFrontendSubRequest($this->buildDetailActionRequest(1));
+        $pageBody = explode('</head>', (string)$response->getBody(), 2)[1] ?? '';
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertStringContainsString('Job with visible stepped grade', $pageBody);
+        self::assertStringContainsString(
+            'The application deadline for this job expired on ' . $deadline->format('Y-m-d')
+            . '. Applications are no longer possible.',
+            $pageBody,
+        );
+        self::assertStringNotContainsString('jobuid=1', $pageBody);
+        self::assertStringNotContainsString('Job description', $pageBody);
+        self::assertStringNotContainsString('application/ld+json', $pageBody);
+    }
+
+    #[Test]
     public function detailActionHidesApplicationLinkWithoutPidOfApplicationForm(): void
     {
         $response = $this->executeFrontendSubRequest($this->buildDetailActionRequest(1));
